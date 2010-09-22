@@ -1,0 +1,802 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 45;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		8DD76F9A0486AA7600D96B5E /* WebKitRender.mm in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* WebKitRender.mm */; settings = {ATTRIBUTES = (); }; };
+		8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
+		C23BD641124A535B002946DE /* libapp_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5A9124A535B002946DE /* libapp_base.a */; };
+		C23BD642124A535B002946DE /* libappcache.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5AA124A535B002946DE /* libappcache.a */; };
+		C23BD643124A535B002946DE /* libbase_i18n.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5AB124A535B002946DE /* libbase_i18n.a */; };
+		C23BD644124A535B002946DE /* libbase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5AC124A535B002946DE /* libbase.a */; };
+		C23BD645124A535B002946DE /* libblob.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5AD124A535B002946DE /* libblob.a */; };
+		C23BD646124A535B002946DE /* libcacheinvalidation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5AE124A535B002946DE /* libcacheinvalidation.a */; };
+		C23BD647124A535B002946DE /* libchrome_bz2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5AF124A535B002946DE /* libchrome_bz2.a */; };
+		C23BD648124A535B002946DE /* libchrome_gpu.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5B0124A535B002946DE /* libchrome_gpu.a */; };
+		C23BD649124A535B002946DE /* libchrome_zlib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5B1124A535B002946DE /* libchrome_zlib.a */; };
+		C23BD650124A535B002946DE /* libcld.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5B8124A535B002946DE /* libcld.a */; };
+		C23BD654124A535B002946DE /* libcommon_constants.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5BC124A535B002946DE /* libcommon_constants.a */; };
+		C23BD655124A535B002946DE /* libcommon_net.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5BD124A535B002946DE /* libcommon_net.a */; };
+		C23BD656124A535B002946DE /* libcommon.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5BE124A535B002946DE /* libcommon.a */; };
+		C23BD657124A535B002946DE /* libdatabase.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5BF124A535B002946DE /* libdatabase.a */; };
+		C23BD658124A535B002946DE /* libdebugger.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5C0124A535B002946DE /* libdebugger.a */; };
+		C23BD659124A535B002946DE /* libdefault_plugin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5C1124A535B002946DE /* libdefault_plugin.a */; };
+		C23BD65A124A535B002946DE /* libdynamic_annotations.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5C2124A535B002946DE /* libdynamic_annotations.a */; };
+		C23BD65B124A535B002946DE /* libes_util.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5C3124A535B002946DE /* libes_util.a */; };
+		C23BD65C124A535B002946DE /* libevent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5C4124A535B002946DE /* libevent.a */; };
+		C23BD65D124A535B002946DE /* libexpat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5C5124A535B002946DE /* libexpat.a */; };
+		C23BD65E124A535B002946DE /* libexpiration.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5C6124A535B002946DE /* libexpiration.a */; };
+		C23BD65F124A535B002946DE /* libffmpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5C7124A535B002946DE /* libffmpeg.a */; };
+		C23BD660124A535B002946DE /* libffmpegsumo.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5C8124A535B002946DE /* libffmpegsumo.dylib */; };
+		C23BD661124A535B002946DE /* libfileapi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5C9124A535B002946DE /* libfileapi.a */; };
+		C23BD662124A535B002946DE /* libgenperf_libs.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5CA124A535B002946DE /* libgenperf_libs.a */; };
+		C23BD663124A535B002946DE /* libgfx.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5CB124A535B002946DE /* libgfx.a */; };
+		C23BD664124A535B002946DE /* libgio_shm.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5CC124A535B002946DE /* libgio_shm.a */; };
+		C23BD665124A535B002946DE /* libgio.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5CD124A535B002946DE /* libgio.a */; };
+		C23BD666124A535B002946DE /* libgles2_c_lib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5CE124A535B002946DE /* libgles2_c_lib.a */; };
+		C23BD667124A535B002946DE /* libgles2_cmd_helper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5CF124A535B002946DE /* libgles2_cmd_helper.a */; };
+		C23BD668124A535B002946DE /* libgles2_demo_lib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5D0124A535B002946DE /* libgles2_demo_lib.a */; };
+		C23BD669124A535B002946DE /* libgles2_implementation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5D1124A535B002946DE /* libgles2_implementation.a */; };
+		C23BD66A124A535B002946DE /* libgles2_lib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5D2124A535B002946DE /* libgles2_lib.a */; };
+		C23BD66B124A535B002946DE /* libglue.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5D3124A535B002946DE /* libglue.a */; };
+		C23BD66C124A535B002946DE /* libgmock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5D4124A535B002946DE /* libgmock.a */; };
+		C23BD66D124A535B002946DE /* libgmockmain.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5D5124A535B002946DE /* libgmockmain.a */; };
+		C23BD66E124A535B002946DE /* libgoogle_nacl_imc_c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5D6124A535B002946DE /* libgoogle_nacl_imc_c.a */; };
+		C23BD66F124A535B002946DE /* libgoogle_nacl_npruntime.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5D7124A535B002946DE /* libgoogle_nacl_npruntime.a */; };
+		C23BD670124A535B002946DE /* libgoogleurl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5D8124A535B002946DE /* libgoogleurl.a */; };
+		C23BD67A124A535B002946DE /* libhunspell.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5E2124A535B002946DE /* libhunspell.a */; };
+		C23BD67B124A535B002946DE /* libicudata.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5E3124A535B002946DE /* libicudata.a */; };
+		C23BD67C124A535B002946DE /* libicui18n.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5E4124A535B002946DE /* libicui18n.a */; };
+		C23BD67D124A535B002946DE /* libicuuc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5E5124A535B002946DE /* libicuuc.a */; };
+		C23BD67E124A535B002946DE /* libil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5E6124A535B002946DE /* libil.a */; };
+		C23BD680124A535B002946DE /* libipc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5E8124A535B002946DE /* libipc.a */; };
+		C23BD681124A535B002946DE /* libjingle_p2p.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5E9124A535B002946DE /* libjingle_p2p.a */; };
+		C23BD682124A535B002946DE /* libjingle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5EA124A535B002946DE /* libjingle.a */; };
+		C23BD683124A535B002946DE /* libjpeg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5EB124A535B002946DE /* libjpeg.a */; };
+		C23BD684124A535B002946DE /* liblzma_decompress.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5EC124A535B002946DE /* liblzma_decompress.dylib */; };
+		C23BD685124A535B002946DE /* liblzma_sdk.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5ED124A535B002946DE /* liblzma_sdk.a */; };
+		C23BD686124A535B002946DE /* liblzma.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5EE124A535B002946DE /* liblzma.a */; };
+		C23BD688124A535B002946DE /* libmedia.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5F0124A535B002946DE /* libmedia.a */; };
+		C23BD689124A535B002946DE /* libmesa.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5F1124A535B002946DE /* libmesa.a */; };
+		C23BD68A124A535B002946DE /* libmip_map_2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5F2124A535B002946DE /* libmip_map_2d.a */; };
+		C23BD68B124A535B002946DE /* libmodp_b64.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5F3124A535B002946DE /* libmodp_b64.a */; };
+		C23BD68D124A535B002946DE /* libnacl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5F5124A535B002946DE /* libnacl.a */; };
+		C23BD68E124A535B002946DE /* libncopcode_utils.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5F6124A535B002946DE /* libncopcode_utils.a */; };
+		C23BD68F124A535B002946DE /* libncvalidate.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5F7124A535B002946DE /* libncvalidate.a */; };
+		C23BD690124A535B002946DE /* libnet_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5F8124A535B002946DE /* libnet_base.a */; };
+		C23BD692124A535B002946DE /* libnet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5FA124A535B002946DE /* libnet.a */; };
+		C23BD693124A535B002946DE /* libnonnacl_srpc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5FB124A535B002946DE /* libnonnacl_srpc.a */; };
+		C23BD694124A535B002946DE /* libnonnacl_util_chrome.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5FC124A535B002946DE /* libnonnacl_util_chrome.a */; };
+		C23BD695124A535B002946DE /* libnotifier.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5FD124A535B002946DE /* libnotifier.a */; };
+		C23BD698124A535B002946DE /* libnrd_xfer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD600124A535B002946DE /* libnrd_xfer.a */; };
+		C23BD699124A535B002946DE /* libnspr.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD601124A535B002946DE /* libnspr.a */; };
+		C23BD69A124A535B002946DE /* libnss.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD602124A535B002946DE /* libnss.a */; };
+		C23BD69B124A535B002946DE /* libocmock.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD603124A535B002946DE /* libocmock.a */; };
+		C23BD69C124A535B002946DE /* libots.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD604124A535B002946DE /* libots.a */; };
+		C23BD69E124A535B002946DE /* libpgl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD606124A535B002946DE /* libpgl.a */; };
+		C23BD69F124A535B002946DE /* libplatform_qual_lib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD607124A535B002946DE /* libplatform_qual_lib.a */; };
+		C23BD6A0124A535B002946DE /* libplatform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD608124A535B002946DE /* libplatform.a */; };
+		C23BD6A1124A535B002946DE /* libplugin_carbon_interpose.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD609124A535B002946DE /* libplugin_carbon_interpose.dylib */; };
+		C23BD6A2124A535B002946DE /* libplugin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD60A124A535B002946DE /* libplugin.a */; };
+		C23BD6A3124A535B002946DE /* libpng.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD60B124A535B002946DE /* libpng.a */; };
+		C23BD6A4124A535B002946DE /* libppapi_cpp_objects.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD60C124A535B002946DE /* libppapi_cpp_objects.a */; };
+		C23BD6A5124A535B002946DE /* libppapi_cpp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD60D124A535B002946DE /* libppapi_cpp.a */; };
+		C23BD6A6124A535B002946DE /* libprinting.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD60E124A535B002946DE /* libprinting.a */; };
+		C23BD6A7124A535B002946DE /* libprofile_import.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD60F124A535B002946DE /* libprofile_import.a */; };
+		C23BD6AA124A535B002946DE /* librenderer.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD612124A535B002946DE /* librenderer.a */; };
+		C23BD6AB124A535B002946DE /* libsdch.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD613124A535B002946DE /* libsdch.a */; };
+		C23BD6AC124A535B002946DE /* libsel_ldr_launcher.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD614124A535B002946DE /* libsel_ldr_launcher.a */; };
+		C23BD6AD124A535B002946DE /* libsel.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD615124A535B002946DE /* libsel.a */; };
+		C23BD6AE124A535C002946DE /* libservice_runtime_x86_32.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD616124A535B002946DE /* libservice_runtime_x86_32.a */; };
+		C23BD6AF124A535C002946DE /* libservice_runtime_x86_common.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD617124A535B002946DE /* libservice_runtime_x86_common.a */; };
+		C23BD6B0124A535C002946DE /* libservice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD618124A535B002946DE /* libservice.a */; };
+		C23BD6B1124A535C002946DE /* libsimple_texture_2d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD619124A535B002946DE /* libsimple_texture_2d.a */; };
+		C23BD6B2124A535C002946DE /* libsimple_texture_cubemap.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD61A124A535B002946DE /* libsimple_texture_cubemap.a */; };
+		C23BD6B3124A535C002946DE /* libsimple_vertex_shader.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD61B124A535B002946DE /* libsimple_vertex_shader.a */; };
+		C23BD6B4124A535C002946DE /* libskia_opts.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD61C124A535B002946DE /* libskia_opts.a */; };
+		C23BD6B5124A535C002946DE /* libskia.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD61D124A535B002946DE /* libskia.a */; };
+		C23BD6B6124A535C002946DE /* libspeex.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD61E124A535B002946DE /* libspeex.a */; };
+		C23BD6B7124A535C002946DE /* libsqlite3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD61F124A535B002946DE /* libsqlite3.a */; };
+		C23BD6B8124A535C002946DE /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD620124A535B002946DE /* libssl.a */; };
+		C23BD6B9124A535C002946DE /* libstencil_test.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD621124A535B002946DE /* libstencil_test.a */; };
+		C23BD6BA124A535C002946DE /* libsync_notifier.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD622124A535B002946DE /* libsync_notifier.a */; };
+		C23BD6BB124A535C002946DE /* libsync.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD623124A535B002946DE /* libsync.a */; };
+		C23BD6BC124A535C002946DE /* libsyncapi.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD624124A535B002946DE /* libsyncapi.a */; };
+		C23BD6C3124A535C002946DE /* libtexture_wrap.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD62B124A535B002946DE /* libtexture_wrap.a */; };
+		C23BD6C4124A535C002946DE /* libtrace_proto_lib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD62C124A535B002946DE /* libtrace_proto_lib.a */; };
+		C23BD6C5124A535C002946DE /* libtranslator_common.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD62D124A535B002946DE /* libtranslator_common.a */; };
+		C23BD6C6124A535C002946DE /* libtranslator_glsl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD62E124A535B002946DE /* libtranslator_glsl.a */; };
+		C23BD6C7124A535C002946DE /* libutility.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD62F124A535B002946DE /* libutility.a */; };
+		C23BD6C8124A535C002946DE /* libutils.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD630124A535B002946DE /* libutils.a */; };
+		C23BD6C9124A535C002946DE /* libv8_base.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD631124A535B002946DE /* libv8_base.a */; };
+		C23BD6CA124A535C002946DE /* libv8_nosnapshot.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD632124A535B002946DE /* libv8_nosnapshot.a */; };
+		C23BD6CB124A535C002946DE /* libv8_snapshot.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD633124A535B002946DE /* libv8_snapshot.a */; };
+		C23BD6CC124A535C002946DE /* libwebcore_bindings.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD634124A535B002946DE /* libwebcore_bindings.a */; };
+		C23BD6CF124A535C002946DE /* libwebcore_svg.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD637124A535B002946DE /* libwebcore_svg.a */; };
+		C23BD6D0124A535C002946DE /* libwebkit_support.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD638124A535B002946DE /* libwebkit_support.a */; };
+		C23BD6D1124A535C002946DE /* libwebkit_system_interface.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD639124A535B002946DE /* libwebkit_system_interface.a */; };
+		C23BD6D2124A535C002946DE /* libwebkit_user_agent.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD63A124A535B002946DE /* libwebkit_user_agent.a */; };
+		C23BD6D3124A535C002946DE /* libwebkit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD63B124A535B002946DE /* libwebkit.a */; };
+		C23BD6D6124A535C002946DE /* libwtf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD63E124A535B002946DE /* libwtf.a */; };
+		C23BD6D7124A535C002946DE /* libxml2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD63F124A535B002946DE /* libxml2.a */; };
+		C23BD6D8124A535C002946DE /* libxslt.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD640124A535B002946DE /* libxslt.a */; };
+		C23BD6DC124A53C9002946DE /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD6DB124A53C9002946DE /* AppKit.framework */; };
+		C23BD6E2124A53E8002946DE /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD6E1124A53E8002946DE /* Carbon.framework */; };
+		C23BDC26124A82B1002946DE /* libpcre.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BDC25124A82B1002946DE /* libpcre.a */; };
+		C23BDC34124A88A8002946DE /* libhttp_listen_socket.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5E1124A535B002946DE /* libhttp_listen_socket.a */; };
+		C23BDC39124A8976002946DE /* libgpu_plugin.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD5DD124A535B002946DE /* libgpu_plugin.a */; };
+		C23BDC3A124A8998002946DE /* libwebcore_remaining.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD636124A535B002946DE /* libwebcore_remaining.a */; };
+		C23BDC46124A8D84002946DE /* libwebcore_platform.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BD635124A535B002946DE /* libwebcore_platform.a */; };
+		C23DA8BD124A475C004C2ADE /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C23DA8BC124A475C004C2ADE /* OpenGL.framework */; };
+		C2FAF3E0124A531F003384A4 /* libbrowser.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C2FAF3DF124A531F003384A4 /* libbrowser.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		8DD76F9E0486AA7600D96B5E /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 8;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		08FB7796FE84155DC02AAC07 /* WebKitRender.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = WebKitRender.mm; sourceTree = "<group>"; };
+		08FB779EFE84155DC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		32A70AAB03705E1F00C91783 /* WebKitRender_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebKitRender_Prefix.pch; sourceTree = "<group>"; };
+		8DD76FA10486AA7600D96B5E /* WebKitRender */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = WebKitRender; sourceTree = BUILT_PRODUCTS_DIR; };
+		C23BD5A9124A535B002946DE /* libapp_base.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libapp_base.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libapp_base.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5AA124A535B002946DE /* libappcache.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libappcache.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libappcache.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5AB124A535B002946DE /* libbase_i18n.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbase_i18n.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libbase_i18n.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5AC124A535B002946DE /* libbase.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbase.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libbase.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5AD124A535B002946DE /* libblob.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libblob.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libblob.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5AE124A535B002946DE /* libcacheinvalidation.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcacheinvalidation.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libcacheinvalidation.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5AF124A535B002946DE /* libchrome_bz2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libchrome_bz2.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libchrome_bz2.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5B0124A535B002946DE /* libchrome_gpu.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libchrome_gpu.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libchrome_gpu.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5B1124A535B002946DE /* libchrome_zlib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libchrome_zlib.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libchrome_zlib.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5B2124A535B002946DE /* libchromoting_base.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libchromoting_base.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libchromoting_base.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5B3124A535B002946DE /* libchromoting_client.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libchromoting_client.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libchromoting_client.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5B4124A535B002946DE /* libchromoting_host.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libchromoting_host.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libchromoting_host.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5B5124A535B002946DE /* libchromoting_jingle_glue.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libchromoting_jingle_glue.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libchromoting_jingle_glue.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5B6124A535B002946DE /* libchromoting_plugin.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libchromoting_plugin.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libchromoting_plugin.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5B7124A535B002946DE /* libchromotocol_proto_lib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libchromotocol_proto_lib.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libchromotocol_proto_lib.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5B8124A535B002946DE /* libcld.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcld.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libcld.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5B9124A535B002946DE /* libcommand_buffer_client.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcommand_buffer_client.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libcommand_buffer_client.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5BA124A535B002946DE /* libcommand_buffer_common.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcommand_buffer_common.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libcommand_buffer_common.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5BB124A535B002946DE /* libcommand_buffer_service.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcommand_buffer_service.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libcommand_buffer_service.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5BC124A535B002946DE /* libcommon_constants.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcommon_constants.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libcommon_constants.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5BD124A535B002946DE /* libcommon_net.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcommon_net.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libcommon_net.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5BE124A535B002946DE /* libcommon.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcommon.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libcommon.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5BF124A535B002946DE /* libdatabase.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdatabase.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libdatabase.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5C0124A535B002946DE /* libdebugger.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdebugger.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libdebugger.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5C1124A535B002946DE /* libdefault_plugin.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdefault_plugin.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libdefault_plugin.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5C2124A535B002946DE /* libdynamic_annotations.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libdynamic_annotations.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libdynamic_annotations.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5C3124A535B002946DE /* libes_util.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libes_util.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libes_util.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5C4124A535B002946DE /* libevent.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libevent.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libevent.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5C5124A535B002946DE /* libexpat.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libexpat.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libexpat.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5C6124A535B002946DE /* libexpiration.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libexpiration.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libexpiration.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5C7124A535B002946DE /* libffmpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libffmpeg.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libffmpeg.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5C8124A535B002946DE /* libffmpegsumo.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libffmpegsumo.dylib; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libffmpegsumo.dylib"; sourceTree = SOURCE_ROOT; };
+		C23BD5C9124A535B002946DE /* libfileapi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfileapi.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libfileapi.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5CA124A535B002946DE /* libgenperf_libs.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgenperf_libs.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libgenperf_libs.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5CB124A535B002946DE /* libgfx.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgfx.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libgfx.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5CC124A535B002946DE /* libgio_shm.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgio_shm.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libgio_shm.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5CD124A535B002946DE /* libgio.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgio.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libgio.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5CE124A535B002946DE /* libgles2_c_lib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgles2_c_lib.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libgles2_c_lib.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5CF124A535B002946DE /* libgles2_cmd_helper.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgles2_cmd_helper.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libgles2_cmd_helper.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5D0124A535B002946DE /* libgles2_demo_lib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgles2_demo_lib.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libgles2_demo_lib.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5D1124A535B002946DE /* libgles2_implementation.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgles2_implementation.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libgles2_implementation.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5D2124A535B002946DE /* libgles2_lib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgles2_lib.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libgles2_lib.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5D3124A535B002946DE /* libglue.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libglue.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libglue.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5D4124A535B002946DE /* libgmock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgmock.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libgmock.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5D5124A535B002946DE /* libgmockmain.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgmockmain.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libgmockmain.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5D6124A535B002946DE /* libgoogle_nacl_imc_c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgoogle_nacl_imc_c.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libgoogle_nacl_imc_c.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5D7124A535B002946DE /* libgoogle_nacl_npruntime.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgoogle_nacl_npruntime.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libgoogle_nacl_npruntime.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5D8124A535B002946DE /* libgoogleurl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgoogleurl.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libgoogleurl.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5D9124A535B002946DE /* libgpu_demo_framework_exe.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgpu_demo_framework_exe.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libgpu_demo_framework_exe.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5DA124A535B002946DE /* libgpu_demo_framework_pepper.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgpu_demo_framework_pepper.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libgpu_demo_framework_pepper.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5DB124A535B002946DE /* libgpu_demo_framework_ppapi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgpu_demo_framework_ppapi.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libgpu_demo_framework_ppapi.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5DC124A535B002946DE /* libgpu_demo_framework.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgpu_demo_framework.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libgpu_demo_framework.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5DD124A535B002946DE /* libgpu_plugin.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgpu_plugin.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libgpu_plugin.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5DE124A535B002946DE /* libgtest.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgtest.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libgtest.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5DF124A535B002946DE /* libgtestmain.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgtestmain.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libgtestmain.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5E0124A535B002946DE /* libhello_triangle.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libhello_triangle.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libhello_triangle.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5E1124A535B002946DE /* libhttp_listen_socket.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libhttp_listen_socket.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libhttp_listen_socket.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5E2124A535B002946DE /* libhunspell.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libhunspell.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libhunspell.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5E3124A535B002946DE /* libicudata.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicudata.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libicudata.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5E4124A535B002946DE /* libicui18n.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicui18n.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libicui18n.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5E5124A535B002946DE /* libicuuc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libicuuc.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libicuuc.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5E6124A535B002946DE /* libil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libil.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libil.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5E7124A535B002946DE /* libinstaller_util.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libinstaller_util.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libinstaller_util.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5E8124A535B002946DE /* libipc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libipc.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libipc.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5E9124A535B002946DE /* libjingle_p2p.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjingle_p2p.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libjingle_p2p.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5EA124A535B002946DE /* libjingle.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjingle.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libjingle.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5EB124A535B002946DE /* libjpeg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libjpeg.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libjpeg.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5EC124A535B002946DE /* liblzma_decompress.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = liblzma_decompress.dylib; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/liblzma_decompress.dylib"; sourceTree = SOURCE_ROOT; };
+		C23BD5ED124A535B002946DE /* liblzma_sdk.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblzma_sdk.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/liblzma_sdk.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5EE124A535B002946DE /* liblzma.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblzma.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/liblzma.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5EF124A535B002946DE /* libmedia_test_support.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmedia_test_support.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libmedia_test_support.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5F0124A535B002946DE /* libmedia.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmedia.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libmedia.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5F1124A535B002946DE /* libmesa.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmesa.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libmesa.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5F2124A535B002946DE /* libmip_map_2d.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmip_map_2d.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libmip_map_2d.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5F3124A535B002946DE /* libmodp_b64.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmodp_b64.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libmodp_b64.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5F4124A535B002946DE /* libnacl_security_tests.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libnacl_security_tests.dylib; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libnacl_security_tests.dylib"; sourceTree = SOURCE_ROOT; };
+		C23BD5F5124A535B002946DE /* libnacl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnacl.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libnacl.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5F6124A535B002946DE /* libncopcode_utils.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libncopcode_utils.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libncopcode_utils.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5F7124A535B002946DE /* libncvalidate.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libncvalidate.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libncvalidate.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5F8124A535B002946DE /* libnet_base.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnet_base.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libnet_base.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5F9124A535B002946DE /* libnet_test_support.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnet_test_support.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libnet_test_support.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5FA124A535B002946DE /* libnet.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnet.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libnet.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5FB124A535B002946DE /* libnonnacl_srpc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnonnacl_srpc.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libnonnacl_srpc.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5FC124A535B002946DE /* libnonnacl_util_chrome.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnonnacl_util_chrome.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libnonnacl_util_chrome.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5FD124A535B002946DE /* libnotifier.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnotifier.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libnotifier.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5FE124A535B002946DE /* libnpapi_test_common.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnpapi_test_common.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libnpapi_test_common.a"; sourceTree = SOURCE_ROOT; };
+		C23BD5FF124A535B002946DE /* libnpGoogleNaClPluginChrome.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnpGoogleNaClPluginChrome.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libnpGoogleNaClPluginChrome.a"; sourceTree = SOURCE_ROOT; };
+		C23BD600124A535B002946DE /* libnrd_xfer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnrd_xfer.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libnrd_xfer.a"; sourceTree = SOURCE_ROOT; };
+		C23BD601124A535B002946DE /* libnspr.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnspr.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libnspr.a"; sourceTree = SOURCE_ROOT; };
+		C23BD602124A535B002946DE /* libnss.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libnss.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libnss.a"; sourceTree = SOURCE_ROOT; };
+		C23BD603124A535B002946DE /* libocmock.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libocmock.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libocmock.a"; sourceTree = SOURCE_ROOT; };
+		C23BD604124A535B002946DE /* libots.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libots.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libots.a"; sourceTree = SOURCE_ROOT; };
+		C23BD606124A535B002946DE /* libpgl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpgl.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libpgl.a"; sourceTree = SOURCE_ROOT; };
+		C23BD607124A535B002946DE /* libplatform_qual_lib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libplatform_qual_lib.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libplatform_qual_lib.a"; sourceTree = SOURCE_ROOT; };
+		C23BD608124A535B002946DE /* libplatform.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libplatform.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libplatform.a"; sourceTree = SOURCE_ROOT; };
+		C23BD609124A535B002946DE /* libplugin_carbon_interpose.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libplugin_carbon_interpose.dylib; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libplugin_carbon_interpose.dylib"; sourceTree = SOURCE_ROOT; };
+		C23BD60A124A535B002946DE /* libplugin.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libplugin.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libplugin.a"; sourceTree = SOURCE_ROOT; };
+		C23BD60B124A535B002946DE /* libpng.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpng.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libpng.a"; sourceTree = SOURCE_ROOT; };
+		C23BD60C124A535B002946DE /* libppapi_cpp_objects.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libppapi_cpp_objects.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libppapi_cpp_objects.a"; sourceTree = SOURCE_ROOT; };
+		C23BD60D124A535B002946DE /* libppapi_cpp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libppapi_cpp.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libppapi_cpp.a"; sourceTree = SOURCE_ROOT; };
+		C23BD60E124A535B002946DE /* libprinting.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprinting.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libprinting.a"; sourceTree = SOURCE_ROOT; };
+		C23BD60F124A535B002946DE /* libprofile_import.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprofile_import.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libprofile_import.a"; sourceTree = SOURCE_ROOT; };
+		C23BD610124A535B002946DE /* libprotobuf_lite.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprotobuf_lite.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libprotobuf_lite.a"; sourceTree = SOURCE_ROOT; };
+		C23BD611124A535B002946DE /* libprotobuf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libprotobuf.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libprotobuf.a"; sourceTree = SOURCE_ROOT; };
+		C23BD612124A535B002946DE /* librenderer.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = librenderer.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/librenderer.a"; sourceTree = SOURCE_ROOT; };
+		C23BD613124A535B002946DE /* libsdch.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsdch.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libsdch.a"; sourceTree = SOURCE_ROOT; };
+		C23BD614124A535B002946DE /* libsel_ldr_launcher.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsel_ldr_launcher.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libsel_ldr_launcher.a"; sourceTree = SOURCE_ROOT; };
+		C23BD615124A535B002946DE /* libsel.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsel.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libsel.a"; sourceTree = SOURCE_ROOT; };
+		C23BD616124A535B002946DE /* libservice_runtime_x86_32.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libservice_runtime_x86_32.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libservice_runtime_x86_32.a"; sourceTree = SOURCE_ROOT; };
+		C23BD617124A535B002946DE /* libservice_runtime_x86_common.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libservice_runtime_x86_common.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libservice_runtime_x86_common.a"; sourceTree = SOURCE_ROOT; };
+		C23BD618124A535B002946DE /* libservice.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libservice.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libservice.a"; sourceTree = SOURCE_ROOT; };
+		C23BD619124A535B002946DE /* libsimple_texture_2d.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsimple_texture_2d.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libsimple_texture_2d.a"; sourceTree = SOURCE_ROOT; };
+		C23BD61A124A535B002946DE /* libsimple_texture_cubemap.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsimple_texture_cubemap.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libsimple_texture_cubemap.a"; sourceTree = SOURCE_ROOT; };
+		C23BD61B124A535B002946DE /* libsimple_vertex_shader.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsimple_vertex_shader.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libsimple_vertex_shader.a"; sourceTree = SOURCE_ROOT; };
+		C23BD61C124A535B002946DE /* libskia_opts.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libskia_opts.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libskia_opts.a"; sourceTree = SOURCE_ROOT; };
+		C23BD61D124A535B002946DE /* libskia.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libskia.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libskia.a"; sourceTree = SOURCE_ROOT; };
+		C23BD61E124A535B002946DE /* libspeex.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libspeex.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libspeex.a"; sourceTree = SOURCE_ROOT; };
+		C23BD61F124A535B002946DE /* libsqlite3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsqlite3.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libsqlite3.a"; sourceTree = SOURCE_ROOT; };
+		C23BD620124A535B002946DE /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libssl.a"; sourceTree = SOURCE_ROOT; };
+		C23BD621124A535B002946DE /* libstencil_test.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libstencil_test.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libstencil_test.a"; sourceTree = SOURCE_ROOT; };
+		C23BD622124A535B002946DE /* libsync_notifier.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsync_notifier.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libsync_notifier.a"; sourceTree = SOURCE_ROOT; };
+		C23BD623124A535B002946DE /* libsync.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsync.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libsync.a"; sourceTree = SOURCE_ROOT; };
+		C23BD624124A535B002946DE /* libsyncapi.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsyncapi.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libsyncapi.a"; sourceTree = SOURCE_ROOT; };
+		C23BD625124A535B002946DE /* libtest_shell_common.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtest_shell_common.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libtest_shell_common.a"; sourceTree = SOURCE_ROOT; };
+		C23BD626124A535B002946DE /* libtest_support_base.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtest_support_base.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libtest_support_base.a"; sourceTree = SOURCE_ROOT; };
+		C23BD627124A535B002946DE /* libtest_support_common.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtest_support_common.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libtest_support_common.a"; sourceTree = SOURCE_ROOT; };
+		C23BD628124A535B002946DE /* libtest_support_perf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtest_support_perf.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libtest_support_perf.a"; sourceTree = SOURCE_ROOT; };
+		C23BD629124A535B002946DE /* libtest_support_ui.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtest_support_ui.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libtest_support_ui.a"; sourceTree = SOURCE_ROOT; };
+		C23BD62A124A535B002946DE /* libtest_support_unit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtest_support_unit.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libtest_support_unit.a"; sourceTree = SOURCE_ROOT; };
+		C23BD62B124A535B002946DE /* libtexture_wrap.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtexture_wrap.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libtexture_wrap.a"; sourceTree = SOURCE_ROOT; };
+		C23BD62C124A535B002946DE /* libtrace_proto_lib.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtrace_proto_lib.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libtrace_proto_lib.a"; sourceTree = SOURCE_ROOT; };
+		C23BD62D124A535B002946DE /* libtranslator_common.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtranslator_common.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libtranslator_common.a"; sourceTree = SOURCE_ROOT; };
+		C23BD62E124A535B002946DE /* libtranslator_glsl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtranslator_glsl.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libtranslator_glsl.a"; sourceTree = SOURCE_ROOT; };
+		C23BD62F124A535B002946DE /* libutility.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libutility.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libutility.a"; sourceTree = SOURCE_ROOT; };
+		C23BD630124A535B002946DE /* libutils.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libutils.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libutils.a"; sourceTree = SOURCE_ROOT; };
+		C23BD631124A535B002946DE /* libv8_base.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libv8_base.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libv8_base.a"; sourceTree = SOURCE_ROOT; };
+		C23BD632124A535B002946DE /* libv8_nosnapshot.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libv8_nosnapshot.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libv8_nosnapshot.a"; sourceTree = SOURCE_ROOT; };
+		C23BD633124A535B002946DE /* libv8_snapshot.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libv8_snapshot.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libv8_snapshot.a"; sourceTree = SOURCE_ROOT; };
+		C23BD634124A535B002946DE /* libwebcore_bindings.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwebcore_bindings.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libwebcore_bindings.a"; sourceTree = SOURCE_ROOT; };
+		C23BD635124A535B002946DE /* libwebcore_platform.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwebcore_platform.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libwebcore_platform.a"; sourceTree = SOURCE_ROOT; };
+		C23BD636124A535B002946DE /* libwebcore_remaining.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwebcore_remaining.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libwebcore_remaining.a"; sourceTree = SOURCE_ROOT; };
+		C23BD637124A535B002946DE /* libwebcore_svg.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwebcore_svg.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libwebcore_svg.a"; sourceTree = SOURCE_ROOT; };
+		C23BD638124A535B002946DE /* libwebkit_support.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwebkit_support.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libwebkit_support.a"; sourceTree = SOURCE_ROOT; };
+		C23BD639124A535B002946DE /* libwebkit_system_interface.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwebkit_system_interface.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libwebkit_system_interface.a"; sourceTree = SOURCE_ROOT; };
+		C23BD63A124A535B002946DE /* libwebkit_user_agent.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwebkit_user_agent.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libwebkit_user_agent.a"; sourceTree = SOURCE_ROOT; };
+		C23BD63B124A535B002946DE /* libwebkit.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwebkit.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libwebkit.a"; sourceTree = SOURCE_ROOT; };
+		C23BD63C124A535B002946DE /* libWebKitSystemInterfaceLeopardPrivateExtern.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libWebKitSystemInterfaceLeopardPrivateExtern.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libWebKitSystemInterfaceLeopardPrivateExtern.a"; sourceTree = SOURCE_ROOT; };
+		C23BD63D124A535B002946DE /* libworker.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libworker.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libworker.a"; sourceTree = SOURCE_ROOT; };
+		C23BD63E124A535B002946DE /* libwtf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libwtf.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libwtf.a"; sourceTree = SOURCE_ROOT; };
+		C23BD63F124A535B002946DE /* libxml2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxml2.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libxml2.a"; sourceTree = SOURCE_ROOT; };
+		C23BD640124A535B002946DE /* libxslt.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libxslt.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libxslt.a"; sourceTree = SOURCE_ROOT; };
+		C23BD6DB124A53C9002946DE /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		C23BD6E1124A53E8002946DE /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
+		C23BDC25124A82B1002946DE /* libpcre.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libpcre.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libpcre.a"; sourceTree = SOURCE_ROOT; };
+		C23DA8BC124A475C004C2ADE /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
+		C2FAF3DF124A531F003384A4 /* libbrowser.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libbrowser.a; path = "../../../software/webkit/chromium-mac/src/xcodebuild/Debug/libbrowser.a"; sourceTree = SOURCE_ROOT; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		8DD76F9B0486AA7600D96B5E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8DD76F9C0486AA7600D96B5E /* Foundation.framework in Frameworks */,
+				C23DA8BD124A475C004C2ADE /* OpenGL.framework in Frameworks */,
+				C2FAF3E0124A531F003384A4 /* libbrowser.a in Frameworks */,
+				C23BD641124A535B002946DE /* libapp_base.a in Frameworks */,
+				C23BD642124A535B002946DE /* libappcache.a in Frameworks */,
+				C23BD643124A535B002946DE /* libbase_i18n.a in Frameworks */,
+				C23BD644124A535B002946DE /* libbase.a in Frameworks */,
+				C23BD645124A535B002946DE /* libblob.a in Frameworks */,
+				C23BD646124A535B002946DE /* libcacheinvalidation.a in Frameworks */,
+				C23BD647124A535B002946DE /* libchrome_bz2.a in Frameworks */,
+				C23BD648124A535B002946DE /* libchrome_gpu.a in Frameworks */,
+				C23BD649124A535B002946DE /* libchrome_zlib.a in Frameworks */,
+				C23BD650124A535B002946DE /* libcld.a in Frameworks */,
+				C23BD654124A535B002946DE /* libcommon_constants.a in Frameworks */,
+				C23BD655124A535B002946DE /* libcommon_net.a in Frameworks */,
+				C23BD656124A535B002946DE /* libcommon.a in Frameworks */,
+				C23BD657124A535B002946DE /* libdatabase.a in Frameworks */,
+				C23BD658124A535B002946DE /* libdebugger.a in Frameworks */,
+				C23BD659124A535B002946DE /* libdefault_plugin.a in Frameworks */,
+				C23BD65A124A535B002946DE /* libdynamic_annotations.a in Frameworks */,
+				C23BD65B124A535B002946DE /* libes_util.a in Frameworks */,
+				C23BD65C124A535B002946DE /* libevent.a in Frameworks */,
+				C23BD65D124A535B002946DE /* libexpat.a in Frameworks */,
+				C23BD65E124A535B002946DE /* libexpiration.a in Frameworks */,
+				C23BD65F124A535B002946DE /* libffmpeg.a in Frameworks */,
+				C23BD660124A535B002946DE /* libffmpegsumo.dylib in Frameworks */,
+				C23BD661124A535B002946DE /* libfileapi.a in Frameworks */,
+				C23BD662124A535B002946DE /* libgenperf_libs.a in Frameworks */,
+				C23BD663124A535B002946DE /* libgfx.a in Frameworks */,
+				C23BD664124A535B002946DE /* libgio_shm.a in Frameworks */,
+				C23BD665124A535B002946DE /* libgio.a in Frameworks */,
+				C23BD666124A535B002946DE /* libgles2_c_lib.a in Frameworks */,
+				C23BD667124A535B002946DE /* libgles2_cmd_helper.a in Frameworks */,
+				C23BD668124A535B002946DE /* libgles2_demo_lib.a in Frameworks */,
+				C23BD669124A535B002946DE /* libgles2_implementation.a in Frameworks */,
+				C23BD66A124A535B002946DE /* libgles2_lib.a in Frameworks */,
+				C23BD66B124A535B002946DE /* libglue.a in Frameworks */,
+				C23BD66C124A535B002946DE /* libgmock.a in Frameworks */,
+				C23BD66D124A535B002946DE /* libgmockmain.a in Frameworks */,
+				C23BD66E124A535B002946DE /* libgoogle_nacl_imc_c.a in Frameworks */,
+				C23BD66F124A535B002946DE /* libgoogle_nacl_npruntime.a in Frameworks */,
+				C23BD670124A535B002946DE /* libgoogleurl.a in Frameworks */,
+				C23BD67A124A535B002946DE /* libhunspell.a in Frameworks */,
+				C23BD67B124A535B002946DE /* libicudata.a in Frameworks */,
+				C23BD67C124A535B002946DE /* libicui18n.a in Frameworks */,
+				C23BD67D124A535B002946DE /* libicuuc.a in Frameworks */,
+				C23BD67E124A535B002946DE /* libil.a in Frameworks */,
+				C23BD680124A535B002946DE /* libipc.a in Frameworks */,
+				C23BD681124A535B002946DE /* libjingle_p2p.a in Frameworks */,
+				C23BD682124A535B002946DE /* libjingle.a in Frameworks */,
+				C23BD683124A535B002946DE /* libjpeg.a in Frameworks */,
+				C23BD684124A535B002946DE /* liblzma_decompress.dylib in Frameworks */,
+				C23BD685124A535B002946DE /* liblzma_sdk.a in Frameworks */,
+				C23BD686124A535B002946DE /* liblzma.a in Frameworks */,
+				C23BD688124A535B002946DE /* libmedia.a in Frameworks */,
+				C23BD689124A535B002946DE /* libmesa.a in Frameworks */,
+				C23BD68A124A535B002946DE /* libmip_map_2d.a in Frameworks */,
+				C23BD68B124A535B002946DE /* libmodp_b64.a in Frameworks */,
+				C23BD68D124A535B002946DE /* libnacl.a in Frameworks */,
+				C23BD68E124A535B002946DE /* libncopcode_utils.a in Frameworks */,
+				C23BD68F124A535B002946DE /* libncvalidate.a in Frameworks */,
+				C23BD690124A535B002946DE /* libnet_base.a in Frameworks */,
+				C23BD692124A535B002946DE /* libnet.a in Frameworks */,
+				C23BD693124A535B002946DE /* libnonnacl_srpc.a in Frameworks */,
+				C23BD694124A535B002946DE /* libnonnacl_util_chrome.a in Frameworks */,
+				C23BD695124A535B002946DE /* libnotifier.a in Frameworks */,
+				C23BD698124A535B002946DE /* libnrd_xfer.a in Frameworks */,
+				C23BD699124A535B002946DE /* libnspr.a in Frameworks */,
+				C23BD69A124A535B002946DE /* libnss.a in Frameworks */,
+				C23BD69B124A535B002946DE /* libocmock.a in Frameworks */,
+				C23BD69C124A535B002946DE /* libots.a in Frameworks */,
+				C23BD69E124A535B002946DE /* libpgl.a in Frameworks */,
+				C23BD69F124A535B002946DE /* libplatform_qual_lib.a in Frameworks */,
+				C23BD6A0124A535B002946DE /* libplatform.a in Frameworks */,
+				C23BD6A1124A535B002946DE /* libplugin_carbon_interpose.dylib in Frameworks */,
+				C23BD6A2124A535B002946DE /* libplugin.a in Frameworks */,
+				C23BD6A3124A535B002946DE /* libpng.a in Frameworks */,
+				C23BD6A4124A535B002946DE /* libppapi_cpp_objects.a in Frameworks */,
+				C23BD6A5124A535B002946DE /* libppapi_cpp.a in Frameworks */,
+				C23BD6A6124A535B002946DE /* libprinting.a in Frameworks */,
+				C23BD6A7124A535B002946DE /* libprofile_import.a in Frameworks */,
+				C23BD6AA124A535B002946DE /* librenderer.a in Frameworks */,
+				C23BD6AB124A535B002946DE /* libsdch.a in Frameworks */,
+				C23BD6AC124A535B002946DE /* libsel_ldr_launcher.a in Frameworks */,
+				C23BD6AD124A535B002946DE /* libsel.a in Frameworks */,
+				C23BD6AE124A535C002946DE /* libservice_runtime_x86_32.a in Frameworks */,
+				C23BD6AF124A535C002946DE /* libservice_runtime_x86_common.a in Frameworks */,
+				C23BD6B0124A535C002946DE /* libservice.a in Frameworks */,
+				C23BD6B1124A535C002946DE /* libsimple_texture_2d.a in Frameworks */,
+				C23BD6B2124A535C002946DE /* libsimple_texture_cubemap.a in Frameworks */,
+				C23BD6B3124A535C002946DE /* libsimple_vertex_shader.a in Frameworks */,
+				C23BD6B4124A535C002946DE /* libskia_opts.a in Frameworks */,
+				C23BD6B5124A535C002946DE /* libskia.a in Frameworks */,
+				C23BD6B6124A535C002946DE /* libspeex.a in Frameworks */,
+				C23BD6B7124A535C002946DE /* libsqlite3.a in Frameworks */,
+				C23BD6B8124A535C002946DE /* libssl.a in Frameworks */,
+				C23BD6B9124A535C002946DE /* libstencil_test.a in Frameworks */,
+				C23BD6BA124A535C002946DE /* libsync_notifier.a in Frameworks */,
+				C23BD6BB124A535C002946DE /* libsync.a in Frameworks */,
+				C23BD6BC124A535C002946DE /* libsyncapi.a in Frameworks */,
+				C23BD6C3124A535C002946DE /* libtexture_wrap.a in Frameworks */,
+				C23BD6C4124A535C002946DE /* libtrace_proto_lib.a in Frameworks */,
+				C23BD6C5124A535C002946DE /* libtranslator_common.a in Frameworks */,
+				C23BD6C6124A535C002946DE /* libtranslator_glsl.a in Frameworks */,
+				C23BD6C7124A535C002946DE /* libutility.a in Frameworks */,
+				C23BD6C8124A535C002946DE /* libutils.a in Frameworks */,
+				C23BD6C9124A535C002946DE /* libv8_base.a in Frameworks */,
+				C23BD6CA124A535C002946DE /* libv8_nosnapshot.a in Frameworks */,
+				C23BD6CB124A535C002946DE /* libv8_snapshot.a in Frameworks */,
+				C23BD6CC124A535C002946DE /* libwebcore_bindings.a in Frameworks */,
+				C23BD6CF124A535C002946DE /* libwebcore_svg.a in Frameworks */,
+				C23BD6D0124A535C002946DE /* libwebkit_support.a in Frameworks */,
+				C23BD6D1124A535C002946DE /* libwebkit_system_interface.a in Frameworks */,
+				C23BD6D2124A535C002946DE /* libwebkit_user_agent.a in Frameworks */,
+				C23BD6D3124A535C002946DE /* libwebkit.a in Frameworks */,
+				C23BD6D6124A535C002946DE /* libwtf.a in Frameworks */,
+				C23BD6D7124A535C002946DE /* libxml2.a in Frameworks */,
+				C23BD6D8124A535C002946DE /* libxslt.a in Frameworks */,
+				C23BD6DC124A53C9002946DE /* AppKit.framework in Frameworks */,
+				C23BD6E2124A53E8002946DE /* Carbon.framework in Frameworks */,
+				C23BDC34124A88A8002946DE /* libhttp_listen_socket.a in Frameworks */,
+				C23BDC39124A8976002946DE /* libgpu_plugin.a in Frameworks */,
+				C23BDC3A124A8998002946DE /* libwebcore_remaining.a in Frameworks */,
+				C23BDC26124A82B1002946DE /* libpcre.a in Frameworks */,
+				C23BDC46124A8D84002946DE /* libwebcore_platform.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		08FB7794FE84155DC02AAC07 /* WebKitRender */ = {
+			isa = PBXGroup;
+			children = (
+				08FB7795FE84155DC02AAC07 /* Source */,
+				08FB779DFE84155DC02AAC07 /* External Frameworks and Libraries */,
+				1AB674ADFE9D54B511CA2CBB /* Products */,
+			);
+			name = WebKitRender;
+			sourceTree = "<group>";
+		};
+		08FB7795FE84155DC02AAC07 /* Source */ = {
+			isa = PBXGroup;
+			children = (
+				32A70AAB03705E1F00C91783 /* WebKitRender_Prefix.pch */,
+				08FB7796FE84155DC02AAC07 /* WebKitRender.mm */,
+			);
+			name = Source;
+			sourceTree = "<group>";
+		};
+		08FB779DFE84155DC02AAC07 /* External Frameworks and Libraries */ = {
+			isa = PBXGroup;
+			children = (
+				C23BD5A9124A535B002946DE /* libapp_base.a */,
+				C23BD5AA124A535B002946DE /* libappcache.a */,
+				C23BD5AB124A535B002946DE /* libbase_i18n.a */,
+				C23BD5AC124A535B002946DE /* libbase.a */,
+				C23BD5AD124A535B002946DE /* libblob.a */,
+				C23BD5AE124A535B002946DE /* libcacheinvalidation.a */,
+				C23BD5AF124A535B002946DE /* libchrome_bz2.a */,
+				C23BD5B0124A535B002946DE /* libchrome_gpu.a */,
+				C23BD5B1124A535B002946DE /* libchrome_zlib.a */,
+				C23BD5B2124A535B002946DE /* libchromoting_base.a */,
+				C23BD5B3124A535B002946DE /* libchromoting_client.a */,
+				C23BD5B4124A535B002946DE /* libchromoting_host.a */,
+				C23BD5B5124A535B002946DE /* libchromoting_jingle_glue.a */,
+				C23BD5B6124A535B002946DE /* libchromoting_plugin.a */,
+				C23BD5B7124A535B002946DE /* libchromotocol_proto_lib.a */,
+				C23BD5B8124A535B002946DE /* libcld.a */,
+				C23BD5B9124A535B002946DE /* libcommand_buffer_client.a */,
+				C23BD5BA124A535B002946DE /* libcommand_buffer_common.a */,
+				C23BD5BB124A535B002946DE /* libcommand_buffer_service.a */,
+				C23BD5BC124A535B002946DE /* libcommon_constants.a */,
+				C23BD5BD124A535B002946DE /* libcommon_net.a */,
+				C23BD5BE124A535B002946DE /* libcommon.a */,
+				C23BD5BF124A535B002946DE /* libdatabase.a */,
+				C23BD5C0124A535B002946DE /* libdebugger.a */,
+				C23BD5C1124A535B002946DE /* libdefault_plugin.a */,
+				C23BD5C2124A535B002946DE /* libdynamic_annotations.a */,
+				C23BD5C3124A535B002946DE /* libes_util.a */,
+				C23BD5C4124A535B002946DE /* libevent.a */,
+				C23BD5C5124A535B002946DE /* libexpat.a */,
+				C23BD5C6124A535B002946DE /* libexpiration.a */,
+				C23BD5C7124A535B002946DE /* libffmpeg.a */,
+				C23BD5C8124A535B002946DE /* libffmpegsumo.dylib */,
+				C23BD5C9124A535B002946DE /* libfileapi.a */,
+				C23BD5CA124A535B002946DE /* libgenperf_libs.a */,
+				C23BD5CB124A535B002946DE /* libgfx.a */,
+				C23BD5CC124A535B002946DE /* libgio_shm.a */,
+				C23BD5CD124A535B002946DE /* libgio.a */,
+				C23BD5CE124A535B002946DE /* libgles2_c_lib.a */,
+				C23BD5CF124A535B002946DE /* libgles2_cmd_helper.a */,
+				C23BD5D0124A535B002946DE /* libgles2_demo_lib.a */,
+				C23BD5D1124A535B002946DE /* libgles2_implementation.a */,
+				C23BD5D2124A535B002946DE /* libgles2_lib.a */,
+				C23BD5D3124A535B002946DE /* libglue.a */,
+				C23BD5D4124A535B002946DE /* libgmock.a */,
+				C23BD5D5124A535B002946DE /* libgmockmain.a */,
+				C23BD5D6124A535B002946DE /* libgoogle_nacl_imc_c.a */,
+				C23BD5D7124A535B002946DE /* libgoogle_nacl_npruntime.a */,
+				C23BD5D8124A535B002946DE /* libgoogleurl.a */,
+				C23BD5D9124A535B002946DE /* libgpu_demo_framework_exe.a */,
+				C23BD5DA124A535B002946DE /* libgpu_demo_framework_pepper.a */,
+				C23BD5DB124A535B002946DE /* libgpu_demo_framework_ppapi.a */,
+				C23BD5DC124A535B002946DE /* libgpu_demo_framework.a */,
+				C23BD5DD124A535B002946DE /* libgpu_plugin.a */,
+				C23BD5DE124A535B002946DE /* libgtest.a */,
+				C23BD5DF124A535B002946DE /* libgtestmain.a */,
+				C23BD5E0124A535B002946DE /* libhello_triangle.a */,
+				C23BD5E1124A535B002946DE /* libhttp_listen_socket.a */,
+				C23BD5E2124A535B002946DE /* libhunspell.a */,
+				C23BD5E3124A535B002946DE /* libicudata.a */,
+				C23BD5E4124A535B002946DE /* libicui18n.a */,
+				C23BD5E5124A535B002946DE /* libicuuc.a */,
+				C23BD5E6124A535B002946DE /* libil.a */,
+				C23BD5E7124A535B002946DE /* libinstaller_util.a */,
+				C23BD5E8124A535B002946DE /* libipc.a */,
+				C23BD5E9124A535B002946DE /* libjingle_p2p.a */,
+				C23BD5EA124A535B002946DE /* libjingle.a */,
+				C23BD5EB124A535B002946DE /* libjpeg.a */,
+				C23BD5EC124A535B002946DE /* liblzma_decompress.dylib */,
+				C23BD5ED124A535B002946DE /* liblzma_sdk.a */,
+				C23BD5EE124A535B002946DE /* liblzma.a */,
+				C23BD5EF124A535B002946DE /* libmedia_test_support.a */,
+				C23BD5F0124A535B002946DE /* libmedia.a */,
+				C23BD5F1124A535B002946DE /* libmesa.a */,
+				C23BD5F2124A535B002946DE /* libmip_map_2d.a */,
+				C23BD5F3124A535B002946DE /* libmodp_b64.a */,
+				C23BD5F4124A535B002946DE /* libnacl_security_tests.dylib */,
+				C23BD5F5124A535B002946DE /* libnacl.a */,
+				C23BD5F6124A535B002946DE /* libncopcode_utils.a */,
+				C23BD5F7124A535B002946DE /* libncvalidate.a */,
+				C23BD5F8124A535B002946DE /* libnet_base.a */,
+				C23BD5F9124A535B002946DE /* libnet_test_support.a */,
+				C23BD5FA124A535B002946DE /* libnet.a */,
+				C23BD5FB124A535B002946DE /* libnonnacl_srpc.a */,
+				C23BD5FC124A535B002946DE /* libnonnacl_util_chrome.a */,
+				C23BD5FD124A535B002946DE /* libnotifier.a */,
+				C23BD5FE124A535B002946DE /* libnpapi_test_common.a */,
+				C23BD5FF124A535B002946DE /* libnpGoogleNaClPluginChrome.a */,
+				C23BD600124A535B002946DE /* libnrd_xfer.a */,
+				C23BD601124A535B002946DE /* libnspr.a */,
+				C23BD602124A535B002946DE /* libnss.a */,
+				C23BD603124A535B002946DE /* libocmock.a */,
+				C23BD604124A535B002946DE /* libots.a */,
+				C23BD606124A535B002946DE /* libpgl.a */,
+				C23BD607124A535B002946DE /* libplatform_qual_lib.a */,
+				C23BD608124A535B002946DE /* libplatform.a */,
+				C23BD609124A535B002946DE /* libplugin_carbon_interpose.dylib */,
+				C23BD60A124A535B002946DE /* libplugin.a */,
+				C23BD60B124A535B002946DE /* libpng.a */,
+				C23BD60C124A535B002946DE /* libppapi_cpp_objects.a */,
+				C23BD60D124A535B002946DE /* libppapi_cpp.a */,
+				C23BD60E124A535B002946DE /* libprinting.a */,
+				C23BD60F124A535B002946DE /* libprofile_import.a */,
+				C23BD610124A535B002946DE /* libprotobuf_lite.a */,
+				C23BD611124A535B002946DE /* libprotobuf.a */,
+				C23BD612124A535B002946DE /* librenderer.a */,
+				C23BD613124A535B002946DE /* libsdch.a */,
+				C23BD614124A535B002946DE /* libsel_ldr_launcher.a */,
+				C23BD615124A535B002946DE /* libsel.a */,
+				C23BD616124A535B002946DE /* libservice_runtime_x86_32.a */,
+				C23BD617124A535B002946DE /* libservice_runtime_x86_common.a */,
+				C23BD618124A535B002946DE /* libservice.a */,
+				C23BD619124A535B002946DE /* libsimple_texture_2d.a */,
+				C23BD61A124A535B002946DE /* libsimple_texture_cubemap.a */,
+				C23BD61B124A535B002946DE /* libsimple_vertex_shader.a */,
+				C23BD61C124A535B002946DE /* libskia_opts.a */,
+				C23BD61D124A535B002946DE /* libskia.a */,
+				C23BD61E124A535B002946DE /* libspeex.a */,
+				C23BD620124A535B002946DE /* libssl.a */,
+				C23BD621124A535B002946DE /* libstencil_test.a */,
+				C23BD622124A535B002946DE /* libsync_notifier.a */,
+				C23BD623124A535B002946DE /* libsync.a */,
+				C23BD624124A535B002946DE /* libsyncapi.a */,
+				C23BD625124A535B002946DE /* libtest_shell_common.a */,
+				C23BD626124A535B002946DE /* libtest_support_base.a */,
+				C23BD627124A535B002946DE /* libtest_support_common.a */,
+				C23BD628124A535B002946DE /* libtest_support_perf.a */,
+				C23BD629124A535B002946DE /* libtest_support_ui.a */,
+				C23BD62A124A535B002946DE /* libtest_support_unit.a */,
+				C23BD62B124A535B002946DE /* libtexture_wrap.a */,
+				C23BD62C124A535B002946DE /* libtrace_proto_lib.a */,
+				C23BD62D124A535B002946DE /* libtranslator_common.a */,
+				C23BD62E124A535B002946DE /* libtranslator_glsl.a */,
+				C23BD62F124A535B002946DE /* libutility.a */,
+				C23BD630124A535B002946DE /* libutils.a */,
+				C23BD631124A535B002946DE /* libv8_base.a */,
+				C23BD632124A535B002946DE /* libv8_nosnapshot.a */,
+				C23BD633124A535B002946DE /* libv8_snapshot.a */,
+				C23BD634124A535B002946DE /* libwebcore_bindings.a */,
+				C23BD635124A535B002946DE /* libwebcore_platform.a */,
+				C23BD636124A535B002946DE /* libwebcore_remaining.a */,
+				C23BD637124A535B002946DE /* libwebcore_svg.a */,
+				C23BD638124A535B002946DE /* libwebkit_support.a */,
+				C23BD639124A535B002946DE /* libwebkit_system_interface.a */,
+				C23BD63A124A535B002946DE /* libwebkit_user_agent.a */,
+				C23BD63B124A535B002946DE /* libwebkit.a */,
+				C23BD63C124A535B002946DE /* libWebKitSystemInterfaceLeopardPrivateExtern.a */,
+				C23BD63D124A535B002946DE /* libworker.a */,
+				C23BD63E124A535B002946DE /* libwtf.a */,
+				C23BD63F124A535B002946DE /* libxml2.a */,
+				C23BD640124A535B002946DE /* libxslt.a */,
+				C2FAF3DF124A531F003384A4 /* libbrowser.a */,
+				C23BDC25124A82B1002946DE /* libpcre.a */,
+				C23BD61F124A535B002946DE /* libsqlite3.a */,
+				C23BD6E1124A53E8002946DE /* Carbon.framework */,
+				08FB779EFE84155DC02AAC07 /* Foundation.framework */,
+				C23DA8BC124A475C004C2ADE /* OpenGL.framework */,
+				C23BD6DB124A53C9002946DE /* AppKit.framework */,
+			);
+			name = "External Frameworks and Libraries";
+			sourceTree = "<group>";
+		};
+		1AB674ADFE9D54B511CA2CBB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				8DD76FA10486AA7600D96B5E /* WebKitRender */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		8DD76F960486AA7600D96B5E /* WebKitRender */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "WebKitRender" */;
+			buildPhases = (
+				8DD76F990486AA7600D96B5E /* Sources */,
+				8DD76F9B0486AA7600D96B5E /* Frameworks */,
+				8DD76F9E0486AA7600D96B5E /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = WebKitRender;
+			productInstallPath = "$(HOME)/bin";
+			productName = WebKitRender;
+			productReference = 8DD76FA10486AA7600D96B5E /* WebKitRender */;
+			productType = "com.apple.product-type.tool";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		08FB7793FE84155DC02AAC07 /* Project object */ = {
+			isa = PBXProject;
+			buildConfigurationList = 1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "WebKitRender" */;
+			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
+			hasScannedForEncodings = 1;
+			knownRegions = (
+				English,
+				Japanese,
+				French,
+				German,
+			);
+			mainGroup = 08FB7794FE84155DC02AAC07 /* WebKitRender */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				8DD76F960486AA7600D96B5E /* WebKitRender */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		8DD76F990486AA7600D96B5E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8DD76F9A0486AA7600D96B5E /* WebKitRender.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		1DEB927508733DD40010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				COPY_PHASE_STRIP = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../software/webkit/chromium-mac/src/xcodebuild/Debug\"",
+				);
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_FIX_AND_CONTINUE = YES;
+				GCC_MODEL_TUNING = G5;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = WebKitRender_Prefix.pch;
+				INSTALL_PATH = /usr/local/bin;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../software/webkit/chromium-mac/src/xcodebuild/Debug\"",
+				);
+				PRODUCT_NAME = WebKitRender;
+			};
+			name = Debug;
+		};
+		1DEB927608733DD40010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../software/webkit/chromium-mac/src/xcodebuild/Debug\"",
+				);
+				GCC_MODEL_TUNING = G5;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = WebKitRender_Prefix.pch;
+				INSTALL_PATH = /usr/local/bin;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"$(SRCROOT)/../../../software/webkit/chromium-mac/src/xcodebuild/Debug\"",
+				);
+				PRODUCT_NAME = WebKitRender;
+			};
+			name = Release;
+		};
+		1DEB927908733DD40010E9CD /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"/Users/aw/Projects/software/webkit/chromium-mac/src/",
+					"/Users/aw/Projects/software/webkit/chromium-mac/src/third_party/WebKit/WebKit/chromium/",
+				);
+				LINKER_DISPLAYS_MANGLED_NAMES = NO;
+				ONLY_ACTIVE_ARCH = YES;
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+				VALID_ARCHS = i386;
+			};
+			name = Debug;
+		};
+		1DEB927A08733DD40010E9CD /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"/Users/aw/Projects/software/webkit/chromium-mac/src/",
+					"/Users/aw/Projects/software/webkit/chromium-mac/src/third_party/WebKit/WebKit/chromium/",
+				);
+				PREBINDING = NO;
+				SDKROOT = macosx10.6;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "WebKitRender" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB927508733DD40010E9CD /* Debug */,
+				1DEB927608733DD40010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "WebKitRender" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1DEB927908733DD40010E9CD /* Debug */,
+				1DEB927A08733DD40010E9CD /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 08FB7793FE84155DC02AAC07 /* Project object */;
+}
