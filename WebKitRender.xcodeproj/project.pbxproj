@@ -12,6 +12,10 @@
 		C23BE1F4124AD5A6002946DE /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BE1F3124AD5A6002946DE /* OpenGL.framework */; };
 		C23BE1F8124AD5E9002946DE /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BE1F7124AD5E9002946DE /* AppKit.framework */; };
 		C23BE1FA124AD5E9002946DE /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BE1F9124AD5E9002946DE /* Carbon.framework */; };
+		C23BE45E124AF49F002946DE /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BE45D124AF49F002946DE /* Security.framework */; };
+		C23BE466124AF61E002946DE /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BE465124AF61E002946DE /* SystemConfiguration.framework */; };
+		C23BE47B124AF652002946DE /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BE47A124AF652002946DE /* IOKit.framework */; };
+		C23BE487124AF8AA002946DE /* libresolv.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BE486124AF8AA002946DE /* libresolv.9.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -34,6 +38,10 @@
 		C23BE1F3124AD5A6002946DE /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		C23BE1F7124AD5E9002946DE /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		C23BE1F9124AD5E9002946DE /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
+		C23BE45D124AF49F002946DE /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		C23BE465124AF61E002946DE /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		C23BE47A124AF652002946DE /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		C23BE486124AF8AA002946DE /* libresolv.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.9.dylib; path = usr/lib/libresolv.9.dylib; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,6 +53,10 @@
 				C23BE1F4124AD5A6002946DE /* OpenGL.framework in Frameworks */,
 				C23BE1F8124AD5E9002946DE /* AppKit.framework in Frameworks */,
 				C23BE1FA124AD5E9002946DE /* Carbon.framework in Frameworks */,
+				C23BE45E124AF49F002946DE /* Security.framework in Frameworks */,
+				C23BE466124AF61E002946DE /* SystemConfiguration.framework in Frameworks */,
+				C23BE47B124AF652002946DE /* IOKit.framework in Frameworks */,
+				C23BE487124AF8AA002946DE /* libresolv.9.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -81,10 +93,14 @@
 		C23BE1F0124AD587002946DE /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C23BE465124AF61E002946DE /* SystemConfiguration.framework */,
 				C23BE1F7124AD5E9002946DE /* AppKit.framework */,
 				C23BE1F9124AD5E9002946DE /* Carbon.framework */,
 				C23BE1F1124AD5A6002946DE /* Foundation.framework */,
 				C23BE1F3124AD5A6002946DE /* OpenGL.framework */,
+				C23BE45D124AF49F002946DE /* Security.framework */,
+				C23BE47A124AF652002946DE /* IOKit.framework */,
+				C23BE486124AF8AA002946DE /* libresolv.9.dylib */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -264,6 +280,7 @@
 					"/Users/aw/Projects/software/webkit/chromium-mac/src/xcodebuild/Debug/libtranslator_glsl.a",
 					"/Users/aw/Projects/software/webkit/chromium-mac/src/xcodebuild/Debug/libwebkit_support.a",
 					"/Users/aw/Projects/software/webkit/chromium-mac/src/xcodebuild/Debug/libfileapi.a",
+					"/Users/aw/Projects/software/webkit/chromium-mac/src/xcodebuild/Debug/libWebKitSystemInterfaceLeopardPrivateExtern.a",
 				);
 				PREBINDING = YES;
 				SDKROOT = macosx10.5;
@@ -341,6 +358,7 @@
 					"/Users/aw/Projects/software/webkit/chromium-mac/src/xcodebuild/Debug/libtranslator_glsl.a",
 					"/Users/aw/Projects/software/webkit/chromium-mac/src/xcodebuild/Debug/libwebkit_support.a",
 					"/Users/aw/Projects/software/webkit/chromium-mac/src/xcodebuild/Debug/libfileapi.a",
+					"/Users/aw/Projects/software/webkit/chromium-mac/src/xcodebuild/Debug/libWebKitSystemInterfaceLeopardPrivateExtern.a",
 				);
 				PREBINDING = YES;
 				SDKROOT = macosx10.5;
