@@ -213,11 +213,13 @@
 				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"/Users/aw/Projects/software/webkit/chromium-mac/src/",
 					"/Users/aw/Projects/software/webkit/chromium-mac/src/third_party/WebKit/WebKit/chromium/",
+					"/Users/aw/Projects/software/webkit/chromium-mac/src/skia/config",
 				);
 				LINKER_DISPLAYS_MANGLED_NAMES = NO;
 				ONLY_ACTIVE_ARCH = YES;
@@ -293,11 +295,13 @@
 			buildSettings = {
 				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"/Users/aw/Projects/software/webkit/chromium-mac/src/",
 					"/Users/aw/Projects/software/webkit/chromium-mac/src/third_party/WebKit/WebKit/chromium/",
+					"/Users/aw/Projects/software/webkit/chromium-mac/src/skia/config",
 				);
 				OTHER_LDFLAGS = (
 					"/Users/aw/Projects/software/webkit/chromium-mac/src/xcodebuild/Debug/libskia.a",

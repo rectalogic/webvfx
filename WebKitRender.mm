@@ -6,18 +6,13 @@
 #include <public/WebURL.h>
 #include <public/WebURLRequest.h>
 #include <public/WebSize.h>
+#include <public/WebRect.h>
 #include <webkit/glue/webkitclient_impl.h>
+#include <webkit/glue/webkit_glue.h>
 #include <base/at_exit.h>
 #include <base/basictypes.h>
 #include <base/message_loop.h>
-
-using WebKit::WebView;
-using WebKit::WebFrame;
-using WebKit::WebSize;
-using WebKit::WebURL;
-using WebKit::WebURLRequest;
-using WebKit::WebKitClient;
-using webkit_glue::WebKitClientImpl;
+#include <skia/ext/platform_canvas.h>
 
 int main (int argc, const char * argv[]) {
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
@@ -26,18 +21,21 @@ int main (int argc, const char * argv[]) {
     base::AtExitManager at_exit_manager;
     MessageLoop messageLoop; //XXX test_shell uses MessageLoopForUI, but this might be OK
 
-    WebKitClientImpl client;
-    WebKit::initialize((WebKitClient *)&client);
+    webkit_glue::WebKitClientImpl client;
+    WebKit::initialize((WebKit::WebKitClient *)&client);
 
-    WebView *webView = WebView::create(NULL, NULL);
+    WebKit::WebSize size(400, 300);
+    WebKit::WebView *webView = WebKit::WebView::create(NULL, NULL);
     webView->initializeMainFrame(NULL);
-    webView->resize(WebSize(400, 300));
-    WebFrame *webFrame = webView->mainFrame();
+    webView->resize(size);
+    WebKit::WebFrame *webFrame = webView->mainFrame();
     webFrame->setCanHaveScrollbars(false);
-    webFrame->loadRequest(WebURLRequest(WebURL(GURL("http://www.google.com/"))));
+    webFrame->loadRequest(WebKit::WebURLRequest(WebKit::WebURL(GURL("http://www.google.com/"))));
     webView->layout();
     //XXX base::MessageLoop::current()->Run();
-    //webView->paint(XXX);
+
+    skia::PlatformCanvas skiaCanvas(size.width, size.height, true);
+    webView->paint(webkit_glue::ToWebCanvas(&skiaCanvas), WebKit::WebRect(0, 0, size.width, size.height));
 
     webView->close();
     WebKit::shutdown();
