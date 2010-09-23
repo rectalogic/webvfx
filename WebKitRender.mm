@@ -39,6 +39,7 @@ int main (int argc, const char * argv[]) {
     //XXX base::MessageLoop::current()->Run();
     //webView->paint(XXX);
 
+    webView->close();
     WebKit::shutdown();
 
     [pool drain];
