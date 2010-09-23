@@ -16,6 +16,7 @@
 		C23BE466124AF61E002946DE /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BE465124AF61E002946DE /* SystemConfiguration.framework */; };
 		C23BE47B124AF652002946DE /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BE47A124AF652002946DE /* IOKit.framework */; };
 		C23BE487124AF8AA002946DE /* libresolv.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BE486124AF8AA002946DE /* libresolv.9.dylib */; };
+		C23BE580124BD7C0002946DE /* RenderDelegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = C23BE57F124BD7C0002946DE /* RenderDelegate.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -42,6 +43,8 @@
 		C23BE465124AF61E002946DE /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		C23BE47A124AF652002946DE /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		C23BE486124AF8AA002946DE /* libresolv.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.9.dylib; path = usr/lib/libresolv.9.dylib; sourceTree = SDKROOT; };
+		C23BE57E124BD7C0002946DE /* RenderDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderDelegate.h; sourceTree = "<group>"; };
+		C23BE57F124BD7C0002946DE /* RenderDelegate.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RenderDelegate.cc; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -78,6 +81,8 @@
 			children = (
 				32A70AAB03705E1F00C91783 /* WebKitRender_Prefix.pch */,
 				08FB7796FE84155DC02AAC07 /* WebKitRender.mm */,
+				C23BE57E124BD7C0002946DE /* RenderDelegate.h */,
+				C23BE57F124BD7C0002946DE /* RenderDelegate.cc */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -156,6 +161,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				8DD76F9A0486AA7600D96B5E /* WebKitRender.mm in Sources */,
+				C23BE580124BD7C0002946DE /* RenderDelegate.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

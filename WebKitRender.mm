@@ -16,6 +16,8 @@
 #include <skia/ext/bitmap_platform_device.h>
 #include <gfx/codec/png_codec.h>
 
+#include "RenderDelegate.h"
+
 int main (int argc, const char * argv[]) {
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
@@ -28,13 +30,15 @@ int main (int argc, const char * argv[]) {
 
     WebKit::WebSize size(400, 300);
     WebKit::WebView *webView = WebKit::WebView::create(NULL, NULL);
-    webView->initializeMainFrame(NULL);
+    RenderDelegate delegate;
+    webView->initializeMainFrame(&delegate);
     webView->resize(size);
     WebKit::WebFrame *webFrame = webView->mainFrame();
     webFrame->setCanHaveScrollbars(false);
     webFrame->loadRequest(WebKit::WebURLRequest(WebKit::WebURL(GURL("http://www.google.com/"))));
     webView->layout();
-    base::MessageLoop::current()->Run();
+    while (!delegate.isFrameLoaded())
+        MessageLoop::current()->Run();
 
     skia::PlatformCanvas skiaCanvas(size.width, size.height, true);
     webView->paint(webkit_glue::ToWebCanvas(&skiaCanvas), WebKit::WebRect(0, 0, size.width, size.height));
