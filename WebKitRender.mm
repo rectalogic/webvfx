@@ -7,6 +7,9 @@
 #include <public/WebURLRequest.h>
 #include <public/WebSize.h>
 #include <webkit/glue/webkitclient_impl.h>
+#include <base/at_exit.h>
+#include <base/basictypes.h>
+#include <base/message_loop.h>
 
 using WebKit::WebView;
 using WebKit::WebFrame;
@@ -19,6 +22,10 @@ using webkit_glue::WebKitClientImpl;
 int main (int argc, const char * argv[]) {
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
+    // These setup global state
+    base::AtExitManager at_exit_manager;
+    MessageLoop messageLoop; //XXX test_shell uses MessageLoopForUI, but this might be OK
+
     WebKitClientImpl client;
     WebKit::initialize((WebKitClient *)&client);
 
@@ -29,6 +36,7 @@ int main (int argc, const char * argv[]) {
     webFrame->setCanHaveScrollbars(false);
     webFrame->loadRequest(WebURLRequest(WebURL(GURL("http://www.google.com/"))));
     webView->layout();
+    //XXX base::MessageLoop::current()->Run();
     //webView->paint(XXX);
 
     WebKit::shutdown();
