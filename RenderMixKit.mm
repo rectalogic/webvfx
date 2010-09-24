@@ -33,6 +33,8 @@ int main (int argc, const char * argv[]) {
     while (!frameClient.isFrameLoaded())
         MessageLoop::current()->Run();
 
+    //XXX do we need to GC JS? webView()->mainFrame()->collectGarbage()
+
     skia::PlatformCanvas skiaCanvas(size.width, size.height, true);
     webView->paint(webkit_glue::ToWebCanvas(&skiaCanvas), WebKit::WebRect(0, 0, size.width, size.height));
 

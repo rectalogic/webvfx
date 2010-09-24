@@ -6,7 +6,6 @@
 #include <webkit/glue/webclipboard_impl.h>
 #include <webkit/glue/webkitclient_impl.h>
 
-//XXX build with -fno-rtti like chrome does
 class MixKitWebKitClient : public webkit_glue::WebKitClientImpl {
 public:
     MixKitWebKitClient() {};
