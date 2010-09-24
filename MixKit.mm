@@ -6,6 +6,7 @@
 #include <public/WebURLRequest.h>
 #include <public/WebSize.h>
 #include <public/WebRect.h>
+#include <public/WebSettings.h>
 #include <webkit/glue/webkit_glue.h>
 #include <base/basictypes.h>
 #include <base/message_loop.h>
@@ -14,7 +15,7 @@
 #include <gfx/codec/png_codec.h>
 
 #include "MixManager.h"
-#include "WebFrameClientImpl.h"
+#include "WebViewDelegate.h"
 
 int main (int argc, const char * argv[]) {
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
@@ -22,15 +23,16 @@ int main (int argc, const char * argv[]) {
     MixKit::MixManager mixKit;
 
     WebKit::WebSize size(400, 300);
-    WebKit::WebView *webView = WebKit::WebView::create(NULL, NULL);
-    MixKit::WebFrameClientImpl frameClient;
-    webView->initializeMainFrame(&frameClient);
+    MixKit::WebViewDelegate delegate;
+    WebKit::WebView *webView = WebKit::WebView::create(&delegate, NULL);
+    webView->initializeMainFrame(&delegate);
     webView->resize(size);
     WebKit::WebFrame *webFrame = webView->mainFrame();
     webFrame->setCanHaveScrollbars(false);
+    webView->settings()->setLoadsImagesAutomatically(true);
     webFrame->loadRequest(WebKit::WebURLRequest(WebKit::WebURL(GURL("http://www.google.com/"))));
     webView->layout();
-    while (!frameClient.isFrameLoaded())
+    while (!delegate.isLoadFinished())
         MessageLoop::current()->Run();
 
     //XXX Probably need to do this periodically when rendering video frames
