@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8DD76F9A0486AA7600D96B5E /* RenderMixKit.mm in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* RenderMixKit.mm */; settings = {ATTRIBUTES = (); }; };
+		8DD76F9A0486AA7600D96B5E /* MixKit.mm in Sources */ = {isa = PBXBuildFile; fileRef = 08FB7796FE84155DC02AAC07 /* MixKit.mm */; settings = {ATTRIBUTES = (); }; };
 		C23BE1F2124AD5A6002946DE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BE1F1124AD5A6002946DE /* Foundation.framework */; };
 		C23BE1F4124AD5A6002946DE /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BE1F3124AD5A6002946DE /* OpenGL.framework */; };
 		C23BE1F8124AD5E9002946DE /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BE1F7124AD5E9002946DE /* AppKit.framework */; };
@@ -33,9 +33,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		08FB7796FE84155DC02AAC07 /* RenderMixKit.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RenderMixKit.mm; sourceTree = "<group>"; };
-		32A70AAB03705E1F00C91783 /* RenderMixKit_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RenderMixKit_Prefix.pch; sourceTree = "<group>"; };
-		8DD76FA10486AA7600D96B5E /* RenderMixKit */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RenderMixKit; sourceTree = BUILT_PRODUCTS_DIR; };
+		08FB7796FE84155DC02AAC07 /* MixKit.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MixKit.mm; sourceTree = "<group>"; };
+		32A70AAB03705E1F00C91783 /* MixKit_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MixKit_Prefix.pch; sourceTree = "<group>"; };
+		8DD76FA10486AA7600D96B5E /* MixKit */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = MixKit; sourceTree = BUILT_PRODUCTS_DIR; };
 		C23BE1F1124AD5A6002946DE /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C23BE1F3124AD5A6002946DE /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 		C23BE1F7124AD5E9002946DE /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
@@ -83,8 +83,8 @@
 		08FB7795FE84155DC02AAC07 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				32A70AAB03705E1F00C91783 /* RenderMixKit_Prefix.pch */,
-				08FB7796FE84155DC02AAC07 /* RenderMixKit.mm */,
+				32A70AAB03705E1F00C91783 /* MixKit_Prefix.pch */,
+				08FB7796FE84155DC02AAC07 /* MixKit.mm */,
 				C23BE57E124BD7C0002946DE /* WebFrameClientImpl.h */,
 				C23BE57F124BD7C0002946DE /* WebFrameClientImpl.cc */,
 				C23BE5C8124BED8C002946DE /* WebKitClientImpl.h */,
@@ -97,7 +97,7 @@
 		1AB674ADFE9D54B511CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8DD76FA10486AA7600D96B5E /* RenderMixKit */,
+				8DD76FA10486AA7600D96B5E /* MixKit */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -120,9 +120,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8DD76F960486AA7600D96B5E /* RenderMixKit */ = {
+		8DD76F960486AA7600D96B5E /* MixKit */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "RenderMixKit" */;
+			buildConfigurationList = 1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "MixKit" */;
 			buildPhases = (
 				8DD76F990486AA7600D96B5E /* Sources */,
 				8DD76F9B0486AA7600D96B5E /* Frameworks */,
@@ -132,10 +132,10 @@
 			);
 			dependencies = (
 			);
-			name = RenderMixKit;
+			name = MixKit;
 			productInstallPath = "$(HOME)/bin";
 			productName = RenderMixKit;
-			productReference = 8DD76FA10486AA7600D96B5E /* RenderMixKit */;
+			productReference = 8DD76FA10486AA7600D96B5E /* MixKit */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -143,7 +143,7 @@
 /* Begin PBXProject section */
 		08FB7793FE84155DC02AAC07 /* Project object */ = {
 			isa = PBXProject;
-			buildConfigurationList = 1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "RenderMixKit" */;
+			buildConfigurationList = 1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "MixKit" */;
 			compatibilityVersion = "Xcode 3.1";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -157,7 +157,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8DD76F960486AA7600D96B5E /* RenderMixKit */,
+				8DD76F960486AA7600D96B5E /* MixKit */,
 			);
 		};
 /* End PBXProject section */
@@ -167,7 +167,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8DD76F9A0486AA7600D96B5E /* RenderMixKit.mm in Sources */,
+				8DD76F9A0486AA7600D96B5E /* MixKit.mm in Sources */,
 				C23BE580124BD7C0002946DE /* WebFrameClientImpl.cc in Sources */,
 				C23BE5EC124C0349002946DE /* MixManager.cc in Sources */,
 			);
@@ -190,13 +190,13 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = RenderMixKit_Prefix.pch;
+				GCC_PREFIX_HEADER = MixKit_Prefix.pch;
 				INSTALL_PATH = /usr/local/bin;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../software/webkit/chromium-mac/src/xcodebuild/Debug\"",
 				);
-				PRODUCT_NAME = RenderMixKit;
+				PRODUCT_NAME = MixKit;
 			};
 			name = Debug;
 		};
@@ -211,13 +211,13 @@
 				);
 				GCC_MODEL_TUNING = G5;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = RenderMixKit_Prefix.pch;
+				GCC_PREFIX_HEADER = MixKit_Prefix.pch;
 				INSTALL_PATH = /usr/local/bin;
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/../../../software/webkit/chromium-mac/src/xcodebuild/Debug\"",
 				);
-				PRODUCT_NAME = RenderMixKit;
+				PRODUCT_NAME = MixKit;
 			};
 			name = Release;
 		};
@@ -387,7 +387,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "RenderMixKit" */ = {
+		1DEB927408733DD40010E9CD /* Build configuration list for PBXNativeTarget "MixKit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB927508733DD40010E9CD /* Debug */,
@@ -396,7 +396,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "RenderMixKit" */ = {
+		1DEB927808733DD40010E9CD /* Build configuration list for PBXProject "MixKit" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				1DEB927908733DD40010E9CD /* Debug */,
