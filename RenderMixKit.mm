@@ -13,17 +13,17 @@
 #include <skia/ext/bitmap_platform_device.h>
 #include <gfx/codec/png_codec.h>
 
-#include "MixKit.h"
-#include "MixKitWebFrameClient.h"
+#include "MixManager.h"
+#include "WebFrameClientImpl.h"
 
 int main (int argc, const char * argv[]) {
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
-    MixKit mixKit;
+    MixKit::MixManager mixKit;
 
     WebKit::WebSize size(400, 300);
     WebKit::WebView *webView = WebKit::WebView::create(NULL, NULL);
-    MixKitWebFrameClient frameClient;
+    MixKit::WebFrameClientImpl frameClient;
     webView->initializeMainFrame(&frameClient);
     webView->resize(size);
     WebKit::WebFrame *webFrame = webView->mainFrame();

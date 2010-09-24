@@ -1,14 +1,15 @@
-#ifndef MOTIONBOX_MIXKIT_WEBFRAME_CLIENT_H_
-#define MOTIONBOX_MIXKIT_WEBFRAME_CLIENT_H_
+#ifndef MOTIONBOX_MIXKIT_WEBFRAMECLIENTIMPL_H_
+#define MOTIONBOX_MIXKIT_WEBFRAMECLIENTIMPL_H_
 
 #include <public/WebFrame.h>
 #include <public/WebFrameClient.h>
 #include <public/WebURLError.h>
 
+namespace MixKit {
 
-class MixKitWebFrameClient : public WebKit::WebFrameClient {
+class WebFrameClientImpl : public WebKit::WebFrameClient {
 public:
-    MixKitWebFrameClient() : frameLoaded(false) {};
+    WebFrameClientImpl() : frameLoaded(false) {};
 
     virtual void didFailLoad(WebKit::WebFrame*, const WebKit::WebURLError&);
     virtual void didFinishLoad(WebKit::WebFrame*);
@@ -18,5 +19,6 @@ private:
     bool frameLoaded;
 };
 
+}
 #endif
 

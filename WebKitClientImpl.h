@@ -1,15 +1,17 @@
-#ifndef MOTIONBOX_MIXKIT_WEBKIT_CLIENT_H_
-#define MOTIONBOX_MIXKIT_WEBKIT_CLIENT_H_
+#ifndef MOTIONBOX_MIXKIT_WEBKITCLIENTIMPL_H_
+#define MOTIONBOX_MIXKIT_WEBKITCLIENTIMPL_H_
 
 #include <webkit/glue/simple_webmimeregistry_impl.h>
 #include <webkit/glue/webfileutilities_impl.h>
 #include <webkit/glue/webclipboard_impl.h>
 #include <webkit/glue/webkitclient_impl.h>
 
-class MixKitWebKitClient : public webkit_glue::WebKitClientImpl {
+namespace MixKit {
+
+class WebKitClientImpl : public webkit_glue::WebKitClientImpl {
 public:
-    MixKitWebKitClient() {};
-    virtual ~MixKitWebKitClient() {};
+    WebKitClientImpl() {};
+    virtual ~WebKitClientImpl() {};
 
     virtual WebKit::WebMimeRegistry* mimeRegistry() { return &mimeRegistryImpl; }
     virtual WebKit::WebClipboard* clipboard() { return &clipboardImpl; }
@@ -27,4 +29,5 @@ private:
     //XXXscoped_refptr<TestShellWebBlobRegistryImpl> blob_registry_;
 };
 
+}
 #endif

@@ -1,21 +1,24 @@
-#ifndef MOTIONBOX_MIXKIT_H_
-#define MOTIONBOX_MIXKIT_H_
+#ifndef MOTIONBOX_MIXKIT_MIXMANAGER_H_
+#define MOTIONBOX_MIXKIT_MIXMANAGER_H_
 
 #include <base/message_loop.h>
 #include <base/at_exit.h>
 
-#include "MixKitWebKitClient.h"
+#include "WebKitClientImpl.h"
 
-class MixKit {
+namespace MixKit {
+
+class MixManager {
 public:
-    MixKit();
-    ~MixKit();
+    MixManager();
+    ~MixManager();
 
 private:
     // These setup global state - must be initialized before WebKitClient
     base::AtExitManager atExitManager;
     MessageLoop messageLoop; //XXX test_shell uses MessageLoopForUI, but this might be OK
-    MixKitWebKitClient webKitClient;
+    MixKit::WebKitClientImpl webKitClient;
 };
 
+}
 #endif

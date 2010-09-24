@@ -16,8 +16,8 @@
 		C23BE466124AF61E002946DE /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BE465124AF61E002946DE /* SystemConfiguration.framework */; };
 		C23BE47B124AF652002946DE /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BE47A124AF652002946DE /* IOKit.framework */; };
 		C23BE487124AF8AA002946DE /* libresolv.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BE486124AF8AA002946DE /* libresolv.9.dylib */; };
-		C23BE580124BD7C0002946DE /* MixKitWebFrameClient.cc in Sources */ = {isa = PBXBuildFile; fileRef = C23BE57F124BD7C0002946DE /* MixKitWebFrameClient.cc */; };
-		C23BE5EC124C0349002946DE /* MixKit.cc in Sources */ = {isa = PBXBuildFile; fileRef = C23BE5EB124C0349002946DE /* MixKit.cc */; };
+		C23BE580124BD7C0002946DE /* WebFrameClientImpl.cc in Sources */ = {isa = PBXBuildFile; fileRef = C23BE57F124BD7C0002946DE /* WebFrameClientImpl.cc */; };
+		C23BE5EC124C0349002946DE /* MixManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = C23BE5EB124C0349002946DE /* MixManager.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -44,11 +44,11 @@
 		C23BE465124AF61E002946DE /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		C23BE47A124AF652002946DE /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		C23BE486124AF8AA002946DE /* libresolv.9.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libresolv.9.dylib; path = usr/lib/libresolv.9.dylib; sourceTree = SDKROOT; };
-		C23BE57E124BD7C0002946DE /* MixKitWebFrameClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MixKitWebFrameClient.h; sourceTree = "<group>"; };
-		C23BE57F124BD7C0002946DE /* MixKitWebFrameClient.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MixKitWebFrameClient.cc; sourceTree = "<group>"; };
-		C23BE5C8124BED8C002946DE /* MixKitWebKitClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MixKitWebKitClient.h; sourceTree = "<group>"; };
-		C23BE5EA124C0349002946DE /* MixKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MixKit.h; sourceTree = "<group>"; };
-		C23BE5EB124C0349002946DE /* MixKit.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MixKit.cc; sourceTree = "<group>"; };
+		C23BE57E124BD7C0002946DE /* WebFrameClientImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebFrameClientImpl.h; sourceTree = "<group>"; };
+		C23BE57F124BD7C0002946DE /* WebFrameClientImpl.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WebFrameClientImpl.cc; sourceTree = "<group>"; };
+		C23BE5C8124BED8C002946DE /* WebKitClientImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebKitClientImpl.h; sourceTree = "<group>"; };
+		C23BE5EA124C0349002946DE /* MixManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MixManager.h; sourceTree = "<group>"; };
+		C23BE5EB124C0349002946DE /* MixManager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MixManager.cc; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,11 +85,11 @@
 			children = (
 				32A70AAB03705E1F00C91783 /* RenderMixKit_Prefix.pch */,
 				08FB7796FE84155DC02AAC07 /* RenderMixKit.mm */,
-				C23BE57E124BD7C0002946DE /* MixKitWebFrameClient.h */,
-				C23BE57F124BD7C0002946DE /* MixKitWebFrameClient.cc */,
-				C23BE5C8124BED8C002946DE /* MixKitWebKitClient.h */,
-				C23BE5EA124C0349002946DE /* MixKit.h */,
-				C23BE5EB124C0349002946DE /* MixKit.cc */,
+				C23BE57E124BD7C0002946DE /* WebFrameClientImpl.h */,
+				C23BE57F124BD7C0002946DE /* WebFrameClientImpl.cc */,
+				C23BE5C8124BED8C002946DE /* WebKitClientImpl.h */,
+				C23BE5EA124C0349002946DE /* MixManager.h */,
+				C23BE5EB124C0349002946DE /* MixManager.cc */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -168,8 +168,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				8DD76F9A0486AA7600D96B5E /* RenderMixKit.mm in Sources */,
-				C23BE580124BD7C0002946DE /* MixKitWebFrameClient.cc in Sources */,
-				C23BE5EC124C0349002946DE /* MixKit.cc in Sources */,
+				C23BE580124BD7C0002946DE /* WebFrameClientImpl.cc in Sources */,
+				C23BE5EC124C0349002946DE /* MixManager.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

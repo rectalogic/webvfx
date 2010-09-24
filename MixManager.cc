@@ -1,4 +1,4 @@
-#include "MixKit.h"
+#include "MixManager.h"
 
 #include <public/WebKit.h>
 #if defined(OS_MACOSX)
@@ -6,13 +6,13 @@
 #endif
 
 // webKitClient depends on state initialized by messageLoop
-MixKit::MixKit() : atExitManager(), messageLoop(), webKitClient() {
+MixKit::MixManager::MixManager() : atExitManager(), messageLoop(), webKitClient() {
     WebKit::initialize(&webKitClient);
 #if defined(OS_MACOSX)
     InitWebCoreSystemInterface();
 #endif
 }
 
-MixKit::~MixKit() {
+MixKit::MixManager::~MixManager() {
     WebKit::shutdown();
 }
