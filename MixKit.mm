@@ -7,6 +7,7 @@
 #include <public/WebSize.h>
 #include <public/WebRect.h>
 #include <public/WebSettings.h>
+#include <public/WebScriptController.h>
 #include <webkit/glue/webkit_glue.h>
 #include <base/basictypes.h>
 #include <base/message_loop.h>
@@ -21,6 +22,8 @@ int main (int argc, const char * argv[]) {
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
     MixKit::MixManager mixKit;
+
+    //WebKit::WebScriptController::registerExtension();
 
     WebKit::WebSize size(400, 300);
     MixKit::WebViewDelegate delegate;

@@ -11,6 +11,7 @@ MixKit::MixManager::MixManager() : atExitManager(), messageLoop(), webKitClient(
 #if defined(OS_MACOSX)
     InitWebCoreSystemInterface();
 #endif
+    //XXX WebKit::WebRuntimeFeatures::enableWebGL(true);
 }
 
 MixKit::MixManager::~MixManager() {

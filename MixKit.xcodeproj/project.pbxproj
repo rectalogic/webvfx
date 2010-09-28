@@ -18,6 +18,7 @@
 		C23BE487124AF8AA002946DE /* libresolv.9.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = C23BE486124AF8AA002946DE /* libresolv.9.dylib */; };
 		C23BE580124BD7C0002946DE /* WebViewDelegate.cc in Sources */ = {isa = PBXBuildFile; fileRef = C23BE57F124BD7C0002946DE /* WebViewDelegate.cc */; };
 		C23BE5EC124C0349002946DE /* MixManager.cc in Sources */ = {isa = PBXBuildFile; fileRef = C23BE5EB124C0349002946DE /* MixManager.cc */; };
+		C2A6D62A125111800053590E /* ImageExtension.cc in Sources */ = {isa = PBXBuildFile; fileRef = C2A6D629125111800053590E /* ImageExtension.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -49,6 +50,8 @@
 		C23BE5C8124BED8C002946DE /* WebKitClientImpl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebKitClientImpl.h; sourceTree = "<group>"; };
 		C23BE5EA124C0349002946DE /* MixManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MixManager.h; sourceTree = "<group>"; };
 		C23BE5EB124C0349002946DE /* MixManager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MixManager.cc; sourceTree = "<group>"; };
+		C2A6D628125111800053590E /* ImageExtension.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageExtension.h; sourceTree = "<group>"; };
+		C2A6D629125111800053590E /* ImageExtension.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageExtension.cc; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +93,8 @@
 				C23BE5C8124BED8C002946DE /* WebKitClientImpl.h */,
 				C23BE5EA124C0349002946DE /* MixManager.h */,
 				C23BE5EB124C0349002946DE /* MixManager.cc */,
+				C2A6D628125111800053590E /* ImageExtension.h */,
+				C2A6D629125111800053590E /* ImageExtension.cc */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -170,6 +175,7 @@
 				8DD76F9A0486AA7600D96B5E /* MixKit.mm in Sources */,
 				C23BE580124BD7C0002946DE /* WebViewDelegate.cc in Sources */,
 				C23BE5EC124C0349002946DE /* MixManager.cc in Sources */,
+				C2A6D62A125111800053590E /* ImageExtension.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,8 +239,26 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(CHROMIUM_ROOT)/src/",
+					"$(CHROMIUM_ROOT)/src/v8/include",
 					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebKit/chromium/",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/JavaScriptCore",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/JavaScriptCore/icu",
 					"$(CHROMIUM_ROOT)/src/skia/config",
+					"$(CHROMIUM_ROOT)/src/xcodebuild/DerivedSources/Debug/webkit/bindings",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/bindings/v8",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/bindings/v8/custom",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/xml",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/page",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/html",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/html/canvas",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/dom",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/loader",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/platform",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/platform/text",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/platform/network",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/platform/network/mac",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/platform/graphics",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/rendering/style",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
@@ -315,8 +339,26 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(CHROMIUM_ROOT)/src/",
+					"$(CHROMIUM_ROOT)/src/v8/include",
 					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebKit/chromium/",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/JavaScriptCore",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/JavaScriptCore/icu",
 					"$(CHROMIUM_ROOT)/src/skia/config",
+					"$(CHROMIUM_ROOT)/src/xcodebuild/DerivedSources/Debug/webkit/bindings",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/bindings/v8",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/bindings/v8/custom",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/xml",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/page",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/html",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/html/canvas",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/dom",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/loader",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/platform",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/platform/text",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/platform/network",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/platform/network/mac",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/platform/graphics",
+					"$(CHROMIUM_ROOT)/src/third_party/WebKit/WebCore/rendering/style",
 				);
 				OTHER_LDFLAGS = (
 					"$(CHROMIUM_ROOT)/src/xcodebuild/Debug/libskia.a",
