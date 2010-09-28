@@ -1,13 +1,13 @@
 #import <Foundation/Foundation.h>
 
-#include <public/WebView.h>
-#include <public/WebFrame.h>
-#include <public/WebURL.h>
-#include <public/WebURLRequest.h>
-#include <public/WebSize.h>
-#include <public/WebRect.h>
-#include <public/WebSettings.h>
-#include <public/WebScriptController.h>
+#include <third_party/WebKit/WebKit/chromium/public/WebView.h>
+#include <third_party/WebKit/WebKit/chromium/public/WebFrame.h>
+#include <third_party/WebKit/WebKit/chromium/public/WebURL.h>
+#include <third_party/WebKit/WebKit/chromium/public/WebURLRequest.h>
+#include <third_party/WebKit/WebKit/chromium/public/WebSize.h>
+#include <third_party/WebKit/WebKit/chromium/public/WebRect.h>
+#include <third_party/WebKit/WebKit/chromium/public/WebSettings.h>
+#include <third_party/WebKit/WebKit/chromium/public/WebScriptController.h>
 #include <webkit/glue/webkit_glue.h>
 #include <base/basictypes.h>
 #include <base/message_loop.h>

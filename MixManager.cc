@@ -1,6 +1,6 @@
 #include "MixManager.h"
 
-#include <public/WebKit.h>
+#include <third_party/WebKit/WebKit/chromium/public/WebKit.h>
 #if defined(OS_MACOSX)
 #include <third_party/WebKit/WebKit/mac/WebCoreSupport/WebSystemInterface.h>
 #endif

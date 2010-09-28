@@ -1,10 +1,10 @@
 #ifndef MOTIONBOX_MIXKIT_WEBVIEWDELEGATE_H_
 #define MOTIONBOX_MIXKIT_WEBVIEWDELEGATE_H_
 
-#include <public/WebFrame.h>
-#include <public/WebViewClient.h>
-#include <public/WebFrameClient.h>
-#include <public/WebURLError.h>
+#include <third_party/WebKit/WebKit/chromium/public/WebFrame.h>
+#include <third_party/WebKit/WebKit/chromium/public/WebViewClient.h>
+#include <third_party/WebKit/WebKit/chromium/public/WebFrameClient.h>
+#include <third_party/WebKit/WebKit/chromium/public/WebURLError.h>
 
 namespace MixKit {
 
