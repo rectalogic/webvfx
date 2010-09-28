@@ -1,7 +1,0 @@
-//
-// Prefix header for all source files of the 'RenderMixKit' target in the 'RenderMixKit' project.
-//
-
-#ifdef __OBJC__
-    #import <Foundation/Foundation.h>
-#endif
