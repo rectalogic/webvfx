@@ -14,6 +14,7 @@
         '<(DEPTH)/net/net.gyp:net',
         '<(DEPTH)/skia/skia.gyp:skia',
         '<(DEPTH)/third_party/WebKit/WebKit/chromium/WebKit.gyp:webkit',
+        '<(DEPTH)/third_party/WebKit/WebCore/WebCore.gyp/WebCore.gyp:webcore',
         '<(DEPTH)/webkit/support/webkit_support.gyp:appcache',
         '<(DEPTH)/webkit/support/webkit_support.gyp:glue',
         '<(DEPTH)/webkit/support/webkit_support.gyp:webkit_resources',
@@ -26,8 +27,8 @@
         'WebKitClientImpl.h',
         'WebViewDelegate.cc',
         'WebViewDelegate.h',
-        #'ImageExtension.cc',
-        #'ImageExtension.h',
+        'ImageExtension.cc',
+        'ImageExtension.h',
       ],
     },
   ]

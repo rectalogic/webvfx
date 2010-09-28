@@ -1,8 +1,8 @@
 #include "ImageExtension.h"
+#include <third_party/WebKit/WebCore/config.h>
 #include <third_party/WebKit/WebCore/html/ImageData.h>
-//XXX ugh, obviously this won't work - it's in xcodebuild/DerivedSources/Debug/webkit/bindings/
 #include <V8ImageData.h>
-#include <wtf/RefCounted.h>
+#include <third_party/WebKit/JavaScriptCore/wtf/RefCounted.h>
 
 namespace MixKit {
 
@@ -40,7 +40,7 @@ public:
         WTF::ByteArray* pixelArray = imageData->data()->data();
 
         //XXX write to pixelArray->data()
-        memcpy(pixelArray->data(), 0, 2);//XXX
+        memset(pixelArray->data(), 0xff0000, 2);//XXX
 
         return WebCore::toV8(imageData);
     }
