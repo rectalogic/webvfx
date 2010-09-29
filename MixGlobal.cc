@@ -1,4 +1,4 @@
-#include "MixManager.h"
+#include "MixGlobal.h"
 #include "ImageExtension.h"
 
 #include <third_party/WebKit/WebKit/chromium/public/WebKit.h>
@@ -8,7 +8,7 @@
 #endif
 
 // webKitClient depends on state initialized by messageLoop
-MixKit::MixManager::MixManager() : atExitManager(), messageLoop(), webKitClient() {
+MixKit::MixGlobal::MixGlobal() : atExitManager(), messageLoop(), webKitClient() {
     WebKit::initialize(&webKitClient);
 #if defined(OS_MACOSX)
     InitWebCoreSystemInterface();
@@ -18,6 +18,6 @@ MixKit::MixManager::MixManager() : atExitManager(), messageLoop(), webKitClient(
     WebKit::WebScriptController::registerExtension(MixKit::ImageExtensionV8::Get());
 }
 
-MixKit::MixManager::~MixManager() {
+MixKit::MixGlobal::~MixGlobal() {
     WebKit::shutdown();
 }

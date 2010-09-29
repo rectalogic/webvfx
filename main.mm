@@ -14,13 +14,13 @@
 #include <skia/ext/bitmap_platform_device.h>
 #include <gfx/codec/png_codec.h>
 
-#include "MixManager.h"
+#include "MixGlobal.h"
 #include "WebViewDelegate.h"
 
 int main (int argc, const char * argv[]) {
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
-    MixKit::MixManager mixKit;
+    MixKit::MixGlobal mixKit;
 
     WebKit::WebSize size(400, 300);
     MixKit::WebViewDelegate delegate;

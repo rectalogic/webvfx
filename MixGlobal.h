@@ -1,5 +1,5 @@
-#ifndef MOTIONBOX_MIXKIT_MIXMANAGER_H_
-#define MOTIONBOX_MIXKIT_MIXMANAGER_H_
+#ifndef MOTIONBOX_MIXKIT_MIXGLOBAL_H_
+#define MOTIONBOX_MIXKIT_MIXGLOBAL_H_
 
 #include <base/message_loop.h>
 #include <base/at_exit.h>
@@ -8,10 +8,10 @@
 
 namespace MixKit {
 
-class MixManager {
+class MixGlobal {
 public:
-    MixManager();
-    ~MixManager();
+    MixGlobal();
+    ~MixGlobal();
 
 private:
     // These setup global state - must be initialized before WebKitClient
