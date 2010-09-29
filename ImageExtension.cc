@@ -40,7 +40,7 @@ public:
         WTF::ByteArray* pixelArray = imageData->data()->data();
 
         //XXX write to pixelArray->data()
-        uint32 color = 0xff0000;
+        uint32 color = 0xff0000ff;//red with alpha=1
         memset_pattern4(pixelArray->data(), &color, pixelArray->length());//XXX
 
         return WebCore::toV8(imageData);

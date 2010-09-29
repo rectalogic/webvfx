@@ -15,6 +15,7 @@ MixKit::MixGlobal::MixGlobal() : atExitManager(), messageLoop(), webKitClient() 
 #endif
     //XXX WebKit::WebRuntimeFeatures::enableWebGL(true);
 
+    WebKit::WebScriptController::enableV8SingleThreadMode();
     WebKit::WebScriptController::registerExtension(MixKit::ImageExtensionV8::Get());
 }
 

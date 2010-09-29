@@ -1,15 +1,16 @@
 <html>
 <head>
-<script language="text/javascript">
+<script type="text/javascript">
 function init() {
     var canvas = document.getElementById("imageCanvas");
     var context = canvas.getContext('2d');
     var imageData = mixkit.getImageDataForKey('foo');
-    context.putImageData(imageData);
+    context.putImageData(imageData, 0, 0);
 }
+window.onload = init;
 </script>
 </head>
-<body onLoad="init()">
+<body>
     Canvas below<br/>
     <canvas id="imageCanvas" width="325" height="245" style="background-color: #0000FF;"></canvas>
 </body>

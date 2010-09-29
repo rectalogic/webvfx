@@ -17,8 +17,30 @@ MixKit::MixRender::MixRender(int width, int height) :
     webView = WebKit::WebView::create(this, NULL);
     webView->initializeMainFrame(this);
     webView->resize(size);
-    webView->mainFrame()->setCanHaveScrollbars(false);
-    webView->settings()->setLoadsImagesAutomatically(true);
+    //webView->mainFrame()->setCanHaveScrollbars(false);
+    WebKit::WebSettings *settings = webView->settings();
+
+    settings->setStandardFontFamily(WebKit::WebString("Times New Roman"));
+    settings->setFixedFontFamily(WebKit::WebString("Courier New"));
+    settings->setSerifFontFamily(WebKit::WebString("Times New Roman"));
+    settings->setSansSerifFontFamily(WebKit::WebString("Arial"));
+    settings->setCursiveFontFamily(WebKit::WebString("Comic Sans MS"));
+    settings->setFantasyFontFamily(WebKit::WebString("Times New Roman"));
+
+    settings->setDefaultFontSize(16);
+    settings->setDefaultFixedFontSize(13);
+    settings->setMinimumFontSize(1);
+    settings->setJavaEnabled(false);
+    settings->setPluginsEnabled(true);
+    settings->setDOMPasteAllowed(false);
+    settings->setUsesPageCache(false);
+    settings->setJavaScriptCanOpenWindowsAutomatically(false);
+    settings->setJavaScriptEnabled(true);
+    settings->setLoadsImagesAutomatically(true);
+    settings->setAuthorAndUserStylesEnabled(true);
+    //settings->setAcceleratedCompositingEnabled(true);
+    //settings->setAccelerated2dCanvasEnabled(true);
+    settings->setShouldPaintCustomScrollbars(false);
 }
 
 MixKit::MixRender::~MixRender() {
@@ -36,7 +58,7 @@ bool MixKit::MixRender::loadURL(const std::string& url) {
     }
     
     //XXX Probably need to do this periodically when rendering video frames
-    webFrame->collectGarbage();
+    //XXXcrashes webFrame->collectGarbage();
 
     return true;
 }
