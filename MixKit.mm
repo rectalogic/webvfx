@@ -7,7 +7,6 @@
 #include <third_party/WebKit/WebKit/chromium/public/WebSize.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebRect.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebSettings.h>
-#include <third_party/WebKit/WebKit/chromium/public/WebScriptController.h>
 #include <webkit/glue/webkit_glue.h>
 #include <base/basictypes.h>
 #include <base/message_loop.h>
@@ -23,8 +22,6 @@ int main (int argc, const char * argv[]) {
 
     MixKit::MixManager mixKit;
 
-    //WebKit::WebScriptController::registerExtension();
-
     WebKit::WebSize size(400, 300);
     MixKit::WebViewDelegate delegate;
     WebKit::WebView *webView = WebKit::WebView::create(&delegate, NULL);
@@ -33,7 +30,7 @@ int main (int argc, const char * argv[]) {
     WebKit::WebFrame *webFrame = webView->mainFrame();
     webFrame->setCanHaveScrollbars(false);
     webView->settings()->setLoadsImagesAutomatically(true);
-    webFrame->loadRequest(WebKit::WebURLRequest(WebKit::WebURL(GURL("http://www.google.com/"))));
+    webFrame->loadRequest(WebKit::WebURLRequest(WebKit::WebURL(GURL("test.html"))));
     webView->layout();
     while (!delegate.isLoadFinished())
         MessageLoop::current()->Run();
