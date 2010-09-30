@@ -1,5 +1,5 @@
-#ifndef MOTIONBOX_MIXKIT_MIXRENDER_H_
-#define MOTIONBOX_MIXKIT_MIXRENDER_H_
+#ifndef MOTIONBOX_CHROMIX_MIXRENDER_H_
+#define MOTIONBOX_CHROMIX_MIXRENDER_H_
 
 #include <third_party/WebKit/WebKit/chromium/public/WebView.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebFrame.h>
@@ -9,7 +9,7 @@
 #include <third_party/WebKit/WebKit/chromium/public/WebSize.h>
 #include <skia/ext/platform_canvas.h>
 
-namespace MixKit {
+namespace Chromix {
     
 class MixRender : public WebKit::WebFrameClient,
                   public WebKit::WebViewClient

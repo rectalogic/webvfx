@@ -1,12 +1,12 @@
-#ifndef MOTIONBOX_MIXKIT_WEBKITCLIENTIMPL_H_
-#define MOTIONBOX_MIXKIT_WEBKITCLIENTIMPL_H_
+#ifndef MOTIONBOX_CHROMIX_WEBKITCLIENTIMPL_H_
+#define MOTIONBOX_CHROMIX_WEBKITCLIENTIMPL_H_
 
 #include <webkit/glue/simple_webmimeregistry_impl.h>
 #include <webkit/glue/webfileutilities_impl.h>
 #include <webkit/glue/webclipboard_impl.h>
 #include <webkit/glue/webkitclient_impl.h>
 
-namespace MixKit {
+namespace Chromix {
 
 class WebKitClientImpl : public webkit_glue::WebKitClientImpl {
 public:

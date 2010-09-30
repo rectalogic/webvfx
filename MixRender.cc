@@ -8,7 +8,7 @@
 #include <webkit/glue/webkit_glue.h>
 #include <skia/ext/bitmap_platform_device.h>
 
-MixKit::MixRender::MixRender(int width, int height) :
+Chromix::MixRender::MixRender(int width, int height) :
     size(width, height),
     skiaCanvas(width, height, true),
     inMessageLoop(false),
@@ -43,11 +43,11 @@ MixKit::MixRender::MixRender(int width, int height) :
     settings->setShouldPaintCustomScrollbars(false);
 }
 
-MixKit::MixRender::~MixRender() {
+Chromix::MixRender::~MixRender() {
     webView->close();
 }
 
-bool MixKit::MixRender::loadURL(const std::string& url) {
+bool Chromix::MixRender::loadURL(const std::string& url) {
     WebKit::WebFrame *webFrame = webView->mainFrame();
     webFrame->loadRequest(WebKit::WebURLRequest(WebKit::WebURL(GURL(url))));
     webView->layout();//XXX need this?
@@ -63,7 +63,7 @@ bool MixKit::MixRender::loadURL(const std::string& url) {
     return true;
 }
 
-const SkBitmap& MixKit::MixRender::render() {
+const SkBitmap& Chromix::MixRender::render() {
     webView->paint(webkit_glue::ToWebCanvas(&skiaCanvas), WebKit::WebRect(0, 0, size.width, size.height));
 
     // Get canvas bitmap
@@ -71,13 +71,13 @@ const SkBitmap& MixKit::MixRender::render() {
     return skiaDevice.accessBitmap(false);
 }
 
-void MixKit::MixRender::didStopLoading() {
+void Chromix::MixRender::didStopLoading() {
     isLoadFinished = true;
     if (inMessageLoop)
         MessageLoop::current()->Quit();
 }
 
-void MixKit::MixRender::didFailLoad(WebKit::WebFrame* frame, const WebKit::WebURLError& error) {
+void Chromix::MixRender::didFailLoad(WebKit::WebFrame* frame, const WebKit::WebURLError& error) {
     //XXX need to handle - this means one of the frames failed - set flag so we can return from loadURL
     printf("Failed to load\n");
     isLoadFinished = true;

@@ -5,14 +5,14 @@
 
 #include <gfx/codec/png_codec.h>
 
-#include "MixGlobal.h"
+#include "MixKit.h"
 #include "MixRender.h"
 
 int main (int argc, const char * argv[]) {
     NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
 
-    MixKit::MixGlobal mixKit;
-    MixKit::MixRender mixRender(400, 300);
+    Chromix::MixKit mixKit;
+    Chromix::MixRender mixRender(400, 300);
 
     mixRender.loadURL("file://localhost/Users/aw/Projects/snapfish/encoder/MixKit/test.html");
     const SkBitmap &skiaBitmap = mixRender.render();

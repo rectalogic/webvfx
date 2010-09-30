@@ -1,7 +1,7 @@
 {
   'targets': [
     {
-      'target_name': 'MixKit',
+      'target_name': 'chromix',
       'type': 'executable',
       'variables': {
         'chromium_code': 1,
@@ -22,8 +22,8 @@
       ],
       'sources': [
         'main.mm',
-        'MixGlobal.h',
-        'MixGlobal.cc',
+        'MixKit.h',
+        'MixKit.cc',
         'MixRender.h',
         'MixRender.cc',
         'WebKitClientImpl.h',

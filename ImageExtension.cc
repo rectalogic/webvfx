@@ -4,7 +4,7 @@
 #include <V8ImageData.h>
 #include <third_party/WebKit/JavaScriptCore/wtf/RefCounted.h>
 
-namespace MixKit {
+namespace Chromix {
 
 const char *kImageExtensionName = "MixKitV8/Image";
 
@@ -47,7 +47,7 @@ public:
     }
 };
 
-v8::Extension* MixKit::ImageExtensionV8::Get() {
+v8::Extension* Chromix::ImageExtensionV8::Get() {
     return new ImageWrapper();
 }
 

@@ -1,9 +1,9 @@
-#ifndef MOTIONBOX_MIXKIT_IMAGEEXTENSION_H_
-#define MOTIONBOX_MIXKIT_IMAGEEXTENSION_H_
+#ifndef MOTIONBOX_CHROMIX_IMAGEEXTENSION_H_
+#define MOTIONBOX_CHROMIX_IMAGEEXTENSION_H_
 
 #include <v8/include/v8.h>
 
-namespace MixKit {
+namespace Chromix {
 
 class ImageExtensionV8 {
 public:
