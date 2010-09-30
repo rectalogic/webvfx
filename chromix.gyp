@@ -21,7 +21,9 @@
         '<(DEPTH)/webkit/support/webkit_support.gyp:webkit_support',
       ],
       'sources': [
-        'main.mm',
+        'main.cc',
+        'main_mac.mm',
+        'main_linux.cc',
         'MixKit.h',
         'MixKit.cc',
         'MixRender.h',

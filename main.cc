@@ -1,22 +1,22 @@
-#import <Foundation/Foundation.h>
-
-#include <iostream>
-#include <fstream>
-
 #include <base/basictypes.h>
 #include <base/message_loop.h>
 #include <gfx/codec/png_codec.h>
 
+#include <iostream>
+#include <fstream>
+
 #include "MixKit.h"
 #include "MixRender.h"
 
-int main (int argc, const char * argv[]) {
-    NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-
+int chromix_main(int argc, const char * argv[]) {
+    if (argc != 2) {
+        std::cerr << "Missing html template";
+        return -1;
+    }
     Chromix::MixKit mixKit;
     Chromix::MixRender mixRender(400, 300);
 
-    mixRender.loadURL("file://localhost/Users/aw/Projects/snapfish/encoder/chromix/test.html");
+    mixRender.loadURL(argv[1]);
     const SkBitmap &skiaBitmap = mixRender.render();
 
     // Encode pixel data to PNG.
@@ -32,6 +32,5 @@ int main (int argc, const char * argv[]) {
     pngFile.write(reinterpret_cast<const char *>(&pngData[0]), pngData.size());
     pngFile.close();
 
-    [pool drain];
     return 0;
 }
