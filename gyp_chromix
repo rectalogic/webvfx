@@ -1,0 +1,1 @@
+${CHROMIUM_ROOT}/src/build/gyp_chromium --toplevel-dir=${CHROMIUM_ROOT}/src --depth=${CHROMIUM_ROOT}/src chromix.gyp

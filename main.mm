@@ -1,8 +1,10 @@
 #import <Foundation/Foundation.h>
 
+#include <iostream>
+#include <fstream>
+
 #include <base/basictypes.h>
 #include <base/message_loop.h>
-
 #include <gfx/codec/png_codec.h>
 
 #include "MixKit.h"
@@ -14,7 +16,7 @@ int main (int argc, const char * argv[]) {
     Chromix::MixKit mixKit;
     Chromix::MixRender mixRender(400, 300);
 
-    mixRender.loadURL("file://localhost/Users/aw/Projects/snapfish/encoder/MixKit/test.html");
+    mixRender.loadURL("file://localhost/Users/aw/Projects/snapfish/encoder/chromix/test.html");
     const SkBitmap &skiaBitmap = mixRender.render();
 
     // Encode pixel data to PNG.
@@ -24,11 +26,11 @@ int main (int argc, const char * argv[]) {
                           gfx::PNGCodec::FORMAT_BGRA, skiaBitmap.width(), skiaBitmap.height(),
                           static_cast<int>(skiaBitmap.rowBytes()), false, &pngData);
 
-    // Write to disk. Cheat and be MacOS specific since this is just for testing.
-    NSData *data = [NSData dataWithBytesNoCopy:reinterpret_cast<void *>(&pngData[0])
-                                        length:pngData.size()
-                                  freeWhenDone:NO];
-    [data writeToFile:@"/tmp/render.png" atomically:NO];
+    // Write to disk.
+    std::ofstream pngFile;
+    pngFile.open("/tmp/render.png", std::ios::out|std::ios::trunc|std::ios::binary);
+    pngFile.write(reinterpret_cast<const char *>(&pngData[0]), pngData.size());
+    pngFile.close();
 
     [pool drain];
     return 0;
