@@ -16,7 +16,8 @@ int chromix_main(int argc, const char * argv[]) {
     Chromix::MixKit mixKit;
     Chromix::MixRender mixRender(400, 300);
 
-    mixRender.loadURL(argv[1]);
+    if (!mixRender.loadURL(argv[1]))
+        return -1;
     const SkBitmap &skiaBitmap = mixRender.render();
 
     // Encode pixel data to PNG.

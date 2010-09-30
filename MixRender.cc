@@ -4,43 +4,51 @@
 #include <third_party/WebKit/WebKit/chromium/public/WebURLRequest.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebRect.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebSettings.h>
+#include <base/logging.h>
 #include <base/message_loop.h>
 #include <webkit/glue/webkit_glue.h>
 #include <skia/ext/bitmap_platform_device.h>
+
 
 Chromix::MixRender::MixRender(int width, int height) :
     size(width, height),
     skiaCanvas(width, height, true),
     inMessageLoop(false),
-    isLoadFinished(false)
+    isLoadFinished(false),
+    didLoadSucceed(false)
 {
     webView = WebKit::WebView::create(this, NULL);
-    webView->initializeMainFrame(this);
-    webView->resize(size);
-    //webView->mainFrame()->setCanHaveScrollbars(false);
-    WebKit::WebSettings *settings = webView->settings();
 
+    WebKit::WebSettings *settings = webView->settings();
     settings->setStandardFontFamily(WebKit::WebString("Times New Roman"));
     settings->setFixedFontFamily(WebKit::WebString("Courier New"));
     settings->setSerifFontFamily(WebKit::WebString("Times New Roman"));
     settings->setSansSerifFontFamily(WebKit::WebString("Arial"));
     settings->setCursiveFontFamily(WebKit::WebString("Comic Sans MS"));
     settings->setFantasyFontFamily(WebKit::WebString("Times New Roman"));
-
     settings->setDefaultFontSize(16);
     settings->setDefaultFixedFontSize(13);
     settings->setMinimumFontSize(1);
-    settings->setJavaEnabled(false);
+    settings->setJavaScriptEnabled(true);
+    settings->setJavaScriptCanOpenWindowsAutomatically(false);
+    settings->setLoadsImagesAutomatically(true);
+    settings->setImagesEnabled(true);
     settings->setPluginsEnabled(true);
     settings->setDOMPasteAllowed(false);
+    settings->setJavaEnabled(false);
+    settings->setJavaEnabled(false);
+    settings->setAllowScriptsToCloseWindows(false);
     settings->setUsesPageCache(false);
-    settings->setJavaScriptCanOpenWindowsAutomatically(false);
-    settings->setJavaScriptEnabled(true);
-    settings->setLoadsImagesAutomatically(true);
-    settings->setAuthorAndUserStylesEnabled(true);
-    //settings->setAcceleratedCompositingEnabled(true);
-    //settings->setAccelerated2dCanvasEnabled(true);
     settings->setShouldPaintCustomScrollbars(false);
+    settings->setAllowUniversalAccessFromFileURLs(true);
+    settings->setAllowFileAccessFromFileURLs(true);
+    settings->setExperimentalWebGLEnabled(true);
+    settings->setAcceleratedCompositingEnabled(true);
+    settings->setAccelerated2dCanvasEnabled(true);
+
+    webView->initializeMainFrame(this);
+    //webView->mainFrame()->setCanHaveScrollbars(false);
+    webView->resize(size);
 }
 
 Chromix::MixRender::~MixRender() {
@@ -48,8 +56,14 @@ Chromix::MixRender::~MixRender() {
 }
 
 bool Chromix::MixRender::loadURL(const std::string& url) {
+    isLoadFinished = false;
+    didLoadSucceed = false;
+
     WebKit::WebFrame *webFrame = webView->mainFrame();
-    webFrame->loadRequest(WebKit::WebURLRequest(WebKit::WebURL(GURL(url))));
+    GURL gurl(url);
+    if (!gurl.is_valid())
+        return didLoadSucceed;
+    webFrame->loadRequest(WebKit::WebURLRequest(gurl));
     webView->layout();//XXX need this?
     while (!isLoadFinished) {
         inMessageLoop = true;
@@ -60,10 +74,11 @@ bool Chromix::MixRender::loadURL(const std::string& url) {
     //XXX Probably need to do this periodically when rendering video frames
     //XXXcrashes webFrame->collectGarbage();
 
-    return true;
+    return didLoadSucceed;
 }
 
 const SkBitmap& Chromix::MixRender::render() {
+    DLOG_ASSERT(didLoadSucceed);
     webView->paint(webkit_glue::ToWebCanvas(&skiaCanvas), WebKit::WebRect(0, 0, size.width, size.height));
 
     // Get canvas bitmap
@@ -72,15 +87,27 @@ const SkBitmap& Chromix::MixRender::render() {
 }
 
 void Chromix::MixRender::didStopLoading() {
-    isLoadFinished = true;
+    // This is called even after load failure, so don't reset flags if we already failed.
+    if (!isLoadFinished) {
+        isLoadFinished = true;
+        didLoadSucceed = true;
+    }
     if (inMessageLoop)
         MessageLoop::current()->Quit();
 }
 
+void Chromix::MixRender::didFailProvisionalLoad(WebKit::WebFrame* frame, const WebKit::WebURLError& error) {
+    handlLoadFailure(error);
+}
+
 void Chromix::MixRender::didFailLoad(WebKit::WebFrame* frame, const WebKit::WebURLError& error) {
-    //XXX need to handle - this means one of the frames failed - set flag so we can return from loadURL
-    printf("Failed to load\n");
+    handlLoadFailure(error);
+}
+
+void Chromix::MixRender::handlLoadFailure(const WebKit::WebURLError& error) {
+    printf("Load failed %d\n", error.reason);
     isLoadFinished = true;
+    didLoadSucceed = false;
     if (inMessageLoop)
         MessageLoop::current()->Quit();
 }

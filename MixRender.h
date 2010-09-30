@@ -25,14 +25,18 @@ protected:
     // WebKit::WebViewClient
     virtual void didStopLoading();
     // WebKit::WebFrameClient
+    virtual void didFailProvisionalLoad(WebKit::WebFrame*, const WebKit::WebURLError&);
     virtual void didFailLoad(WebKit::WebFrame*, const WebKit::WebURLError&);
-    
+
+    void handlLoadFailure(const WebKit::WebURLError&);
+
 private:
     WebKit::WebView *webView;
     WebKit::WebSize size;
     skia::PlatformCanvas skiaCanvas;
     bool inMessageLoop;
     bool isLoadFinished;
+    bool didLoadSucceed;
 };
     
 }
