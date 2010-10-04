@@ -10,7 +10,7 @@ namespace Chromix {
 
 class MixKit {
 public:
-    MixKit();
+    MixKit(int argc, const char* argv[]);
     ~MixKit();
 
 private:

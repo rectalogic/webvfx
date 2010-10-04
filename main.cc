@@ -13,8 +13,8 @@ int chromix_main(int argc, const char * argv[]) {
         std::cerr << "Missing html template";
         return -1;
     }
-    Chromix::MixKit mixKit;
-    Chromix::MixRender mixRender(400, 300);
+    Chromix::MixKit mixKit(argc, argv);
+    Chromix::MixRender mixRender(800, 600);
 
     if (!mixRender.loadURL(argv[1]))
         return -1;

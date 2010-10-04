@@ -43,7 +43,7 @@ Chromix::MixRender::MixRender(int width, int height) :
     settings->setAllowUniversalAccessFromFileURLs(true);
     settings->setAllowFileAccessFromFileURLs(true);
     settings->setExperimentalWebGLEnabled(true);
-    settings->setAcceleratedCompositingEnabled(true);
+    settings->setAcceleratedCompositingEnabled(false);//XXX crashes WebGL
     settings->setAccelerated2dCanvasEnabled(true);
 
     webView->initializeMainFrame(this);

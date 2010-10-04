@@ -4,7 +4,7 @@
 function init() {
     var canvas = document.getElementById("imageCanvas");
     var context = canvas.getContext('2d');
-    var imageData = mixkit.getImageDataForKey('foo');
+    var imageData = chromix.getImageDataForKey('foo');
     context.putImageData(imageData, 0, 0);
 }
 window.onload = init;

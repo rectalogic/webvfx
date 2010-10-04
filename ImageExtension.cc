@@ -6,7 +6,7 @@
 
 namespace Chromix {
 
-const char *kImageExtensionName = "MixKitV8/Image";
+const char *kImageExtensionName = "ChromixV8/Image";
 
 //XXX should we fire an event via the DOM for each time signal (e.g. dispatch via WebFrame::windowObject)?
 //XXX will need a way to get the set of named currentFrame images into this extension
@@ -14,10 +14,10 @@ class ImageWrapper : public v8::Extension {
 public:
     ImageWrapper() :
         v8::Extension(kImageExtensionName,
-                      "if (typeof(mixkit) == 'undefined') {"
-                      "    mixkit = {};"
+                      "if (typeof(chromix) == 'undefined') {"
+                      "    chromix = {};"
                       "};"
-                      "mixkit.getImageDataForKey = function(key) {"
+                      "chromix.getImageDataForKey = function(key) {"
                       "    native function GetImageDataForKey();"
                       "    return GetImageDataForKey(key);"
                       "};"
@@ -33,6 +33,11 @@ public:
 
     //XXX how do we get at instance data? image key hash will need to be global registry
     //XXX we don't want to copy pixels from decode buffer into ImageData CanvasPixelArray - so we should preconstruct JS ImageData objects for each key (at correct size), and decode directly into their raw buffers
+    //XXX see chrome/renderer/extensions/extension_process_bindings.cc - uses static maps - but we need keys to be scoped to a page
+    //XXX also chrome/renderer/external_extension.cc - WebFrame::frameForEnteredContext()->view()
+    
+    //XXX maybe JS should create ImageDatas of view size and call back to fill???
+
     static v8::Handle<v8::Value> GetImageDataForKey(const v8::Arguments& args) {
         
         //XXX see third_party/WebKit/WebCore/bindings/v8/SerializedScriptValue.cpp
