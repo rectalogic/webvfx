@@ -1,12 +1,12 @@
 #include "MixRender.h"
 
+#include <map>
+#include <third_party/WebKit/WebKit/chromium/public/WebView.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebURL.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebURLRequest.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebRect.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebSettings.h>
 #include <base/singleton.h>
-#undef LOG //XXX
-#include <base/message_loop.h>
 #include <webkit/glue/webkit_glue.h>
 #include <skia/ext/bitmap_platform_device.h>
 #include <third_party/WebKit/WebCore/html/ImageData.h>
@@ -17,12 +17,10 @@ typedef std::map<WebKit::WebView*, Chromix::MixRender*> ViewRenderMap;
 Chromix::MixRender::MixRender(int width, int height) :
     size(width, height),
     skiaCanvas(width, height, true),
-    inMessageLoop(false),
-    isLoadFinished(false),
-    didLoadSucceed(false),
+    loader(),
     imageMap()
 {
-    webView = WebKit::WebView::create(this, NULL);
+    webView = WebKit::WebView::create(&loader, NULL);
 
     WebKit::WebSettings *settings = webView->settings();
     settings->setStandardFontFamily(WebKit::WebString("Times New Roman"));
@@ -51,7 +49,7 @@ Chromix::MixRender::MixRender(int width, int height) :
     settings->setAcceleratedCompositingEnabled(false);//XXX crashes WebGL
     settings->setAccelerated2dCanvasEnabled(true);
 
-    webView->initializeMainFrame(this);
+    webView->initializeMainFrame(&loader);
     //webView->mainFrame()->setCanHaveScrollbars(false);
     webView->resize(size);
 
@@ -70,6 +68,10 @@ Chromix::MixRender* Chromix::MixRender::fromWebView(WebKit::WebView* webView) {
     ViewRenderMap* views = Singleton<ViewRenderMap>::get();
     ViewRenderMap::iterator it = views->find(webView);
     return it == views->end() ? NULL : it->second;
+}
+
+bool Chromix::MixRender::loadURL(const std::string& url) {
+    return loader.loadURL(webView, url);
 }
 
 // http://webkit.org/coding/RefPtr.html
@@ -91,59 +93,11 @@ WTF::PassRefPtr<WebCore::ImageData> Chromix::MixRender::imageDataForKey(WTF::Str
     return imageData.release(); //XXX figure out refcounting
 }
 
-bool Chromix::MixRender::loadURL(const std::string& url) {
-    isLoadFinished = false;
-    didLoadSucceed = false;
-
-    WebKit::WebFrame *webFrame = webView->mainFrame();
-    GURL gurl(url);
-    if (!gurl.is_valid())
-        return didLoadSucceed;
-    webFrame->loadRequest(WebKit::WebURLRequest(gurl));
-    webView->layout();//XXX need this?
-    while (!isLoadFinished) {
-        inMessageLoop = true;
-        MessageLoop::current()->Run();
-        inMessageLoop = false;
-    }
-    
-    //XXX Probably need to do this periodically when rendering video frames
-    //XXXcrashes webFrame->collectGarbage();
-
-    return didLoadSucceed;
-}
 
 const SkBitmap& Chromix::MixRender::render() {
-    DLOG_ASSERT(didLoadSucceed);
     webView->paint(webkit_glue::ToWebCanvas(&skiaCanvas), WebKit::WebRect(0, 0, size.width, size.height));
 
     // Get canvas bitmap
     skia::BitmapPlatformDevice &skiaDevice = static_cast<skia::BitmapPlatformDevice&>(skiaCanvas.getTopPlatformDevice());
     return skiaDevice.accessBitmap(false);
-}
-
-void Chromix::MixRender::didStopLoading() {
-    // This is called even after load failure, so don't reset flags if we already failed.
-    if (!isLoadFinished) {
-        isLoadFinished = true;
-        didLoadSucceed = true;
-    }
-    if (inMessageLoop)
-        MessageLoop::current()->Quit();
-}
-
-void Chromix::MixRender::didFailProvisionalLoad(WebKit::WebFrame* frame, const WebKit::WebURLError& error) {
-    handlLoadFailure(error);
-}
-
-void Chromix::MixRender::didFailLoad(WebKit::WebFrame* frame, const WebKit::WebURLError& error) {
-    handlLoadFailure(error);
-}
-
-void Chromix::MixRender::handlLoadFailure(const WebKit::WebURLError& error) {
-    printf("Load failed %d\n", error.reason);
-    isLoadFinished = true;
-    didLoadSucceed = false;
-    if (inMessageLoop)
-        MessageLoop::current()->Quit();
 }

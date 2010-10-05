@@ -29,6 +29,8 @@
         'MixKit.cc',
         'MixRender.h',
         'MixRender.cc',
+        'MixRenderLoader.h',
+        'MixRenderLoader.cc',
         'WebKitClientImpl.h',
         'ImageExtension.h',
         'ImageExtension.cc',
