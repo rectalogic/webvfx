@@ -50,6 +50,8 @@ public:
             pixelArray->set(i+3, (unsigned char)0xff); // alpha
         }
 
+        //XXX this will RefCounted<ImageData>::ref() imageData, above ::create does PassRefPtr<ImageData>::adoptRef()
+        //XXX so we need to release the imageData when all done (i.e. won't be GC'd) ?
         return WebCore::toV8(imageData);
     }
 };

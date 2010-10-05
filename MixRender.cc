@@ -4,10 +4,14 @@
 #include <third_party/WebKit/WebKit/chromium/public/WebURLRequest.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebRect.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebSettings.h>
-#include <base/logging.h>
+#include <base/singleton.h>
+#undef LOG //XXX
 #include <base/message_loop.h>
 #include <webkit/glue/webkit_glue.h>
 #include <skia/ext/bitmap_platform_device.h>
+#include <third_party/WebKit/WebCore/html/ImageData.h>
+
+typedef std::map<WebKit::WebView*, Chromix::MixRender*> ViewRenderMap;
 
 
 Chromix::MixRender::MixRender(int width, int height) :
@@ -15,7 +19,8 @@ Chromix::MixRender::MixRender(int width, int height) :
     skiaCanvas(width, height, true),
     inMessageLoop(false),
     isLoadFinished(false),
-    didLoadSucceed(false)
+    didLoadSucceed(false),
+    imageMap()
 {
     webView = WebKit::WebView::create(this, NULL);
 
@@ -49,10 +54,41 @@ Chromix::MixRender::MixRender(int width, int height) :
     webView->initializeMainFrame(this);
     //webView->mainFrame()->setCanHaveScrollbars(false);
     webView->resize(size);
+
+    // Register in map
+    Singleton<ViewRenderMap>::get()->insert(std::make_pair(webView, this));
 }
 
 Chromix::MixRender::~MixRender() {
+    // Remove from map
+    Singleton<ViewRenderMap>::get()->erase(webView);
     webView->close();
+}
+
+/*static*/
+Chromix::MixRender* Chromix::MixRender::fromWebView(WebKit::WebView* webView) {
+    ViewRenderMap* views = Singleton<ViewRenderMap>::get();
+    ViewRenderMap::iterator it = views->find(webView);
+    return it == views->end() ? NULL : it->second;
+}
+
+// http://webkit.org/coding/RefPtr.html
+WTF::PassRefPtr<WebCore::ImageData> Chromix::MixRender::imageDataForKey(WTF::String key, unsigned int width, unsigned int height) {
+    WTF::RefPtr<WebCore::ImageData> imageData;
+    // Found image for key, recreate if wrong size
+    if (imageMap.contains(key)) {
+        imageData = imageMap.get(key);
+        if (width != imageData->width() || height != imageData->height()) {
+            imageData = WebCore::ImageData::create(width, height);
+            imageMap.set(key, imageData);
+        }
+    }
+    // No image in map, create a new one
+    else {
+        imageData = WebCore::ImageData::create(width, height);
+        imageMap.set(key, imageData);
+    }
+    return imageData.release(); //XXX figure out refcounting
 }
 
 bool Chromix::MixRender::loadURL(const std::string& url) {

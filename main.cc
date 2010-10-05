@@ -1,5 +1,3 @@
-#include <base/basictypes.h>
-#include <base/message_loop.h>
 #include <gfx/codec/png_codec.h>
 
 #include <iostream>

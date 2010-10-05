@@ -8,9 +8,17 @@
 #include <third_party/WebKit/WebKit/chromium/public/WebURLError.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebSize.h>
 #include <skia/ext/platform_canvas.h>
+#undef LOG //XXX
+#include <third_party/WebKit/WebCore/config.h>
+#include <third_party/WebKit/JavaScriptCore/wtf/RefPtr.h>
+#include <third_party/WebKit/JavaScriptCore/wtf/text/WTFString.h>
+#include <third_party/WebKit/JavaScriptCore/wtf/text/StringHash.h>
+#include <third_party/WebKit/JavaScriptCore/wtf/HashMap.h>
+#include <third_party/WebKit/WebCore/html/ImageData.h>
+
 
 namespace Chromix {
-    
+
 class MixRender : public WebKit::WebFrameClient,
                   public WebKit::WebViewClient
 {
@@ -20,6 +28,9 @@ public:
 
     bool loadURL(const std::string& url);
     const SkBitmap& render();//XXX need keyed video frames and current time
+
+    static MixRender* fromWebView(WebKit::WebView* webView);
+    WTF::PassRefPtr<WebCore::ImageData> imageDataForKey(WTF::String key, unsigned int width, unsigned int height);
 
 protected:
     // WebKit::WebViewClient
@@ -37,6 +48,9 @@ private:
     bool inMessageLoop;
     bool isLoadFinished;
     bool didLoadSucceed;
+
+    typedef WTF::HashMap<WTF::String, WTF::RefPtr<WebCore::ImageData> > ImageMap;
+    ImageMap imageMap;
 };
     
 }
