@@ -1,4 +1,5 @@
 #include "MixKit.h"
+#include "MixKitPrivate.h"
 #include "ImageExtension.h"
 
 #include <base/command_line.h>
@@ -9,10 +10,25 @@
 #include <third_party/WebKit/WebKit/mac/WebCoreSupport/WebSystemInterface.h>
 #endif
 
+
+Chromix::MixKit::MixKit(int argc, const char* argv[]) : impl(new MixKitPrivate(argc, argv))
+{
+}
+
+Chromix::MixKit::~MixKit() {
+    delete impl;
+}
+
+
 // webKitClient depends on state initialized by messageLoop
-Chromix::MixKit::MixKit(int argc, const char* argv[]) : atExitManager(), messageLoop(), webKitClient() {
-    WebKit::initialize(&webKitClient);
+Chromix::MixKitPrivate::MixKitPrivate(int argc, const char* argv[]) :
+    atExitManager(),
+    messageLoop(),
+    webKitClient()
+{
     CommandLine::Init(argc, argv);
+
+    WebKit::initialize(&webKitClient);
 #if defined(OS_MACOSX)
     InitWebCoreSystemInterface();
 #endif
@@ -22,6 +38,6 @@ Chromix::MixKit::MixKit(int argc, const char* argv[]) : atExitManager(), message
     WebKit::WebScriptController::registerExtension(Chromix::ImageExtensionV8::Get());
 }
 
-Chromix::MixKit::~MixKit() {
+Chromix::MixKitPrivate::~MixKitPrivate() {
     WebKit::shutdown();
 }

@@ -25,6 +25,7 @@
         'main_mac.mm',
         'main_linux.cc',
         'MixKit.h',
+        'MixKitPrivate.h',
         'MixKit.cc',
         'MixRender.h',
         'MixRender.cc',
