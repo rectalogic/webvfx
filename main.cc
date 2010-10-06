@@ -16,7 +16,7 @@ int chromix_main(int argc, const char * argv[]) {
 
     if (!mixRender.loadURL(argv[1]))
         return -1;
-    const SkBitmap &skiaBitmap = mixRender.render();
+    const SkBitmap &skiaBitmap = mixRender.render(0);
 
     // Encode pixel data to PNG.
     std::vector<unsigned char> pngData;

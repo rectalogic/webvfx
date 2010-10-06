@@ -34,8 +34,8 @@
         'MixParameterMap.h',
         'MixParameterMap.cc',
         'WebKitClientImpl.h',
-        'ImageExtension.h',
-        'ImageExtension.cc',
+        'ChromixExtension.h',
+        'ChromixExtension.cc',
       ],
     },
   ]

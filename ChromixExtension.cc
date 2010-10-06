@@ -1,21 +1,19 @@
-#include "ImageExtension.h"
+#include "ChromixExtension.h"
 
 #include <v8/include/v8.h>
 #include <third_party/WebKit/WebCore/config.h>
 #include <third_party/WebKit/WebCore/html/ImageData.h>
-#include <V8ImageData.h>
 #include <third_party/WebKit/JavaScriptCore/wtf/RefCounted.h>
+#include <V8ImageData.h>
 
 namespace Chromix {
 
-const char *kImageExtensionName = "ChromixV8/Image";
+const char *kChromixExtensionName = "v8Chromix/Chromix";
 
-//XXX should we fire an event via the DOM for each time signal (e.g. dispatch via WebFrame::windowObject)?
-//XXX will need a way to get the set of named currentFrame images into this extension
-class ImageWrapper : public v8::Extension {
+class ChromixExtensionWrapper : public v8::Extension {
 public:
-    ImageWrapper() :
-        v8::Extension(kImageExtensionName,
+    ChromixExtensionWrapper() :
+        v8::Extension(kChromixExtensionName,
                       "if (typeof(chromix) == 'undefined') {"
                       "    chromix = {};"
                       "};"
@@ -99,8 +97,8 @@ public:
     }
 };
 
-v8::Extension* Chromix::ImageExtensionV8::Get() {
-    return new ImageWrapper();
+v8::Extension* Chromix::ChromixExtension::Get() {
+    return new ChromixExtensionWrapper();
 }
 
 }

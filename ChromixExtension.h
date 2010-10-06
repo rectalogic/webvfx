@@ -7,7 +7,7 @@ namespace v8 {
 
 namespace Chromix {
 
-class ImageExtensionV8 {
+class ChromixExtension {
 public:
     static v8::Extension* Get();
 };
