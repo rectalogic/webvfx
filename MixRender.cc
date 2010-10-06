@@ -1,4 +1,5 @@
 #include "MixRender.h"
+#include "MixParameterMap.h"
 
 #include <map>
 #include <third_party/WebKit/WebKit/chromium/public/WebView.h>
@@ -9,7 +10,7 @@
 #include <base/singleton.h>
 #include <webkit/glue/webkit_glue.h>
 #include <skia/ext/bitmap_platform_device.h>
-#include <third_party/WebKit/WebCore/html/ImageData.h>
+
 
 typedef std::map<WebKit::WebView*, Chromix::MixRender*> ViewRenderMap;
 
@@ -18,7 +19,7 @@ Chromix::MixRender::MixRender(int width, int height) :
     size(width, height),
     skiaCanvas(width, height, true),
     loader(),
-    imageMap()
+    parameterMap(new MixParameterMap())
 {
     webView = WebKit::WebView::create(&loader, NULL);
 
@@ -60,6 +61,7 @@ Chromix::MixRender::MixRender(int width, int height) :
 Chromix::MixRender::~MixRender() {
     // Remove from map
     Singleton<ViewRenderMap>::get()->erase(webView);
+    delete parameterMap;
     webView->close();
 }
 
@@ -74,27 +76,9 @@ bool Chromix::MixRender::loadURL(const std::string& url) {
     return loader.loadURL(webView, url);
 }
 
-// http://webkit.org/coding/RefPtr.html
-WTF::PassRefPtr<WebCore::ImageData> Chromix::MixRender::imageDataForKey(WTF::String key, unsigned int width, unsigned int height) {
-    WTF::RefPtr<WebCore::ImageData> imageData;
-    // Found image for key, recreate if wrong size
-    if (imageMap.contains(key)) {
-        imageData = imageMap.get(key);
-        if (width != imageData->width() || height != imageData->height()) {
-            imageData = WebCore::ImageData::create(width, height);
-            imageMap.set(key, imageData);
-        }
-    }
-    // No image in map, create a new one
-    else {
-        imageData = WebCore::ImageData::create(width, height);
-        imageMap.set(key, imageData);
-    }
-    return imageData.release(); //XXX figure out refcounting
-}
+const SkBitmap& Chromix::MixRender::render(float time) {
+    //XXX call into JS chromix.renderCallback(time) - set flag allowing image param access
 
-
-const SkBitmap& Chromix::MixRender::render() {
     webView->paint(webkit_glue::ToWebCanvas(&skiaCanvas), WebKit::WebRect(0, 0, size.width, size.height));
 
     // Get canvas bitmap

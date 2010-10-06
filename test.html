@@ -1,11 +1,22 @@
 <html>
 <head>
 <script type="text/javascript">
+function render(time) {
+    var canvas = document.getElementById("imageCanvas");
+    var context = canvas.getContext('2d');
+    var imageData = chromix.getImageDataParamValue('video');
+    context.putImageData(imageData, 0, 0);
+}
+
 function init() {
+    chromix.setRenderCallback(render);
+    chromix.registerImageDataParam("video", "The video");
+/*
     var canvas = document.getElementById("imageCanvas");
     var context = canvas.getContext('2d');
     var imageData = chromix.getImageDataForKey('foo');
     context.putImageData(imageData, 0, 0);
+*/
 }
 window.onload = init;
 </script>

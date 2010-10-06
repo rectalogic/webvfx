@@ -1,4 +1,6 @@
 #include "ImageExtension.h"
+
+#include <v8/include/v8.h>
 #include <third_party/WebKit/WebCore/config.h>
 #include <third_party/WebKit/WebCore/html/ImageData.h>
 #include <V8ImageData.h>
@@ -17,17 +19,46 @@ public:
                       "if (typeof(chromix) == 'undefined') {"
                       "    chromix = {};"
                       "};"
-                      "chromix.getImageDataForKey = function(key) {"
-                      "    native function GetImageDataForKey();"
-                      "    return GetImageDataForKey(key);"
+                      "chromix.setRenderCallback = function(renderCallback) {"
+                      "    chromix.renderCallback = renderCallback;"
+                      "};"
+                      "chromix.registerStringParam = function(name, description) {"
+                      "    native function RegisterStringParam();"
+                      "    RegisterStringParam(name, description);"
+                      "};"
+                      "chromix.registerImageDataParam = function(name, description) {"
+                      "    native function RegisterImageDataParam();"
+                      "    RegisterImageDataParam(name, description);"
+                      "};"
+                      "chromix.getStringParamValue = function(name) {"
+                      "    native function GetStringParamValue();"
+                      "    return GetStringParamValue(name);"
+                      "};"
+                      "chromix.getImageDataParamValue = function(name) {"
+                      "    native function GetImageDataParamValue();"
+                      "    return GetImageDataParamValue(name);"
                       "};"
                       ) {}
+    //XXX getting image/time based params should only be valid when responding to RenderEvent/callback (set flag and check we are rendering)
+    //XXX static params should be gotten up front right after registering them??
+    //XXX or series of chromix.registerStringParam(name, desc) and chromix.registerImageDataParam(name, desc) and single chromix.registerMix(name, renderCallback)
+    //XXX and chromix.getStringParam(name) chromix.getImageDataParam(name)
+    //XXX std::string name = std::string(*v8::String::Utf8Value(args[0])), also see v8StringToWebCoreString
 
     virtual v8::Handle<v8::FunctionTemplate> GetNativeFunction(v8::Handle<v8::String> name) {
-        if (name->Equals(v8::String::New("GetImageDataForKey"))) {
-            return v8::FunctionTemplate::New(GetImageDataForKey);
-         }
-        
+        if (name->Equals(v8::String::New("RegisterStringParam"))) {
+            return v8::FunctionTemplate::New(RegisterStringParam);
+        }
+        else if (name->Equals(v8::String::New("RegisterImageDataParam"))) {
+            return v8::FunctionTemplate::New(RegisterImageDataParam);
+        }
+        else if (name->Equals(v8::String::New("GetStringParamValue"))) {
+            return v8::FunctionTemplate::New(GetStringParamValue);
+        }
+        else if (name->Equals(v8::String::New("GetImageDataParamValue"))) {
+            return v8::FunctionTemplate::New(GetImageDataParamValue);
+        }
+
         return v8::Handle<v8::FunctionTemplate>();
     }
 
@@ -38,7 +69,19 @@ public:
     
     //XXX maybe JS should create ImageDatas of view size and call back to fill???
 
-    static v8::Handle<v8::Value> GetImageDataForKey(const v8::Arguments& args) {
+    static v8::Handle<v8::Value> RegisterStringParam(const v8::Arguments& args) {
+        return v8::Undefined();
+    }
+
+    static v8::Handle<v8::Value> RegisterImageDataParam(const v8::Arguments& args) {
+        return v8::Undefined();
+    }
+
+    static v8::Handle<v8::Value> GetStringParamValue(const v8::Arguments& args) {
+        return v8::Undefined();
+    }
+
+    static v8::Handle<v8::Value> GetImageDataParamValue(const v8::Arguments& args) {
         
         //XXX see third_party/WebKit/WebCore/bindings/v8/SerializedScriptValue.cpp
         WTF::PassRefPtr<WebCore::ImageData> imageData = WebCore::ImageData::create(320, 240);//XXX bogus size for now

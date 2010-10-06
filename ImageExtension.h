@@ -1,7 +1,9 @@
 #ifndef MOTIONBOX_CHROMIX_IMAGEEXTENSION_H_
 #define MOTIONBOX_CHROMIX_IMAGEEXTENSION_H_
 
-#include <v8/include/v8.h>
+namespace v8 {
+    class Extension;
+}
 
 namespace Chromix {
 

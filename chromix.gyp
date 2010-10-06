@@ -31,6 +31,8 @@
         'MixRender.cc',
         'MixRenderLoader.h',
         'MixRenderLoader.cc',
+        'MixParameterMap.h',
+        'MixParameterMap.cc',
         'WebKitClientImpl.h',
         'ImageExtension.h',
         'ImageExtension.cc',
