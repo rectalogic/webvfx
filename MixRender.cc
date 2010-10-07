@@ -18,9 +18,9 @@
 typedef std::map<WebKit::WebView*, Chromix::MixRender*> ViewRenderMap;
 
 
-Chromix::MixRender::MixRender(int width, int height) :
-    size(width, height),
-    skiaCanvas(width, height, true),
+Chromix::MixRender::MixRender() :
+    size(),
+    skiaCanvas(NULL),
     loader(),
     parameterMap(new MixParameterMap())
 {
@@ -55,7 +55,6 @@ Chromix::MixRender::MixRender(int width, int height) :
 
     webView->initializeMainFrame(&loader);
     //webView->mainFrame()->setCanHaveScrollbars(false);
-    webView->resize(size);
 
     // Register in map
     Singleton<ViewRenderMap>::get()->insert(std::make_pair(webView, this));
@@ -64,6 +63,7 @@ Chromix::MixRender::MixRender(int width, int height) :
 Chromix::MixRender::~MixRender() {
     // Remove from map
     Singleton<ViewRenderMap>::get()->erase(webView);
+    delete skiaCanvas;
     delete parameterMap;
     webView->close();
 }
@@ -79,7 +79,21 @@ bool Chromix::MixRender::loadURL(const std::string& url) {
     return loader.loadURL(webView, url);
 }
 
+void Chromix::MixRender::resize(int width, int height) {
+    if (size.width == width && size.height == height)
+        return;
+    size.width = width;
+    size.height = height;
+    webView->resize(size);
+    // NULL out so we recreate in render()
+    delete skiaCanvas;
+    skiaCanvas = NULL;
+}
+
 const SkBitmap& Chromix::MixRender::render(float time) {
+    if (skiaCanvas == NULL)
+        skiaCanvas = new skia::PlatformCanvas(size.width, size.height, true);
+
     //XXX need to pass time argument, should hold v8::Function in a v8::Persistent
     //XXX see WebCore::invokeCallback in V8CustomVoidCallback.cpp, V8TestCallback
     const static WebKit::WebScriptSource s("chromix.renderCallback(0)");
@@ -87,10 +101,10 @@ const SkBitmap& Chromix::MixRender::render(float time) {
     webView->mainFrame()->executeScript(s);
 
     webView->layout();
-    webView->paint(webkit_glue::ToWebCanvas(&skiaCanvas), WebKit::WebRect(0, 0, size.width, size.height));
+    webView->paint(webkit_glue::ToWebCanvas(skiaCanvas), WebKit::WebRect(0, 0, size.width, size.height));
 
     // Get canvas bitmap
-    skia::BitmapPlatformDevice &skiaDevice = static_cast<skia::BitmapPlatformDevice&>(skiaCanvas.getTopPlatformDevice());
+    skia::BitmapPlatformDevice &skiaDevice = static_cast<skia::BitmapPlatformDevice&>(skiaCanvas->getTopPlatformDevice());
     return skiaDevice.accessBitmap(false);
 }
 

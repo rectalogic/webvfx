@@ -13,7 +13,8 @@ int chromix_main(int argc, const char * argv[]) {
         return -1;
     }
     Chromix::MixKit mixKit(argc, argv);
-    Chromix::MixRender mixRender(800, 600);
+    Chromix::MixRender mixRender;
+    mixRender.resize(800, 600);
 
     if (!mixRender.loadURL(argv[1]))
         return -1;

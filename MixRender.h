@@ -4,8 +4,8 @@
 #include "MixRenderLoader.h"
 
 #include <string>
-#include <third_party/WebKit/WebKit/chromium/public/WebSize.h>
 #include <skia/ext/platform_canvas.h>
+#include <third_party/WebKit/WebKit/chromium/public/WebSize.h>
 
 namespace WTF {
     class String;
@@ -17,24 +17,23 @@ class MixParameterMap;
 
 class MixRender {
 public:
-    //XXX need to allow caller to resize on the fly before rendering (need to resize webview, skia canvas etc.)
-    MixRender(int width, int height);
+    MixRender();
     virtual ~MixRender();
 
     bool loadURL(const std::string& url);
+    void resize(int width, int height);
     const SkBitmap& render(float time);
 
     unsigned char* writeableDataForImageParameter(const WTF::String& name, unsigned int width, unsigned int height);
 
+    //XXX make these protected and friend to ChromixExtension?
     static MixRender* fromWebView(WebKit::WebView* webView);
-
-    //XXX make this protected and friend to ChromixExtension?
     MixParameterMap* getParameterMap() { return parameterMap; }
 
 private:
     WebKit::WebView *webView;
     WebKit::WebSize size;
-    skia::PlatformCanvas skiaCanvas;
+    skia::PlatformCanvas* skiaCanvas;
     MixRenderLoader loader;
     MixParameterMap *parameterMap;
 };
