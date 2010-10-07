@@ -10,6 +10,7 @@ namespace WebKit {
     class WebView;
 }
 
+
 namespace Chromix {
     
 class MixRenderLoader : public WebKit::WebFrameClient,

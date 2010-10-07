@@ -23,7 +23,6 @@ bool Chromix::MixRenderLoader::loadURL(WebKit::WebView *webView, const std::stri
     if (!gurl.is_valid())
         return didLoadSucceed;
     webFrame->loadRequest(WebKit::WebURLRequest(gurl));
-    webView->layout();//XXX need this?
     while (!isLoadFinished) {
         inMessageLoop = true;
         MessageLoop::current()->Run();

@@ -3,9 +3,13 @@
 
 #include "MixRenderLoader.h"
 
+#include <string>
 #include <third_party/WebKit/WebKit/chromium/public/WebSize.h>
 #include <skia/ext/platform_canvas.h>
 
+namespace WTF {
+    class String;
+}
 
 namespace Chromix {
 
@@ -20,11 +24,12 @@ public:
     bool loadURL(const std::string& url);
     const SkBitmap& render(float time);
 
-    MixParameterMap* getParameterMap() { return parameterMap; }
+    unsigned char* writeableDataForImageParameter(const WTF::String& name, unsigned int width, unsigned int height);
 
     static MixRender* fromWebView(WebKit::WebView* webView);
 
-    //XXX need setParameters() api called from v8, and param/imageForKey called from v8
+    //XXX make this protected and friend to ChromixExtension?
+    MixParameterMap* getParameterMap() { return parameterMap; }
 
 private:
     WebKit::WebView *webView;

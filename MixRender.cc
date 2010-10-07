@@ -3,10 +3,13 @@
 
 #include <map>
 #include <third_party/WebKit/WebKit/chromium/public/WebView.h>
+#include <third_party/WebKit/WebKit/chromium/public/WebFrame.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebURL.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebURLRequest.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebRect.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebSettings.h>
+#include <third_party/WebKit/WebKit/chromium/public/WebScriptSource.h>//XXX only needed while we use executeScript()
+#include <third_party/WebKit/JavaScriptCore/wtf/text/WTFString.h>
 #include <base/singleton.h>
 #include <webkit/glue/webkit_glue.h>
 #include <skia/ext/bitmap_platform_device.h>
@@ -77,11 +80,21 @@ bool Chromix::MixRender::loadURL(const std::string& url) {
 }
 
 const SkBitmap& Chromix::MixRender::render(float time) {
+    //XXX need to pass time argument, should hold v8::Function in a v8::Persistent
+    //XXX see WebCore::invokeCallback in V8CustomVoidCallback.cpp, V8TestCallback
+    const static WebKit::WebScriptSource s("chromix.renderCallback(0)");
     //XXX call into JS chromix.renderCallback(time) - set flag allowing image param access
+    webView->mainFrame()->executeScript(s);
 
+    webView->layout();
     webView->paint(webkit_glue::ToWebCanvas(&skiaCanvas), WebKit::WebRect(0, 0, size.width, size.height));
 
     // Get canvas bitmap
     skia::BitmapPlatformDevice &skiaDevice = static_cast<skia::BitmapPlatformDevice&>(skiaCanvas.getTopPlatformDevice());
     return skiaDevice.accessBitmap(false);
 }
+
+unsigned char* Chromix::MixRender::writeableDataForImageParameter(const WTF::String& name, unsigned int width, unsigned int height) {
+    return parameterMap->writeableDataForImageParameter(name, width, height);
+}
+

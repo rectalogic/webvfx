@@ -1,26 +1,57 @@
 #include "MixParameterMap.h"
 
-Chromix::MixParameterMap::MixParameterMap() : imageMap()
+#include <third_party/WebKit/WebCore/bindings/v8/V8Binding.h>
+#include <V8ImageData.h>
+
+
+Chromix::MixParameterMap::MixParameterMap() : imageParamMap(), stringParamMap()
 {
 }
 
-
-// http://webkit.org/coding/RefPtr.html
-WTF::PassRefPtr<WebCore::ImageData> Chromix::MixParameterMap::imageDataForKey(WTF::String key, unsigned int width, unsigned int height) {
-    WTF::RefPtr<WebCore::ImageData> imageData;
-    // Found image for key, recreate if wrong size
-    if (imageMap.contains(key)) {
-        imageData = imageMap.get(key);
-        if (width != imageData->width() || height != imageData->height()) {
-            imageData = WebCore::ImageData::create(width, height);
-            imageMap.set(key, imageData);
-        }
-    }
-    // No image in map, create a new one
-    else {
-        imageData = WebCore::ImageData::create(width, height);
-        imageMap.set(key, imageData);
-    }
-    return imageData.release(); //XXX figure out refcounting
+void Chromix::MixParameterMap::registerStringParameter(const WTF::String& name, const WTF::String& description) {
+    stringParamMap.set(name, Chromix::StringParameter(description));
 }
 
+void Chromix::MixParameterMap::registerImageParameter(const WTF::String& name, const WTF::String& description) {
+    imageParamMap.set(name, Chromix::ImageParameter(description));
+}
+
+v8::Handle<v8::Value> Chromix::MixParameterMap::getImageParameterValue(const WTF::String& name) {
+    if (imageParamMap.contains(name)) {
+        ImageParameter param = imageParamMap.get(name);
+        WebCore::ImageData *imageData = param.getValue();
+        if (imageData)
+            return WebCore::toV8(imageData);
+    }
+    return v8::Undefined();
+}
+
+v8::Handle<v8::Value> Chromix::MixParameterMap::getStringParameterValue(const WTF::String& name) {
+    if (stringParamMap.contains(name)) {
+        StringParameter param = stringParamMap.get(name);
+        return WebCore::v8String(param.getValue());
+    }
+    return v8::Undefined();
+}
+
+// http://webkit.org/coding/RefPtr.html
+unsigned char* Chromix::MixParameterMap::writeableDataForImageParameter(const WTF::String& name, unsigned int width, unsigned int height) {
+    // First check if this is a valid image param
+    if (!imageParamMap.contains(name))
+        return NULL;
+
+    ImageParameter param = imageParamMap.get(name);
+    WebCore::ImageData *imageData = param.getValue();
+
+    // Param has no ImageData yet, or if it has one of the wrong size,
+    // create and set or replace.
+    if (imageData == NULL || (width != imageData->width() || height != imageData->height())) {
+        WTF::RefPtr<WebCore::ImageData> rpImageData = WebCore::ImageData::create(width, height);
+        param.setValue(rpImageData);
+        imageParamMap.set(name, param);
+        imageData = rpImageData.get();
+    }
+
+    // Return the raw data from the CanvasPixelBuffer
+    return imageData->data()->data()->data();
+}

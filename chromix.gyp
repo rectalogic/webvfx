@@ -33,6 +33,8 @@
         'MixRenderLoader.cc',
         'MixParameterMap.h',
         'MixParameterMap.cc',
+        'Parameter.h',
+        'Parameter.cc',
         'WebKitClientImpl.h',
         'ChromixExtension.h',
         'ChromixExtension.cc',

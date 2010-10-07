@@ -1,10 +1,11 @@
-#include <gfx/codec/png_codec.h>
-
 #include <iostream>
 #include <fstream>
 
 #include "MixKit.h"
 #include "MixRender.h"
+#include <gfx/codec/png_codec.h>
+
+#include <third_party/WebKit/JavaScriptCore/wtf/text/WTFString.h>
 
 int chromix_main(int argc, const char * argv[]) {
     if (argc != 2) {
@@ -16,6 +17,13 @@ int chromix_main(int argc, const char * argv[]) {
 
     if (!mixRender.loadURL(argv[1]))
         return -1;
+
+    unsigned char* data = mixRender.writeableDataForImageParameter(WTF::String("video"), 320, 240);
+    for (unsigned int i = 0; i < 320*240*4; i += 4) {
+        data[i] = 0xff; //red
+        data[i+3] = 0xff; //alpha
+    }
+
     const SkBitmap &skiaBitmap = mixRender.render(0);
 
     // Encode pixel data to PNG.

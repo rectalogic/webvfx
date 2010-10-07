@@ -21,16 +21,10 @@ public:
         return WebKit::WebGraphicsContext3D::createDefault();
     }
 
-    //XXX this is required
-    //virtual WebKit::WebBlobRegistry* blobRegistry() 
-    //virtual WebFileSystem* fileSystem()
-
-
 private:
     webkit_glue::SimpleWebMimeRegistryImpl mimeRegistryImpl;
     webkit_glue::WebClipboardImpl clipboardImpl;
     webkit_glue::WebFileUtilitiesImpl fileUtiliesImpl;
-    //XXXscoped_refptr<TestShellWebBlobRegistryImpl> blob_registry_;
 };
 
 }

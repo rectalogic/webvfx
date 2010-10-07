@@ -4,19 +4,14 @@
 function render(time) {
     var canvas = document.getElementById("imageCanvas");
     var context = canvas.getContext('2d');
-    var imageData = chromix.getImageDataParamValue('video');
+    var imageData = chromix.getImageParamValue('video');
     context.putImageData(imageData, 0, 0);
+    return true;
 }
 
 function init() {
     chromix.setRenderCallback(render);
-    chromix.registerImageDataParam("video", "The video");
-/*
-    var canvas = document.getElementById("imageCanvas");
-    var context = canvas.getContext('2d');
-    var imageData = chromix.getImageDataForKey('foo');
-    context.putImageData(imageData, 0, 0);
-*/
+    chromix.registerImageParam("video", "The video");
 }
 window.onload = init;
 </script>
