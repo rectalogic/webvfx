@@ -1,5 +1,5 @@
-#ifndef MOTIONBOX_CHROMIX_MIXPARAMETERMAP_H_
-#define MOTIONBOX_CHROMIX_MIXPARAMETERMAP_H_
+#ifndef MOTIONBOX_CHROMIX_PARAMETERMAP_H_
+#define MOTIONBOX_CHROMIX_PARAMETERMAP_H_
 
 #include "Parameter.h"
 
@@ -19,10 +19,10 @@ namespace Chromix {
 
 class MixRender;
 
-class MixParameterMap {
+class ParameterMap {
 public:
-    MixParameterMap();
-    virtual ~MixParameterMap() {};
+    ParameterMap();
+    virtual ~ParameterMap() {};
 
     void registerStringParameter(const WTF::String& name, const WTF::String& description);
     void registerImageParameter(const WTF::String& name, const WTF::String& description);
@@ -36,10 +36,10 @@ public:
     //XXX APIs to enumerate (keys and descriptions)
 
 private:
-    typedef WTF::HashMap<WTF::String, ImageParameter > ImageParamMap;
+    typedef WTF::HashMap<WTF::String, ImageParameter> ImageParamMap;
     ImageParamMap imageParamMap;
 
-    typedef WTF::HashMap<WTF::String, StringParameter > StringParamMap;
+    typedef WTF::HashMap<WTF::String, StringParameter> StringParamMap;
     StringParamMap stringParamMap;
 };
 

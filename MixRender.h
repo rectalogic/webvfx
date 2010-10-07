@@ -13,7 +13,7 @@ namespace WTF {
 
 namespace Chromix {
 
-class MixParameterMap;
+class ScriptingSupport;
 
 class MixRender {
 public:
@@ -27,15 +27,14 @@ public:
     unsigned char* writeableDataForImageParameter(const WTF::String& name, unsigned int width, unsigned int height);
 
     //XXX make these protected and friend to ChromixExtension?
-    static MixRender* fromWebView(WebKit::WebView* webView);
-    MixParameterMap* getParameterMap() { return parameterMap; }
+    static ScriptingSupport* scriptingSupportFromWebView(WebKit::WebView* webView);
 
 private:
     WebKit::WebView *webView;
     WebKit::WebSize size;
     skia::PlatformCanvas* skiaCanvas;
     MixRenderLoader loader;
-    MixParameterMap *parameterMap;
+    ScriptingSupport *scriptingSupport;
 };
     
 }

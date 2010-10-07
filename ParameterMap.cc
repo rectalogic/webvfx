@@ -1,22 +1,22 @@
-#include "MixParameterMap.h"
+#include "ParameterMap.h"
 
 #include <third_party/WebKit/WebCore/bindings/v8/V8Binding.h>
 #include <V8ImageData.h>
 
 
-Chromix::MixParameterMap::MixParameterMap() : imageParamMap(), stringParamMap()
+Chromix::ParameterMap::ParameterMap() : imageParamMap(), stringParamMap()
 {
 }
 
-void Chromix::MixParameterMap::registerStringParameter(const WTF::String& name, const WTF::String& description) {
+void Chromix::ParameterMap::registerStringParameter(const WTF::String& name, const WTF::String& description) {
     stringParamMap.set(name, Chromix::StringParameter(description));
 }
 
-void Chromix::MixParameterMap::registerImageParameter(const WTF::String& name, const WTF::String& description) {
+void Chromix::ParameterMap::registerImageParameter(const WTF::String& name, const WTF::String& description) {
     imageParamMap.set(name, Chromix::ImageParameter(description));
 }
 
-v8::Handle<v8::Value> Chromix::MixParameterMap::getImageParameterValue(const WTF::String& name) {
+v8::Handle<v8::Value> Chromix::ParameterMap::getImageParameterValue(const WTF::String& name) {
     if (imageParamMap.contains(name)) {
         ImageParameter param = imageParamMap.get(name);
         WebCore::ImageData *imageData = param.getValue();
@@ -26,7 +26,7 @@ v8::Handle<v8::Value> Chromix::MixParameterMap::getImageParameterValue(const WTF
     return v8::Undefined();
 }
 
-v8::Handle<v8::Value> Chromix::MixParameterMap::getStringParameterValue(const WTF::String& name) {
+v8::Handle<v8::Value> Chromix::ParameterMap::getStringParameterValue(const WTF::String& name) {
     if (stringParamMap.contains(name)) {
         StringParameter param = stringParamMap.get(name);
         return WebCore::v8String(param.getValue());
@@ -35,7 +35,7 @@ v8::Handle<v8::Value> Chromix::MixParameterMap::getStringParameterValue(const WT
 }
 
 // http://webkit.org/coding/RefPtr.html
-unsigned char* Chromix::MixParameterMap::writeableDataForImageParameter(const WTF::String& name, unsigned int width, unsigned int height) {
+unsigned char* Chromix::ParameterMap::writeableDataForImageParameter(const WTF::String& name, unsigned int width, unsigned int height) {
     // First check if this is a valid image param
     if (!imageParamMap.contains(name))
         return NULL;

@@ -1,5 +1,6 @@
 #include "MixRender.h"
-#include "MixParameterMap.h"
+#include "ScriptingSupport.h"
+#include "ParameterMap.h"
 
 #include <map>
 #include <third_party/WebKit/WebKit/chromium/public/WebView.h>
@@ -14,17 +15,18 @@
 #include <webkit/glue/webkit_glue.h>
 #include <skia/ext/bitmap_platform_device.h>
 
-
-typedef std::map<WebKit::WebView*, Chromix::MixRender*> ViewRenderMap;
-
+typedef std::map<WebKit::WebView*, Chromix::ScriptingSupport*> ViewScriptMap;
 
 Chromix::MixRender::MixRender() :
     size(),
     skiaCanvas(NULL),
     loader(),
-    parameterMap(new MixParameterMap())
+    scriptingSupport(new ScriptingSupport())
 {
     webView = WebKit::WebView::create(&loader, NULL);
+
+    // Register in map
+    Singleton<ViewScriptMap>::get()->insert(std::make_pair(webView, scriptingSupport));
 
     WebKit::WebSettings *settings = webView->settings();
     settings->setStandardFontFamily(WebKit::WebString("Times New Roman"));
@@ -55,23 +57,20 @@ Chromix::MixRender::MixRender() :
 
     webView->initializeMainFrame(&loader);
     //webView->mainFrame()->setCanHaveScrollbars(false);
-
-    // Register in map
-    Singleton<ViewRenderMap>::get()->insert(std::make_pair(webView, this));
 }
 
 Chromix::MixRender::~MixRender() {
     // Remove from map
-    Singleton<ViewRenderMap>::get()->erase(webView);
+    Singleton<ViewScriptMap>::get()->erase(webView);
     delete skiaCanvas;
-    delete parameterMap;
+    delete scriptingSupport;
     webView->close();
 }
 
 /*static*/
-Chromix::MixRender* Chromix::MixRender::fromWebView(WebKit::WebView* webView) {
-    ViewRenderMap* views = Singleton<ViewRenderMap>::get();
-    ViewRenderMap::iterator it = views->find(webView);
+Chromix::ScriptingSupport* Chromix::MixRender::scriptingSupportFromWebView(WebKit::WebView* webView) {
+    ViewScriptMap* views = Singleton<ViewScriptMap>::get();
+    ViewScriptMap::iterator it = views->find(webView);
     return it == views->end() ? NULL : it->second;
 }
 
@@ -109,6 +108,6 @@ const SkBitmap& Chromix::MixRender::render(float time) {
 }
 
 unsigned char* Chromix::MixRender::writeableDataForImageParameter(const WTF::String& name, unsigned int width, unsigned int height) {
-    return parameterMap->writeableDataForImageParameter(name, width, height);
+    return scriptingSupport->getParameterMap().writeableDataForImageParameter(name, width, height);
 }
 

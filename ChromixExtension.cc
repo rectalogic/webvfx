@@ -1,6 +1,7 @@
 #include "ChromixExtension.h"
 #include "MixRender.h"
-#include "MixParameterMap.h"
+#include "ScriptingSupport.h"
+#include "ParameterMap.h"
 
 #include <v8/include/v8.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebFrame.h>
@@ -67,43 +68,43 @@ public:
 
     static v8::Handle<v8::Value> RegisterStringParam(const v8::Arguments& args) {
         if (args.Length() >= 2 && args[0]->IsString() && args[1]->IsString()) {
-            Chromix::MixRender *mixRender = findMixRender();
-            if (mixRender)
-                mixRender->getParameterMap()->registerStringParameter(*v8::String::Utf8Value(args[0]), *v8::String::Utf8Value(args[1]));
+            Chromix::ScriptingSupport *scriptingSupport = findScriptingSupport();
+            if (scriptingSupport)
+                scriptingSupport->getParameterMap().registerStringParameter(*v8::String::Utf8Value(args[0]), *v8::String::Utf8Value(args[1]));
         }
         return v8::Undefined();
     }
 
     static v8::Handle<v8::Value> RegisterImageParam(const v8::Arguments& args) {
         if (args.Length() >= 2 && args[0]->IsString() && args[1]->IsString()) {
-            Chromix::MixRender *mixRender = findMixRender();
-            if (mixRender)
-                mixRender->getParameterMap()->registerImageParameter(*v8::String::Utf8Value(args[0]), *v8::String::Utf8Value(args[1]));
+            Chromix::ScriptingSupport *scriptingSupport = findScriptingSupport();
+            if (scriptingSupport)
+                scriptingSupport->getParameterMap().registerImageParameter(*v8::String::Utf8Value(args[0]), *v8::String::Utf8Value(args[1]));
         }
         return v8::Undefined();
     }
 
     static v8::Handle<v8::Value> GetStringParamValue(const v8::Arguments& args) {
         if (args.Length() >= 1 && args[0]->IsString()) {
-            Chromix::MixRender *mixRender = findMixRender();
-            if (mixRender)
-                return mixRender->getParameterMap()->getStringParameterValue(*v8::String::Utf8Value(args[0]));
+            Chromix::ScriptingSupport *scriptingSupport = findScriptingSupport();
+            if (scriptingSupport)
+                return scriptingSupport->getParameterMap().getStringParameterValue(*v8::String::Utf8Value(args[0]));
         }
         return v8::Undefined();
     }
 
     static v8::Handle<v8::Value> GetImageParamValue(const v8::Arguments& args) {
         if (args.Length() >= 1 && args[0]->IsString()) {
-            Chromix::MixRender *mixRender = findMixRender();
-            if (mixRender)
-                return mixRender->getParameterMap()->getImageParameterValue(*v8::String::Utf8Value(args[0]));
+            Chromix::ScriptingSupport *scriptingSupport = findScriptingSupport();
+            if (scriptingSupport)
+                return scriptingSupport->getParameterMap().getImageParameterValue(*v8::String::Utf8Value(args[0]));
         }
         return v8::Undefined();
     }
 
 private:
-    static Chromix::MixRender* findMixRender() {
-        return Chromix::MixRender::fromWebView(WebKit::WebFrame::frameForEnteredContext()->view());
+    static Chromix::ScriptingSupport* findScriptingSupport() {
+        return Chromix::MixRender::scriptingSupportFromWebView(WebKit::WebFrame::frameForEnteredContext()->view());
     }
 };
 
