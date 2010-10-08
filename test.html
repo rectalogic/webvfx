@@ -2,21 +2,24 @@
 <head>
 <script type="text/javascript">
 function render(time) {
-    var canvas = document.getElementById("imageCanvas");
-    var context = canvas.getContext('2d');
     var imageData = chromix.getImageParamValue('video');
     context.putImageData(imageData, 0, 0);
+    timeEl.innerHTML = time;
 }
 
 function init() {
     chromix.setRenderCallback(render);
     chromix.registerImageParam("video", "The video");
+    var canvas = document.getElementById("imageCanvas");
+    // globals
+    context = canvas.getContext('2d');
+    timeEl = document.getElementById("time");
 }
-window.onload = init;
+window.addEventListener("load", init, false);
 </script>
 </head>
 <body>
-    Canvas below<br/>
+    Canvas time <span id="time">unset</span><br/>
     <canvas id="imageCanvas" width="325" height="245" style="background-color: #0000FF;"></canvas>
 </body>
 </html>
