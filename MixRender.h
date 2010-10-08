@@ -22,7 +22,7 @@ public:
 
     bool loadURL(const std::string& url);
     void resize(int width, int height);
-    const SkBitmap& render(float time);
+    const SkBitmap& render(double time);
 
     unsigned char* writeableDataForImageParameter(const WTF::String& name, unsigned int width, unsigned int height);
 

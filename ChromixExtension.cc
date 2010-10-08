@@ -22,7 +22,8 @@ public:
                       "    chromix = {};"
                       "};"
                       "chromix.setRenderCallback = function(renderCallback) {"
-                      "    chromix.renderCallback = renderCallback;"
+                      "    native function SetRenderCallback();"
+                      "    SetRenderCallback(renderCallback);"
                       "};"
                       "chromix.registerStringParam = function(name, description) {"
                       "    native function RegisterStringParam();"
@@ -62,6 +63,9 @@ public:
         else if (name->Equals(v8::String::New("GetImageParamValue"))) {
             return v8::FunctionTemplate::New(GetImageParamValue);
         }
+        else if (name->Equals(v8::String::New("SetRenderCallback"))) {
+            return v8::FunctionTemplate::New(SetRenderCallback);
+        }
 
         return v8::Handle<v8::FunctionTemplate>();
     }
@@ -98,6 +102,15 @@ public:
             Chromix::ScriptingSupport *scriptingSupport = findScriptingSupport();
             if (scriptingSupport)
                 return scriptingSupport->getParameterMap().getImageParameterValue(*v8::String::Utf8Value(args[0]));
+        }
+        return v8::Undefined();
+    }
+
+    static v8::Handle<v8::Value> SetRenderCallback(const v8::Arguments& args) {
+        if (args.Length() >= 1 && args[0]->IsFunction()) {
+            Chromix::ScriptingSupport *scriptingSupport = findScriptingSupport();
+            if (scriptingSupport)
+                scriptingSupport->setRenderCallback(WebKit::WebFrame::frameForEnteredContext(), args[0]);
         }
         return v8::Undefined();
     }

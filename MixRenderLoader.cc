@@ -29,6 +29,8 @@ bool Chromix::MixRenderLoader::loadURL(WebKit::WebView *webView, const std::stri
         inMessageLoop = false;
     }
 
+    //XXX need to detect and handle JS errors in loaded page
+
     //XXX Probably need to do this periodically when rendering video frames
     //XXXcrashes webFrame->collectGarbage();
 

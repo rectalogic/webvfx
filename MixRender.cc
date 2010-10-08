@@ -9,7 +9,6 @@
 #include <third_party/WebKit/WebKit/chromium/public/WebURLRequest.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebRect.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebSettings.h>
-#include <third_party/WebKit/WebKit/chromium/public/WebScriptSource.h>//XXX only needed while we use executeScript()
 #include <third_party/WebKit/JavaScriptCore/wtf/text/WTFString.h>
 #include <base/singleton.h>
 #include <webkit/glue/webkit_glue.h>
@@ -21,7 +20,7 @@ Chromix::MixRender::MixRender() :
     size(),
     skiaCanvas(NULL),
     loader(),
-    scriptingSupport(new ScriptingSupport())
+    scriptingSupport(new Chromix::ScriptingSupport())
 {
     webView = WebKit::WebView::create(&loader, NULL);
 
@@ -84,20 +83,17 @@ void Chromix::MixRender::resize(int width, int height) {
     size.width = width;
     size.height = height;
     webView->resize(size);
-    // NULL out so we recreate in render()
+    // NULL out so we recreate canvas in render()
     delete skiaCanvas;
     skiaCanvas = NULL;
 }
 
-const SkBitmap& Chromix::MixRender::render(float time) {
+const SkBitmap& Chromix::MixRender::render(double time) {
     if (skiaCanvas == NULL)
         skiaCanvas = new skia::PlatformCanvas(size.width, size.height, true);
 
-    //XXX need to pass time argument, should hold v8::Function in a v8::Persistent
-    //XXX see WebCore::invokeCallback in V8CustomVoidCallback.cpp, V8TestCallback
-    const static WebKit::WebScriptSource s("chromix.renderCallback(0)");
-    //XXX call into JS chromix.renderCallback(time) - set flag allowing image param access
-    webView->mainFrame()->executeScript(s);
+    //XXX set flag allowing image param access (so only allowed while rendering)
+    scriptingSupport->invokeRenderCallback(time);
 
     webView->layout();
     webView->paint(webkit_glue::ToWebCanvas(skiaCanvas), WebKit::WebRect(0, 0, size.width, size.height));
