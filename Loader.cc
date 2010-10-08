@@ -1,4 +1,4 @@
-#include "MixRenderLoader.h"
+#include "Loader.h"
 
 #include <third_party/WebKit/WebKit/chromium/public/WebView.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebFrame.h>
@@ -7,14 +7,14 @@
 #include <base/message_loop.h>
 //#include <webkit/glue/webkit_glue.h>
 
-Chromix::MixRenderLoader::MixRenderLoader() :
+Chromix::Loader::Loader() :
     inMessageLoop(false),
     isLoadFinished(false),
     didLoadSucceed(false)
 {
 }
 
-bool Chromix::MixRenderLoader::loadURL(WebKit::WebView *webView, const std::string& url) {
+bool Chromix::Loader::loadURL(WebKit::WebView *webView, const std::string& url) {
     isLoadFinished = false;
     didLoadSucceed = false;
 
@@ -38,7 +38,7 @@ bool Chromix::MixRenderLoader::loadURL(WebKit::WebView *webView, const std::stri
 }
 
 
-void Chromix::MixRenderLoader::didStopLoading() {
+void Chromix::Loader::didStopLoading() {
     // This is called even after load failure, so don't reset flags if we already failed.
     if (!isLoadFinished) {
         isLoadFinished = true;
@@ -48,16 +48,16 @@ void Chromix::MixRenderLoader::didStopLoading() {
         MessageLoop::current()->Quit();
 }
 
-void Chromix::MixRenderLoader::didFailProvisionalLoad(WebKit::WebFrame* frame, const WebKit::WebURLError& error) {
+void Chromix::Loader::didFailProvisionalLoad(WebKit::WebFrame* frame, const WebKit::WebURLError& error) {
     handlLoadFailure(error);
 }
 
-void Chromix::MixRenderLoader::didFailLoad(WebKit::WebFrame* frame, const WebKit::WebURLError& error) {
+void Chromix::Loader::didFailLoad(WebKit::WebFrame* frame, const WebKit::WebURLError& error) {
     handlLoadFailure(error);
 }
 
-void Chromix::MixRenderLoader::handlLoadFailure(const WebKit::WebURLError& error) {
-    printf("Load failed %d\n", error.reason);
+void Chromix::Loader::handlLoadFailure(const WebKit::WebURLError& error) {
+    printf("Load failed %d\n", error.reason);//XXX need logging API
     isLoadFinished = true;
     didLoadSucceed = false;
     if (inMessageLoop)

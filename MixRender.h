@@ -1,7 +1,7 @@
 #ifndef MOTIONBOX_CHROMIX_MIXRENDER_H_
 #define MOTIONBOX_CHROMIX_MIXRENDER_H_
 
-#include "MixRenderLoader.h"
+#include "Loader.h"
 
 #include <string>
 #include <skia/ext/platform_canvas.h>
@@ -33,7 +33,7 @@ private:
     WebKit::WebView *webView;
     WebKit::WebSize size;
     skia::PlatformCanvas* skiaCanvas;
-    MixRenderLoader loader;
+    Loader loader;
     ScriptingSupport *scriptingSupport;
 };
     

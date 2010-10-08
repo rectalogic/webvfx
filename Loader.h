@@ -1,5 +1,5 @@
-#ifndef MOTIONBOX_CHROMIX_MIXRENDERLOADER_H_
-#define MOTIONBOX_CHROMIX_MIXRENDERLOADER_H_
+#ifndef MOTIONBOX_CHROMIX_LOADER_H_
+#define MOTIONBOX_CHROMIX_LOADER_H_
 
 #include <third_party/WebKit/WebKit/chromium/public/WebViewClient.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebFrameClient.h>
@@ -13,12 +13,12 @@ namespace WebKit {
 
 namespace Chromix {
     
-class MixRenderLoader : public WebKit::WebFrameClient,
-                        public WebKit::WebViewClient
+class Loader : public WebKit::WebFrameClient,
+               public WebKit::WebViewClient
 {
 public:
-    MixRenderLoader();
-    virtual ~MixRenderLoader() {};
+    Loader();
+    virtual ~Loader() {};
     
     bool loadURL(WebKit::WebView *webView, const std::string& url);
 
