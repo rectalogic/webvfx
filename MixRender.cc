@@ -88,19 +88,20 @@ void Chromix::MixRender::resize(int width, int height) {
     skiaCanvas = NULL;
 }
 
-const SkBitmap& Chromix::MixRender::render(double time) {
+const SkBitmap* Chromix::MixRender::render(double time) {
     if (skiaCanvas == NULL)
         skiaCanvas = new skia::PlatformCanvas(size.width, size.height, true);
 
     //XXX set flag allowing image param access (so only allowed while rendering)
-    scriptingSupport->invokeRenderCallback(time);
+    if (!scriptingSupport->invokeRenderCallback(time))
+        return NULL;
 
     webView->layout();
     webView->paint(webkit_glue::ToWebCanvas(skiaCanvas), WebKit::WebRect(0, 0, size.width, size.height));
 
     // Get canvas bitmap
     skia::BitmapPlatformDevice &skiaDevice = static_cast<skia::BitmapPlatformDevice&>(skiaCanvas->getTopPlatformDevice());
-    return skiaDevice.accessBitmap(false);
+    return &skiaDevice.accessBitmap(false);
 }
 
 unsigned char* Chromix::MixRender::writeableDataForImageParameter(const WTF::String& name, unsigned int width, unsigned int height) {

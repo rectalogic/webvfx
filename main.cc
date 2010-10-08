@@ -25,14 +25,16 @@ int chromix_main(int argc, const char * argv[]) {
         data[i+3] = 0xff; //alpha
     }
 
-    const SkBitmap &skiaBitmap = mixRender.render(0);
+    const SkBitmap* skiaBitmap = mixRender.render(0);
+    if (!skiaBitmap)
+        return -1;
 
     // Encode pixel data to PNG.
     std::vector<unsigned char> pngData;
-    SkAutoLockPixels bitmapLock(skiaBitmap);
-    gfx::PNGCodec::Encode(reinterpret_cast<const unsigned char*>(skiaBitmap.getPixels()),
-                          gfx::PNGCodec::FORMAT_BGRA, skiaBitmap.width(), skiaBitmap.height(),
-                          static_cast<int>(skiaBitmap.rowBytes()), false, &pngData);
+    SkAutoLockPixels bitmapLock(*skiaBitmap);
+    gfx::PNGCodec::Encode(reinterpret_cast<const unsigned char*>(skiaBitmap->getPixels()),
+                          gfx::PNGCodec::FORMAT_BGRA, skiaBitmap->width(), skiaBitmap->height(),
+                          static_cast<int>(skiaBitmap->rowBytes()), false, &pngData);
 
     // Write to disk.
     std::ofstream pngFile;
