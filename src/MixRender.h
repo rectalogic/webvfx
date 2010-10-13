@@ -20,6 +20,8 @@ public:
     MixRender();
     virtual ~MixRender();
 
+    void setLogger(LogCallback logger, const void* data = NULL) { loader.setLogger(logger, data); }
+
     bool loadURL(const std::string& url);
     void resize(int width, int height);
     const SkBitmap* render(double time);

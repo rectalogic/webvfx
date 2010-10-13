@@ -9,6 +9,10 @@
 
 #include <third_party/WebKit/JavaScriptCore/wtf/text/WTFString.h>
 
+void chromix_log(const std::string& msg, const void*) {
+    std::cerr << msg << std::endl;
+}
+
 int chromix_main(int argc, const char * argv[]) {
     if (argc != 2) {
         std::cerr << "Missing html template";
@@ -16,6 +20,7 @@ int chromix_main(int argc, const char * argv[]) {
     }
     Chromix::MixKit mixKit(argc, argv);
     Chromix::MixRender mixRender;
+    mixRender.setLogger(chromix_log);
     mixRender.resize(800, 600);
 
     if (!mixRender.loadURL(argv[1]))

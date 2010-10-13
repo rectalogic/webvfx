@@ -10,8 +10,15 @@
 Chromix::Loader::Loader() :
     inMessageLoop(false),
     isLoadFinished(false),
-    didLoadSucceed(false)
+    didLoadSucceed(false),
+    logger(NULL),
+    logData(NULL)
 {
+}
+
+void Chromix::Loader::setLogger(LogCallback logger, const void* data) {
+    this->logger = logger;
+    this->logData = data;
 }
 
 bool Chromix::Loader::loadURL(WebKit::WebView *webView, const std::string& url) {
@@ -46,10 +53,9 @@ void Chromix::Loader::didStopLoading() {
         MessageLoop::current()->Quit();
 }
 
-#include <iostream>//XXX
 void Chromix::Loader::didAddMessageToConsole(const WebKit::WebConsoleMessage& message, const WebKit::WebString& sourceName, unsigned sourceLine) {
-    //XXX append to list and expose via API?
-    std::cout << std::string(message.text.utf8()) << std::endl;
+    if (logger)
+        logger(std::string(message.text.utf8()), logData);
 }
 
 void Chromix::Loader::didFailProvisionalLoad(WebKit::WebFrame* frame, const WebKit::WebURLError& error) {
