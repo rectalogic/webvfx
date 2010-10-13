@@ -24,6 +24,8 @@ int chromix_main(int argc, const char * argv[]) {
     const int MaxFrames = 20;
     for (int f = 0; f < MaxFrames; f++) {
         unsigned char* data = mixRender.writeableDataForImageParameter(WTF::String("video"), 320, 240);
+        if (!data)
+            return -1;
         for (unsigned int i = 0; i < 320*240*4; i += 4) {
             data[i] = 0xff * ((double)f / MaxFrames); //shade of red
             data[i+3] = 0xff; //alpha

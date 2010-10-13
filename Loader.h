@@ -8,6 +8,7 @@ namespace WebKit {
     class WebFrame;
     class WebURLError;
     class WebView;
+    class WebConsoleMessage;
 }
 
 
@@ -25,6 +26,7 @@ public:
 protected:
     // WebKit::WebViewClient
     virtual void didStopLoading();
+    virtual void didAddMessageToConsole(const WebKit::WebConsoleMessage&, const WebKit::WebString& sourceName, unsigned sourceLine);
     // WebKit::WebFrameClient
     virtual void didFailProvisionalLoad(WebKit::WebFrame*, const WebKit::WebURLError&);
     virtual void didFailLoad(WebKit::WebFrame*, const WebKit::WebURLError&);

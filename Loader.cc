@@ -2,10 +2,10 @@
 
 #include <third_party/WebKit/WebKit/chromium/public/WebView.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebFrame.h>
+#include <third_party/WebKit/WebKit/chromium/public/WebConsoleMessage.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebURLRequest.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebURLError.h>
 #include <base/message_loop.h>
-//#include <webkit/glue/webkit_glue.h>
 
 Chromix::Loader::Loader() :
     inMessageLoop(false),
@@ -29,8 +29,6 @@ bool Chromix::Loader::loadURL(WebKit::WebView *webView, const std::string& url) 
         inMessageLoop = false;
     }
 
-    //XXX need to detect and handle JS errors in loaded page
-
     //XXX Probably need to do this periodically when rendering video frames
     //XXXcrashes webFrame->collectGarbage();
 
@@ -48,6 +46,12 @@ void Chromix::Loader::didStopLoading() {
         MessageLoop::current()->Quit();
 }
 
+#include <iostream>//XXX
+void Chromix::Loader::didAddMessageToConsole(const WebKit::WebConsoleMessage& message, const WebKit::WebString& sourceName, unsigned sourceLine) {
+    //XXX append to list and expose via API?
+    std::cout << std::string(message.text.utf8()) << std::endl;
+}
+
 void Chromix::Loader::didFailProvisionalLoad(WebKit::WebFrame* frame, const WebKit::WebURLError& error) {
     handlLoadFailure(error);
 }
@@ -57,7 +61,6 @@ void Chromix::Loader::didFailLoad(WebKit::WebFrame* frame, const WebKit::WebURLE
 }
 
 void Chromix::Loader::handlLoadFailure(const WebKit::WebURLError& error) {
-    printf("Load failed %d\n", error.reason);//XXX need logging API
     isLoadFinished = true;
     didLoadSucceed = false;
     if (inMessageLoop)

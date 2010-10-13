@@ -56,6 +56,8 @@ Chromix::MixRender::MixRender() :
 
     webView->initializeMainFrame(&loader);
     //webView->mainFrame()->setCanHaveScrollbars(false);
+
+    scriptingSupport->initialize(webView->mainFrame());
 }
 
 Chromix::MixRender::~MixRender() {
@@ -74,7 +76,7 @@ Chromix::ScriptingSupport* Chromix::MixRender::scriptingSupportFromWebView(WebKi
 }
 
 bool Chromix::MixRender::loadURL(const std::string& url) {
-    return loader.loadURL(webView, url);
+    return loader.loadURL(webView, url) && scriptingSupport->hasRenderCallback();
 }
 
 void Chromix::MixRender::resize(int width, int height) {

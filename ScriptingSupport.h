@@ -16,9 +16,12 @@ public:
     ScriptingSupport();
     virtual ~ScriptingSupport();
 
+    void initialize(WebKit::WebFrame* webFrame);
+
     ParameterMap& getParameterMap() { return parameterMap; }
 
-    void setRenderCallback(WebKit::WebFrame* webFrame, v8::Handle<v8::Value> callbackFunction);
+    void setRenderCallback(v8::Handle<v8::Value> callbackFunction);
+    bool hasRenderCallback() { return renderCallback.hasNoValue(); }
     bool invokeRenderCallback(double time);
 
 private:

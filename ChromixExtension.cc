@@ -110,7 +110,7 @@ public:
         if (args.Length() >= 1 && args[0]->IsFunction()) {
             Chromix::ScriptingSupport *scriptingSupport = findScriptingSupport();
             if (scriptingSupport)
-                scriptingSupport->setRenderCallback(WebKit::WebFrame::frameForEnteredContext(), args[0]);
+                scriptingSupport->setRenderCallback(args[0]);
         }
         return v8::Undefined();
     }
