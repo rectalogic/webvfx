@@ -1,5 +1,4 @@
 #include "ChromixExtension.h"
-#include "MixRender.h"
 #include "ScriptingSupport.h"
 #include "ParameterMap.h"
 
@@ -117,7 +116,7 @@ public:
 
 private:
     static Chromix::ScriptingSupport* findScriptingSupport() {
-        return Chromix::MixRender::scriptingSupportFromWebView(WebKit::WebFrame::frameForEnteredContext()->view());
+        return Chromix::ScriptingSupport::fromWebView(WebKit::WebFrame::frameForEnteredContext()->view());
     }
 };
 

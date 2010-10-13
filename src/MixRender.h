@@ -26,9 +26,6 @@ public:
 
     unsigned char* writeableDataForImageParameter(const WTF::String& name, unsigned int width, unsigned int height);
 
-    //XXX make these protected and friend to ChromixExtension?
-    static ScriptingSupport* scriptingSupportFromWebView(WebKit::WebView* webView);
-
 private:
     WebKit::WebView *webView;
     WebKit::WebSize size;

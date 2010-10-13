@@ -2,7 +2,6 @@
 #include "ScriptingSupport.h"
 #include "ParameterMap.h"
 
-#include <map>
 #include <third_party/WebKit/WebKit/chromium/public/WebView.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebFrame.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebURL.h>
@@ -10,11 +9,9 @@
 #include <third_party/WebKit/WebKit/chromium/public/WebRect.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebSettings.h>
 #include <third_party/WebKit/JavaScriptCore/wtf/text/WTFString.h>
-#include <base/singleton.h>
 #include <webkit/glue/webkit_glue.h>
 #include <skia/ext/bitmap_platform_device.h>
 
-typedef std::map<WebKit::WebView*, Chromix::ScriptingSupport*> ViewScriptMap;
 
 Chromix::MixRender::MixRender() :
     size(),
@@ -23,9 +20,6 @@ Chromix::MixRender::MixRender() :
     scriptingSupport(new Chromix::ScriptingSupport())
 {
     webView = WebKit::WebView::create(&loader, NULL);
-
-    // Register in map
-    Singleton<ViewScriptMap>::get()->insert(std::make_pair(webView, scriptingSupport));
 
     WebKit::WebSettings *settings = webView->settings();
     settings->setStandardFontFamily(WebKit::WebString("Times New Roman"));
@@ -57,22 +51,13 @@ Chromix::MixRender::MixRender() :
     webView->initializeMainFrame(&loader);
     //webView->mainFrame()->setCanHaveScrollbars(false);
 
-    scriptingSupport->initialize(webView->mainFrame());
+    scriptingSupport->initialize(webView);
 }
 
 Chromix::MixRender::~MixRender() {
-    // Remove from map
-    Singleton<ViewScriptMap>::get()->erase(webView);
     delete skiaCanvas;
     delete scriptingSupport;
     webView->close();
-}
-
-/*static*/
-Chromix::ScriptingSupport* Chromix::MixRender::scriptingSupportFromWebView(WebKit::WebView* webView) {
-    ViewScriptMap* views = Singleton<ViewScriptMap>::get();
-    ViewScriptMap::iterator it = views->find(webView);
-    return it == views->end() ? NULL : it->second;
 }
 
 bool Chromix::MixRender::loadURL(const std::string& url) {

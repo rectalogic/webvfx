@@ -4,7 +4,7 @@
 #include "ParameterMap.h"
 
 #include <v8/include/v8.h>
-#include <third_party/WebKit/WebKit/chromium/public/WebFrame.h>
+#include <third_party/WebKit/WebKit/chromium/public/WebView.h>
 #include <third_party/WebKit/WebCore/bindings/v8/ScriptState.h>
 #include <third_party/WebKit/WebCore/bindings/v8/ScriptValue.h>
 #include <third_party/WebKit/WebCore/bindings/v8/ScriptFunctionCall.h>
@@ -16,15 +16,19 @@ public:
     ScriptingSupport();
     virtual ~ScriptingSupport();
 
-    void initialize(WebKit::WebFrame* webFrame);
+    static ScriptingSupport* fromWebView(WebKit::WebView* webView);
+
+    // webView must have its mainFrame created
+    void initialize(WebKit::WebView* webView);
 
     ParameterMap& getParameterMap() { return parameterMap; }
 
     void setRenderCallback(v8::Handle<v8::Value> callbackFunction);
-    bool hasRenderCallback() { return renderCallback.hasNoValue(); }
+    bool hasRenderCallback() { return !renderCallback.hasNoValue(); }
     bool invokeRenderCallback(double time);
 
 private:
+    WebKit::WebView *webView;
     ParameterMap parameterMap;
     WebCore::ScriptState *scriptState;
     WebCore::ScriptValue renderCallback;
