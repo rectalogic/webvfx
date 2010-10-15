@@ -3,6 +3,7 @@
 #include "ChromixExtension.h"
 
 #include <base/command_line.h>
+#include <app/gfx/gl/gl_implementation.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebKit.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebRuntimeFeatures.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebScriptController.h>
@@ -32,6 +33,7 @@ Chromix::MixKitPrivate::MixKitPrivate(int argc, const char* argv[]) :
 #if defined(OS_MACOSX)
     InitWebCoreSystemInterface();
 #endif
+    gfx::InitializeGLBindings(gfx::kGLImplementationOSMesaGL);
     WebKit::WebRuntimeFeatures::enableWebGL(true);
 
     WebKit::WebScriptController::enableV8SingleThreadMode();
