@@ -2,7 +2,7 @@
   'targets': [
     {
       'target_name': 'chromix',
-      'type': 'executable',
+      'type': '<(library)',
       'variables': {
         'chromium_code': 1,
       },
@@ -13,9 +13,6 @@
         '<(DEPTH)/webkit/support/webkit_support.gyp:webkit_support',
       ],
       'sources': [
-        'src/main.cc',
-        'src/main_mac.mm',
-        'src/main_linux.cc',
         'src/MixKit.h',
         'src/MixKitPrivate.h',
         'src/MixKit.cc',
@@ -32,6 +29,25 @@
         'src/WebKitClientImpl.h',
         'src/ChromixExtension.h',
         'src/ChromixExtension.cc',
+      ],
+    },
+    {
+      'target_name': 'chromix_test',
+      'type': 'executable',
+      'variables': {
+        'chromium_code': 1,
+      },
+      'dependencies': [
+        'chromix',
+        '<(DEPTH)/third_party/WebKit/WebCore/WebCore.gyp/WebCore.gyp:webcore',
+      ],
+      'include_dirs': [
+        'src',
+      ],
+      'sources': [
+        'test/main.cc',
+        'test/main_mac.mm',
+        'test/main_linux.cc',
       ],
     },
   ]
