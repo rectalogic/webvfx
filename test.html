@@ -2,6 +2,7 @@
 <head>
 <script type="text/javascript">
 function render(time) {
+    console.log("rendering " + time);
     var imageData = chromix.getImageParamValue('video');
     context.putImageData(imageData, 0, 0);
     timeEl.innerHTML = time;
