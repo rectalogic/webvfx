@@ -2,6 +2,6 @@
 # On Linux, this will add our target to ${CHROMIUM_ROOT}/src/Makefile
 # so build using that.
 
-# Currently building with Chromium r61963
+# Currently building with Chromium r62565
 
 ${CHROMIUM_ROOT}/src/build/gyp_chromium --toplevel-dir=${CHROMIUM_ROOT}/src --depth=${CHROMIUM_ROOT}/src chromix.gyp
