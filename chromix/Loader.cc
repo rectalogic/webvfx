@@ -1,4 +1,4 @@
-#include "Loader.h"
+#include "chromix/Loader.h"
 
 #include <third_party/WebKit/WebKit/chromium/public/WebView.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebFrame.h>

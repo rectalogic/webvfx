@@ -1,7 +1,7 @@
 #ifndef MOTIONBOX_CHROMIX_MIXRENDER_H_
 #define MOTIONBOX_CHROMIX_MIXRENDER_H_
 
-#include "Loader.h"
+#include "chromix/Loader.h"
 
 #include <string>
 #include <base/basictypes.h>

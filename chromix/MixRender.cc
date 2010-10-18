@@ -1,6 +1,6 @@
-#include "MixRender.h"
-#include "ScriptingSupport.h"
-#include "ParameterMap.h"
+#include "chromix/MixRender.h"
+#include "chromix/ScriptingSupport.h"
+#include "chromix/ParameterMap.h"
 
 #include <third_party/WebKit/WebKit/chromium/public/WebView.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebFrame.h>

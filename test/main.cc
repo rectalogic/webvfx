@@ -3,8 +3,8 @@
 #include <sstream>
 #include <iomanip>
 
-#include "MixKit.h"
-#include "MixRender.h"
+#include "chromix/MixKit.h"
+#include "chromix/MixRender.h"
 #include <gfx/codec/png_codec.h>
 
 #include <third_party/WebKit/JavaScriptCore/wtf/text/WTFString.h>

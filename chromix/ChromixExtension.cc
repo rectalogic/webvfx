@@ -1,6 +1,6 @@
-#include "ChromixExtension.h"
-#include "ScriptingSupport.h"
-#include "ParameterMap.h"
+#include "chromix/ChromixExtension.h"
+#include "chromix/ScriptingSupport.h"
+#include "chromix/ParameterMap.h"
 
 #include <v8/include/v8.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebFrame.h>

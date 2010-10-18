@@ -1,4 +1,4 @@
-#include "ParameterMap.h"
+#include "chromix/ParameterMap.h"
 
 #include <third_party/WebKit/WebCore/bindings/v8/V8Binding.h>
 #include <V8ImageData.h>

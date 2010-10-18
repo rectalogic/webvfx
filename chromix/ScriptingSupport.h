@@ -1,7 +1,7 @@
 #ifndef MOTIONBOX_CHROMIX_SCRIPTINGSUPPORT_H_
 #define MOTIONBOX_CHROMIX_SCRIPTINGSUPPORT_H_
 
-#include "ParameterMap.h"
+#include "chromix/ParameterMap.h"
 
 #include <base/basictypes.h>
 #include <v8/include/v8.h>

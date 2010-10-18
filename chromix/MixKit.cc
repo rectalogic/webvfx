@@ -1,6 +1,6 @@
-#include "MixKit.h"
-#include "MixKitPrivate.h"
-#include "ChromixExtension.h"
+#include "chromix/MixKit.h"
+#include "chromix/MixKitPrivate.h"
+#include "chromix/ChromixExtension.h"
 
 #include <base/command_line.h>
 #include <app/gfx/gl/gl_implementation.h>

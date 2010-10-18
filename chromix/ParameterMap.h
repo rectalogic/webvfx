@@ -1,7 +1,7 @@
 #ifndef MOTIONBOX_CHROMIX_PARAMETERMAP_H_
 #define MOTIONBOX_CHROMIX_PARAMETERMAP_H_
 
-#include "Parameter.h"
+#include "chromix/Parameter.h"
 
 #include <third_party/WebKit/WebCore/config.h>
 #include <third_party/WebKit/WebCore/html/ImageData.h>

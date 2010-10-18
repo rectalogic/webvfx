@@ -1,7 +1,7 @@
 #ifndef MOTIONBOX_CHROMIX_MIXKITPRIVATE_H_
 #define MOTIONBOX_CHROMIX_MIXKITPRIVATE_H_
 
-#include "WebKitClientImpl.h"
+#include "chromix/WebKitClientImpl.h"
 
 #include <base/message_loop.h>
 #include <base/at_exit.h>
