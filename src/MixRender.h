@@ -4,6 +4,7 @@
 #include "Loader.h"
 
 #include <string>
+#include <base/basictypes.h>
 #include <skia/ext/platform_canvas.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebSize.h>
 
@@ -34,6 +35,8 @@ private:
     skia::PlatformCanvas* skiaCanvas;
     Loader loader;
     ScriptingSupport *scriptingSupport;
+
+    DISALLOW_COPY_AND_ASSIGN(MixRender);
 };
     
 }
