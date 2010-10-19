@@ -41,13 +41,6 @@ public:
                       "    return GetImageParamValue(name);"
                       "};"
                       ) {}
-    //XXX add chromix.log() method so user can manage error output?
-
-    //XXX getting image/time based params should only be valid when responding to RenderEvent/callback (set flag and check we are rendering)
-    //XXX static params should be gotten up front right after registering them??
-    //XXX or series of chromix.registerStringParam(name, desc) and chromix.registerImageDataParam(name, desc) and single chromix.registerMix(name, renderCallback)
-    //XXX and chromix.getStringParam(name) chromix.getImageDataParam(name)
-    //XXX std::string name = std::string(*v8::String::Utf8Value(args[0])), also see v8StringToWebCoreString
 
     virtual v8::Handle<v8::FunctionTemplate> GetNativeFunction(v8::Handle<v8::String> name) {
         if (name->Equals(v8::String::New("RegisterStringParam"))) {
@@ -73,7 +66,7 @@ public:
         if (args.Length() >= 2 && args[0]->IsString() && args[1]->IsString()) {
             Chromix::ScriptingSupport *scriptingSupport = findScriptingSupport();
             if (scriptingSupport)
-                scriptingSupport->getParameterMap().registerStringParameter(*v8::String::Utf8Value(args[0]), *v8::String::Utf8Value(args[1]));
+                scriptingSupport->getParameterMap().registerStringParameter(*v8::String::Value(args[0]), *v8::String::Value(args[1]));
         }
         return v8::Undefined();
     }
@@ -82,7 +75,7 @@ public:
         if (args.Length() >= 2 && args[0]->IsString() && args[1]->IsString()) {
             Chromix::ScriptingSupport *scriptingSupport = findScriptingSupport();
             if (scriptingSupport)
-                scriptingSupport->getParameterMap().registerImageParameter(*v8::String::Utf8Value(args[0]), *v8::String::Utf8Value(args[1]));
+                scriptingSupport->getParameterMap().registerImageParameter(*v8::String::Value(args[0]), *v8::String::Value(args[1]));
         }
         return v8::Undefined();
     }
@@ -91,7 +84,7 @@ public:
         if (args.Length() >= 1 && args[0]->IsString()) {
             Chromix::ScriptingSupport *scriptingSupport = findScriptingSupport();
             if (scriptingSupport)
-                return scriptingSupport->getParameterMap().getStringParameterValue(*v8::String::Utf8Value(args[0]));
+                return scriptingSupport->getParameterMap().getStringParameterValue(*v8::String::Value(args[0]));
         }
         return v8::Undefined();
     }
@@ -100,7 +93,7 @@ public:
         if (args.Length() >= 1 && args[0]->IsString()) {
             Chromix::ScriptingSupport *scriptingSupport = findScriptingSupport();
             if (scriptingSupport)
-                return scriptingSupport->getParameterMap().getImageParameterValue(*v8::String::Utf8Value(args[0]));
+                return scriptingSupport->getParameterMap().getImageParameterValue(*v8::String::Value(args[0]));
         }
         return v8::Undefined();
     }

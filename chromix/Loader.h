@@ -11,10 +11,9 @@ namespace WebKit {
     class WebConsoleMessage;
 }
 
-
 namespace Chromix {
 
-typedef void(*LogCallback)(const std::string&, const void* data);
+typedef void(*LogCallback)(string16 const&, const void* data);
 
 class Loader : public WebKit::WebFrameClient,
                public WebKit::WebViewClient
@@ -24,7 +23,7 @@ public:
     virtual ~Loader() {};
 
     void setLogger(LogCallback logger, const void* data);
-    bool loadURL(WebKit::WebView *webView, const std::string& url);
+    bool loadURL(WebKit::WebView *webView, string16 const& url);
 
 protected:
     // WebKit::WebViewClient

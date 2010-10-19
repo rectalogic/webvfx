@@ -2,6 +2,7 @@
 #include "chromix/ScriptingSupport.h"
 #include "chromix/ParameterMap.h"
 
+#include <base/string16.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebView.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebFrame.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebURL.h>
@@ -60,8 +61,8 @@ Chromix::MixRender::~MixRender() {
     webView->close();
 }
 
-bool Chromix::MixRender::loadURL(const std::string& url) {
-    return loader.loadURL(webView, url) && scriptingSupport->hasRenderCallback();
+bool Chromix::MixRender::loadURL(WTF::String const& url) {
+    return loader.loadURL(webView, string16(url.characters(), url.length())) && scriptingSupport->hasRenderCallback();
 }
 
 void Chromix::MixRender::resize(int width, int height) {
@@ -91,7 +92,7 @@ const SkBitmap* Chromix::MixRender::render(double time) {
     return &skiaDevice.accessBitmap(false);
 }
 
-unsigned char* Chromix::MixRender::writeableDataForImageParameter(const WTF::String& name, unsigned int width, unsigned int height) {
+unsigned char* Chromix::MixRender::writeableDataForImageParameter(WTF::String const& name, unsigned int width, unsigned int height) {
     return scriptingSupport->getParameterMap().writeableDataForImageParameter(name, width, height);
 }
 

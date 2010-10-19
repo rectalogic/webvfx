@@ -8,15 +8,15 @@ Chromix::ParameterMap::ParameterMap() : imageParamMap(), stringParamMap()
 {
 }
 
-void Chromix::ParameterMap::registerStringParameter(const WTF::String& name, const WTF::String& description) {
+void Chromix::ParameterMap::registerStringParameter(WTF::String const& name, WTF::String const& description) {
     stringParamMap.set(name, Chromix::StringParameter(description));
 }
 
-void Chromix::ParameterMap::registerImageParameter(const WTF::String& name, const WTF::String& description) {
+void Chromix::ParameterMap::registerImageParameter(WTF::String const& name, WTF::String const& description) {
     imageParamMap.set(name, Chromix::ImageParameter(description));
 }
 
-v8::Handle<v8::Value> Chromix::ParameterMap::getImageParameterValue(const WTF::String& name) {
+v8::Handle<v8::Value> Chromix::ParameterMap::getImageParameterValue(WTF::String const& name) {
     if (imageParamMap.contains(name)) {
         ImageParameter param = imageParamMap.get(name);
         WebCore::ImageData *imageData = param.getValue();
@@ -26,7 +26,7 @@ v8::Handle<v8::Value> Chromix::ParameterMap::getImageParameterValue(const WTF::S
     return v8::Undefined();
 }
 
-v8::Handle<v8::Value> Chromix::ParameterMap::getStringParameterValue(const WTF::String& name) {
+v8::Handle<v8::Value> Chromix::ParameterMap::getStringParameterValue(WTF::String const& name) {
     if (stringParamMap.contains(name)) {
         StringParameter param = stringParamMap.get(name);
         return WebCore::v8String(param.getValue());
@@ -35,7 +35,7 @@ v8::Handle<v8::Value> Chromix::ParameterMap::getStringParameterValue(const WTF::
 }
 
 // http://webkit.org/coding/RefPtr.html
-unsigned char* Chromix::ParameterMap::writeableDataForImageParameter(const WTF::String& name, unsigned int width, unsigned int height) {
+unsigned char* Chromix::ParameterMap::writeableDataForImageParameter(WTF::String const& name, unsigned int width, unsigned int height) {
     // First check if this is a valid image param
     if (!imageParamMap.contains(name))
         return NULL;

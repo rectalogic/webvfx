@@ -3,8 +3,8 @@
 
 #include "chromix/Loader.h"
 
-#include <string>
 #include <base/basictypes.h>
+#include <base/string16.h>
 #include <skia/ext/platform_canvas.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebSize.h>
 
@@ -23,11 +23,11 @@ public:
 
     void setLogger(LogCallback logger, const void* data = NULL) { loader.setLogger(logger, data); }
 
-    bool loadURL(const std::string& url);
+    bool loadURL(WTF::String const& url);
     void resize(int width, int height);
     const SkBitmap* render(double time);
 
-    unsigned char* writeableDataForImageParameter(const WTF::String& name, unsigned int width, unsigned int height);
+    unsigned char* writeableDataForImageParameter(WTF::String const& name, unsigned int width, unsigned int height);
 
 private:
     WebKit::WebView *webView;

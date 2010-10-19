@@ -2,9 +2,10 @@
 
 #include <third_party/WebKit/WebKit/chromium/public/WebView.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebFrame.h>
-#include <third_party/WebKit/WebKit/chromium/public/WebConsoleMessage.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebURLRequest.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebURLError.h>
+#include <third_party/WebKit/WebKit/chromium/public/WebConsoleMessage.h>
+#include <base/string16.h>
 #include <base/message_loop.h>
 
 Chromix::Loader::Loader() :
@@ -21,7 +22,7 @@ void Chromix::Loader::setLogger(LogCallback logger, const void* data) {
     this->logData = data;
 }
 
-bool Chromix::Loader::loadURL(WebKit::WebView *webView, const std::string& url) {
+bool Chromix::Loader::loadURL(WebKit::WebView *webView, string16 const& url) {
     isLoadFinished = false;
     didLoadSucceed = false;
 
@@ -42,6 +43,10 @@ bool Chromix::Loader::loadURL(WebKit::WebView *webView, const std::string& url) 
     return didLoadSucceed;
 }
 
+void Chromix::Loader::didAddMessageToConsole(const WebKit::WebConsoleMessage& message, const WebKit::WebString& sourceName, unsigned sourceLine) {
+    if (logger)
+        logger(string16(message.text), logData);
+}
 
 void Chromix::Loader::didStopLoading() {
     // This is called even after load failure, so don't reset flags if we already failed.
@@ -51,11 +56,6 @@ void Chromix::Loader::didStopLoading() {
     }
     if (inMessageLoop)
         MessageLoop::current()->Quit();
-}
-
-void Chromix::Loader::didAddMessageToConsole(const WebKit::WebConsoleMessage& message, const WebKit::WebString& sourceName, unsigned sourceLine) {
-    if (logger)
-        logger(std::string(message.text.utf8()), logData);
 }
 
 void Chromix::Loader::didFailProvisionalLoad(WebKit::WebFrame* frame, const WebKit::WebURLError& error) {

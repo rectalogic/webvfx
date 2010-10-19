@@ -10,10 +10,10 @@ namespace Chromix {
 class Parameter {
 public:
     Parameter() {};
-    Parameter(const WTF::String& description);
+    Parameter(WTF::String const& description) : description(description) {}
     virtual ~Parameter() {};
 
-    WTF::String getDescription() { return description; }
+    const WTF::String getDescription() { return description; }
 
 private:
     WTF::String description;
@@ -23,7 +23,7 @@ private:
 class ImageParameter : public Parameter {
 public:
     ImageParameter() {};
-    ImageParameter(const WTF::String& description) : Parameter(description) {};
+    ImageParameter(WTF::String const& description) : Parameter(description) {};
 
     virtual ~ImageParameter() {};
     void setValue(WTF::PassRefPtr<WebCore::ImageData> value) { imageDataValue = value; }
@@ -37,11 +37,11 @@ private:
 class StringParameter : public Parameter {
 public:
     StringParameter() {};
-    StringParameter(const WTF::String& description) : Parameter(description) {};
+    StringParameter(WTF::String const& description) : Parameter(description) {};
 
     virtual ~StringParameter() {};
-    void setValue(WTF::String& value) { stringValue = value; }
-    WTF::String getValue() { return stringValue; }
+    void setValue(WTF::String const& value) { stringValue = value; }
+    const WTF::String getValue() { return stringValue; }
 
 private:
     WTF::String stringValue;

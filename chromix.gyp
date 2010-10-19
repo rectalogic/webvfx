@@ -26,7 +26,6 @@
         'chromix/ParameterMap.h',
         'chromix/ParameterMap.cc',
         'chromix/Parameter.h',
-        'chromix/Parameter.cc',
         'chromix/ScriptingSupport.h',
         'chromix/ScriptingSupport.cc',
         'chromix/WebKitClientImpl.h',

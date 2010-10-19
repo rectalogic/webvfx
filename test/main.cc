@@ -7,9 +7,10 @@
 #include "chromix/MixRender.h"
 #include <gfx/codec/png_codec.h>
 
+#include <base/string16.h>
 #include <third_party/WebKit/JavaScriptCore/wtf/text/WTFString.h>
 
-void chromix_log(const std::string& msg, const void*) {
+void chromix_log(string16 const& msg, const void*) {
     std::cerr << msg << std::endl;
 }
 
@@ -23,12 +24,13 @@ int chromix_main(int argc, const char * argv[]) {
     mixRender.setLogger(chromix_log);
     mixRender.resize(800, 600);
 
-    if (!mixRender.loadURL(argv[1]))
+    if (!mixRender.loadURL(WTF::String::fromUTF8(argv[1])))
         return -1;
 
     const int MaxFrames = 20;
+    WTF::String key = WTF::String::fromUTF8("video");
     for (int f = 0; f < MaxFrames; f++) {
-        unsigned char* data = mixRender.writeableDataForImageParameter(WTF::String("video"), 320, 240);
+        unsigned char* data = mixRender.writeableDataForImageParameter(key, 320, 240);
         if (!data)
             return -1;
         for (unsigned int i = 0; i < 320*240*4; i += 4) {
