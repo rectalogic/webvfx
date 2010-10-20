@@ -4,7 +4,6 @@
 #include "chromix/Loader.h"
 
 #include <base/basictypes.h>
-#include <base/string16.h>
 #include <skia/ext/platform_canvas.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebSize.h>
 

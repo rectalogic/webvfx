@@ -2,7 +2,8 @@
 #define MOTIONBOX_CHROMIX_CHROMIX_H_
 
 namespace Chromix {
-bool initialize();
+enum InitializeResult { InitializeFailure, InitializeSuccess, InitializeAlready };
+InitializeResult initialize();
 void shutdown();    
 }
 #endif

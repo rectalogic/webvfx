@@ -57,11 +57,13 @@ private:
 
 static MixKit* mixKit = 0;
 
-bool initialize() {
+InitializeResult initialize() {
+    InitializeResult result = InitializeAlready;
     pthread_mutex_lock(&chromixLock);
-    if (!mixKit)
+    if (!mixKit) {
         mixKit = new MixKit(0, NULL);
-    bool result = mixKit;
+        result = mixKit ? InitializeSuccess : InitializeFailure;
+    }
     pthread_mutex_unlock(&chromixLock);
     return result;
 }

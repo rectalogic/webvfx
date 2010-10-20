@@ -2,22 +2,20 @@
 #include <mlt/framework/mlt_frame.h>
 #include "chromix_helper.h"
 
-static int filter_get_image( mlt_frame this, uint8_t **image, mlt_image_format *format, int *width, int *height, int writable )
-{
+static int filter_get_image(mlt_frame this, uint8_t **image, mlt_image_format *format, int *width, int *height, int writable) {
     RGB32 *background;
     unsigned char *diff;
     unsigned char *buffer;
-    
+
     // Get the filter
-    mlt_filter filter = mlt_frame_pop_service( this );
-    
+    mlt_filter filter = mlt_frame_pop_service(this);
+
     // Get the image
     *format = mlt_image_rgb24a;
-    int error = mlt_frame_get_image( this, image, format, width, height, 1 );
-    
+    int error = mlt_frame_get_image(this, image, format, width, height, 1);
+
     // Only process if we have no error and a valid colour space
-    if ( error == 0 )
-    {
+    if ( error == 0 ) {
         // Get the "Burn the foreground" value
         int burn_foreground = mlt_properties_get_int( MLT_FILTER_PROPERTIES( filter ), "foreground" );
         int y_threshold = image_set_threshold_y(
