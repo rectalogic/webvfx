@@ -24,17 +24,9 @@ public:
                       "    native function SetRenderCallback();"
                       "    SetRenderCallback(renderCallback);"
                       "};"
-                      "chromix.registerStringParam = function(name, description) {"
-                      "    native function RegisterStringParam();"
-                      "    RegisterStringParam(name, description);"
-                      "};"
-                      "chromix.registerImageParam = function(name, description) {"
-                      "    native function RegisterImageParam();"
-                      "    RegisterImageParam(name, description);"
-                      "};"
-                      "chromix.getStringParamValue = function(name) {"
-                      "    native function GetStringParamValue();"
-                      "    return GetStringParamValue(name);"
+                      "chromix.getParamValue = function(name) {"
+                      "    native function GetParamValue();"
+                      "    return GetParamValue(name);"
                       "};"
                       "chromix.getImageParamValue = function(name) {"
                       "    native function GetImageParamValue();"
@@ -43,14 +35,8 @@ public:
                       ) {}
 
     virtual v8::Handle<v8::FunctionTemplate> GetNativeFunction(v8::Handle<v8::String> name) {
-        if (name->Equals(v8::String::New("RegisterStringParam"))) {
-            return v8::FunctionTemplate::New(RegisterStringParam);
-        }
-        else if (name->Equals(v8::String::New("RegisterImageParam"))) {
-            return v8::FunctionTemplate::New(RegisterImageParam);
-        }
-        else if (name->Equals(v8::String::New("GetStringParamValue"))) {
-            return v8::FunctionTemplate::New(GetStringParamValue);
+        if (name->Equals(v8::String::New("GetParamValue"))) {
+            return v8::FunctionTemplate::New(GetParamValue);
         }
         else if (name->Equals(v8::String::New("GetImageParamValue"))) {
             return v8::FunctionTemplate::New(GetImageParamValue);
@@ -62,29 +48,11 @@ public:
         return v8::Handle<v8::FunctionTemplate>();
     }
 
-    static v8::Handle<v8::Value> RegisterStringParam(const v8::Arguments& args) {
-        if (args.Length() >= 2 && args[0]->IsString() && args[1]->IsString()) {
-            Chromix::ScriptingSupport *scriptingSupport = findScriptingSupport();
-            if (scriptingSupport)
-                scriptingSupport->getParameterMap().registerStringParameter(*v8::String::Value(args[0]), *v8::String::Value(args[1]));
-        }
-        return v8::Undefined();
-    }
-
-    static v8::Handle<v8::Value> RegisterImageParam(const v8::Arguments& args) {
-        if (args.Length() >= 2 && args[0]->IsString() && args[1]->IsString()) {
-            Chromix::ScriptingSupport *scriptingSupport = findScriptingSupport();
-            if (scriptingSupport)
-                scriptingSupport->getParameterMap().registerImageParameter(*v8::String::Value(args[0]), *v8::String::Value(args[1]));
-        }
-        return v8::Undefined();
-    }
-
-    static v8::Handle<v8::Value> GetStringParamValue(const v8::Arguments& args) {
+    static v8::Handle<v8::Value> GetParamValue(const v8::Arguments& args) {
         if (args.Length() >= 1 && args[0]->IsString()) {
             Chromix::ScriptingSupport *scriptingSupport = findScriptingSupport();
             if (scriptingSupport)
-                return scriptingSupport->getParameterMap().getStringParameterValue(*v8::String::Value(args[0]));
+                return scriptingSupport->getParameterMap().getParameterValue(*v8::String::Value(args[0]));
         }
         return v8::Undefined();
     }
