@@ -131,7 +131,7 @@ mlt_filter filter_chromix_init(mlt_profile profile, mlt_service_type type, const
     if (this != NULL) {
         this->process = filter_process;
         //XXX need to pass html file too - is it arg above?
-        if (!chromix_initialize(MLT_FILTER_PROPERTIES(this))) {
+        if (!chromix_initialize_properties(MLT_FILTER_PROPERTIES(this))) {
             mlt_filter_close(this);
             return NULL;
         }

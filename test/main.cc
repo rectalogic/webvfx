@@ -3,7 +3,7 @@
 #include <sstream>
 #include <iomanip>
 
-#include <chromix/MixKit.h>
+#include <chromix/Chromix.h>
 #include <chromix/MixRender.h>
 #include <gfx/codec/png_codec.h>
 
@@ -19,7 +19,14 @@ int chromix_main(int argc, const char * argv[]) {
         std::cerr << "Missing html template";
         return -1;
     }
-    Chromix::MixKit mixKit(argc, argv);
+
+    class ChromixState {
+    public:
+        ChromixState() { Chromix::initialize(); }
+        ~ChromixState() { Chromix::shutdown(); }
+    };
+    ChromixState state;
+
     Chromix::MixRender mixRender;
     mixRender.setLogger(chromix_log);
     mixRender.resize(800, 600);

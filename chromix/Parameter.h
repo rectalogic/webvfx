@@ -13,7 +13,7 @@ public:
     Parameter(WTF::String const& description) : description(description) {}
     virtual ~Parameter() {};
 
-    const WTF::String getDescription() { return description; }
+    const WTF::String getDescription() const { return description; }
 
 private:
     WTF::String description;
@@ -24,10 +24,10 @@ class ImageParameter : public Parameter {
 public:
     ImageParameter() {};
     ImageParameter(WTF::String const& description) : Parameter(description) {};
-
     virtual ~ImageParameter() {};
+
     void setValue(WTF::PassRefPtr<WebCore::ImageData> value) { imageDataValue = value; }
-    WebCore::ImageData* getValue() { return imageDataValue.get(); }
+    WebCore::ImageData* getValue() const { return imageDataValue.get(); }
 
 private:
     WTF::RefPtr<WebCore::ImageData> imageDataValue;
@@ -38,10 +38,10 @@ class StringParameter : public Parameter {
 public:
     StringParameter() {};
     StringParameter(WTF::String const& description) : Parameter(description) {};
-
     virtual ~StringParameter() {};
+
     void setValue(WTF::String const& value) { stringValue = value; }
-    const WTF::String getValue() { return stringValue; }
+    const WTF::String getValue() const { return stringValue; }
 
 private:
     WTF::String stringValue;

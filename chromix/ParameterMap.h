@@ -30,8 +30,8 @@ public:
     // Returns buffer to write image data to - RGBA format, so size is width*height*4
     unsigned char* writeableDataForImageParameter(WTF::String const& name, unsigned int width, unsigned int height);
 
-    v8::Handle<v8::Value> getImageParameterValue(WTF::String const& name);
-    v8::Handle<v8::Value> getStringParameterValue(WTF::String const& name);
+    v8::Handle<v8::Value> getImageParameterValue(WTF::String const& name) const;
+    v8::Handle<v8::Value> getStringParameterValue(WTF::String const& name) const;
 
     //XXX APIs to enumerate (keys and descriptions)
 

@@ -24,9 +24,8 @@
         ],
       },
       'sources': [
-        'chromix/MixKit.h',
-        'chromix/MixKitPrivate.h',
-        'chromix/MixKit.cc',
+        'chromix/Chromix.h',
+        'chromix/Chromix.cc',
         'chromix/MixRender.h',
         'chromix/MixRender.cc',
         'chromix/Loader.h',

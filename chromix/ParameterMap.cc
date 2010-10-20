@@ -16,7 +16,7 @@ void Chromix::ParameterMap::registerImageParameter(WTF::String const& name, WTF:
     imageParamMap.set(name, Chromix::ImageParameter(description));
 }
 
-v8::Handle<v8::Value> Chromix::ParameterMap::getImageParameterValue(WTF::String const& name) {
+v8::Handle<v8::Value> Chromix::ParameterMap::getImageParameterValue(WTF::String const& name) const {
     if (imageParamMap.contains(name)) {
         ImageParameter param = imageParamMap.get(name);
         WebCore::ImageData *imageData = param.getValue();
@@ -26,7 +26,7 @@ v8::Handle<v8::Value> Chromix::ParameterMap::getImageParameterValue(WTF::String 
     return v8::Undefined();
 }
 
-v8::Handle<v8::Value> Chromix::ParameterMap::getStringParameterValue(WTF::String const& name) {
+v8::Handle<v8::Value> Chromix::ParameterMap::getStringParameterValue(WTF::String const& name) const {
     if (stringParamMap.contains(name)) {
         StringParameter param = stringParamMap.get(name);
         return WebCore::v8String(param.getValue());
