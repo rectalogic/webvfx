@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# CHROMIUM_ROOT can be specified in environment,
+# should point to root dir where src/ and depot_tools/ live.
+#
+# On MacOS, this will generate <project>.xcodeproj which can be built.
+# On Linux, this will add our target to ${CHROMIUM_ROOT}/src/Makefile
+# so build using that.
+
+# Currently building with Chromium r62565
+
+while getopts ":c:" opt; do
+  case $opt in
+    c)
+      CHROMIUM_ROOT=$OPTARG
+      ;;
+    \?)
+      echo "Usage: $0 [-c <chromium-root>] <project.gyp>" >&2
+      exit 1
+      ;;
+    :)
+      echo "-$OPTARG missing argument." >&2
+      exit 1
+      ;;
+  esac
+done
+shift $(expr $OPTIND - 1)
+
+${CHROMIUM_ROOT:?}/src/build/gyp_chromium --toplevel-dir=${CHROMIUM_ROOT}/src --depth=${CHROMIUM_ROOT}/src "$1"

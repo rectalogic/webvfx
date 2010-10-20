@@ -6,15 +6,23 @@
       'variables': {
         'chromium_code': 1,
       },
+      'include_dirs': [
+        '.',
+      ],
       'dependencies': [
         '<(DEPTH)/third_party/mesa/mesa.gyp:osmesa',
         '<(DEPTH)/third_party/WebKit/WebKit/chromium/WebKit.gyp:webkit',
         '<(DEPTH)/third_party/WebKit/WebCore/WebCore.gyp/WebCore.gyp:webcore',
         '<(DEPTH)/webkit/support/webkit_support.gyp:webkit_support',
       ],
-      'include_dirs': [
-        '.',
+      'export_dependent_settings': [
+        '<(DEPTH)/third_party/WebKit/WebCore/WebCore.gyp/WebCore.gyp:webcore',
       ],
+      'direct_dependent_settings': {
+        'include_dirs': [
+          '.',
+        ],
+      },
       'sources': [
         'chromix/MixKit.h',
         'chromix/MixKitPrivate.h',
@@ -41,10 +49,6 @@
       },
       'dependencies': [
         'chromix',
-        '<(DEPTH)/third_party/WebKit/WebCore/WebCore.gyp/WebCore.gyp:webcore',
-      ],
-      'include_dirs': [
-        '.',
       ],
       'sources': [
         'test/main.cc',

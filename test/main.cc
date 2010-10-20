@@ -3,8 +3,8 @@
 #include <sstream>
 #include <iomanip>
 
-#include "chromix/MixKit.h"
-#include "chromix/MixRender.h"
+#include <chromix/MixKit.h>
+#include <chromix/MixRender.h>
 #include <gfx/codec/png_codec.h>
 
 #include <base/string16.h>

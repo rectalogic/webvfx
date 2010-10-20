@@ -1,2 +1,4 @@
 chromix.xcodeproj
 chromix.target.mk
+mltchromix.xcodeproj
+mltchromix.target.mk
