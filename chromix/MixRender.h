@@ -2,6 +2,7 @@
 #define MOTIONBOX_CHROMIX_MIXRENDER_H_
 
 #include "chromix/Loader.h"
+#include "chromix/ParameterValue.h"
 
 #include <base/basictypes.h>
 #include <skia/ext/platform_canvas.h>
@@ -26,6 +27,7 @@ public:
     void resize(int width, int height);
     const SkBitmap* render(double time);
 
+    void setParameterValue(WTF::String const& name, WTF::PassRefPtr<ParameterValue> value);
     unsigned char* writeableDataForImageParameter(WTF::String const& name, unsigned int width, unsigned int height);
 
 private:

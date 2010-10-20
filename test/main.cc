@@ -5,6 +5,7 @@
 
 #include <chromix/Chromix.h>
 #include <chromix/MixRender.h>
+#include <chromix/ParameterValue.h>
 #include <gfx/codec/png_codec.h>
 
 #include <base/string16.h>
@@ -30,6 +31,7 @@ int chromix_main(int argc, const char * argv[]) {
     Chromix::MixRender mixRender;
     mixRender.setLogger(chromix_log);
     mixRender.resize(800, 600);
+    mixRender.setParameterValue(WTF::String::fromUTF8("title"), Chromix::StringParameterValue::create(WTF::String::fromUTF8("This is the title")));
 
     if (!mixRender.loadURL(WTF::String::fromUTF8(argv[1])))
         return -1;

@@ -14,12 +14,15 @@ function init() {
     // globals
     context = canvas.getContext('2d');
     timeEl = document.getElementById("time");
+    var title = chromix.getParamValue('title');
+    var titleEl = document.getElementById("title");
+    titleEl.innerHTML = title;
 }
 window.addEventListener("load", init, false);
 </script>
 </head>
 <body>
-    Canvas time <span id="time">unset</span><br/>
+    Canvas time <span id="time">unset</span> title <span id="title">unset</span><br/>
     <canvas id="imageCanvas" width="325" height="245" style="background-color: #0000FF;"></canvas>
 </body>
 </html>

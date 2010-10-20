@@ -5,8 +5,8 @@ Chromix::ParameterMap::ParameterMap() : imageParamMap(), paramMap()
 {
 }
 
-void Chromix::ParameterMap::setParameterValue(WTF::String const& name, Chromix::ParameterValue const &param) {
-    paramMap.set(name, param);
+void Chromix::ParameterMap::setParameterValue(WTF::String const& name, WTF::PassRefPtr<ParameterValue> prpParam) {
+    paramMap.set(name, prpParam);
 }
 
 v8::Handle<v8::Value> Chromix::ParameterMap::getImageParameterValue(WTF::String const& name) const {
@@ -19,8 +19,7 @@ v8::Handle<v8::Value> Chromix::ParameterMap::getImageParameterValue(WTF::String 
 
 v8::Handle<v8::Value> Chromix::ParameterMap::getParameterValue(WTF::String const& name) const {
     if (paramMap.contains(name)) {
-        ParameterValue param = paramMap.get(name);
-        return param.getV8Value();
+        return paramMap.get(name)->getV8Value();
     }
     return v8::Undefined();
 }

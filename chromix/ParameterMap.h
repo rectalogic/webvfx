@@ -24,7 +24,7 @@ public:
     ParameterMap();
     virtual ~ParameterMap() {};
 
-    void setParameterValue(WTF::String const& name, ParameterValue const &param);
+    void setParameterValue(WTF::String const& name, WTF::PassRefPtr<ParameterValue> prpParam);
 
     // Returns buffer to write image data to - RGBA format, so size is width*height*4
     unsigned char* writeableDataForImageParameter(WTF::String const& name, unsigned int width, unsigned int height);
@@ -38,8 +38,7 @@ private:
     typedef WTF::HashMap<WTF::String, ImageParameterValue> ImageParamMap;
     ImageParamMap imageParamMap;
 
-    //XXX this is broken, can't store polymorphic by value
-    typedef WTF::HashMap<WTF::String, ParameterValue> ParamMap;
+    typedef WTF::HashMap<WTF::String, WTF::RefPtr<ParameterValue> > ParamMap;
     ParamMap paramMap;
 };
 

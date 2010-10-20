@@ -92,6 +92,10 @@ const SkBitmap* Chromix::MixRender::render(double time) {
     return &skiaDevice.accessBitmap(false);
 }
 
+void Chromix::MixRender::setParameterValue(WTF::String const& name, WTF::PassRefPtr<ParameterValue> value) {
+    scriptingSupport->getParameterMap().setParameterValue(name, value);
+}
+
 unsigned char* Chromix::MixRender::writeableDataForImageParameter(WTF::String const& name, unsigned int width, unsigned int height) {
     return scriptingSupport->getParameterMap().writeableDataForImageParameter(name, width, height);
 }
