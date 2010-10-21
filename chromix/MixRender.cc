@@ -61,7 +61,7 @@ Chromix::MixRender::~MixRender() {
     webView->close();
 }
 
-bool Chromix::MixRender::loadURL(WTF::String const& url) {
+bool Chromix::MixRender::loadURL(const WTF::String& url) {
     return loader.loadURL(webView, string16(url.characters(), url.length())) && scriptingSupport->hasRenderCallback();
 }
 
@@ -92,11 +92,19 @@ const SkBitmap* Chromix::MixRender::render(double time) {
     return &skiaDevice.accessBitmap(false);
 }
 
-void Chromix::MixRender::setParameterValue(WTF::String const& name, WTF::PassRefPtr<ParameterValue> value) {
-    scriptingSupport->getParameterMap().setParameterValue(name, value);
+void Chromix::MixRender::setParameterValue(const WTF::String& name, bool value) {
+    scriptingSupport->getParameterMap().setParameterValue(name, Chromix::BooleanParameterValue::create(value));
 }
 
-unsigned char* Chromix::MixRender::writeableDataForImageParameter(WTF::String const& name, unsigned int width, unsigned int height) {
+void Chromix::MixRender::setParameterValue(const WTF::String& name, double value) {
+    scriptingSupport->getParameterMap().setParameterValue(name, Chromix::NumberParameterValue::create(value));
+}
+
+void Chromix::MixRender::setParameterValue(const WTF::String& name, const WTF::String& value) {
+    scriptingSupport->getParameterMap().setParameterValue(name, Chromix::StringParameterValue::create(value));
+}
+
+unsigned char* Chromix::MixRender::writeableDataForImageParameter(const WTF::String& name, unsigned int width, unsigned int height) {
     return scriptingSupport->getParameterMap().writeableDataForImageParameter(name, width, height);
 }
 

@@ -22,7 +22,7 @@ void Chromix::Loader::setLogger(LogCallback logger, const void* data) {
     this->logData = data;
 }
 
-bool Chromix::Loader::loadURL(WebKit::WebView *webView, string16 const& url) {
+bool Chromix::Loader::loadURL(WebKit::WebView *webView, const string16& url) {
     isLoadFinished = false;
     didLoadSucceed = false;
 

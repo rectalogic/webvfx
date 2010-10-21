@@ -23,12 +23,14 @@ public:
 
     void setLogger(LogCallback logger, const void* data = NULL) { loader.setLogger(logger, data); }
 
-    bool loadURL(WTF::String const& url);
+    bool loadURL(const WTF::String& url);
     void resize(int width, int height);
     const SkBitmap* render(double time);
 
-    void setParameterValue(WTF::String const& name, WTF::PassRefPtr<ParameterValue> value);
-    unsigned char* writeableDataForImageParameter(WTF::String const& name, unsigned int width, unsigned int height);
+    void setParameterValue(const WTF::String& name, bool value);
+    void setParameterValue(const WTF::String& name, double value);
+    void setParameterValue(const WTF::String& name, const WTF::String& value);
+    unsigned char* writeableDataForImageParameter(const WTF::String& name, unsigned int width, unsigned int height);
 
 private:
     WebKit::WebView *webView;

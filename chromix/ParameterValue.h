@@ -37,7 +37,7 @@ protected:
 template <typename T>
 class PrimitiveParameterValue : public ParameterValue  {
 public:
-    PrimitiveParameterValue(T const& value) : value(value) {};
+    PrimitiveParameterValue(const T& value) : value(value) {};
     virtual ~PrimitiveParameterValue() {};
     const T getValue() const { return value; }
     virtual v8::Handle<v8::Value> getV8Value() const = 0;
@@ -48,12 +48,12 @@ private:
 
 class StringParameterValue : public PrimitiveParameterValue<WTF::String> {
 public:
-    static WTF::PassRefPtr<StringParameterValue> create(WTF::String const& value) { return adoptRef(new StringParameterValue(value)); }
+    static WTF::PassRefPtr<StringParameterValue> create(const WTF::String& value) { return adoptRef(new StringParameterValue(value)); }
     virtual ~StringParameterValue() {};
     virtual v8::Handle<v8::Value> getV8Value() const;
 
 private:
-    StringParameterValue(WTF::String const& value) : PrimitiveParameterValue<WTF::String>(value) {};
+    StringParameterValue(const WTF::String& value) : PrimitiveParameterValue<WTF::String>(value) {};
 };
 
 

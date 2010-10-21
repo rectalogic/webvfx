@@ -24,13 +24,13 @@ public:
     ParameterMap();
     virtual ~ParameterMap() {};
 
-    void setParameterValue(WTF::String const& name, WTF::PassRefPtr<ParameterValue> prpParam);
+    void setParameterValue(const WTF::String& name, WTF::PassRefPtr<ParameterValue> prpParam);
 
     // Returns buffer to write image data to - RGBA format, so size is width*height*4
-    unsigned char* writeableDataForImageParameter(WTF::String const& name, unsigned int width, unsigned int height);
+    unsigned char* writeableDataForImageParameter(const WTF::String& name, unsigned int width, unsigned int height);
 
-    v8::Handle<v8::Value> getImageParameterValue(WTF::String const& name) const;
-    v8::Handle<v8::Value> getParameterValue(WTF::String const& name) const;
+    v8::Handle<v8::Value> getImageParameterValue(const WTF::String& name) const;
+    v8::Handle<v8::Value> getParameterValue(const WTF::String& name) const;
 
     //XXX APIs to enumerate (keys and descriptions)
 

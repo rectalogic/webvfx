@@ -13,7 +13,7 @@ namespace WebKit {
 
 namespace Chromix {
 
-typedef void(*LogCallback)(string16 const&, const void* data);
+typedef void(*LogCallback)(const string16&, const void* data);
 
 class Loader : public WebKit::WebFrameClient,
                public WebKit::WebViewClient
@@ -23,7 +23,7 @@ public:
     virtual ~Loader() {};
 
     void setLogger(LogCallback logger, const void* data);
-    bool loadURL(WebKit::WebView *webView, string16 const& url);
+    bool loadURL(WebKit::WebView *webView, const string16& url);
 
 protected:
     // WebKit::WebViewClient

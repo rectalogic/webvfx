@@ -5,11 +5,11 @@ Chromix::ParameterMap::ParameterMap() : imageParamMap(), paramMap()
 {
 }
 
-void Chromix::ParameterMap::setParameterValue(WTF::String const& name, WTF::PassRefPtr<ParameterValue> prpParam) {
+void Chromix::ParameterMap::setParameterValue(const WTF::String& name, WTF::PassRefPtr<ParameterValue> prpParam) {
     paramMap.set(name, prpParam);
 }
 
-v8::Handle<v8::Value> Chromix::ParameterMap::getImageParameterValue(WTF::String const& name) const {
+v8::Handle<v8::Value> Chromix::ParameterMap::getImageParameterValue(const WTF::String& name) const {
     if (imageParamMap.contains(name)) {
         ImageParameterValue param = imageParamMap.get(name);
         return param.getV8Value();
@@ -17,7 +17,7 @@ v8::Handle<v8::Value> Chromix::ParameterMap::getImageParameterValue(WTF::String 
     return v8::Undefined();
 }
 
-v8::Handle<v8::Value> Chromix::ParameterMap::getParameterValue(WTF::String const& name) const {
+v8::Handle<v8::Value> Chromix::ParameterMap::getParameterValue(const WTF::String& name) const {
     if (paramMap.contains(name)) {
         return paramMap.get(name)->getV8Value();
     }
@@ -25,7 +25,7 @@ v8::Handle<v8::Value> Chromix::ParameterMap::getParameterValue(WTF::String const
 }
 
 // http://webkit.org/coding/RefPtr.html
-unsigned char* Chromix::ParameterMap::writeableDataForImageParameter(WTF::String const& name, unsigned int width, unsigned int height) {
+unsigned char* Chromix::ParameterMap::writeableDataForImageParameter(const WTF::String& name, unsigned int width, unsigned int height) {
     // This will create the param if one doesn't exist.
     ImageParameterValue param = imageParamMap.get(name);
     WebCore::ImageData *imageData = param.getValue();
