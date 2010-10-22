@@ -31,6 +31,7 @@
             'OTHER_LDFLAGS': [
               '<!@(pkg-config --libs mlt-framework)',
             ],
+            'DYLIB_INSTALL_NAME_BASE': '<!@(pkg-config --variable=libdir mlt-framework)/mlt',
           },
         }], # OS=="mac"
       ],
