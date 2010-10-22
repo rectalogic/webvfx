@@ -1,9 +1,9 @@
 #include <mlt/framework/mlt.h>
-
-extern mlt_filter filter_chromix_init(mlt_profile profile, mlt_service_type type, const char *id, char *arg);
+#include "chromix_helper.h"
 
 MLT_REPOSITORY
 {
-    MLT_REGISTER(filter_type, "Chromix", filter_chromix_init);
-    //XXX also producer and transition
+    chromix_register_services(repository, producer_type);
+    chromix_register_services(repository, filter_type);
+    chromix_register_services(repository, transition_type);
 }
