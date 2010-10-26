@@ -10,8 +10,8 @@ int chromix_set_image(mlt_properties properties, const char* track, uint8_t* ima
 int chromix_render(mlt_properties properties, double time, uint8_t* image, int width, int height);
 
 mlt_frame chromix_filter_process(mlt_filter self, mlt_frame frame);
-int producer_get_frame(mlt_producer producer, mlt_frame_ptr frame, int index);
-mlt_frame transition_process(mlt_transition transition, mlt_frame a_frame, mlt_frame b_frame);
+int chromix_producer_get_frame(mlt_producer producer, mlt_frame_ptr frame, int index);
+mlt_frame chromix_transition_process(mlt_transition transition, mlt_frame a_frame, mlt_frame b_frame);
 
 #ifdef __cplusplus
 }
