@@ -119,17 +119,16 @@ static mlt_properties chromix_create_metadata(mlt_service_type service_type, con
 }
 
 static void* chromix_create_service(mlt_profile profile, mlt_service_type service_type, const char* service_name, const void*) {
-    void* service = NULL;
     switch (service_type) {
         case producer_type: {
             mlt_producer self = mlt_producer_new();
             if (self) {
                 self->get_frame = chromix_producer_get_frame;
-                service = self;
                 if (chromix_initialize_service_properties(MLT_PRODUCER_PROPERTIES(self)) != 0) {
                     mlt_producer_close(self);
                     return NULL;
                 }
+                return self;
             }
             break;
         }
@@ -137,11 +136,11 @@ static void* chromix_create_service(mlt_profile profile, mlt_service_type servic
             mlt_filter self = mlt_filter_new();
             if (self) {
                 self->process = chromix_filter_process;
-                service = self;
                 if (chromix_initialize_service_properties(MLT_FILTER_PROPERTIES(self)) != 0) {
                     mlt_filter_close(self);
                     return NULL;
                 }
+                return self;
             }
             break;
         }
@@ -149,19 +148,19 @@ static void* chromix_create_service(mlt_profile profile, mlt_service_type servic
             mlt_transition self = mlt_transition_new();
             if (self) {
                 self->process = chromix_transition_process;
-                service = self;
                 if (chromix_initialize_service_properties(MLT_TRANSITION_PROPERTIES(self)) != 0) {
                     mlt_transition_close(self);
                     return NULL;
                 }
+                return self;
             }
             break;
         }
         default:
-            return NULL;
+            break;
     }
     
-    return service;
+    return NULL;
 }
 
 extern "C" void chromix_register_services(mlt_repository repository, mlt_service_type service_type) {
