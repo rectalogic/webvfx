@@ -28,17 +28,17 @@ private:
 
 class ParameterValue : public WTF::RefCounted<ParameterValue>  {
 public:
-    virtual ~ParameterValue() {};
     virtual v8::Handle<v8::Value> getV8Value() const = 0;
 protected:
+    friend class WTF::RefCounted<ParameterValue>;
     ParameterValue() {};
+    virtual ~ParameterValue() {};
 };
 
 template <typename T>
 class PrimitiveParameterValue : public ParameterValue  {
 public:
     PrimitiveParameterValue(const T& value) : value(value) {};
-    virtual ~PrimitiveParameterValue() {};
     const T getValue() const { return value; }
     virtual v8::Handle<v8::Value> getV8Value() const = 0;
 private:
@@ -49,7 +49,6 @@ private:
 class StringParameterValue : public PrimitiveParameterValue<WTF::String> {
 public:
     static WTF::PassRefPtr<StringParameterValue> create(const WTF::String& value) { return adoptRef(new StringParameterValue(value)); }
-    virtual ~StringParameterValue() {};
     virtual v8::Handle<v8::Value> getV8Value() const;
 
 private:
@@ -60,7 +59,6 @@ private:
 class BooleanParameterValue : public PrimitiveParameterValue<bool> {
 public:
     static WTF::PassRefPtr<BooleanParameterValue> create(bool value) { return adoptRef(new BooleanParameterValue(value)); }
-    virtual ~BooleanParameterValue() {};
     virtual v8::Handle<v8::Value> getV8Value() const;
 
 private:
@@ -71,7 +69,6 @@ private:
 class NumberParameterValue : public PrimitiveParameterValue<double> {
 public:
     static WTF::PassRefPtr<NumberParameterValue> create(double value) { return adoptRef(new NumberParameterValue(value)); }
-    virtual ~NumberParameterValue() {};
     virtual v8::Handle<v8::Value> getV8Value() const;
 
 private:
