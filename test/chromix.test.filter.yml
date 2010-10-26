@@ -1,0 +1,25 @@
+schema_version: 0.1
+type: filter # consumer, filter, producer, or transition
+identifier: chromix.test.filter
+title: Chromix Test Filter
+version: 0.0.1
+copyright: Copyright (C) 2010
+license: GPL
+language: en
+url: none
+creator: Andrew Wason
+tags:
+  - Video # this may produce video
+description: Simple Chromix test
+
+#XXX specify path to HTML, and mapping of video param names
+
+parameters:
+  - identifier: title
+    title: Title
+    type: string
+    description: Title rendered in html
+    readonly: no
+    required: no
+    mutable: no
+    widget: text

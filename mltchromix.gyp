@@ -39,7 +39,9 @@
         'mlt/factory.c',
         'mlt/chromix_helper.h',
         'mlt/chromix_helper.cc',
-        #XXX'mlt/filter_chromix.c',
+        'mlt/filter_chromix.c',
+        'mlt/producer_chromix.c',
+        'mlt/transition_chromix.c',
       ],
     },
   ]

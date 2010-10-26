@@ -7,7 +7,7 @@
 # On Linux, this will add our target to ${CHROMIUM_ROOT}/src/Makefile
 # so build using that.
 
-# Currently building with Chromium r62565
+# Currently building with Chromium r63660
 
 while getopts ":c:" opt; do
   case $opt in
