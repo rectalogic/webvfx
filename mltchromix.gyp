@@ -36,9 +36,11 @@
         }], # OS=="mac"
       ],
       'sources': [
-        'mlt/factory.c',
-        'mlt/chromix_helper.h',
         'mlt/chromix_helper.cc',
+        'mlt/chromix_helper.h',
+        'mlt/chromix_linux.cc',
+        'mlt/chromix_mac.m',
+        'mlt/factory.c',
         'mlt/filter_chromix.c',
         'mlt/producer_chromix.c',
         'mlt/transition_chromix.c',

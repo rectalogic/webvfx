@@ -3,25 +3,34 @@
 #include "chromix_helper.h"
 
 static int filter_get_image(mlt_frame this, uint8_t **image, mlt_image_format *format, int *width, int *height, int writable) {
+    int error = 0;
+    void* context = chromix_context_new();
+
     // Get the filter
     mlt_filter filter = mlt_frame_pop_service(this);
 
+    if ((error = chromix_initialize_service_properties(MLT_FILTER_PROPERTIES(filter))) != 0)
+        goto finished;
+
     // Compute position
+    //XXX this is wrong - in/out are always 0 - maybe have to deal with this in chromix, or always specify out in params?
     mlt_position in = mlt_filter_get_in(filter);
-	mlt_position out = mlt_filter_get_out(filter);
+    mlt_position length = mlt_filter_get_out(filter) - in + 1;
 	mlt_position time = mlt_frame_get_position(this);
-	double position = (double)(time - in) / (double)(out - in + 1);
+    double position = (double)(time - in) / (double)length;
 
     // Get the image
     *format = mlt_image_rgb24a;
-    int error = mlt_frame_get_image(this, image, format, width, height, 1);
-    if (error != 0)
-        return error;
+    if ((error = mlt_frame_get_image(this, image, format, width, height, 1)) != 0)
+        goto finished;
     //XXX need to get track name from properties
-    error = chromix_set_image(MLT_FILTER_PROPERTIES(filter), "video", *image, *width, *height);
-    if (error != 0)
-        return error;
-    error = chromix_render(MLT_FILTER_PROPERTIES(filter), position, *image, *width, *height);
+    if ((error = chromix_set_image(MLT_FILTER_PROPERTIES(filter), "video", *image, *width, *height)) != 0)
+        goto finished;
+    if ((error = chromix_render(MLT_FILTER_PROPERTIES(filter), position, *image, *width, *height)) != 0)
+        goto finished;
+
+finished:
+    chromix_context_close(context);
     return error;
 }
 

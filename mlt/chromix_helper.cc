@@ -26,12 +26,21 @@ static void chromix_delete_mixrender(Chromix::MixRender* mixRender) {
     delete mixRender;
 }
 
-static int chromix_initialize_service_properties(mlt_properties properties) {
+static inline Chromix::MixRender* chromix_get_mixrender(mlt_properties properties) {
+    return (Chromix::MixRender*)mlt_properties_get_data(properties, MIXRENDER_PROP, NULL);
+}
+
+int chromix_initialize_service_properties(mlt_properties properties) {
+    // Already initialized
+    Chromix::MixRender* mixRender = chromix_get_mixrender(properties);
+    if (mixRender)
+        return SUCCESS;
+
     if (!chromix_initialize())
         return FAILURE;
 
     // Create and stash renderer on properties
-    Chromix::MixRender* mixRender = new Chromix::MixRender();
+    mixRender = new Chromix::MixRender();
     if (!mixRender)
         return FAILURE;
     mlt_properties_set_data(properties, MIXRENDER_PROP, mixRender, 0, (mlt_destructor)chromix_delete_mixrender, NULL);
@@ -54,7 +63,7 @@ static int chromix_initialize_service_properties(mlt_properties properties) {
 
 //XXX lookup track property to get the WTF::String mixrender name for the image
 int chromix_set_image(mlt_properties properties, const char* track, uint8_t* image, int width, int height) {
-    Chromix::MixRender* mixRender = (Chromix::MixRender*)mlt_properties_get_data(properties, MIXRENDER_PROP, NULL);
+    Chromix::MixRender* mixRender = chromix_get_mixrender(properties);
     if (!mixRender)
         return FAILURE;
     //XXX lookup param - map track to WTF::String
@@ -66,7 +75,7 @@ int chromix_set_image(mlt_properties properties, const char* track, uint8_t* ima
 }
 
 int chromix_render(mlt_properties properties, double time, uint8_t* image, int width, int height) {
-    Chromix::MixRender* mixRender = (Chromix::MixRender*)mlt_properties_get_data(properties, MIXRENDER_PROP, NULL);
+    Chromix::MixRender* mixRender = chromix_get_mixrender(properties);
     if (!mixRender)
         return FAILURE;
     mixRender->resize(width, height);
@@ -124,10 +133,6 @@ static void* chromix_create_service(mlt_profile profile, mlt_service_type servic
             mlt_producer self = mlt_producer_new();
             if (self) {
                 self->get_frame = chromix_producer_get_frame;
-                if (chromix_initialize_service_properties(MLT_PRODUCER_PROPERTIES(self)) != 0) {
-                    mlt_producer_close(self);
-                    return NULL;
-                }
                 return self;
             }
             break;
@@ -136,10 +141,6 @@ static void* chromix_create_service(mlt_profile profile, mlt_service_type servic
             mlt_filter self = mlt_filter_new();
             if (self) {
                 self->process = chromix_filter_process;
-                if (chromix_initialize_service_properties(MLT_FILTER_PROPERTIES(self)) != 0) {
-                    mlt_filter_close(self);
-                    return NULL;
-                }
                 return self;
             }
             break;
@@ -148,10 +149,6 @@ static void* chromix_create_service(mlt_profile profile, mlt_service_type servic
             mlt_transition self = mlt_transition_new();
             if (self) {
                 self->process = chromix_transition_process;
-                if (chromix_initialize_service_properties(MLT_TRANSITION_PROPERTIES(self)) != 0) {
-                    mlt_transition_close(self);
-                    return NULL;
-                }
                 return self;
             }
             break;
