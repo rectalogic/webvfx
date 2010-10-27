@@ -2,8 +2,6 @@
 #include "chromix/ChromixExtension.h"
 #include "chromix/WebKitClientImpl.h"
 
-#include <pthread.h>
-
 #include <base/message_loop.h>
 #include <base/at_exit.h>
 #include <base/command_line.h>
@@ -16,8 +14,6 @@
 #endif
 
 namespace Chromix {
-
-static pthread_mutex_t chromixLock = PTHREAD_MUTEX_INITIALIZER;
 
 //XXX need to ensure only one MixKit is created
 //XXX add Chromix::initialize/shutdown functions and create Singleton<MixKit>
@@ -59,20 +55,16 @@ static MixKit* mixKit = 0;
 
 InitializeResult initialize() {
     InitializeResult result = InitializeAlready;
-    pthread_mutex_lock(&chromixLock);
     if (!mixKit) {
         mixKit = new MixKit(0, NULL);
         result = mixKit ? InitializeSuccess : InitializeFailure;
     }
-    pthread_mutex_unlock(&chromixLock);
     return result;
 }
 
 void shutdown() {
-    pthread_mutex_lock(&chromixLock);
     delete mixKit;
     mixKit = 0;
-    pthread_mutex_unlock(&chromixLock);
 }
 
 }
