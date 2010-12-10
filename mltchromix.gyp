@@ -3,9 +3,6 @@
     {
       'target_name': 'mltchromix',
       'type': 'shared_library',
-      'variables': {
-        'chromium_code': 1,
-      },
       'dependencies': [
         'chromix.gyp:chromix',
       ],

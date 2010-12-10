@@ -3,9 +3,6 @@
     {
       'target_name': 'chromix',
       'type': '<(library)',
-      'variables': {
-        'chromium_code': 1,
-      },
       'include_dirs': [
         '.',
       ],
@@ -44,9 +41,6 @@
     {
       'target_name': 'chromix_test',
       'type': 'executable',
-      'variables': {
-        'chromium_code': 1,
-      },
       'dependencies': [
         'chromix',
       ],
