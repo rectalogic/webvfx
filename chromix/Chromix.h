@@ -1,5 +1,5 @@
-#ifndef MOTIONBOX_CHROMIX_CHROMIX_H_
-#define MOTIONBOX_CHROMIX_CHROMIX_H_
+#ifndef CHROMIX_CHROMIX_H_
+#define CHROMIX_CHROMIX_H_
 
 namespace Chromix {
 enum InitializeResult { InitializeFailure, InitializeSuccess, InitializeAlready };

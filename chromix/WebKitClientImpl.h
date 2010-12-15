@@ -1,5 +1,5 @@
-#ifndef MOTIONBOX_CHROMIX_WEBKITCLIENTIMPL_H_
-#define MOTIONBOX_CHROMIX_WEBKITCLIENTIMPL_H_
+#ifndef CHROMIX_WEBKITCLIENTIMPL_H_
+#define CHROMIX_WEBKITCLIENTIMPL_H_
 
 #include <third_party/WebKit/WebKit/chromium/public/WebGraphicsContext3D.h>
 #include <webkit/glue/simple_webmimeregistry_impl.h>

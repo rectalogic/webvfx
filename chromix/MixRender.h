@@ -1,5 +1,5 @@
-#ifndef MOTIONBOX_CHROMIX_MIXRENDER_H_
-#define MOTIONBOX_CHROMIX_MIXRENDER_H_
+#ifndef CHROMIX_MIXRENDER_H_
+#define CHROMIX_MIXRENDER_H_
 
 #include "chromix/Loader.h"
 #include "chromix/ParameterValue.h"

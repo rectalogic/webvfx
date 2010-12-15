@@ -1,5 +1,5 @@
-#ifndef MOTIONBOX_CHROMIX_LOADER_H_
-#define MOTIONBOX_CHROMIX_LOADER_H_
+#ifndef CHROMIX_LOADER_H_
+#define CHROMIX_LOADER_H_
 
 #include <third_party/WebKit/WebKit/chromium/public/WebViewClient.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebFrameClient.h>

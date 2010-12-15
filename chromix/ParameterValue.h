@@ -1,5 +1,5 @@
-#ifndef MOTIONBOX_CHROMIX_PARAMETERVALUE_H_
-#define MOTIONBOX_CHROMIX_PARAMETERVALUE_H_
+#ifndef CHROMIX_PARAMETERVALUE_H_
+#define CHROMIX_PARAMETERVALUE_H_
 
 #include <third_party/WebKit/JavaScriptCore/wtf/RefCounted.h>
 #include <third_party/WebKit/JavaScriptCore/wtf/text/WTFString.h>

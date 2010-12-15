@@ -1,5 +1,5 @@
-#ifndef MOTIONBOX_CHROMIX_PARAMETERMAP_H_
-#define MOTIONBOX_CHROMIX_PARAMETERMAP_H_
+#ifndef CHROMIX_PARAMETERMAP_H_
+#define CHROMIX_PARAMETERMAP_H_
 
 #include "chromix/ParameterValue.h"
 
