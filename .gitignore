@@ -1,4 +1,6 @@
 chromix.xcodeproj
 chromix.target.mk
+chromix_test.xcodeproj
+chromix_test.target.mk
 mltchromix.xcodeproj
 mltchromix.target.mk

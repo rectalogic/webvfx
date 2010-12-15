@@ -7,10 +7,18 @@
         '.',
       ],
       'dependencies': [
-        '<(DEPTH)/third_party/mesa/mesa.gyp:osmesa',
         '<(DEPTH)/third_party/WebKit/WebKit/chromium/WebKit.gyp:webkit',
         '<(DEPTH)/third_party/WebKit/WebCore/WebCore.gyp/WebCore.gyp:webcore',
         '<(DEPTH)/webkit/support/webkit_support.gyp:webkit_support',
+      ],
+      'conditions': [
+        ['OS == "linux"', {
+          'dependencies': [
+            '<(DEPTH)/third_party/mesa/mesa.gyp:osmesa',
+            '<(DEPTH)/gfx/gfx.gyp:gfx',
+            '<(DEPTH)/build/linux/system.gyp:gtk',
+          ],
+        }],
       ],
       'export_dependent_settings': [
         '<(DEPTH)/third_party/WebKit/WebCore/WebCore.gyp/WebCore.gyp:webcore',

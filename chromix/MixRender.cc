@@ -46,6 +46,7 @@ Chromix::MixRender::MixRender() :
     settings->setAllowUniversalAccessFromFileURLs(true);
     settings->setAllowFileAccessFromFileURLs(true);
     settings->setExperimentalWebGLEnabled(true);
+    //XXX see http://groups.google.com/a/chromium.org/group/chromium-dev/browse_thread/thread/26ce7cbbc758a504/3515ab0391212a37?show_docid=3515ab0391212a37
     settings->setAcceleratedCompositingEnabled(false);//XXX crashes WebGL
     settings->setAccelerated2dCanvasEnabled(true);
 

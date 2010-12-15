@@ -15,24 +15,24 @@ void chromix_log(const string16& msg, const void*) {
 }
 
 int chromix_main(int argc, const char * argv[]) {
-    if (argc != 2) {
-        std::cerr << "Missing html template";
+    if (argc < 2) {
+        std::cerr << "Usage: " << argv[0] << " [chromium-options] <html-template-url>" << std::endl;
         return -1;
     }
 
     class ChromixState {
     public:
-        ChromixState() { Chromix::initialize(); }
+        ChromixState(int argc, const char * argv[]) { Chromix::initialize(argc, argv); }
         ~ChromixState() { Chromix::shutdown(); }
     };
-    ChromixState state;
+    ChromixState state(argc, argv);
 
     Chromix::MixRender mixRender;
     mixRender.setLogger(chromix_log);
     mixRender.resize(800, 600);
     mixRender.setParameterValue(WTF::String::fromUTF8("title"), WTF::String::fromUTF8("This is the title"));
 
-    if (!mixRender.loadURL(WTF::String::fromUTF8(argv[1])))
+    if (!mixRender.loadURL(WTF::String::fromUTF8(argv[argc - 1])))
         return -1;
 
     const int MaxFrames = 20;
