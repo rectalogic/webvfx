@@ -24,12 +24,12 @@ int chromix_main(int argc, const char * argv[]) {
         return -1;
     }
 
-    class ChromixState {
+    class AutoChromix {
     public:
-        ChromixState(int argc, const char * argv[]) { Chromix::initialize(argc, argv); }
-        ~ChromixState() { Chromix::shutdown(); }
+        AutoChromix(int argc, const char * argv[]) { Chromix::initialize(argc, argv); }
+        ~AutoChromix() { Chromix::shutdown(); }
     };
-    ChromixState state(argc, argv);
+    AutoChromix chromix(argc, argv);
 
     Chromix::MixRender mixRender;
     mixRender.setLogger(chromix_log);

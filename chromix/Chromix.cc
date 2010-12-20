@@ -37,6 +37,7 @@ public:
 #if defined(OS_MACOSX)
         InitWebCoreSystemInterface();
 #elif defined(OS_LINUX)
+        //XXX should we use defined(TOOLKIT_USES_GTK) ?
         // Check if --use-gl specified
         // If 'osmesa' specified, then explicitly initialize it and don't initialize
         // X11. If we don't explicitly initialize it then we will crash

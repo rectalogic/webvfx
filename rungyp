@@ -25,4 +25,5 @@ while getopts ":c:" opt; do
 done
 shift $(expr $OPTIND - 1)
 
-${CHROMIUM_ROOT:?}/build/gyp_chromium --include=variables.gypi --toplevel-dir=${CHROMIUM_ROOT} --depth=${CHROMIUM_ROOT} "$1"
+CURDIR=$(cd $(dirname "$0") && pwd)
+"${CHROMIUM_ROOT:?}/build/gyp_chromium" --include="$CURDIR/variables.gypi" --toplevel-dir="${CHROMIUM_ROOT}" --depth="${CHROMIUM_ROOT}" "$1"
