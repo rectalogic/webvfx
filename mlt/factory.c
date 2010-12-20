@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include <mlt/framework/mlt.h>
-#include "chromix_helper.h"
+#include "chromix_service.h"
 
 #if defined(__GNUC__) && __GNUC__ >= 4
 #define EXPORT __attribute__((visibility ("default")))

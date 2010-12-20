@@ -8,13 +8,11 @@
 extern "C" {
     #include <mlt/framework/mlt.h>
 }
-#include "chromix_helper.h"
+#include "chromix_service.h"
 
-extern "C" {
-    mlt_frame chromix_filter_process(mlt_filter self, mlt_frame frame);
-    int chromix_producer_get_frame(mlt_producer producer, mlt_frame_ptr frame, int index);
-    mlt_frame chromix_transition_process(mlt_transition transition, mlt_frame a_frame, mlt_frame b_frame);
-}
+mlt_frame chromix_filter_process(mlt_filter self, mlt_frame frame);
+int chromix_producer_get_frame(mlt_producer producer, mlt_frame_ptr frame, int index);
+mlt_frame chromix_transition_process(mlt_transition transition, mlt_frame a_frame, mlt_frame b_frame);
 
 #define YML_SUFFIX ".yml"
 

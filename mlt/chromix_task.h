@@ -6,8 +6,8 @@
 #define MLTCHROMIX_CHROMIX_TASK_H_
 
 extern "C" {
-#include <mlt_service.h>
-#include <mlt_deque.h>
+    #include <mlt_service.h>
+    #include <mlt_deque.h>
 }
 #include <pthread.h>
 

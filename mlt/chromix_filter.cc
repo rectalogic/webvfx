@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <mlt/framework/mlt_filter.h>
-#include <mlt/framework/mlt_frame.h>
-#include "chromix_helper.h"
+extern "C" {
+    #include <mlt/framework/mlt_filter.h>
+    #include <mlt/framework/mlt_frame.h>
+}
 #include "chromix_task.h"
 
 
