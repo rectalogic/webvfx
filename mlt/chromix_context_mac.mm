@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromix_context.h"
 #import <Foundation/Foundation.h>
 
-void* chromix_context_new() {
-    return [[NSAutoreleasePool alloc] init];
+ChromixContext::ChromixContext() {
+    context = [[NSAutoreleasePool alloc] init];
 }
 
-void chromix_context_close(void* pool) {
-    [(NSAutoreleasePool*)pool drain];
+ChromixContext::~ChromixContext() {
+    [(NSAutoreleasePool*)context drain];
 }

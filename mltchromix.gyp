@@ -37,12 +37,15 @@
         }], # OS=="mac"
       ],
       'sources': [
+        'mlt/chromix_context.h',
+        'mlt/chromix_context_linux.cc',
+        'mlt/chromix_context_mac.mm',
         'mlt/chromix_helper.cc',
         'mlt/chromix_helper.h',
-        'mlt/chromix_linux.cc',
-        'mlt/chromix_mac.m',
+        'mlt/chromix_task.cc',
+        'mlt/chromix_task.h',
         'mlt/factory.c',
-        'mlt/filter_chromix.c',
+        'mlt/filter_chromix.cc',
         'mlt/producer_chromix.c',
         'mlt/transition_chromix.c',
       ],

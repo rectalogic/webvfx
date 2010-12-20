@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-extern "C" void* chromix_context_new() {
-    return 0;
+#include "chromix_context.h"
+
+ChromixContext::ChromixContext() {
 }
 
-extern "C"void chromix_context_close(void* context) {
+ChromixContext::~ChromixContext() {
 }

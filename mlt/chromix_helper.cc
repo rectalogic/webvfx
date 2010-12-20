@@ -10,99 +10,14 @@ extern "C" {
 }
 #include "chromix_helper.h"
 
-static const char* MIXRENDER_PROP = "MixRender";
+extern "C" {
+    mlt_frame chromix_filter_process(mlt_filter self, mlt_frame frame);
+    int chromix_producer_get_frame(mlt_producer producer, mlt_frame_ptr frame, int index);
+    mlt_frame chromix_transition_process(mlt_transition transition, mlt_frame a_frame, mlt_frame b_frame);
+}
+
 #define YML_SUFFIX ".yml"
-#define FAILURE 1
-#define SUCCESS 0
 
-static void chromix_shutdown(void*) {
-    Chromix::shutdown();
-}
-
-static bool chromix_initialize() {
-    Chromix::InitializeResult result = Chromix::initialize();
-    if (result == Chromix::InitializeSuccess)
-        mlt_factory_register_for_clean_up(NULL, chromix_shutdown);
-    return result != Chromix::InitializeFailure;
-}
-
-static void chromix_delete_mixrender(Chromix::MixRender* mixRender) {
-    delete mixRender;
-}
-
-static inline Chromix::MixRender* chromix_get_mixrender(mlt_properties properties) {
-    return (Chromix::MixRender*)mlt_properties_get_data(properties, MIXRENDER_PROP, NULL);
-}
-
-int chromix_initialize_service_properties(mlt_properties properties) {
-    // Already initialized
-    Chromix::MixRender* mixRender = chromix_get_mixrender(properties);
-    if (mixRender)
-        return SUCCESS;
-
-    if (!chromix_initialize())
-        return FAILURE;
-
-    // Create and stash renderer on properties
-    mixRender = new Chromix::MixRender();
-    if (!mixRender)
-        return FAILURE;
-    mlt_properties_set_data(properties, MIXRENDER_PROP, mixRender, 0, (mlt_destructor)chromix_delete_mixrender, NULL);
-
-    //XXX need to set mixRender properties from mlt_properties_get, iterate over metadata
-    //XXX should chromix use a callback to get properties from the app? would need to map to v8 datatype
-    mixRender->loadURL(WTF::String::fromUTF8("file://localhost/Users/aw/Projects/snapfish/encoder/chromix/test/test.html"));//XXX
-    //XXX get and load html page property here, if not specified assume same as service_name".html"
-
-    //XXX for a_track/b_track for transition, "track" for filter, and other tracks
-    //XXX add these in yaml as custom props - mapping track to prop name used in html?
-    //XXX store this mapping on properties - map char* well defined name (for filter, trans) to WTF::String we can use w/chromix
-
-    //XXX add method dealing with getting the writeable image etc.
-
-    //XXX setup logging using mlt_log - should we map chrome levels to mlt? are crhome levels accurate?
-
-    return SUCCESS;
-}
-
-//XXX lookup track property to get the WTF::String mixrender name for the image
-int chromix_set_image(mlt_properties properties, const char* track, uint8_t* image, int width, int height) {
-    Chromix::MixRender* mixRender = chromix_get_mixrender(properties);
-    if (!mixRender)
-        return FAILURE;
-    //XXX lookup param - map track to WTF::String
-    unsigned char* buffer = mixRender->writeableDataForImageParameter(WTF::String::fromUTF8("video"), width, height);
-    if (!buffer)
-        return FAILURE;
-    memcpy(buffer, image, width * height * 4);
-    return SUCCESS;
-}
-
-int chromix_render(mlt_properties properties, double time, uint8_t* image, int width, int height) {
-    Chromix::MixRender* mixRender = chromix_get_mixrender(properties);
-    if (!mixRender)
-        return FAILURE;
-    mixRender->resize(width, height);
-    const SkBitmap* skiaBitmap = mixRender->render(time);
-    if (!skiaBitmap)
-        return FAILURE;
-    SkAutoLockPixels bitmapLock(*skiaBitmap);
-    // Do a block copy if no padding, otherwise copy a row at a time
-    unsigned int byteCount = width * height * 4;
-    if (skiaBitmap->getSize() == byteCount)
-        memcpy(image, skiaBitmap->getPixels(), byteCount);
-    else {
-        int bytesPerRow = width * 4;
-        const unsigned char* srcP = reinterpret_cast<const unsigned char*>(skiaBitmap->getPixels());
-        unsigned char* dstP = image;
-        for (int y = 0; y < height; y++) {
-            memcpy(dstP, srcP, bytesPerRow);
-            srcP += skiaBitmap->rowBytes();
-            dstP += bytesPerRow;
-        }
-    }
-    return SUCCESS;
-}
 
 static const char* service_type_to_name(mlt_service_type service_type) {
     switch (service_type) {
@@ -160,7 +75,7 @@ static void* chromix_create_service(mlt_profile profile, mlt_service_type servic
         default:
             break;
     }
-    
+
     return NULL;
 }
 
