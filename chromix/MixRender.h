@@ -12,9 +12,6 @@
 #include <skia/ext/platform_canvas.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebSize.h>
 
-namespace WTF {
-    class String;
-}
 
 namespace Chromix {
 
@@ -27,14 +24,14 @@ public:
 
     void setLogger(LogCallback logger, const void* data = NULL) { loader.setLogger(logger, data); }
 
-    bool loadURL(const WTF::String& url);
+    bool loadURL(const std::string& url);
     void resize(int width, int height);
     const SkBitmap* render(double time);
 
-    void setParameterValue(const WTF::String& name, bool value);
-    void setParameterValue(const WTF::String& name, double value);
-    void setParameterValue(const WTF::String& name, const WTF::String& value);
-    unsigned char* writeableDataForImageParameter(const WTF::String& name, unsigned int width, unsigned int height);
+    void setParameterValue(const std::string& name, bool value);
+    void setParameterValue(const std::string& name, double value);
+    void setParameterValue(const std::string& name, const std::string& value);
+    unsigned char* writeableDataForImageParameter(const std::string& name, unsigned int width, unsigned int height);
 
 private:
     WebKit::WebView *webView;

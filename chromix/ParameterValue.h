@@ -5,6 +5,7 @@
 #ifndef CHROMIX_PARAMETERVALUE_H_
 #define CHROMIX_PARAMETERVALUE_H_
 
+#include <string>
 #include <third_party/WebKit/JavaScriptCore/wtf/RefCounted.h>
 #include <third_party/WebKit/JavaScriptCore/wtf/text/WTFString.h>
 #include <third_party/WebKit/WebCore/html/ImageData.h>
@@ -53,6 +54,7 @@ private:
 class StringParameterValue : public PrimitiveParameterValue<WTF::String> {
 public:
     static WTF::PassRefPtr<StringParameterValue> create(const WTF::String& value) { return adoptRef(new StringParameterValue(value)); }
+    static WTF::PassRefPtr<StringParameterValue> create(const std::string& value) { return create(WTF::String::fromUTF8(value.data(), value.size())); }
     virtual v8::Handle<v8::Value> getV8Value() const;
 
 private:

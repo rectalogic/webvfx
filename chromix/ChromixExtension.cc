@@ -56,7 +56,7 @@ public:
         if (args.Length() >= 1 && args[0]->IsString()) {
             Chromix::ScriptingSupport *scriptingSupport = findScriptingSupport();
             if (scriptingSupport)
-                return scriptingSupport->getParameterMap().getParameterValue(*v8::String::Value(args[0]));
+                return scriptingSupport->getParameterMap().getParameterValue(*v8::String::Utf8Value(args[0]));
         }
         return v8::Undefined();
     }
@@ -65,7 +65,7 @@ public:
         if (args.Length() >= 1 && args[0]->IsString()) {
             Chromix::ScriptingSupport *scriptingSupport = findScriptingSupport();
             if (scriptingSupport)
-                return scriptingSupport->getParameterMap().getImageParameterValue(*v8::String::Value(args[0]));
+                return scriptingSupport->getParameterMap().getImageParameterValue(*v8::String::Utf8Value(args[0]));
         }
         return v8::Undefined();
     }

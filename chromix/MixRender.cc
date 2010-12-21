@@ -66,8 +66,8 @@ Chromix::MixRender::~MixRender() {
     webView->close();
 }
 
-bool Chromix::MixRender::loadURL(const WTF::String& url) {
-    return loader.loadURL(webView, string16(url.characters(), url.length())) && scriptingSupport->hasRenderCallback();
+bool Chromix::MixRender::loadURL(const std::string& url) {
+    return loader.loadURL(webView, url) && scriptingSupport->hasRenderCallback();
 }
 
 void Chromix::MixRender::resize(int width, int height) {
@@ -93,23 +93,24 @@ const SkBitmap* Chromix::MixRender::render(double time) {
     webView->paint(webkit_glue::ToWebCanvas(skiaCanvas), WebKit::WebRect(0, 0, size.width, size.height));
 
     // Get canvas bitmap
+    // XXX return wrapper class that internally does SkAutoLockPixels
     skia::BitmapPlatformDevice &skiaDevice = static_cast<skia::BitmapPlatformDevice&>(skiaCanvas->getTopPlatformDevice());
     return &skiaDevice.accessBitmap(false);
 }
 
-void Chromix::MixRender::setParameterValue(const WTF::String& name, bool value) {
+void Chromix::MixRender::setParameterValue(const std::string& name, bool value) {
     scriptingSupport->getParameterMap().setParameterValue(name, Chromix::BooleanParameterValue::create(value));
 }
 
-void Chromix::MixRender::setParameterValue(const WTF::String& name, double value) {
+void Chromix::MixRender::setParameterValue(const std::string& name, double value) {
     scriptingSupport->getParameterMap().setParameterValue(name, Chromix::NumberParameterValue::create(value));
 }
 
-void Chromix::MixRender::setParameterValue(const WTF::String& name, const WTF::String& value) {
+void Chromix::MixRender::setParameterValue(const std::string& name, const std::string& value) {
     scriptingSupport->getParameterMap().setParameterValue(name, Chromix::StringParameterValue::create(value));
 }
 
-unsigned char* Chromix::MixRender::writeableDataForImageParameter(const WTF::String& name, unsigned int width, unsigned int height) {
+unsigned char* Chromix::MixRender::writeableDataForImageParameter(const std::string& name, unsigned int width, unsigned int height) {
     return scriptingSupport->getParameterMap().writeableDataForImageParameter(name, width, height);
 }
 

@@ -5,6 +5,7 @@
 #ifndef CHROMIX_LOADER_H_
 #define CHROMIX_LOADER_H_
 
+#include <string>
 #include <third_party/WebKit/WebKit/chromium/public/WebViewClient.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebFrameClient.h>
 
@@ -27,7 +28,7 @@ public:
     virtual ~Loader() {};
 
     void setLogger(LogCallback logger, const void* data);
-    bool loadURL(WebKit::WebView *webView, const string16& url);
+    bool loadURL(WebKit::WebView *webView, const std::string& url);
 
 protected:
     // WebKit::WebViewClient
