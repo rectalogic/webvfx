@@ -16,7 +16,7 @@ public:
         int error = 0;
 
         // Get the filter
-        mlt_filter filter = mlt_frame_pop_service(frame);
+        mlt_filter filter = (mlt_filter)mlt_frame_pop_service(frame);
 
         // Compute time
         //XXX this is wrong - in/out are always 0 - maybe have to deal with this in chromix, or always specify out in params?
@@ -30,25 +30,25 @@ public:
         if ((error = mlt_frame_get_image(frame, image, format, width, height, 1)) != 0)
             return error;
 
-        ChromixFilterTask *task = getTask(MLT_FILTER_SERVICE(filter));
+        ChromixFilterTask *task = (ChromixFilterTask*)getTask(MLT_FILTER_SERVICE(filter));
         if (!task)
             task = new ChromixFilterTask(MLT_FILTER_SERVICE(filter));
 
         ChromixRawImage targetImage(*image, *width, *height);
-        filterImage = targetImage;
+        task->filterImage = targetImage;
         error = task->renderToImageForTime(targetImage, time);
-        filterImage.reset();
+        task->filterImage.reset();
         return error;
     }
 
 protected:
-    ChromixFilterTask(mlt_service service) : ChromixTask(service);
+    ChromixFilterTask(mlt_service service) : ChromixTask(service) {}
 
     int performTask() {
         //XXX lookup param - map track to WTF::String
         //XXX lookup track property to get the WTF::String mixrender name for the image
         //XXX need a map of name to ChromixRawImage - maintain in ChromixTask, clear after each render
-        return setImageForName(filterImage, WTF::String::fromUTF8("video"))
+        return setImageForName(filterImage, "video");
     };
 
 private:

@@ -4,4 +4,4 @@ public:
     ~ChromixContext();
 private:
     void *context;
-}
+};

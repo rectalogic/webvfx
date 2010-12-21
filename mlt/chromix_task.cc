@@ -7,13 +7,14 @@
 #include <chromix/Chromix.h>
 #include <chromix/MixRender.h>
 extern "C" {
-#include <mlt_log.h>
+    #include <mlt/framework/mlt_factory.h>
+    #include <mlt/framework/mlt_log.h>
 }
 
-static mlt_deque ChromixTask::queue = 0;
-static pthread_t ChromixTask::chromixThread = 0;
-static pthread_mutex_t ChromixTask::queueMutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_cond_t ChromixTask::queueCond = PTHREAD_COND_INITIALIZER;
+mlt_deque ChromixTask::queue = 0;
+pthread_t ChromixTask::chromixThread = 0;
+pthread_mutex_t ChromixTask::queueMutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t ChromixTask::queueCond = PTHREAD_COND_INITIALIZER;
 
 static const char* TASK_PROP = "ChromixTask";
 
@@ -38,12 +39,12 @@ private:
 
 ////////////////////////////////
 
-ChromixTask* ChromixTask::getTask(mlt_service service);
+ChromixTask* ChromixTask::getTask(mlt_service service) {
     return (ChromixTask*)mlt_properties_get_data(MLT_SERVICE_PROPERTIES(service), TASK_PROP, NULL);
 }
 
-void ChromixTask::chromixMainLoop(void* arg) {
-    AutoChromix chromix(argc, argv);
+void* ChromixTask::chromixMainLoop(void* arg) {
+    AutoChromix chromix(0, NULL);
 
     //XXX check shutdown flag in this loop, but also drain queue
     pthread_mutex_lock(&queueMutex);
@@ -52,16 +53,18 @@ void ChromixTask::chromixMainLoop(void* arg) {
         ChromixContext context;
 
         //XXX need to check shutdown flag in this loop too
-        while ((ChromixTask* task = nextQueuedTask()) == 0)
-            pthread_cond_wait(&queueCond);
+        ChromixTask *task;
+        while ((task = nextQueuedTask()) == 0)
+            pthread_cond_wait(&queueCond, &queueMutex);
         task->executeTask();
     }
     pthread_mutex_unlock(&queueMutex);
 
     pthread_cond_destroy(&queueCond);
     pthread_mutex_destroy(&queueMutex);
-    mlt_queue_close(queue);
+    mlt_deque_close(queue);
     //XXX should all this be in AutoChromix? do we even need AutoChromix?
+    return NULL;
 }
 
 void ChromixTask::shutdownHook(void*) {
@@ -82,10 +85,11 @@ void ChromixTask::destroy(ChromixTask *task) {
 ChromixTask::ChromixTask(mlt_service service) :
     service(service),
     mixRender(0),
-    taskCond(PTHREAD_COND_INITIALIZER),
     needsDestruction(false),
-    taskResult(0)
+    taskResult(0),
+    time(0)
 {
+    pthread_cond_init(&taskCond, NULL);
     mlt_properties_set_data(MLT_SERVICE_PROPERTIES(service), TASK_PROP, this, 0,
                             (mlt_destructor)destroy, NULL);
 }
@@ -96,9 +100,9 @@ ChromixTask::~ChromixTask() {
     //XXX assert that mixRender is NULL, it should have been destroyed on chromix thread
 }
 
-int ChromixTask::renderToImageForTime(ChromixRawImage targetImage, double time) {
-    this.targetImage = targetImage;
-    this.time = time;
+int ChromixTask::renderToImageForTime(ChromixRawImage& targetImage, double time) {
+    this->targetImage = targetImage;
+    this->time = time;
     return queueAndWait();
 }
 
@@ -137,7 +141,7 @@ int ChromixTask::initMixRender() {
     //XXX load url
     //XXX need to set mixRender properties from mlt_properties_get, iterate over metadata
     //XXX should chromix use a callback to get properties from the app? would need to map to v8 datatype
-    mixRender->loadURL(WTF::String::fromUTF8("file://localhost/Users/aw/Projects/snapfish/encoder/chromix/test/test.html"));//XXX
+    mixRender->loadURL("file://localhost/Users/aw/Projects/snapfish/encoder/chromix/test/test.html");//XXX
     //XXX get and load html page property here, if not specified assume same as service_name".html"
 
     //XXX for a_track/b_track for transition, "track" for filter, and other tracks
@@ -150,7 +154,7 @@ int ChromixTask::initMixRender() {
     return 0;
 }
 
-int setImageForName(ChromixRawImage image, WTF::String name) {
+int ChromixTask::setImageForName(ChromixRawImage& image, const std::string& name) {
     //XXX assert we are on chromix thread
     unsigned char* buffer = mixRender->writeableDataForImageParameter(name, image.width, image.height);
     if (!buffer)
@@ -159,7 +163,7 @@ int setImageForName(ChromixRawImage image, WTF::String name) {
     return 0;
 }
 
-int renderToTarget() {
+int ChromixTask::renderToTarget() {
     // Resize MixRender and render into target image
     mixRender->resize(targetImage.width, targetImage.height);
     //XXX move this into MixRender - pass raw buffer for it to render into
