@@ -4,7 +4,8 @@
 
 #include "chromix/MixRender.h"
 #include "chromix/ScriptingSupport.h"
-#include "chromix/ParameterMap.h"
+#include "chromix/ImageMap.h"
+#include "chromix/Delegate.h"
 
 #include <base/string16.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebView.h>
@@ -18,11 +19,12 @@
 #include <skia/ext/bitmap_platform_device.h>
 
 
-Chromix::MixRender::MixRender() :
+Chromix::MixRender::MixRender(Delegate* delegate) :
+    delegate(delegate),
     size(),
     skiaCanvas(NULL),
-    loader(),
-    scriptingSupport(new Chromix::ScriptingSupport())
+    loader(delegate),
+    scriptingSupport(new Chromix::ScriptingSupport(delegate))
 {
     webView = WebKit::WebView::create(&loader, NULL);
 
@@ -61,6 +63,7 @@ Chromix::MixRender::MixRender() :
 }
 
 Chromix::MixRender::~MixRender() {
+    delete delegate;
     delete skiaCanvas;
     delete scriptingSupport;
     webView->close();
@@ -98,19 +101,7 @@ const SkBitmap* Chromix::MixRender::render(double time) {
     return &skiaDevice.accessBitmap(false);
 }
 
-void Chromix::MixRender::setParameterValue(const std::string& name, bool value) {
-    scriptingSupport->getParameterMap().setParameterValue(name, Chromix::BooleanParameterValue::create(value));
-}
-
-void Chromix::MixRender::setParameterValue(const std::string& name, double value) {
-    scriptingSupport->getParameterMap().setParameterValue(name, Chromix::NumberParameterValue::create(value));
-}
-
-void Chromix::MixRender::setParameterValue(const std::string& name, const std::string& value) {
-    scriptingSupport->getParameterMap().setParameterValue(name, Chromix::StringParameterValue::create(value));
-}
-
 unsigned char* Chromix::MixRender::writeableDataForImageParameter(const std::string& name, unsigned int width, unsigned int height) {
-    return scriptingSupport->getParameterMap().writeableDataForImageParameter(name, width, height);
+    return scriptingSupport->writeableDataForImageParameter(name, width, height);
 }
 

@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMIX_PARAMETERMAP_H_
-#define CHROMIX_PARAMETERMAP_H_
+#ifndef CHROMIX_IMAGEMAP_H_
+#define CHROMIX_IMAGEMAP_H_
 
-#include "chromix/ParameterValue.h"
 #include <string>
 #include <third_party/WebKit/WebCore/config.h>
 #include <third_party/WebKit/WebCore/html/ImageData.h>
@@ -21,27 +20,20 @@ namespace Chromix {
 
 class MixRender;
 
-class ParameterMap {
+class ImageMap {
 public:
-    ParameterMap();
-    virtual ~ParameterMap() {};
-
-    void setParameterValue(const std::string& name, WTF::PassRefPtr<ParameterValue> prpParam);
+    ImageMap();
+    virtual ~ImageMap() {};
 
     // Returns buffer to write image data to - RGBA format, so size is width*height*4
     unsigned char* writeableDataForImageParameter(const std::string& name, unsigned int width, unsigned int height);
 
     v8::Handle<v8::Value> getImageParameterValue(const std::string& name) const;
-    v8::Handle<v8::Value> getParameterValue(const std::string& name) const;
 
-    //XXX APIs to enumerate (keys and descriptions)
 
 private:
-    typedef base::hash_map<std::string, ImageParameterValue> ImageParamMap;
-    ImageParamMap imageParamMap;
-
-    typedef base::hash_map<std::string, WTF::RefPtr<ParameterValue> > ParamMap;
-    ParamMap paramMap;
+    typedef base::hash_map<std::string, WTF::RefPtr<WebCore::ImageData> > ImageDataMap;
+    ImageDataMap imageDataMap;
 };
 
 }

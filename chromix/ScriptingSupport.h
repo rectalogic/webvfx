@@ -5,7 +5,7 @@
 #ifndef CHROMIX_SCRIPTINGSUPPORT_H_
 #define CHROMIX_SCRIPTINGSUPPORT_H_
 
-#include "chromix/ParameterMap.h"
+#include "chromix/ImageMap.h"
 
 #include <base/basictypes.h>
 #include <v8/include/v8.h>
@@ -16,9 +16,11 @@
 
 namespace Chromix {
 
+class Delegate;
+
 class ScriptingSupport {
 public:
-    ScriptingSupport();
+    ScriptingSupport(Delegate* delegate);
     virtual ~ScriptingSupport();
 
     static ScriptingSupport* fromWebView(WebKit::WebView* webView);
@@ -26,15 +28,18 @@ public:
     // webView must have its mainFrame created
     void initialize(WebKit::WebView* webView);
 
-    ParameterMap& getParameterMap() { return parameterMap; }
+    v8::Handle<v8::Value> getImageParameterValue(const std::string& name) { return imageMap.getImageParameterValue(name); }
+    v8::Handle<v8::Value> getParameterValue(const std::string& name);
+    unsigned char* writeableDataForImageParameter(const std::string& name, unsigned int width, unsigned int height) { return imageMap.writeableDataForImageParameter(name, width, height); }
 
     void setRenderCallback(v8::Handle<v8::Value> callbackFunction);
     bool hasRenderCallback() { return !renderCallback.hasNoValue(); }
     bool invokeRenderCallback(double time);
 
 private:
+    Delegate* delegate;
     WebKit::WebView *webView;
-    ParameterMap parameterMap;
+    ImageMap imageMap;
     WebCore::ScriptState *scriptState;
     WebCore::ScriptValue renderCallback;
 

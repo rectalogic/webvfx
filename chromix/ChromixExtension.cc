@@ -4,14 +4,9 @@
 
 #include "chromix/ChromixExtension.h"
 #include "chromix/ScriptingSupport.h"
-#include "chromix/ParameterMap.h"
 
 #include <v8/include/v8.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebFrame.h>
-#include <third_party/WebKit/WebCore/config.h>
-#include <third_party/WebKit/WebCore/html/ImageData.h>
-#include <third_party/WebKit/JavaScriptCore/wtf/RefCounted.h>
-#include <V8ImageData.h>
 
 namespace Chromix {
 
@@ -56,7 +51,7 @@ public:
         if (args.Length() >= 1 && args[0]->IsString()) {
             Chromix::ScriptingSupport *scriptingSupport = findScriptingSupport();
             if (scriptingSupport)
-                return scriptingSupport->getParameterMap().getParameterValue(*v8::String::Utf8Value(args[0]));
+                return scriptingSupport->getParameterValue(*v8::String::Utf8Value(args[0]));
         }
         return v8::Undefined();
     }
@@ -65,7 +60,7 @@ public:
         if (args.Length() >= 1 && args[0]->IsString()) {
             Chromix::ScriptingSupport *scriptingSupport = findScriptingSupport();
             if (scriptingSupport)
-                return scriptingSupport->getParameterMap().getImageParameterValue(*v8::String::Utf8Value(args[0]));
+                return scriptingSupport->getImageParameterValue(*v8::String::Utf8Value(args[0]));
         }
         return v8::Undefined();
     }

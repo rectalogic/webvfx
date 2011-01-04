@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromix/Loader.h"
+#include "chromix/Delegate.h"
 
 #include <third_party/WebKit/WebKit/chromium/public/WebView.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebFrame.h>
@@ -12,18 +13,12 @@
 #include <base/string16.h>
 #include <base/message_loop.h>
 
-Chromix::Loader::Loader() :
+Chromix::Loader::Loader(Delegate* delegate) :
+    delegate(delegate),
     inMessageLoop(false),
     isLoadFinished(false),
-    didLoadSucceed(false),
-    logger(NULL),
-    logData(NULL)
+    didLoadSucceed(false)
 {
-}
-
-void Chromix::Loader::setLogger(LogCallback logger, const void* data) {
-    this->logger = logger;
-    this->logData = data;
 }
 
 bool Chromix::Loader::loadURL(WebKit::WebView *webView, const std::string& url) {
@@ -48,8 +43,8 @@ bool Chromix::Loader::loadURL(WebKit::WebView *webView, const std::string& url) 
 }
 
 void Chromix::Loader::didAddMessageToConsole(const WebKit::WebConsoleMessage& message, const WebKit::WebString& sourceName, unsigned sourceLine) {
-    if (logger)
-        logger(string16(message.text), logData);
+    if (delegate)
+        delegate->logMessage(std::string(message.text.utf8()));
 }
 
 void Chromix::Loader::didStopLoading() {

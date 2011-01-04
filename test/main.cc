@@ -10,18 +10,27 @@
 
 #include <chromix/Chromix.h>
 #include <chromix/MixRender.h>
+#include <chromix/Delegate.h>
 #include <gfx/codec/png_codec.h>
 
-
-void chromix_log(const string16& msg, const void*) {
-    std::cerr << msg << std::endl;
-}
 
 int chromix_main(int argc, const char * argv[]) {
     if (argc < 2) {
         std::cerr << "Usage: " << argv[0] << " [chromium-options] <html-template-url>" << std::endl;
         return -1;
     }
+
+    class Delegate : public Chromix::Delegate {
+    public:
+        virtual void logMessage(const std::string& message) {
+            std::cerr << message << std::endl;
+        }
+        virtual v8::Handle<v8::Value> getParameterValue(const std::string& name) {
+            if (name == "title")
+                return wrapParameterValue(std::string("This is the title"));
+            return getUndefinedParameterValue();
+        }
+    };
 
     class AutoChromix {
     public:
@@ -30,10 +39,8 @@ int chromix_main(int argc, const char * argv[]) {
     };
     AutoChromix chromix(argc, argv);
 
-    Chromix::MixRender mixRender;
-    mixRender.setLogger(chromix_log);
+    Chromix::MixRender mixRender(new Delegate());
     mixRender.resize(800, 600);
-    mixRender.setParameterValue("title", std::string("This is the title"));
 
     if (!mixRender.loadURL(argv[argc - 1]))
         return -1;

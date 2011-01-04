@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromix/ScriptingSupport.h"
+#include "chromix/Delegate.h"
 
 #include <map>
 #include <base/singleton.h>
@@ -13,7 +14,7 @@
 typedef std::map<WebKit::WebView*, Chromix::ScriptingSupport*> ViewScriptMap;
 
 
-Chromix::ScriptingSupport::ScriptingSupport() {
+Chromix::ScriptingSupport::ScriptingSupport(Delegate* delegate) : delegate(delegate) {
 }
 
 Chromix::ScriptingSupport::~ScriptingSupport() {
@@ -37,6 +38,13 @@ void Chromix::ScriptingSupport::initialize(WebKit::WebView* webView) {
 
     v8::HandleScope scope;
     scriptState = WebCore::ScriptState::forContext(webView->mainFrame()->mainWorldScriptContext());
+}
+
+v8::Handle<v8::Value> Chromix::ScriptingSupport::getParameterValue(const std::string& name) {
+    if (delegate)
+        return delegate->getParameterValue(name);
+    return v8::Undefined();
+
 }
 
 void Chromix::ScriptingSupport::setRenderCallback(v8::Handle<v8::Value> callbackFunction) {

@@ -5,6 +5,7 @@
 #ifndef CHROMIX_LOADER_H_
 #define CHROMIX_LOADER_H_
 
+
 #include <string>
 #include <third_party/WebKit/WebKit/chromium/public/WebViewClient.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebFrameClient.h>
@@ -18,16 +19,15 @@ namespace WebKit {
 
 namespace Chromix {
 
-typedef void(*LogCallback)(const string16&, const void* data);
+class Delegate;
 
 class Loader : public WebKit::WebFrameClient,
                public WebKit::WebViewClient
 {
 public:
-    Loader();
+    Loader(Delegate* delegate);
     virtual ~Loader() {};
 
-    void setLogger(LogCallback logger, const void* data);
     bool loadURL(WebKit::WebView *webView, const std::string& url);
 
 protected:
@@ -37,16 +37,14 @@ protected:
     // WebKit::WebFrameClient
     virtual void didFailProvisionalLoad(WebKit::WebFrame*, const WebKit::WebURLError&);
     virtual void didFailLoad(WebKit::WebFrame*, const WebKit::WebURLError&);
-    
+
     void handlLoadFailure(const WebKit::WebURLError&);
-    
+
 private:
+    Delegate* delegate;
     bool inMessageLoop;
     bool isLoadFinished;
     bool didLoadSucceed;
-
-    LogCallback logger;
-    const void* logData;
 };
 
 }

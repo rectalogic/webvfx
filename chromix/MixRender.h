@@ -6,7 +6,6 @@
 #define CHROMIX_MIXRENDER_H_
 
 #include "chromix/Loader.h"
-#include "chromix/ParameterValue.h"
 
 #include <base/basictypes.h>
 #include <skia/ext/platform_canvas.h>
@@ -19,21 +18,18 @@ class ScriptingSupport;
 
 class MixRender {
 public:
-    MixRender();
+    // MixRender takes ownership of Delegate (may be NULL)
+    MixRender(Delegate* delegate);
     virtual ~MixRender();
-
-    void setLogger(LogCallback logger, const void* data = NULL) { loader.setLogger(logger, data); }
 
     bool loadURL(const std::string& url);
     void resize(int width, int height);
     const SkBitmap* render(double time);
 
-    void setParameterValue(const std::string& name, bool value);
-    void setParameterValue(const std::string& name, double value);
-    void setParameterValue(const std::string& name, const std::string& value);
     unsigned char* writeableDataForImageParameter(const std::string& name, unsigned int width, unsigned int height);
 
 private:
+    Delegate* delegate;
     WebKit::WebView *webView;
     WebKit::WebSize size;
     skia::PlatformCanvas* skiaCanvas;
@@ -42,7 +38,7 @@ private:
 
     DISALLOW_COPY_AND_ASSIGN(MixRender);
 };
-    
+
 }
 
 #endif
