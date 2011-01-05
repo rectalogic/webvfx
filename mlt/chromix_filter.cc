@@ -30,14 +30,20 @@ public:
         if ((error = mlt_frame_get_image(frame, image, format, width, height, 1)) != 0)
             return error;
 
-        ChromixFilterTask *task = (ChromixFilterTask*)getTask(MLT_FILTER_SERVICE(filter));
-        if (!task)
-            task = new ChromixFilterTask(MLT_FILTER_SERVICE(filter));
+        {
+            mlt_service service = MLT_FILTER_SERVICE(filter);
+            ServiceLock lock(service);
 
-        ChromixRawImage targetImage(*image, *width, *height);
-        task->filterImage = targetImage;
-        error = task->renderToImageForTime(targetImage, time);
-        task->filterImage.reset();
+            ChromixFilterTask *task = (ChromixFilterTask*)getTask(service);
+            if (!task)
+                task = new ChromixFilterTask(service);
+
+            ChromixRawImage targetImage(*image, *width, *height);
+            task->filterImage = targetImage;
+            error = task->renderToImageForTime(targetImage, time);
+            task->filterImage.reset();
+        }
+
         return error;
     }
 

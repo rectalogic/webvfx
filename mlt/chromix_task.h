@@ -25,6 +25,18 @@ public:
     int height;
 };
 
+////////////////////////////////
+
+class ServiceLock {
+public:
+    ServiceLock(mlt_service service) : service(service) { mlt_service_lock(service); }
+    ~ServiceLock() { mlt_service_unlock(service); }
+private:
+    mlt_service service;
+};
+
+////////////////////////////////
+
 class ChromixTask {
 public:
 

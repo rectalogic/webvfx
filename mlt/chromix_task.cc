@@ -6,6 +6,7 @@
 #include "chromix_context.h"
 #include <chromix/Chromix.h>
 #include <chromix/MixRender.h>
+#include <chromix/Delegate.h>
 extern "C" {
     #include <mlt/framework/mlt_factory.h>
     #include <mlt/framework/mlt_log.h>
@@ -35,6 +36,27 @@ public:
     ~MutexLock() { pthread_mutex_unlock(mutex); }
 private:
     pthread_mutex_t *mutex;
+};
+
+////////////////////////////////
+
+class ChromixDelegate : public Chromix::Delegate {
+public:
+    ChromixDelegate(mlt_service service) : service(service) {}
+
+    virtual void logMessage(const std::string& message) {
+        //XXX do we need log level too?
+        mlt_log(service, MLT_LOG_INFO, message.c_str());
+    }
+    virtual v8::Handle<v8::Value> getParameterValue(const std::string& name) {
+        //XXX can we identify type of property so we wrap it right? need mlt_repository and ID to lookup metadata
+        char* value = mlt_properties_get(MLT_SERVICE_PROPERTIES(service), name.c_str());
+        if (value)
+            return wrapParameterValue(std::string(value));
+        return getUndefinedParameterValue();
+    }
+private:
+    mlt_service service;
 };
 
 ////////////////////////////////
@@ -95,7 +117,6 @@ ChromixTask::ChromixTask(mlt_service service) :
 }
 
 ChromixTask::~ChromixTask() {
-    //XXX not safe to destroy while other threads are waiting
     pthread_cond_destroy(&taskCond);
     //XXX assert that mixRender is NULL, it should have been destroyed on chromix thread
 }
@@ -110,7 +131,7 @@ int ChromixTask::queueAndWait() {
     MutexLock lock(&queueMutex);
     taskResult = 0;
 
-    // Create queue and thread lazily
+    // Lazily create queue and thread
     if (chromixThread == 0) {
         queue = mlt_deque_init();
         if (pthread_create(&chromixThread, NULL, chromixMainLoop, 0) < 0) {
@@ -133,7 +154,7 @@ int ChromixTask::queueAndWait() {
 int ChromixTask::initMixRender() {
     if (mixRender)
         return 0;
-    mixRender = new Chromix::MixRender();
+    mixRender = new Chromix::MixRender(new ChromixDelegate(service));
     if (!mixRender) {
         mlt_log(service, MLT_LOG_ERROR, "failed to create MixRender");
         return 1;
@@ -141,7 +162,7 @@ int ChromixTask::initMixRender() {
     //XXX load url
     //XXX need to set mixRender properties from mlt_properties_get, iterate over metadata
     //XXX should chromix use a callback to get properties from the app? would need to map to v8 datatype
-    mixRender->loadURL("file://localhost/Users/aw/Projects/snapfish/encoder/chromix/test/test.html");//XXX
+    mixRender->loadURL("file:///tmp/test.html");//XXX
     //XXX get and load html page property here, if not specified assume same as service_name".html"
 
     //XXX for a_track/b_track for transition, "track" for filter, and other tracks
