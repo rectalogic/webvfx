@@ -63,6 +63,7 @@ private:
     static pthread_mutex_t queueMutex;
     static pthread_cond_t queueCond;
     static pthread_t chromixThread;
+    static bool shutdown;
 
     static void* chromixMainLoop(void*);
     static void shutdownHook(void*);

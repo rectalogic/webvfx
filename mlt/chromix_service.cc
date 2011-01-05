@@ -40,8 +40,8 @@ static mlt_properties chromix_create_metadata(mlt_service_type service_type, con
     if (!service_type_name)
         return NULL;
 
-    std::string metadata_yml = chromix_get_metadata_dir() + service_name + YML_SUFFIX;
-	return mlt_properties_parse_yaml(metadata_yml.c_str());
+    std::string metadata_path = chromix_get_metadata_dir() + "/" + service_name + YML_SUFFIX;
+	return mlt_properties_parse_yaml(metadata_path.c_str());
 }
 
 static void* chromix_create_service(mlt_profile profile, mlt_service_type service_type, const char* service_name, const void*) {

@@ -62,7 +62,7 @@ private:
 };
 
 
-extern "C" mlt_frame chromix_filter_process(mlt_filter filter, mlt_frame frame) {
+mlt_frame chromix_filter_process(mlt_filter filter, mlt_frame frame) {
     // Push the frame filter
     mlt_frame_push_service(frame, filter);
     mlt_frame_push_get_image(frame, ChromixFilterTask::filterGetImage);

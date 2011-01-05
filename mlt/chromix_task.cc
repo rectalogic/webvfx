@@ -16,6 +16,7 @@ mlt_deque ChromixTask::queue = 0;
 pthread_t ChromixTask::chromixThread = 0;
 pthread_mutex_t ChromixTask::queueMutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t ChromixTask::queueCond = PTHREAD_COND_INITIALIZER;
+bool ChromixTask::shutdown = false;
 
 static const char* TASK_PROP = "ChromixTask";
 
@@ -68,18 +69,26 @@ ChromixTask* ChromixTask::getTask(mlt_service service) {
 void* ChromixTask::chromixMainLoop(void* arg) {
     AutoChromix chromix(0, NULL);
 
-    //XXX check shutdown flag in this loop, but also drain queue
     pthread_mutex_lock(&queueMutex);
-    while (true) {
+    while (!shutdown) {
         // This manages autorelease pool for Mac
         ChromixContext context;
 
-        //XXX need to check shutdown flag in this loop too
         ChromixTask *task;
-        while ((task = nextQueuedTask()) == 0)
+        while ((task = nextQueuedTask()) == 0) {
             pthread_cond_wait(&queueCond, &queueMutex);
-        task->executeTask();
+            if (shutdown)
+                break;
+        }
+        if (task)
+            task->executeTask();
     }
+
+    // Drain the queue
+    ChromixTask *task;
+    while ((task = nextQueuedTask()))
+        task->executeTask();
+
     pthread_mutex_unlock(&queueMutex);
 
     pthread_cond_destroy(&queueCond);
@@ -90,8 +99,11 @@ void* ChromixTask::chromixMainLoop(void* arg) {
 }
 
 void ChromixTask::shutdownHook(void*) {
-//XXX set flag to drain queue and exit chromix thread
-//XXX join on the chromix thread
+    pthread_mutex_lock(&queueMutex);
+    shutdown = true;
+    pthread_cond_signal(&queueCond);
+    pthread_mutex_unlock(&queueMutex);
+    pthread_join(chromixThread, NULL);
 }
 
 // mlt_destructor for service task property.
@@ -162,7 +174,11 @@ int ChromixTask::initMixRender() {
     //XXX load url
     //XXX need to set mixRender properties from mlt_properties_get, iterate over metadata
     //XXX should chromix use a callback to get properties from the app? would need to map to v8 datatype
-    mixRender->loadURL("file:///tmp/test.html");//XXX
+    bool result = mixRender->loadURL("file:///tmp/test.html");//XXX
+    if (!result) {
+        mlt_log(service, MLT_LOG_ERROR, "failed to load URL");
+        return 1;
+    }
     //XXX get and load html page property here, if not specified assume same as service_name".html"
 
     //XXX for a_track/b_track for transition, "track" for filter, and other tracks
@@ -228,8 +244,3 @@ void ChromixTask::executeTask() {
         pthread_cond_signal(&taskCond);
     }
 }
-
-
-//XXX custom C++ classes for filter/producer/trans etc. which can hold needed data and handle the rendering
-
-

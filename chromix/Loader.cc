@@ -66,6 +66,8 @@ void Chromix::Loader::didFailLoad(WebKit::WebFrame* frame, const WebKit::WebURLE
 }
 
 void Chromix::Loader::handlLoadFailure(const WebKit::WebURLError& error) {
+    if (delegate)
+        delegate->logMessage(std::string("Failed to load ") + std::string(error.unreachableURL.spec()));
     isLoadFinished = true;
     didLoadSucceed = false;
     if (inMessageLoop)

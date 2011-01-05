@@ -54,6 +54,12 @@ void Chromix::ScriptingSupport::setRenderCallback(v8::Handle<v8::Value> callback
 bool Chromix::ScriptingSupport::invokeRenderCallback(double time) {
     if (!scriptState)
         return false;
+    if (renderCallback.hasNoValue()) {
+        if (delegate)
+            delegate->logMessage("Render callback not set - loaded page must call chromix.setRenderCallback");
+        return false;
+    }
+
     // Need scope so we can construct Number
     WebCore::ScriptScope scope(scriptState);
     WebCore::ScriptCallback callback(scriptState, renderCallback);

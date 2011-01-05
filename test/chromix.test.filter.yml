@@ -3,7 +3,7 @@ type: filter # consumer, filter, producer, or transition
 identifier: chromix.test.filter
 title: Chromix Test Filter
 version: 0.0.1
-copyright: Copyright (C) 2010
+copyright: Copyright (C) 2010 Hewlett-Packard Development Company, L.P.
 license: GPL
 language: en
 url: none
