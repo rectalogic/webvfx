@@ -47,7 +47,7 @@
         'mlt/chromix_task.cc',
         'mlt/chromix_task.h',
         'mlt/chromix_transition.cc',
-        'mlt/factory.c',
+        'mlt/factory.cc',
       ],
     },
   ]

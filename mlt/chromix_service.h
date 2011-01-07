@@ -5,14 +5,15 @@
 #ifndef MLTCHROMIX_CHROMIX_HELPER_H_
 #define MLTCHROMIX_CHROMIX_HELPER_H_
 
-#ifdef __cplusplus
 extern "C" {
-#endif
+    #include <mlt/framework/mlt_factory.h>
+}
+#include <string>
+
+#define CHROMIX_METADATA_PROP "ChromixMetadata"
 
 void chromix_register_services(mlt_repository repository, mlt_service_type service_type);
 
-#ifdef __cplusplus
-}
-#endif
+const std::string chromix_get_metadata_dir();
 
 #endif

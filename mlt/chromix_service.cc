@@ -30,17 +30,15 @@ static const char* service_type_to_name(mlt_service_type service_type) {
     }
 }
 
-static const std::string chromix_get_metadata_dir() {
-    return std::string(mlt_environment("MLT_DATA")).append("/chromix");
+// Includes trailing slash
+const std::string chromix_get_metadata_dir() {
+    static const std::string metadata_dir(std::string(mlt_environment("MLT_DATA")).append("/chromix/"));
+    return metadata_dir;
 }
 
 //XXX http://mltframework.org/twiki/bin/view/MLT/MetadataRequirements
 static mlt_properties chromix_create_metadata(mlt_service_type service_type, const char* service_name, void*) {
-    const char* service_type_name = service_type_to_name(service_type);
-    if (!service_type_name)
-        return NULL;
-
-    std::string metadata_path = chromix_get_metadata_dir() + "/" + service_name + YML_SUFFIX;
+    std::string metadata_path = chromix_get_metadata_dir() + service_name + YML_SUFFIX;
 	return mlt_properties_parse_yaml(metadata_path.c_str());
 }
 
@@ -50,6 +48,9 @@ static void* chromix_create_service(mlt_profile profile, mlt_service_type servic
             mlt_producer self = mlt_producer_new();
             if (self) {
                 self->get_frame = chromix_producer_get_frame;
+                mlt_properties_set_data(MLT_PRODUCER_PROPERTIES(self), CHROMIX_METADATA_PROP,
+                                        chromix_create_metadata(service_type, service_name, NULL),
+                                        0, (mlt_destructor)mlt_properties_close, NULL);
                 return self;
             }
             break;
@@ -58,6 +59,9 @@ static void* chromix_create_service(mlt_profile profile, mlt_service_type servic
             mlt_filter self = mlt_filter_new();
             if (self) {
                 self->process = chromix_filter_process;
+                mlt_properties_set_data(MLT_FILTER_PROPERTIES(self), CHROMIX_METADATA_PROP,
+                                        chromix_create_metadata(service_type, service_name, NULL),
+                                        0, (mlt_destructor)mlt_properties_close, NULL);
                 return self;
             }
             break;
@@ -66,6 +70,9 @@ static void* chromix_create_service(mlt_profile profile, mlt_service_type servic
             mlt_transition self = mlt_transition_new();
             if (self) {
                 self->process = chromix_transition_process;
+                mlt_properties_set_data(MLT_TRANSITION_PROPERTIES(self), CHROMIX_METADATA_PROP,
+                                        chromix_create_metadata(service_type, service_name, NULL),
+                                        0, (mlt_destructor)mlt_properties_close, NULL);
                 return self;
             }
             break;
@@ -77,7 +84,7 @@ static void* chromix_create_service(mlt_profile profile, mlt_service_type servic
     return NULL;
 }
 
-extern "C" void chromix_register_services(mlt_repository repository, mlt_service_type service_type) {
+void chromix_register_services(mlt_repository repository, mlt_service_type service_type) {
     // Metadata is named "chromix.<service_name>.filter.yml" and the ID is "chromix.<service_name>.filter"
     // This is so we can have e.g. both a filter and transition with the same <service_name> name.
 

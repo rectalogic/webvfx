@@ -4,15 +4,16 @@ identifier: chromix.test.filter
 title: Chromix Test Filter
 version: 0.0.1
 copyright: Copyright (C) 2010 Hewlett-Packard Development Company, L.P.
-license: GPL
+license: BSD-new
 language: en
-url: none
+#url:
 creator: Andrew Wason
 tags:
   - Video # this may produce video
 description: Simple Chromix test
 
 #XXX specify path to HTML, and mapping of video param names
+html: test.html
 
 parameters:
   - identifier: title

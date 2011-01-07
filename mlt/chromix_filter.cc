@@ -19,18 +19,18 @@ public:
         mlt_filter filter = (mlt_filter)mlt_frame_pop_service(frame);
 
         // Compute time
-        //XXX this is wrong - in/out are always 0 - maybe have to deal with this in chromix, or always specify out in params?
         mlt_position in = mlt_filter_get_in(filter);
         mlt_position length = mlt_filter_get_out(filter) - in + 1;
-        mlt_position position = mlt_frame_get_position(frame);
+        char *name = mlt_properties_get(MLT_FILTER_PROPERTIES(filter), "_unique_id");
+        mlt_position position = mlt_properties_get_position(MLT_FRAME_PROPERTIES(frame), name);
         double time = (double)(position - in) / (double)length;
 
-        // Get the image
+        // Get the image, we will write our output to it
         *format = mlt_image_rgb24a;
         if ((error = mlt_frame_get_image(frame, image, format, width, height, 1)) != 0)
             return error;
 
-        {
+        { // Scope the ServiceLock
             mlt_service service = MLT_FILTER_SERVICE(filter);
             ServiceLock lock(service);
 
@@ -63,6 +63,9 @@ private:
 
 
 mlt_frame chromix_filter_process(mlt_filter filter, mlt_frame frame) {
+    // Store position on frame
+    char *name = mlt_properties_get(MLT_FILTER_PROPERTIES(filter), "_unique_id");
+    mlt_properties_set_position(MLT_FRAME_PROPERTIES(frame), name, mlt_frame_get_position(frame));
     // Push the frame filter
     mlt_frame_push_service(frame, filter);
     mlt_frame_push_get_image(frame, ChromixFilterTask::filterGetImage);

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromix_task.h"
+#include "chromix_service.h"
 #include "chromix_context.h"
 #include <chromix/Chromix.h>
 #include <chromix/MixRender.h>
@@ -18,7 +19,8 @@ pthread_mutex_t ChromixTask::queueMutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t ChromixTask::queueCond = PTHREAD_COND_INITIALIZER;
 bool ChromixTask::shutdown = false;
 
-static const char* TASK_PROP = "ChromixTask";
+#define TASK_PROP "ChromixTask"
+#define HTML_METADATA_PROP "html"
 
 ////////////////////////////////
 
@@ -47,10 +49,11 @@ public:
 
     virtual void logMessage(const std::string& message) {
         //XXX do we need log level too?
-        mlt_log(service, MLT_LOG_INFO, message.c_str());
+        mlt_log(service, MLT_LOG_INFO, "%s\n", message.c_str());
     }
     virtual v8::Handle<v8::Value> getParameterValue(const std::string& name) {
         //XXX can we identify type of property so we wrap it right? need mlt_repository and ID to lookup metadata
+        //XXX get CHROMIX_METADATA_PROP and lookup param
         char* value = mlt_properties_get(MLT_SERVICE_PROPERTIES(service), name.c_str());
         if (value)
             return wrapParameterValue(std::string(value));
@@ -147,7 +150,7 @@ int ChromixTask::queueAndWait() {
     if (chromixThread == 0) {
         queue = mlt_deque_init();
         if (pthread_create(&chromixThread, NULL, chromixMainLoop, 0) < 0) {
-            mlt_log(NULL, MLT_LOG_FATAL, "failed to spawn Chromix thread");
+            mlt_log(NULL, MLT_LOG_FATAL, "failed to spawn Chromix thread\n");
             return 1;
         }
         mlt_factory_register_for_clean_up(NULL, shutdownHook);
@@ -168,18 +171,25 @@ int ChromixTask::initMixRender() {
         return 0;
     mixRender = new Chromix::MixRender(new ChromixDelegate(service));
     if (!mixRender) {
-        mlt_log(service, MLT_LOG_ERROR, "failed to create MixRender");
+        mlt_log(service, MLT_LOG_ERROR, "failed to create MixRender\n");
         return 1;
     }
-    //XXX load url
-    //XXX need to set mixRender properties from mlt_properties_get, iterate over metadata
-    //XXX should chromix use a callback to get properties from the app? would need to map to v8 datatype
-    bool result = mixRender->loadURL("file:///tmp/test.html");//XXX
+
+    // Load HTML. Look up relative path in service metadata.
+    mlt_properties metadata = (mlt_properties)mlt_properties_get_data(MLT_SERVICE_PROPERTIES(service), CHROMIX_METADATA_PROP, 0);
+    char *htmlPath = NULL;
+    if (metadata)
+        htmlPath = mlt_properties_get(metadata, HTML_METADATA_PROP);
+    if (!htmlPath) {
+        mlt_log(service, MLT_LOG_ERROR, "property '" HTML_METADATA_PROP "' not found in metadata\n");
+        return 1;
+    }
+    std::string url(std::string("file://") + chromix_get_metadata_dir() + htmlPath);
+    bool result = mixRender->loadURL(url);
     if (!result) {
-        mlt_log(service, MLT_LOG_ERROR, "failed to load URL");
+        mlt_log(service, MLT_LOG_ERROR, "failed to load URL %s\n", url.c_str());
         return 1;
     }
-    //XXX get and load html page property here, if not specified assume same as service_name".html"
 
     //XXX for a_track/b_track for transition, "track" for filter, and other tracks
     //XXX add these in yaml as custom props - mapping track to prop name used in html?
