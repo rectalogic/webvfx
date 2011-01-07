@@ -1,7 +1,7 @@
 schema_version: 0.1
 type: filter # consumer, filter, producer, or transition
-identifier: chromix.test.filter
-title: Chromix Test Filter
+identifier: chromix.demo.filter
+title: Chromix Demo Filter
 version: 0.0.1
 copyright: Copyright (C) 2010 Hewlett-Packard Development Company, L.P.
 license: BSD-new

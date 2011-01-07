@@ -51,15 +51,15 @@
       ],
     },
     {
-      'target_name': 'chromix_test',
+      'target_name': 'chromix_demo',
       'type': 'executable',
       'dependencies': [
         'chromix',
       ],
       'sources': [
-        'test/main.cc',
-        'test/main_mac.mm',
-        'test/main_linux.cc',
+        'demo/main.cc',
+        'demo/main_mac.mm',
+        'demo/main_linux.cc',
       ],
     },
   ]

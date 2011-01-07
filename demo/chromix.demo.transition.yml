@@ -1,7 +1,7 @@
 schema_version: 0.1
 type: transition # consumer, filter, producer, or transition
-identifier: chromix.test.transition
-title: Chromix Test Transition
+identifier: chromix.demo.transition
+title: Chromix Demo Transition
 version: 0.0.1
 copyright: Copyright (C) 2010 Hewlett-Packard Development Company, L.P.
 license: BSD-new
