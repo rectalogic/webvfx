@@ -1,0 +1,40 @@
+<html>
+<head>
+<script type="text/javascript">
+function render(time) {
+    console.log("rendering " + time);
+    var aImage = chromix.getImageParamValue('a_track');
+    var bImage = chromix.getImageParamValue('b_track');
+    aContext.putImageData(aImage, 0, 0);
+    bContext.putImageData(bImage, 0, 0);
+    context.drawImage(aContext.canvas, 0, 0, 160, 120)
+    context.drawImage(bContext.canvas, 160, 120, 160, 120)
+    timeEl.innerHTML = time;
+}
+
+function init() {
+    chromix.setRenderCallback(render);
+    var canvas = document.getElementById("canvas");
+    var aCanvas = document.createElement('canvas');
+    aCanvas.width = 320;
+    aCanvas.height = 240;
+    var bCanvas = document.createElement('canvas');
+    bCanvas.width = 320;
+    bCanvas.height = 240;
+    // globals
+    context = canvas.getContext('2d');
+    aContext = aCanvas.getContext('2d');
+    bContext = bCanvas.getContext('2d');
+    timeEl = document.getElementById("time");
+    var title = chromix.getParamValue('title');
+    var titleEl = document.getElementById("title");
+    titleEl.innerHTML = title;
+}
+window.addEventListener("load", init, false);
+</script>
+</head>
+<body>
+    Canvas time <span id="time">unset</span> title <span id="title">unset</span><br/>
+    <canvas id="canvas" width="320" height="240" style="background-color: #0000FF;"></canvas>
+</body>
+</html>

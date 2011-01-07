@@ -232,7 +232,7 @@ int ChromixTask::renderToTarget() {
             dstP += bytesPerRow;
         }
     }
-    targetImage.reset();
+    targetImage.set();
     return 0;
 }
 

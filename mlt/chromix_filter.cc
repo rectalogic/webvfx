@@ -39,9 +39,9 @@ public:
                 task = new ChromixFilterTask(service);
 
             ChromixRawImage targetImage(*image, *width, *height);
-            task->filterImage = targetImage;
+            task->filterImage.set(*image, *width, *height);
             error = task->renderToImageForTime(targetImage, time);
-            task->filterImage.reset();
+            task->filterImage.set();
         }
 
         return error;

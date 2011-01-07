@@ -73,6 +73,8 @@ static void* chromix_create_service(mlt_profile profile, mlt_service_type servic
                 mlt_properties_set_data(MLT_TRANSITION_PROPERTIES(self), CHROMIX_METADATA_PROP,
                                         chromix_create_metadata(service_type, service_name, NULL),
                                         0, (mlt_destructor)mlt_properties_close, NULL);
+                // Video only transition
+                mlt_properties_set_int(MLT_TRANSITION_PROPERTIES(self), "_transition_type", 1);
                 return self;
             }
             break;

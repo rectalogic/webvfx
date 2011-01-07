@@ -18,7 +18,7 @@ extern "C" {
 class ChromixRawImage {
 public:
     ChromixRawImage(uint8_t *image=0, int width=0, int height=0) : image(image), width(width), height(height) {}
-    void reset() { image = 0; width = 0; height = 0; }
+    void set(uint8_t *image=0, int width=0, int height=0) { this->image = image; this->width = width; this->height = height; }
 
     uint8_t *image;
     int width;
