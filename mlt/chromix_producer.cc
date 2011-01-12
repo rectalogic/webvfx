@@ -3,11 +3,91 @@
 // found in the LICENSE file.
 
 extern "C" {
-    #include <mlt/framework/mlt.h>
+    #include <mlt/framework/mlt_producer.h>
+    #include <mlt/framework/mlt_frame.h>
 }
+#include "chromix_task.h"
+
+class ChromixProducerTask : public ChromixTask {
+public:
+
+    static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format *format, int *width, int *height, int writable) {
+        int error = 0;
+
+        // Obtain properties of frame
+        mlt_properties properties = MLT_FRAME_PROPERTIES(frame);
+
+        // Obtain the producer for this frame
+        mlt_producer producer = (mlt_producer)mlt_properties_get_data(properties, "producer_chromix", NULL);
+
+        // Compute time
+        mlt_position in = mlt_producer_get_in(producer);
+        mlt_position length = mlt_producer_get_out(producer) - in + 1;
+        mlt_position position = mlt_frame_get_position(frame);
+        double time = (double)(position - in) / (double)length;
+
+		// Allocate the image
+        *format = mlt_image_rgb24a;
+        int size = *width * *height * 4;
+		*buffer = (uint8_t*)mlt_pool_alloc(size);
+        if (!*buffer)
+            return 1;
+
+        // Update the frame
+        mlt_properties_set_data(properties, "image", *buffer, size, mlt_pool_release, NULL);
+        mlt_properties_set_int(properties, "width", *width);
+        mlt_properties_set_int(properties, "height", *height);
+
+        { // Scope the ServiceLock
+            mlt_service service = MLT_PRODUCER_SERVICE(producer);
+            ServiceLock lock(service);
+
+            ChromixProducerTask *task = (ChromixProducerTask*)getTask(service);
+            if (!task)
+                task = new ChromixProducerTask(service);
+
+            ChromixRawImage targetImage(*buffer, *width, *height);
+            error = task->renderToImageForTime(targetImage, time);
+        }
+
+        return error;
+    }
+
+protected:
+    ChromixProducerTask(mlt_service service) : ChromixTask(service) {}
+
+    int performTask() {
+        return 0;
+    };
+};
 
 int chromix_producer_get_frame(mlt_producer producer, mlt_frame_ptr frame, int index) {
-    //XXX
-    //XXX need to chromix_initialize_service_properties from get_image
-    return 1;
+    // Generate a frame
+    *frame = mlt_frame_init(MLT_PRODUCER_SERVICE(producer));
+
+    if (*frame != NULL) {
+        // Obtain properties of frame and producer
+        mlt_properties properties = MLT_FRAME_PROPERTIES(*frame);
+
+        // Obtain properties of producer
+        mlt_properties producer_props = MLT_PRODUCER_PROPERTIES(producer);
+
+        // Set the producer on the frame properties
+        mlt_properties_set_data(properties, "producer_chromix", producer, 0, NULL, NULL);
+
+        // Update timecode on the frame we're creating
+        mlt_frame_set_position(*frame, mlt_producer_position(producer));
+
+        // Set producer-specific frame properties
+        mlt_properties_set_int(properties, "progressive", 1);
+        mlt_properties_set_double(properties, "aspect_ratio", mlt_properties_get_double(producer_props, "aspect_ratio"));
+
+        // Push the get_image method
+        mlt_frame_push_get_image(*frame, ChromixProducerTask::producerGetImage);
+    }
+
+    // Calculate the next timecode
+    mlt_producer_prepare_next(producer);
+
+    return 0;
 }

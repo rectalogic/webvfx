@@ -1,0 +1,23 @@
+<html>
+<head>
+<script type="text/javascript">
+function render(time) {
+    console.log("rendering " + time);
+    timeEl.innerHTML = time;
+}
+
+function init() {
+    chromix.setRenderCallback(render);
+    // globals
+    timeEl = document.getElementById("time");
+    var title = chromix.getParamValue('title');
+    var titleEl = document.getElementById("title");
+    titleEl.innerHTML = title;
+}
+window.addEventListener("load", init, false);
+</script>
+</head>
+<body>
+    Producer time <span id="time">unset</span> title <span id="title">unset</span><br/>
+</body>
+</html>

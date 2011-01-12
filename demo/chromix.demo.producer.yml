@@ -1,0 +1,26 @@
+schema_version: 0.1
+type: producer # consumer, filter, producer, or transition
+identifier: chromix.demo.producer
+title: Chromix Demo Producer
+version: 0.0.1
+copyright: Copyright (C) 2010 Hewlett-Packard Development Company, L.P.
+license: BSD-new
+language: en
+#url:
+creator: Andrew Wason
+tags:
+  - Video # this may produce video
+description: Simple Chromix test
+
+#XXX specify path to HTML, and mapping of video param names
+html: producer.html
+
+parameters:
+  - identifier: title
+    title: Title
+    type: string
+    description: Title rendered in html
+    readonly: no
+    required: no
+    mutable: no
+    widget: text
