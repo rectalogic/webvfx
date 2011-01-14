@@ -12,6 +12,7 @@ description: Simple Chromix test
 
 #XXX specify path to HTML, and mapping of video param names
 html: filter.html
+a_image: video
 
 parameters:
   - identifier: title

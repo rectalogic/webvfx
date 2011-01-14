@@ -12,6 +12,12 @@ description: Simple Chromix test
 
 #XXX specify path to HTML, and mapping of video param names
 html: transition.html
+a_image: srcVideo
+b_image: dstVideo
+# XXX extra image names from html - optimize out snapshots (in==out)
+images:
+  - demoSnapshot
+  - demoVideo
 
 parameters:
   - identifier: title

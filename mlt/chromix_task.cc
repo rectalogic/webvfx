@@ -176,7 +176,7 @@ int ChromixTask::initMixRender() {
     }
 
     // Load HTML. Look up relative path in service metadata.
-    mlt_properties metadata = (mlt_properties)mlt_properties_get_data(MLT_SERVICE_PROPERTIES(service), CHROMIX_METADATA_PROP, 0);
+    mlt_properties metadata = (mlt_properties)mlt_properties_get_data(MLT_SERVICE_PROPERTIES(service), CHROMIX_METADATA_PROP, NULL);
     char *htmlPath = NULL;
     if (metadata)
         htmlPath = mlt_properties_get(metadata, HTML_METADATA_PROP);

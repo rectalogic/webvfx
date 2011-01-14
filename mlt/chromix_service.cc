@@ -36,12 +36,17 @@ const std::string chromix_get_metadata_dir() {
     return metadata_dir;
 }
 
+static mlt_properties chromix_load_metadata(const char* service_name) {
+    std::string metadata_path = chromix_get_metadata_dir() + service_name + YML_SUFFIX;
+	return mlt_properties_parse_yaml(metadata_path.c_str());
+}
+
 //XXX http://mltframework.org/twiki/bin/view/MLT/MetadataRequirements
 static mlt_properties chromix_create_metadata(mlt_service_type service_type, const char* service_name, void*) {
-    std::string metadata_path = chromix_get_metadata_dir() + service_name + YML_SUFFIX;
-	mlt_properties metadata = mlt_properties_parse_yaml(metadata_path.c_str());
+    mlt_properties metadata = chromix_load_metadata(service_name);
     mlt_properties_set(metadata, "identifier", service_name);
     mlt_properties_set(metadata, "type", service_type_to_name(service_type));
+    //XXX set extra params implied by images hash
     return metadata;
 }
 
@@ -52,7 +57,7 @@ static void* chromix_create_service(mlt_profile profile, mlt_service_type servic
             if (self) {
                 self->get_frame = chromix_producer_get_frame;
                 mlt_properties_set_data(MLT_PRODUCER_PROPERTIES(self), CHROMIX_METADATA_PROP,
-                                        chromix_create_metadata(service_type, service_name, NULL),
+                                        chromix_load_metadata(service_name),
                                         0, (mlt_destructor)mlt_properties_close, NULL);
                 return self;
             }
@@ -63,7 +68,7 @@ static void* chromix_create_service(mlt_profile profile, mlt_service_type servic
             if (self) {
                 self->process = chromix_filter_process;
                 mlt_properties_set_data(MLT_FILTER_PROPERTIES(self), CHROMIX_METADATA_PROP,
-                                        chromix_create_metadata(service_type, service_name, NULL),
+                                        chromix_load_metadata(service_name),
                                         0, (mlt_destructor)mlt_properties_close, NULL);
                 return self;
             }
@@ -74,7 +79,7 @@ static void* chromix_create_service(mlt_profile profile, mlt_service_type servic
             if (self) {
                 self->process = chromix_transition_process;
                 mlt_properties_set_data(MLT_TRANSITION_PROPERTIES(self), CHROMIX_METADATA_PROP,
-                                        chromix_create_metadata(service_type, service_name, NULL),
+                                        chromix_load_metadata(service_name),
                                         0, (mlt_destructor)mlt_properties_close, NULL);
                 // Video only transition
                 mlt_properties_set_int(MLT_TRANSITION_PROPERTIES(self), "_transition_type", 1);

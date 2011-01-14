@@ -5,8 +5,10 @@
 extern "C" {
     #include <mlt/framework/mlt_transition.h>
     #include <mlt/framework/mlt_frame.h>
+    #include <mlt/framework/mlt_log.h>
 }
 #include "chromix_task.h"
+#include "chromix_service.h"
 
 
 class ChromixTransitionTask : public ChromixTask {
@@ -53,8 +55,20 @@ public:
             ServiceLock lock(service);
 
             ChromixTransitionTask *task = (ChromixTransitionTask*)getTask(service);
-            if (!task)
-                task = new ChromixTransitionTask(service);
+            if (!task) {
+                mlt_properties metadata = (mlt_properties)mlt_properties_get_data(MLT_SERVICE_PROPERTIES(service), CHROMIX_METADATA_PROP, NULL);
+                if (!metadata) {
+                    mlt_log(service, MLT_LOG_FATAL, "failed to find " CHROMIX_METADATA_PROP " property\n");
+                    return 1;
+                }
+                char* aImageName = mlt_properties_get(metadata, "a_image");
+                char* bImageName = mlt_properties_get(metadata, "b_image");
+                if (!aImageName || !bImageName) {
+                    mlt_log(service, MLT_LOG_FATAL, "failed to find a_image or b_image specifications in metadata\n");
+                    return 1;
+                }
+                task = new ChromixTransitionTask(service, aImageName, bImageName);
+            }
 
             ChromixRawImage targetImage(*image, *width, *height);
             task->aTrackImage.set(*image, *width, *height);
@@ -68,19 +82,22 @@ public:
     }
 
 protected:
-    ChromixTransitionTask(mlt_service service) : ChromixTask(service) {}
+    ChromixTransitionTask(mlt_service service, const std::string& aImageName, const std::string& bImageName)
+        : ChromixTask(service), aImageName(aImageName), bImageName(bImageName) {}
 
     int performTask() {
         //XXX lookup param - map track to WTF::String
         //XXX lookup track property to get the WTF::String mixrender name for the image
         //XXX need a map of name to ChromixRawImage - maintain in ChromixTask, clear after each render
-        int result = setImageForName(aTrackImage, "a_track");//XXX
+        int result = setImageForName(aTrackImage, aImageName);
         if (result == 0)
-            result = setImageForName(bTrackImage, "b_track");//XXX
+            result = setImageForName(bTrackImage, bImageName);
         return result;
     };
 
 private:
+    std::string aImageName;
+    std::string bImageName;
     ChromixRawImage aTrackImage;
     ChromixRawImage bTrackImage;
 };

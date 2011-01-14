@@ -5,8 +5,10 @@
 extern "C" {
     #include <mlt/framework/mlt_filter.h>
     #include <mlt/framework/mlt_frame.h>
+    #include <mlt/framework/mlt_log.h>
 }
 #include "chromix_task.h"
+#include "chromix_service.h"
 
 
 class ChromixFilterTask : public ChromixTask {
@@ -35,30 +37,43 @@ public:
             ServiceLock lock(service);
 
             ChromixFilterTask *task = (ChromixFilterTask*)getTask(service);
-            if (!task)
-                task = new ChromixFilterTask(service);
+            if (!task) {
+                mlt_properties metadata = (mlt_properties)mlt_properties_get_data(MLT_SERVICE_PROPERTIES(service), CHROMIX_METADATA_PROP, NULL);
+                if (!metadata) {
+                    mlt_log(service, MLT_LOG_FATAL, "failed to find " CHROMIX_METADATA_PROP " property\n");
+                    return 1;
+                }
+                char* aImageName = mlt_properties_get(metadata, "a_image");
+                if (!aImageName) {
+                    mlt_log(service, MLT_LOG_FATAL, "failed to find a_image specifications in metadata\n");
+                    return 1;
+                }
+                task = new ChromixFilterTask(service, aImageName);
+            }
 
             ChromixRawImage targetImage(*image, *width, *height);
-            task->filterImage.set(*image, *width, *height);
+            task->aTrackImage.set(*image, *width, *height);
             error = task->renderToImageForTime(targetImage, time);
-            task->filterImage.set();
+            task->aTrackImage.set();
         }
 
         return error;
     }
 
 protected:
-    ChromixFilterTask(mlt_service service) : ChromixTask(service) {}
+    ChromixFilterTask(mlt_service service, const std::string& aImageName)
+        : ChromixTask(service), aImageName(aImageName) {}
 
     int performTask() {
         //XXX lookup param - map track to WTF::String
         //XXX lookup track property to get the WTF::String mixrender name for the image
         //XXX need a map of name to ChromixRawImage - maintain in ChromixTask, clear after each render
-        return setImageForName(filterImage, "video");
+        return setImageForName(aTrackImage, aImageName);
     };
 
 private:
-    ChromixRawImage filterImage;
+    std::string aImageName;
+    ChromixRawImage aTrackImage;
 };
 
 

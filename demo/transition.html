@@ -3,28 +3,28 @@
 <script type="text/javascript">
 function render(time) {
     console.log("rendering " + time);
-    var aImage = chromix.getImageParamValue('a_track');
-    var bImage = chromix.getImageParamValue('b_track');
-    aContext.putImageData(aImage, 0, 0);
-    bContext.putImageData(bImage, 0, 0);
-    context.drawImage(aContext.canvas, 0, 0, 160, 120)
-    context.drawImage(bContext.canvas, 160, 120, 160, 120)
+    var srcImage = chromix.getImageParamValue('srcVideo');
+    var dstImage = chromix.getImageParamValue('dstVideo');
+    srcContext.putImageData(srcImage, 0, 0);
+    dstContext.putImageData(dstImage, 0, 0);
+    context.drawImage(srcContext.canvas, 0, 0, 160, 120)
+    context.drawImage(dstContext.canvas, 160, 120, 160, 120)
     timeEl.innerHTML = time;
 }
 
 function init() {
     chromix.setRenderCallback(render);
     var canvas = document.getElementById("canvas");
-    var aCanvas = document.createElement('canvas');
-    aCanvas.width = 320;
-    aCanvas.height = 240;
-    var bCanvas = document.createElement('canvas');
-    bCanvas.width = 320;
-    bCanvas.height = 240;
+    var srcCanvas = document.createElement('canvas');
+    srcCanvas.width = 320;
+    srcCanvas.height = 240;
+    var dstCanvas = document.createElement('canvas');
+    dstCanvas.width = 320;
+    dstCanvas.height = 240;
     // globals
     context = canvas.getContext('2d');
-    aContext = aCanvas.getContext('2d');
-    bContext = bCanvas.getContext('2d');
+    srcContext = srcCanvas.getContext('2d');
+    dstContext = dstCanvas.getContext('2d');
     timeEl = document.getElementById("time");
     var title = chromix.getParamValue('title');
     var titleEl = document.getElementById("title");
