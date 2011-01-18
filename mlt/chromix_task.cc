@@ -20,7 +20,6 @@ pthread_cond_t ChromixTask::queueCond = PTHREAD_COND_INITIALIZER;
 bool ChromixTask::shutdown = false;
 
 #define TASK_PROP "ChromixTask"
-#define HTML_METADATA_PROP "html"
 
 ////////////////////////////////
 
@@ -53,7 +52,7 @@ public:
     }
     virtual v8::Handle<v8::Value> getParameterValue(const std::string& name) {
         //XXX can we identify type of property so we wrap it right? need mlt_repository and ID to lookup metadata
-        //XXX get CHROMIX_METADATA_PROP and lookup param
+        //XXX get metadata and lookup param
         char* value = mlt_properties_get(MLT_SERVICE_PROPERTIES(service), name.c_str());
         if (value)
             return wrapParameterValue(std::string(value));
@@ -119,8 +118,10 @@ void ChromixTask::destroy(ChromixTask *task) {
 
 ////////////////////////////////
 
-ChromixTask::ChromixTask(mlt_service service) :
+ChromixTask::ChromixTask(mlt_service service, const std::string& serviceName) :
+    serviceName(serviceName),
     service(service),
+    metadata(NULL),
     mixRender(0),
     needsDestruction(false),
     taskResult(0),
@@ -134,6 +135,18 @@ ChromixTask::ChromixTask(mlt_service service) :
 ChromixTask::~ChromixTask() {
     pthread_cond_destroy(&taskCond);
     //XXX assert that mixRender is NULL, it should have been destroyed on chromix thread
+    if (metadata)
+        mlt_properties_close(metadata);
+}
+
+int ChromixTask::initialize() {
+    metadata = chromix_load_metadata(serviceName);
+    if (!metadata) {
+        mlt_log(service, MLT_LOG_FATAL, "failed to load metadata\n");
+        return 1;
+    }
+    //XXX preprocess metadata image list
+    return 0;
 }
 
 int ChromixTask::renderToImageForTime(ChromixRawImage& targetImage, double time) {
@@ -176,10 +189,7 @@ int ChromixTask::initMixRender() {
     }
 
     // Load HTML. Look up relative path in service metadata.
-    mlt_properties metadata = (mlt_properties)mlt_properties_get_data(MLT_SERVICE_PROPERTIES(service), CHROMIX_METADATA_PROP, NULL);
-    char *htmlPath = NULL;
-    if (metadata)
-        htmlPath = mlt_properties_get(metadata, HTML_METADATA_PROP);
+    char *htmlPath = mlt_properties_get(metadata, HTML_METADATA_PROP);
     if (!htmlPath) {
         mlt_log(service, MLT_LOG_ERROR, "property '" HTML_METADATA_PROP "' not found in metadata\n");
         return 1;

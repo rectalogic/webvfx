@@ -36,21 +36,7 @@ public:
             mlt_service service = MLT_FILTER_SERVICE(filter);
             ServiceLock lock(service);
 
-            ChromixFilterTask *task = (ChromixFilterTask*)getTask(service);
-            if (!task) {
-                mlt_properties metadata = (mlt_properties)mlt_properties_get_data(MLT_SERVICE_PROPERTIES(service), CHROMIX_METADATA_PROP, NULL);
-                if (!metadata) {
-                    mlt_log(service, MLT_LOG_FATAL, "failed to find " CHROMIX_METADATA_PROP " property\n");
-                    return 1;
-                }
-                char* aImageName = mlt_properties_get(metadata, "a_image");
-                if (!aImageName) {
-                    mlt_log(service, MLT_LOG_FATAL, "failed to find a_image specifications in metadata\n");
-                    return 1;
-                }
-                task = new ChromixFilterTask(service, aImageName);
-            }
-
+            ChromixFilterTask* task = (ChromixFilterTask*)getTask(service);
             ChromixRawImage targetImage(*image, *width, *height);
             task->aTrackImage.set(*image, *width, *height);
             error = task->renderToImageForTime(targetImage, time);
@@ -60,10 +46,25 @@ public:
         return error;
     }
 
-protected:
-    ChromixFilterTask(mlt_service service, const std::string& aImageName)
-        : ChromixTask(service), aImageName(aImageName) {}
+    ChromixFilterTask(mlt_filter filter, const std::string& serviceName)
+        : ChromixTask(MLT_FILTER_SERVICE(filter), serviceName) {}
 
+    int initialize() {
+        int result = ChromixTask::initialize();
+        if (result == 0) {
+            // Get a image name
+            mlt_properties metadata = getMetadata();
+            const char* name = mlt_properties_get(metadata, A_IMAGE_METADATA_PROP);
+            if (!name) {
+                mlt_log(getService(), MLT_LOG_FATAL, "failed to find " A_IMAGE_METADATA_PROP " specifications in metadata\n");
+                return 1;
+            }
+            aImageName = name;
+        }
+        return result;
+    }
+
+protected:
     int performTask() {
         //XXX lookup param - map track to WTF::String
         //XXX lookup track property to get the WTF::String mixrender name for the image
@@ -77,7 +78,7 @@ private:
 };
 
 
-mlt_frame chromix_filter_process(mlt_filter filter, mlt_frame frame) {
+static mlt_frame chromix_filter_process(mlt_filter filter, mlt_frame frame) {
     // Store position on frame
     char *name = mlt_properties_get(MLT_FILTER_PROPERTIES(filter), "_unique_id");
     mlt_properties_set_position(MLT_FRAME_PROPERTIES(frame), name, mlt_frame_get_position(frame));
@@ -86,4 +87,18 @@ mlt_frame chromix_filter_process(mlt_filter filter, mlt_frame frame) {
     mlt_frame_push_get_image(frame, ChromixFilterTask::filterGetImage);
 
     return frame;
+}
+
+mlt_filter chromix_filter_create(const char* service_name) {
+    mlt_filter self = mlt_filter_new();
+    if (self) {
+        self->process = chromix_filter_process;
+        ChromixFilterTask* task = new ChromixFilterTask(self, std::string(service_name));
+        if (task->initialize() != 0) {
+            mlt_filter_close(self);
+            return NULL;
+        }
+        return self;
+    }
+    return NULL;
 }

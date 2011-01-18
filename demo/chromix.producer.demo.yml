@@ -11,7 +11,7 @@ tags:
 description: Simple Chromix test
 
 #XXX specify path to HTML, and mapping of video param names
-html: producer.html
+chromix.html: producer.html
 
 parameters:
   - identifier: title

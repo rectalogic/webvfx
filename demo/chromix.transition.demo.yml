@@ -11,14 +11,23 @@ tags:
 description: Simple Chromix test
 
 #XXX specify path to HTML, and mapping of video param names
-html: transition.html
-a_image: srcVideo
-b_image: dstVideo
+chromix.html: transition.html
+chromix.a_image: srcVideo
+chromix.b_image: dstVideo
 # XXX extra image names from html - optimize out snapshots (in==out)
-images:
+# XXX name this "producers"?
+chromix.images:
   - demoSnapshot
   - demoVideo
 
+#XXX load raw metadata, then postprocess to add identifier etc. and to generate image params (e.g. resource and passthru props including snapshot time) from image data
+#XXX also process params into a map so we can lookup name and get type
+#XXX map image name to the producer itself? and for snapshots remove after first set
+#XXX for snapshot, user can set in==out and we just get_image once then remove from map
+#XXX so user can set producer.demoSnapshot.resource=file.mov etc.
+#XXX allow it to be optional? e.g. a given trans may support 3 snapshots/videos - but allow some to not be specified?
+#
+#XXX array of name, producer, rawimage - remove item (and close producer) when in==out
 parameters:
   - identifier: title
     title: Title

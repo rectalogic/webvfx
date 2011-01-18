@@ -54,22 +54,7 @@ public:
             mlt_service service = MLT_TRANSITION_SERVICE(transition);
             ServiceLock lock(service);
 
-            ChromixTransitionTask *task = (ChromixTransitionTask*)getTask(service);
-            if (!task) {
-                mlt_properties metadata = (mlt_properties)mlt_properties_get_data(MLT_SERVICE_PROPERTIES(service), CHROMIX_METADATA_PROP, NULL);
-                if (!metadata) {
-                    mlt_log(service, MLT_LOG_FATAL, "failed to find " CHROMIX_METADATA_PROP " property\n");
-                    return 1;
-                }
-                char* aImageName = mlt_properties_get(metadata, "a_image");
-                char* bImageName = mlt_properties_get(metadata, "b_image");
-                if (!aImageName || !bImageName) {
-                    mlt_log(service, MLT_LOG_FATAL, "failed to find a_image or b_image specifications in metadata\n");
-                    return 1;
-                }
-                task = new ChromixTransitionTask(service, aImageName, bImageName);
-            }
-
+            ChromixTransitionTask* task = (ChromixTransitionTask*)getTask(service);
             ChromixRawImage targetImage(*image, *width, *height);
             task->aTrackImage.set(*image, *width, *height);
             task->bTrackImage.set(b_image, b_width, b_height);
@@ -81,10 +66,29 @@ public:
         return error;
     }
 
-protected:
-    ChromixTransitionTask(mlt_service service, const std::string& aImageName, const std::string& bImageName)
-        : ChromixTask(service), aImageName(aImageName), bImageName(bImageName) {}
+    ChromixTransitionTask(mlt_transition transition, const std::string& serviceName)
+        : ChromixTask(MLT_TRANSITION_SERVICE(transition), serviceName) {}
 
+    int initialize() {
+        int result = ChromixTask::initialize();
+        if (result == 0) {
+            // Video only transition
+            mlt_properties_set_int(MLT_SERVICE_PROPERTIES(getService()), "_transition_type", 1);
+            // Get a/b image names
+            mlt_properties metadata = getMetadata();
+            const char* aName = mlt_properties_get(metadata, A_IMAGE_METADATA_PROP);
+            const char* bName = mlt_properties_get(metadata, B_IMAGE_METADATA_PROP);
+            if (!aName || !bName) {
+                mlt_log(getService(), MLT_LOG_FATAL, "failed to find " A_IMAGE_METADATA_PROP " or " B_IMAGE_METADATA_PROP " specifications in metadata\n");
+                return 1;
+            }
+            aImageName = aName;
+            bImageName = bName;
+        }
+        return result;
+    }
+
+protected:
     int performTask() {
         //XXX lookup param - map track to WTF::String
         //XXX lookup track property to get the WTF::String mixrender name for the image
@@ -102,11 +106,25 @@ private:
     ChromixRawImage bTrackImage;
 };
 
-mlt_frame chromix_transition_process(mlt_transition transition, mlt_frame a_frame, mlt_frame b_frame) {
+static mlt_frame chromix_transition_process(mlt_transition transition, mlt_frame a_frame, mlt_frame b_frame) {
     char *name = mlt_properties_get(MLT_TRANSITION_PROPERTIES(transition), "_unique_id");
     mlt_properties_set_position(MLT_FRAME_PROPERTIES(a_frame), name, mlt_frame_get_position(a_frame));
     mlt_frame_push_service(a_frame, transition);
     mlt_frame_push_frame(a_frame, b_frame);
     mlt_frame_push_get_image(a_frame, ChromixTransitionTask::transitionGetImage);
     return a_frame;
+}
+
+mlt_transition chromix_transition_create(const char* service_name) {
+    mlt_transition self = mlt_transition_new();
+    if (self) {
+        self->process = chromix_transition_process;
+        ChromixTransitionTask* task = new ChromixTransitionTask(self, service_name);
+        if (task->initialize() != 0) {
+            mlt_transition_close(self);
+            return NULL;
+        }
+        return self;
+    }
+    return NULL;
 }

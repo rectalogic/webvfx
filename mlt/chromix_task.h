@@ -14,6 +14,10 @@ extern "C" {
 #include <chromix/MixRender.h>
 
 
+#define HTML_METADATA_PROP "chromix.html"
+#define A_IMAGE_METADATA_PROP "chromix.a_image"
+#define B_IMAGE_METADATA_PROP "chromix.b_image"
+
 // Image data must be format mlt_image_rgb24a
 class ChromixRawImage {
 public:
@@ -38,16 +42,17 @@ private:
 ////////////////////////////////
 
 class ChromixTask {
-public:
-
 protected:
-    ChromixTask(mlt_service service);
+    ChromixTask(mlt_service service, const std::string& serviceName);
     virtual ~ChromixTask();
 
-    // Get task for this service, return NULL if a task needs to be created.
+    virtual int initialize();
+
+    // Get task for this service
     static ChromixTask* getTask(mlt_service service);
 
     mlt_service getService() { return service; };
+    mlt_properties getMetadata() { return metadata; };
 
     int renderToImageForTime(ChromixRawImage& targetImage, double time);
 
@@ -71,6 +76,8 @@ private:
     static ChromixTask* nextQueuedTask() { return (ChromixTask*)mlt_deque_pop_front(queue); };
 
     mlt_service service;
+    std::string serviceName;
+    mlt_properties metadata;
     Chromix::MixRender *mixRender;
     pthread_cond_t taskCond;
     bool needsDestruction;

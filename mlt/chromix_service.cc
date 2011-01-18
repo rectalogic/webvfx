@@ -10,9 +10,9 @@ extern "C" {
 }
 #include "chromix_service.h"
 
-mlt_frame chromix_filter_process(mlt_filter self, mlt_frame frame);
-int chromix_producer_get_frame(mlt_producer producer, mlt_frame_ptr frame, int index);
-mlt_frame chromix_transition_process(mlt_transition transition, mlt_frame a_frame, mlt_frame b_frame);
+extern mlt_transition chromix_transition_create(const char* service_name);
+extern mlt_filter chromix_filter_create(const char* service_name);
+extern mlt_producer chromix_producer_create(const char* service_name);
 
 #define YML_SUFFIX ".yml"
 
@@ -36,7 +36,7 @@ const std::string chromix_get_metadata_dir() {
     return metadata_dir;
 }
 
-static mlt_properties chromix_load_metadata(const char* service_name) {
+mlt_properties chromix_load_metadata(const std::string& service_name) {
     std::string metadata_path = chromix_get_metadata_dir() + service_name + YML_SUFFIX;
 	return mlt_properties_parse_yaml(metadata_path.c_str());
 }
@@ -52,41 +52,12 @@ static mlt_properties chromix_create_metadata(mlt_service_type service_type, con
 
 static void* chromix_create_service(mlt_profile profile, mlt_service_type service_type, const char* service_name, const void*) {
     switch (service_type) {
-        case producer_type: {
-            mlt_producer self = mlt_producer_new();
-            if (self) {
-                self->get_frame = chromix_producer_get_frame;
-                mlt_properties_set_data(MLT_PRODUCER_PROPERTIES(self), CHROMIX_METADATA_PROP,
-                                        chromix_load_metadata(service_name),
-                                        0, (mlt_destructor)mlt_properties_close, NULL);
-                return self;
-            }
-            break;
-        }
-        case filter_type: {
-            mlt_filter self = mlt_filter_new();
-            if (self) {
-                self->process = chromix_filter_process;
-                mlt_properties_set_data(MLT_FILTER_PROPERTIES(self), CHROMIX_METADATA_PROP,
-                                        chromix_load_metadata(service_name),
-                                        0, (mlt_destructor)mlt_properties_close, NULL);
-                return self;
-            }
-            break;
-        }
-        case transition_type: {
-            mlt_transition self = mlt_transition_new();
-            if (self) {
-                self->process = chromix_transition_process;
-                mlt_properties_set_data(MLT_TRANSITION_PROPERTIES(self), CHROMIX_METADATA_PROP,
-                                        chromix_load_metadata(service_name),
-                                        0, (mlt_destructor)mlt_properties_close, NULL);
-                // Video only transition
-                mlt_properties_set_int(MLT_TRANSITION_PROPERTIES(self), "_transition_type", 1);
-                return self;
-            }
-            break;
-        }
+        case producer_type:
+            return chromix_producer_create(service_name);
+        case filter_type:
+            return chromix_filter_create(service_name);
+        case transition_type:
+            return chromix_transition_create(service_name);
         default:
             break;
     }

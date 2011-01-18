@@ -10,10 +10,9 @@ extern "C" {
 }
 #include <string>
 
-#define CHROMIX_METADATA_PROP "ChromixMetadata"
-
 void chromix_register_services(mlt_repository repository, mlt_service_type service_type);
 
 const std::string chromix_get_metadata_dir();
+mlt_properties chromix_load_metadata(const std::string& service_name);
 
 #endif

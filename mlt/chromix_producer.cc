@@ -42,10 +42,7 @@ public:
             mlt_service service = MLT_PRODUCER_SERVICE(producer);
             ServiceLock lock(service);
 
-            ChromixProducerTask *task = (ChromixProducerTask*)getTask(service);
-            if (!task)
-                task = new ChromixProducerTask(service);
-
+            ChromixProducerTask* task = (ChromixProducerTask*)getTask(service);
             ChromixRawImage targetImage(*buffer, *width, *height);
             error = task->renderToImageForTime(targetImage, time);
         }
@@ -53,15 +50,18 @@ public:
         return error;
     }
 
-protected:
-    ChromixProducerTask(mlt_service service) : ChromixTask(service) {}
+    ChromixProducerTask(mlt_producer producer, const std::string& serviceName)
+        : ChromixTask(MLT_PRODUCER_SERVICE(producer), serviceName) {}
 
+    using ChromixTask::initialize;
+
+protected:
     int performTask() {
         return 0;
     };
 };
 
-int chromix_producer_get_frame(mlt_producer producer, mlt_frame_ptr frame, int index) {
+static int chromix_producer_get_frame(mlt_producer producer, mlt_frame_ptr frame, int index) {
     // Generate a frame
     *frame = mlt_frame_init(MLT_PRODUCER_SERVICE(producer));
 
@@ -90,4 +90,18 @@ int chromix_producer_get_frame(mlt_producer producer, mlt_frame_ptr frame, int i
     mlt_producer_prepare_next(producer);
 
     return 0;
+}
+
+mlt_producer chromix_producer_create(const char* service_name) {
+    mlt_producer self = mlt_producer_new();
+    if (self) {
+        self->get_frame = chromix_producer_get_frame;
+        ChromixProducerTask* task = new ChromixProducerTask(self, service_name);
+        if (task->initialize() != 0) {
+            mlt_producer_close(self);
+            return NULL;
+        }
+        return self;
+    }
+    return NULL;
 }
