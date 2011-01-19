@@ -12,6 +12,7 @@
 #include <third_party/WebKit/WebKit/chromium/public/WebKit.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebRuntimeFeatures.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebScriptController.h>
+#include <webkit/tools/test_shell/simple_resource_loader_bridge.h>
 #if defined(OS_MACOSX)
 #include <third_party/WebKit/WebKit/mac/WebCoreSupport/WebSystemInterface.h>
 #elif defined(OS_LINUX)
@@ -71,6 +72,9 @@ public:
     }
 
     ~MixKit() {
+        // webkit_glue::ResourceLoaderBridge::Create() creates a SimpleResourceLoaderBridge
+        // which spawns an IO thread - so need to shut it down.
+        SimpleResourceLoaderBridge::Shutdown();
         WebKit::shutdown();
     }
 
