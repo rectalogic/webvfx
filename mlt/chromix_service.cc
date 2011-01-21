@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include <string>
-#include <chromix/Chromix.h>
-#include <chromix/MixRender.h>
+#include <chromix/chromix.h>
+#include <chromix/mix_render.h>
 extern "C" {
     #include <mlt/framework/mlt.h>
 }

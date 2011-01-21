@@ -8,9 +8,9 @@
 #include <iomanip>
 #include <string>
 
-#include <chromix/Chromix.h>
-#include <chromix/MixRender.h>
-#include <chromix/Delegate.h>
+#include <chromix/chromix.h>
+#include <chromix/mix_render.h>
+#include <chromix/delegate.h>
 #include <gfx/codec/png_codec.h>
 
 

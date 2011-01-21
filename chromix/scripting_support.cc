@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromix/ScriptingSupport.h"
-#include "chromix/Delegate.h"
+#include "chromix/scripting_support.h"
+#include "chromix/delegate.h"
 
 #include <map>
 #include <base/singleton.h>

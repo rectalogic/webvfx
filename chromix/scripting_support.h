@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMIX_SCRIPTINGSUPPORT_H_
-#define CHROMIX_SCRIPTINGSUPPORT_H_
+#ifndef CHROMIX_SCRIPTING_SUPPORT_H_
+#define CHROMIX_SCRIPTING_SUPPORT_H_
 
-#include "chromix/ImageMap.h"
+#include "chromix/image_map.h"
 
 #include <base/basictypes.h>
 #include <v8/include/v8.h>

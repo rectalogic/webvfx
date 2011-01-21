@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromix/Chromix.h"
-#include "chromix/ChromixExtension.h"
-#include "chromix/WebKitClientImpl.h"
+#include "chromix/chromix.h"
+#include "chromix/chromix_extension.h"
+#include "chromix/webkit_client_impl.h"
 
 #include <base/message_loop.h>
 #include <base/at_exit.h>

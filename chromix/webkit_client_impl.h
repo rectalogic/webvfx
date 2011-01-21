@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMIX_WEBKITCLIENTIMPL_H_
-#define CHROMIX_WEBKITCLIENTIMPL_H_
+#ifndef CHROMIX_WEBKIT_CLIENT_IMPL_H_
+#define CHROMIX_WEBKIT_CLIENT_IMPL_H_
 
 #include <third_party/WebKit/WebKit/chromium/public/WebGraphicsContext3D.h>
 #include <webkit/glue/simple_webmimeregistry_impl.h>

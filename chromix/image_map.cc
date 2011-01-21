@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromix/ImageMap.h"
+#include "chromix/image_map.h"
 
 #include <third_party/WebKit/WebCore/config.h>
 #include <v8/include/v8.h>

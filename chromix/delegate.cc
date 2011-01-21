@@ -1,4 +1,4 @@
-#include "chromix/Delegate.h"
+#include "chromix/delegate.h"
 
 #include <third_party/WebKit/WebCore/config.h>
 #include <third_party/WebKit/WebCore/bindings/v8/V8Binding.h>

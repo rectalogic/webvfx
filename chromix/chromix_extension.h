@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMIX_IMAGEEXTENSION_H_
-#define CHROMIX_IMAGEEXTENSION_H_
+#ifndef CHROMIX_EXTENSION_H_
+#define CHROMIX_EXTENSION_H_
 
 namespace v8 {
     class Extension;

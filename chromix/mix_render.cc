@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromix/MixRender.h"
-#include "chromix/ScriptingSupport.h"
-#include "chromix/ImageMap.h"
-#include "chromix/Delegate.h"
+#include "chromix/mix_render.h"
+#include "chromix/scripting_support.h"
+#include "chromix/image_map.h"
+#include "chromix/delegate.h"
 
 #include <base/string16.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebView.h>

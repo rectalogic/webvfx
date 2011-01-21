@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromix/ChromixExtension.h"
-#include "chromix/ScriptingSupport.h"
+#include "chromix/chromix_extension.h"
+#include "chromix/scripting_support.h"
 
 #include <v8/include/v8.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebFrame.h>

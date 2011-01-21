@@ -9,10 +9,12 @@ extern "C" {
     #include <mlt/framework/mlt_service.h>
     #include <mlt/framework/mlt_deque.h>
 }
+#include <chromix/mix_render.h>
+
 #include <string>
 #include <vector>
 #include <pthread.h>
-#include <chromix/MixRender.h>
+
 
 
 #define HTML_METADATA_PROP "chromix.html"

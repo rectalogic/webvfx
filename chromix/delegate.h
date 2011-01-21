@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMIX_DELEGATE
-#define CHROMIX_DELEGATE
+#ifndef CHROMIX_DELEGATE_H_
+#define CHROMIX_DELEGATE_H_
 
 #include <string>
 #include <v8/include/v8.h>

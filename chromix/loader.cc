@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromix/Loader.h"
-#include "chromix/Delegate.h"
+#include "chromix/loader.h"
+#include "chromix/delegate.h"
 
 #include <third_party/WebKit/WebKit/chromium/public/WebView.h>
 #include <third_party/WebKit/WebKit/chromium/public/WebFrame.h>

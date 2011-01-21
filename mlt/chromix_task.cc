@@ -5,9 +5,9 @@
 #include "chromix_task.h"
 #include "chromix_service.h"
 #include "chromix_context.h"
-#include <chromix/Chromix.h>
-#include <chromix/MixRender.h>
-#include <chromix/Delegate.h>
+#include <chromix/chromix.h>
+#include <chromix/mix_render.h>
+#include <chromix/delegate.h>
 extern "C" {
     #include <mlt/framework/mlt_factory.h>
     #include <mlt/framework/mlt_producer.h>

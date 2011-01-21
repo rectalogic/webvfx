@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMIX_MIXRENDER_H_
-#define CHROMIX_MIXRENDER_H_
+#ifndef CHROMIX_MIX_RENDER_H_
+#define CHROMIX_MIX_RENDER_H_
 
-#include "chromix/Loader.h"
+#include "chromix/loader.h"
 
 #include <base/basictypes.h>
 #include <skia/ext/platform_canvas.h>
