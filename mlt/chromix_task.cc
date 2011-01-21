@@ -10,6 +10,8 @@
 #include <chromix/Delegate.h>
 extern "C" {
     #include <mlt/framework/mlt_factory.h>
+    #include <mlt/framework/mlt_producer.h>
+    #include <mlt/framework/mlt_frame.h>
     #include <mlt/framework/mlt_log.h>
 }
 
@@ -20,6 +22,7 @@ pthread_cond_t ChromixTask::queueCond = PTHREAD_COND_INITIALIZER;
 bool ChromixTask::shutdown = false;
 
 #define TASK_PROP "ChromixTask"
+#define CHROMIX_PRODUCERS_PROP "chromix.producers"
 
 ////////////////////////////////
 
@@ -42,17 +45,54 @@ private:
 
 ////////////////////////////////
 
+class ProducerImage {
+public:
+    ProducerImage(const std::string& name, mlt_producer producer) : name(name), producer(producer) {}
+    ~ProducerImage() {
+        mlt_producer_close(producer);
+    }
+    int produceImage(mlt_position position, int targetWidth, int targetHeight) {
+        if (position > mlt_producer_get_out(producer))
+            return 0;
+        mlt_producer_seek(producer, position);
+        mlt_frame frame = NULL;
+        int error = mlt_service_get_frame(MLT_PRODUCER_SERVICE(producer), &frame, 0);
+        if (error)
+            return error;
+        mlt_frame_set_position(frame, position);
+
+        mlt_image_format format = mlt_image_rgb24a;
+        uint8_t *image = NULL;
+        int width = targetWidth;
+        int height = targetHeight;
+        error = mlt_frame_get_image(frame, &image, &format, &width, &height, 0);
+        if (!error)
+            rawImage.set(image, width, height);
+        mlt_frame_close(frame);
+        return error;
+    }
+    const std::string& getName() { return name; }
+    const ChromixRawImage& getImage() { return rawImage; }
+    void reset() { rawImage.set(); }
+
+private:
+    std::string name;
+    mlt_producer producer;
+    ChromixRawImage rawImage;
+};
+
+////////////////////////////////
+
 class ChromixDelegate : public Chromix::Delegate {
 public:
     ChromixDelegate(mlt_service service) : service(service) {}
 
     virtual void logMessage(const std::string& message) {
-        //XXX do we need log level too?
+        //XXX do we need log level too - map Chromium levels to mlt?
         mlt_log(service, MLT_LOG_INFO, "%s\n", message.c_str());
     }
     virtual v8::Handle<v8::Value> getParameterValue(const std::string& name) {
-        //XXX can we identify type of property so we wrap it right? need mlt_repository and ID to lookup metadata
-        //XXX get metadata and lookup param
+        //XXX parse metadata params in initialize and map to datatype, then set proper type wrapper here
         char* value = mlt_properties_get(MLT_SERVICE_PROPERTIES(service), name.c_str());
         if (value)
             return wrapParameterValue(std::string(value));
@@ -125,11 +165,13 @@ ChromixTask::ChromixTask(mlt_service service, const std::string& serviceName) :
     mixRender(0),
     needsDestruction(false),
     taskResult(0),
-    time(0)
+    time(0),
+    producerImages(NULL)
 {
     pthread_cond_init(&taskCond, NULL);
-    mlt_properties_set_data(MLT_SERVICE_PROPERTIES(service), TASK_PROP, this, 0,
-                            (mlt_destructor)destroy, NULL);
+    mlt_properties properties = MLT_SERVICE_PROPERTIES(service);
+    mlt_properties_set_data(properties, TASK_PROP, this, 0, (mlt_destructor)destroy, NULL);
+    mlt_properties_set(properties, "factory", mlt_environment("MLT_PRODUCER"));
 }
 
 ChromixTask::~ChromixTask() {
@@ -137,6 +179,13 @@ ChromixTask::~ChromixTask() {
     //XXX assert that mixRender is NULL, it should have been destroyed on chromix thread
     if (metadata)
         mlt_properties_close(metadata);
+    if (producerImages) {
+        for (std::vector<ProducerImage*>::iterator pi = producerImages->begin();
+             pi != producerImages->end(); pi++) {
+            delete *pi;
+        }
+        delete producerImages;
+    }
 }
 
 int ChromixTask::initialize() {
@@ -145,14 +194,92 @@ int ChromixTask::initialize() {
         mlt_log(service, MLT_LOG_FATAL, "failed to load metadata\n");
         return 1;
     }
-    //XXX preprocess metadata image list
+    return createProducerImages();
+}
+
+int ChromixTask::createProducerImages() {
+    mlt_properties producers = (mlt_properties)mlt_properties_get_data(metadata, CHROMIX_PRODUCERS_PROP, NULL);
+    if (!producers)
+        return 0;
+
+    int count = mlt_properties_count(producers);
+    // Warn if no values, but not an error
+    if (count == 0) {
+        mlt_log(service, MLT_LOG_WARNING, "no list defined for " CHROMIX_PRODUCERS_PROP " in metadata\n");
+        return 0;
+    }
+
+    producerImages = new std::vector<ProducerImage*>(count, NULL);
+    mlt_properties properties = MLT_SERVICE_PROPERTIES(service);
+    char* factory = mlt_properties_get(properties, "factory");
+    int i;
+    for (i = 0; i < count; i++) {
+        std::string producerName(mlt_properties_get_value(producers, i));
+        // Property prefix "producer.<name>."
+        std::string producerPrefix("producer.");
+        producerPrefix.append(producerName).append(".");
+
+        // Find producer.<name>.resource property
+        std::string resourceName(producerPrefix);
+        resourceName.append("resource");
+        char* resource = mlt_properties_get(properties, resourceName.c_str());
+        if (resource) {
+            mlt_producer producer = mlt_factory_producer(mlt_service_profile(service), factory, resource);
+            if (!producer) {
+                mlt_log(service, MLT_LOG_ERROR, "failed to create producer for %s\n", resourceName.c_str());
+                return 1;
+            }
+            // Copy producer.<name>.* properties onto producer
+            mlt_properties_pass(MLT_PRODUCER_PROPERTIES(producer), properties, producerPrefix.c_str());
+            (*producerImages)[i] = new ProducerImage(producerName, producer);
+        }
+        else
+            mlt_log(service, MLT_LOG_WARNING, "no producer resource property specified for %s\n", resourceName.c_str());
+    }
     return 0;
 }
 
-int ChromixTask::renderToImageForTime(ChromixRawImage& targetImage, double time) {
+int ChromixTask::renderToImageForPosition(ChromixRawImage& targetImage, mlt_position position) {
+    int error = 0;
+
+    // Perform one-time initialization
+    if (!metadata) {
+        error = initialize();
+        if (error)
+            return error;
+    }
+
+    // Compute time
+    mlt_properties properties = MLT_SERVICE_PROPERTIES(service);
+    mlt_position in = mlt_properties_get_position(properties, "in");
+    mlt_position length = mlt_properties_get_position(properties, "out") - in + 1;
+    this->time = (double)(position - in) / (double)length;
+
+    if (producerImages) {
+        error = writeProducerImages(position, targetImage.getWidth(), targetImage.getHeight());
+        if (error)
+            return error;
+    }
+
     this->targetImage = targetImage;
-    this->time = time;
-    return queueAndWait();
+    error = queueAndWait();
+    return error;
+}
+
+int ChromixTask::writeProducerImages(mlt_position position, int width, int height) {
+    int error = 0;
+    for (std::vector<ProducerImage*>::iterator pi = producerImages->begin();
+         pi != producerImages->end(); pi++) {
+        ProducerImage* producerImage = *pi;
+        if (producerImage) {
+            error = producerImage->produceImage(position, width, height);
+            if (error) {
+                mlt_log(service, MLT_LOG_ERROR, "failed to produce image for name %s\n", producerImage->getName().c_str());
+                return error;
+            }
+        }
+    }
+    return error;
 }
 
 int ChromixTask::queueAndWait() {
@@ -201,48 +328,57 @@ int ChromixTask::initMixRender() {
         return 1;
     }
 
-    //XXX for a_track/b_track for transition, "track" for filter, and other tracks
-    //XXX add these in yaml as custom props - mapping track to prop name used in html?
-    //XXX store this mapping on properties - map char* well defined name (for filter, trans) to WTF::String we can use w/chromix
-
-    //XXX add method dealing with getting the writeable image etc.
-
-    //XXX setup Chromix log callback using mlt_log - should we map chrome levels to mlt? are crhome levels accurate?
     return 0;
 }
 
-int ChromixTask::setImageForName(ChromixRawImage& image, const std::string& name) {
+int ChromixTask::setImageForName(const ChromixRawImage& image, const std::string& name) {
     //XXX assert we are on chromix thread
-    unsigned char* buffer = mixRender->writeableDataForImageParameter(name, image.width, image.height);
+    if (!image.valid())
+        return 0;
+    unsigned char* buffer = mixRender->writeableDataForImageParameter(name, image.getWidth(), image.getHeight());
     if (!buffer)
         return 1;
-    memcpy(buffer, image.image, image.width * image.height * 4);
+    image.copy(buffer);
     return 0;
 }
 
 int ChromixTask::renderToTarget() {
     // Resize MixRender and render into target image
-    mixRender->resize(targetImage.width, targetImage.height);
+    mixRender->resize(targetImage.getWidth(), targetImage.getHeight());
     //XXX move this into MixRender - pass raw buffer for it to render into
     const SkBitmap* skiaBitmap = mixRender->render(time);
     if (!skiaBitmap)
         return 1;
     SkAutoLockPixels bitmapLock(*skiaBitmap);
     // Do a block copy if no padding, otherwise copy a row at a time
-    unsigned int byteCount = targetImage.width * targetImage.height * 4;
+    unsigned int byteCount = targetImage.getWidth() * targetImage.getHeight() * 4;
     if (skiaBitmap->getSize() == byteCount)
-        memcpy(targetImage.image, skiaBitmap->getPixels(), byteCount);
+        memcpy(targetImage.getImage(), skiaBitmap->getPixels(), byteCount);
     else {
-        int bytesPerRow = targetImage.width * 4;
+        int bytesPerRow = targetImage.getWidth() * 4;
         const unsigned char* srcP = reinterpret_cast<const unsigned char*>(skiaBitmap->getPixels());
-        unsigned char* dstP = targetImage.image;
-        for (int y = 0; y < targetImage.height; y++) {
+        unsigned char* dstP = targetImage.getImage();
+        for (int y = 0; y < targetImage.getHeight(); y++) {
             memcpy(dstP, srcP, bytesPerRow);
             srcP += skiaBitmap->rowBytes();
             dstP += bytesPerRow;
         }
     }
     targetImage.set();
+    return 0;
+}
+
+int ChromixTask::storeProducerImages() {
+    for (std::vector<ProducerImage*>::iterator pi = producerImages->begin();
+         pi != producerImages->end(); pi++) {
+        ProducerImage* producerImage = *pi;
+        if (producerImage) {
+            int error = setImageForName(producerImage->getImage(), producerImage->getName());
+            if (error)
+                return error;
+            producerImage->reset();
+        }
+    }
     return 0;
 }
 
@@ -257,9 +393,13 @@ void ChromixTask::executeTask() {
         taskResult = initMixRender();
         // Allow subclass to process
         if (taskResult == 0) {
-            taskResult = performTask();
-            if (taskResult == 0)
-                taskResult = renderToTarget();
+            if (producerImages)
+                taskResult = storeProducerImages();
+            if (taskResult == 0) {
+                taskResult = performTask();
+                if (taskResult == 0)
+                    taskResult = renderToTarget();
+            }
         }
         pthread_cond_signal(&taskCond);
     }

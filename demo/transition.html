@@ -5,10 +5,13 @@ function render(time) {
     console.log("rendering " + time);
     var srcImage = chromix.getImageParamValue('srcVideo');
     var dstImage = chromix.getImageParamValue('dstVideo');
+    var demoImage = chromix.getImageParamValue('demoVideo');
     srcContext.putImageData(srcImage, 0, 0);
     dstContext.putImageData(dstImage, 0, 0);
+    demoContext.putImageData(demoImage, 0, 0);
     context.drawImage(srcContext.canvas, 0, 0, 160, 120)
     context.drawImage(dstContext.canvas, 160, 120, 160, 120)
+    context.drawImage(demoContext.canvas, 0, 120, 160, 120)
     timeEl.innerHTML = time;
 }
 
@@ -21,10 +24,15 @@ function init() {
     var dstCanvas = document.createElement('canvas');
     dstCanvas.width = 320;
     dstCanvas.height = 240;
+    var demoCanvas = document.createElement('canvas');
+    demoCanvas.width = 320;
+    demoCanvas.height = 240;
     // globals
     context = canvas.getContext('2d');
     srcContext = srcCanvas.getContext('2d');
     dstContext = dstCanvas.getContext('2d');
+    demoContext = demoCanvas.getContext('2d');
+
     timeEl = document.getElementById("time");
     var title = chromix.getParamValue('title');
     var titleEl = document.getElementById("title");
@@ -35,6 +43,6 @@ window.addEventListener("load", init, false);
 </head>
 <body>
     Canvas time <span id="time">unset</span> title <span id="title">unset</span><br/>
-    <canvas id="canvas" width="320" height="240" style="background-color: #0000FF;"></canvas>
+    <canvas id="canvas" width="320" height="240" style="background-color: #DDDDDD;"></canvas>
 </body>
 </html>

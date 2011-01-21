@@ -9,7 +9,8 @@ extern "C" {
     #include <mlt/framework/mlt_service.h>
     #include <mlt/framework/mlt_deque.h>
 }
-#include <string.h>
+#include <string>
+#include <vector>
 #include <pthread.h>
 #include <chromix/MixRender.h>
 
@@ -23,8 +24,14 @@ class ChromixRawImage {
 public:
     ChromixRawImage(uint8_t *image=0, int width=0, int height=0) : image(image), width(width), height(height) {}
     void set(uint8_t *image=0, int width=0, int height=0) { this->image = image; this->width = width; this->height = height; }
+    bool valid() const { return image; }
+    void copy(uint8_t *buffer) const { memcpy(buffer, image, width * height * 4); }
+    int getWidth() const { return width; }
+    int getHeight() const { return height; }
+    uint8_t* getImage() { return image; }
 
-    uint8_t *image;
+private:
+    uint8_t* image;
     int width;
     int height;
 };
@@ -41,11 +48,14 @@ private:
 
 ////////////////////////////////
 
+class ProducerImage;
+
 class ChromixTask {
 protected:
     ChromixTask(mlt_service service, const std::string& serviceName);
     virtual ~ChromixTask();
 
+    // Subclasses should override for one time initialization, and must call superclass implementation.
     virtual int initialize();
 
     // Get task for this service
@@ -54,10 +64,10 @@ protected:
     mlt_service getService() { return service; };
     mlt_properties getMetadata() { return metadata; };
 
-    int renderToImageForTime(ChromixRawImage& targetImage, double time);
+    int renderToImageForPosition(ChromixRawImage& targetImage, mlt_position position);
 
     // Can only be called from performTask
-    int setImageForName(ChromixRawImage& image, const std::string& name);
+    int setImageForName(const ChromixRawImage& image, const std::string& name);
 
     // Subclasses should override to implement Chromix related tasks.
     // Should return a valid MLT error code or 0.
@@ -84,10 +94,14 @@ private:
     int taskResult;
     double time;
     ChromixRawImage targetImage;
+    std::vector<ProducerImage*>* producerImages;
 
+    int createProducerImages();
+    int writeProducerImages(mlt_position position, int targetWidth, int targetHeight);
     int queueAndWait();
     int initMixRender();
     int renderToTarget();
+    int storeProducerImages();
     // Execute the task. Must only be called on the chromix thread.
     void executeTask();
 };

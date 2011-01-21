@@ -20,11 +20,8 @@ public:
         // Obtain the producer for this frame
         mlt_producer producer = (mlt_producer)mlt_properties_get_data(properties, "producer_chromix", NULL);
 
-        // Compute time
-        mlt_position in = mlt_producer_get_in(producer);
-        mlt_position length = mlt_producer_get_out(producer) - in + 1;
+        // Compute position
         mlt_position position = mlt_frame_get_position(frame);
-        double time = (double)(position - in) / (double)length;
 
 		// Allocate the image
         *format = mlt_image_rgb24a;
@@ -44,7 +41,7 @@ public:
 
             ChromixProducerTask* task = (ChromixProducerTask*)getTask(service);
             ChromixRawImage targetImage(*buffer, *width, *height);
-            error = task->renderToImageForTime(targetImage, time);
+            error = task->renderToImageForPosition(targetImage, position);
         }
 
         return error;
@@ -52,8 +49,6 @@ public:
 
     ChromixProducerTask(mlt_producer producer, const std::string& serviceName)
         : ChromixTask(MLT_PRODUCER_SERVICE(producer), serviceName) {}
-
-    using ChromixTask::initialize;
 
 protected:
     int performTask() {
@@ -96,10 +91,9 @@ mlt_producer chromix_producer_create(const char* service_name) {
     mlt_producer self = mlt_producer_new();
     if (self) {
         self->get_frame = chromix_producer_get_frame;
-        ChromixProducerTask* task = new ChromixProducerTask(self, service_name);
-        if (task->initialize() != 0) {
+        if (!new ChromixProducerTask(self, service_name)) {
             mlt_producer_close(self);
-            return NULL;
+            self = NULL;
         }
         return self;
     }

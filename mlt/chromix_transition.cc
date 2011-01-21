@@ -33,12 +33,9 @@ public:
         if (mlt_properties_get(b_props, "rescale.interp") == NULL || !strcmp(mlt_properties_get(b_props, "rescale.interp"), "none"))
             mlt_properties_set(b_props, "rescale.interp", mlt_properties_get(a_props, "rescale.interp"));
 
-        // Compute time
-        mlt_position in = mlt_transition_get_in(transition);
-        mlt_position length = mlt_transition_get_out(transition) - in + 1;
+        // Compute position
         char *name = mlt_properties_get(transition_props, "_unique_id");
         mlt_position position = mlt_properties_get_position(a_props, name);
-        double time = (double)(position - in) / (double)length;
 
         // Get the a_frame image, we will write our output to it
         *format = mlt_image_rgb24a;
@@ -58,7 +55,7 @@ public:
             ChromixRawImage targetImage(*image, *width, *height);
             task->aTrackImage.set(*image, *width, *height);
             task->bTrackImage.set(b_image, b_width, b_height);
-            error = task->renderToImageForTime(targetImage, time);
+            error = task->renderToImageForPosition(targetImage, position);
             task->aTrackImage.set();
             task->bTrackImage.set();
         }
@@ -72,8 +69,6 @@ public:
     int initialize() {
         int result = ChromixTask::initialize();
         if (result == 0) {
-            // Video only transition
-            mlt_properties_set_int(MLT_SERVICE_PROPERTIES(getService()), "_transition_type", 1);
             // Get a/b image names
             mlt_properties metadata = getMetadata();
             const char* aName = mlt_properties_get(metadata, A_IMAGE_METADATA_PROP);
@@ -90,9 +85,6 @@ public:
 
 protected:
     int performTask() {
-        //XXX lookup param - map track to WTF::String
-        //XXX lookup track property to get the WTF::String mixrender name for the image
-        //XXX need a map of name to ChromixRawImage - maintain in ChromixTask, clear after each render
         int result = setImageForName(aTrackImage, aImageName);
         if (result == 0)
             result = setImageForName(bTrackImage, bImageName);
@@ -107,7 +99,7 @@ private:
 };
 
 static mlt_frame chromix_transition_process(mlt_transition transition, mlt_frame a_frame, mlt_frame b_frame) {
-    char *name = mlt_properties_get(MLT_TRANSITION_PROPERTIES(transition), "_unique_id");
+    char* name = mlt_properties_get(MLT_TRANSITION_PROPERTIES(transition), "_unique_id");
     mlt_properties_set_position(MLT_FRAME_PROPERTIES(a_frame), name, mlt_frame_get_position(a_frame));
     mlt_frame_push_service(a_frame, transition);
     mlt_frame_push_frame(a_frame, b_frame);
@@ -119,10 +111,11 @@ mlt_transition chromix_transition_create(const char* service_name) {
     mlt_transition self = mlt_transition_new();
     if (self) {
         self->process = chromix_transition_process;
-        ChromixTransitionTask* task = new ChromixTransitionTask(self, service_name);
-        if (task->initialize() != 0) {
+        // Video only transition
+        mlt_properties_set_int(MLT_TRANSITION_PROPERTIES(self), "_transition_type", 1);
+        if (!new ChromixTransitionTask(self, service_name)) {
             mlt_transition_close(self);
-            return NULL;
+            self = NULL;
         }
         return self;
     }

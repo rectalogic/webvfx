@@ -21,11 +21,8 @@ public:
         mlt_filter filter = (mlt_filter)mlt_frame_pop_service(frame);
 
         // Compute time
-        mlt_position in = mlt_filter_get_in(filter);
-        mlt_position length = mlt_filter_get_out(filter) - in + 1;
         char *name = mlt_properties_get(MLT_FILTER_PROPERTIES(filter), "_unique_id");
         mlt_position position = mlt_properties_get_position(MLT_FRAME_PROPERTIES(frame), name);
-        double time = (double)(position - in) / (double)length;
 
         // Get the image, we will write our output to it
         *format = mlt_image_rgb24a;
@@ -39,7 +36,7 @@ public:
             ChromixFilterTask* task = (ChromixFilterTask*)getTask(service);
             ChromixRawImage targetImage(*image, *width, *height);
             task->aTrackImage.set(*image, *width, *height);
-            error = task->renderToImageForTime(targetImage, time);
+            error = task->renderToImageForPosition(targetImage, position);
             task->aTrackImage.set();
         }
 
@@ -66,9 +63,6 @@ public:
 
 protected:
     int performTask() {
-        //XXX lookup param - map track to WTF::String
-        //XXX lookup track property to get the WTF::String mixrender name for the image
-        //XXX need a map of name to ChromixRawImage - maintain in ChromixTask, clear after each render
         return setImageForName(aTrackImage, aImageName);
     };
 
@@ -93,10 +87,9 @@ mlt_filter chromix_filter_create(const char* service_name) {
     mlt_filter self = mlt_filter_new();
     if (self) {
         self->process = chromix_filter_process;
-        ChromixFilterTask* task = new ChromixFilterTask(self, std::string(service_name));
-        if (task->initialize() != 0) {
+        if (!new ChromixFilterTask(self, std::string(service_name))) {
             mlt_filter_close(self);
-            return NULL;
+            self = NULL;
         }
         return self;
     }

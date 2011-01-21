@@ -10,7 +10,6 @@ tags:
   - Video # this may produce video
 description: Simple Chromix test
 
-#XXX specify path to HTML, and mapping of video param names
 chromix.html: producer.html
 
 parameters:
