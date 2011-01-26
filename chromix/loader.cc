@@ -13,7 +13,7 @@
 #include <base/string16.h>
 #include <base/message_loop.h>
 
-#include <ostringstream>
+#include <sstream>
 
 Chromix::Loader::Loader(Delegate* delegate) :
     delegate(delegate),
