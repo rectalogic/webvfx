@@ -6,13 +6,13 @@
 #include "chromix/delegate.h"
 
 #include <map>
-#include <base/singleton.h>
-#include <third_party/WebKit/WebKit/chromium/public/WebFrame.h>
-#include <third_party/WebKit/WebCore/bindings/v8/ScriptScope.h>
-#include <third_party/WebKit/WebCore/bindings/v8/ScriptFunctionCall.h>
+#include <base/lazy_instance.h>
+#include <third_party/WebKit/Source/WebKit/chromium/public/WebFrame.h>
+#include <third_party/WebKit/Source/WebCore/bindings/v8/ScriptScope.h>
+#include <third_party/WebKit/Source/WebCore/bindings/v8/ScriptFunctionCall.h>
 
 typedef std::map<WebKit::WebView*, Chromix::ScriptingSupport*> ViewScriptMap;
-
+static base::LazyInstance<ViewScriptMap> g_view_script_map(base::LINKER_INITIALIZED);
 
 Chromix::ScriptingSupport::ScriptingSupport(Delegate* delegate) : delegate(delegate) {
 }
@@ -20,12 +20,12 @@ Chromix::ScriptingSupport::ScriptingSupport(Delegate* delegate) : delegate(deleg
 Chromix::ScriptingSupport::~ScriptingSupport() {
     // Remove from map
     if (this->webView)
-        Singleton<ViewScriptMap>::get()->erase(this->webView);
+        g_view_script_map.Get().erase(this->webView);
 }
 
 /*static*/
 Chromix::ScriptingSupport* Chromix::ScriptingSupport::fromWebView(WebKit::WebView* webView) {
-    ViewScriptMap* views = Singleton<ViewScriptMap>::get();
+    ViewScriptMap* views = g_view_script_map.Pointer();
     ViewScriptMap::iterator it = views->find(webView);
     return it == views->end() ? NULL : it->second;
 }
@@ -34,7 +34,7 @@ void Chromix::ScriptingSupport::initialize(WebKit::WebView* webView) {
     this->webView = webView;
 
     // Register in map
-    Singleton<ViewScriptMap>::get()->insert(std::make_pair(webView, this));
+    g_view_script_map.Get().insert(std::make_pair(webView, this));
 
     v8::HandleScope scope;
     scriptState = WebCore::ScriptState::forContext(webView->mainFrame()->mainWorldScriptContext());

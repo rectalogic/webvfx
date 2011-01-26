@@ -11,8 +11,8 @@
         '.',
       ],
       'dependencies': [
-        '<(DEPTH)/third_party/WebKit/WebKit/chromium/WebKit.gyp:webkit',
-        '<(DEPTH)/third_party/WebKit/WebCore/WebCore.gyp/WebCore.gyp:webcore',
+        '<(DEPTH)/third_party/WebKit/Source/WebKit/chromium/WebKit.gyp:webkit',
+        '<(DEPTH)/third_party/WebKit/Source/WebCore/WebCore.gyp/WebCore.gyp:webcore',
         '<(DEPTH)/webkit/support/webkit_support.gyp:webkit_support',
       ],
       'conditions': [
@@ -25,7 +25,7 @@
         }],
       ],
       'export_dependent_settings': [
-        '<(DEPTH)/third_party/WebKit/WebCore/WebCore.gyp/WebCore.gyp:webcore',
+        '<(DEPTH)/third_party/WebKit/Source/WebCore/WebCore.gyp/WebCore.gyp:webcore',
       ],
       'direct_dependent_settings': {
         'include_dirs': [

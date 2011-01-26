@@ -5,11 +5,11 @@
 #ifndef CHROMIX_WEBKIT_CLIENT_IMPL_H_
 #define CHROMIX_WEBKIT_CLIENT_IMPL_H_
 
-#include <third_party/WebKit/WebKit/chromium/public/WebGraphicsContext3D.h>
 #include <webkit/glue/simple_webmimeregistry_impl.h>
 #include <webkit/glue/webfileutilities_impl.h>
 #include <webkit/glue/webclipboard_impl.h>
 #include <webkit/glue/webkitclient_impl.h>
+#include <webkit/gpu/webgraphicscontext3d_in_process_impl.h>
 
 namespace Chromix {
 
@@ -22,7 +22,7 @@ public:
     virtual WebKit::WebClipboard* clipboard() { return &clipboardImpl; }
     virtual WebKit::WebFileUtilities* fileUtilities() { return &fileUtiliesImpl; }
     virtual WebKit::WebGraphicsContext3D* createGraphicsContext3D() {
-        return WebKit::WebGraphicsContext3D::createDefault();
+        return new webkit::gpu::WebGraphicsContext3DInProcessImpl();
     }
 
 private:

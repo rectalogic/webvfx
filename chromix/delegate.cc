@@ -1,7 +1,7 @@
 #include "chromix/delegate.h"
 
-#include <third_party/WebKit/WebCore/config.h>
-#include <third_party/WebKit/WebCore/bindings/v8/V8Binding.h>
+#include <third_party/WebKit/Source/WebCore/config.h>
+#include <third_party/WebKit/Source/WebCore/bindings/v8/V8Binding.h>
 
 v8::Handle<v8::Value> Chromix::Delegate::getUndefinedParameterValue() {
     return v8::Undefined();

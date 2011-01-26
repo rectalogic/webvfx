@@ -9,7 +9,7 @@
 
 #include <base/basictypes.h>
 #include <skia/ext/platform_canvas.h>
-#include <third_party/WebKit/WebKit/chromium/public/WebSize.h>
+#include <third_party/WebKit/Source/WebKit/chromium/public/WebSize.h>
 
 
 namespace Chromix {

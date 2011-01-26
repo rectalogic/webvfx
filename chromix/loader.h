@@ -7,8 +7,8 @@
 
 
 #include <string>
-#include <third_party/WebKit/WebKit/chromium/public/WebViewClient.h>
-#include <third_party/WebKit/WebKit/chromium/public/WebFrameClient.h>
+#include <third_party/WebKit/Source/WebKit/chromium/public/WebViewClient.h>
+#include <third_party/WebKit/Source/WebKit/chromium/public/WebFrameClient.h>
 
 namespace WebKit {
     class WebFrame;

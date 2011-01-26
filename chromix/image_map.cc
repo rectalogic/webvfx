@@ -4,9 +4,10 @@
 
 #include "chromix/image_map.h"
 
-#include <third_party/WebKit/WebCore/config.h>
+#include <third_party/WebKit/Source/WebCore/config.h>
 #include <v8/include/v8.h>
-#include <third_party/WebKit/WebCore/bindings/v8/V8Binding.h>
+#include <third_party/WebKit/Source/WebCore/bindings/v8/V8Binding.h>
+#include <third_party/WebKit/Source/WebCore/platform/graphics/IntSize.h>
 #include <V8ImageData.h>
 
 Chromix::ImageMap::ImageMap() : imageDataMap()
@@ -29,7 +30,7 @@ unsigned char* Chromix::ImageMap::writeableDataForImageParameter(const std::stri
     // Param has no ImageData yet, or if it has one of the wrong size,
     // create and set or replace.
     if (imageData == NULL || (width != imageData->width() || height != imageData->height())) {
-        rpImageData = WebCore::ImageData::create(width, height);
+        rpImageData = WebCore::ImageData::create(WebCore::IntSize(width, height));
         imageDataMap[name] = rpImageData;
         imageData = rpImageData.get();
     }

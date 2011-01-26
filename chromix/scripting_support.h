@@ -9,10 +9,10 @@
 
 #include <base/basictypes.h>
 #include <v8/include/v8.h>
-#include <third_party/WebKit/WebKit/chromium/public/WebView.h>
-#include <third_party/WebKit/WebCore/bindings/v8/ScriptState.h>
-#include <third_party/WebKit/WebCore/bindings/v8/ScriptValue.h>
-#include <third_party/WebKit/WebCore/bindings/v8/ScriptFunctionCall.h>
+#include <third_party/WebKit/Source/WebKit/chromium/public/WebView.h>
+#include <third_party/WebKit/Source/WebCore/bindings/v8/ScriptState.h>
+#include <third_party/WebKit/Source/WebCore/bindings/v8/ScriptValue.h>
+#include <third_party/WebKit/Source/WebCore/bindings/v8/ScriptFunctionCall.h>
 
 namespace Chromix {
 

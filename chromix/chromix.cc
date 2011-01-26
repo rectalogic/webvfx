@@ -9,12 +9,12 @@
 #include <base/message_loop.h>
 #include <base/at_exit.h>
 #include <base/command_line.h>
-#include <third_party/WebKit/WebKit/chromium/public/WebKit.h>
-#include <third_party/WebKit/WebKit/chromium/public/WebRuntimeFeatures.h>
-#include <third_party/WebKit/WebKit/chromium/public/WebScriptController.h>
+#include <third_party/WebKit/Source/WebKit/chromium/public/WebKit.h>
+#include <third_party/WebKit/Source/WebKit/chromium/public/WebRuntimeFeatures.h>
+#include <third_party/WebKit/Source/WebKit/chromium/public/WebScriptController.h>
 #include <webkit/tools/test_shell/simple_resource_loader_bridge.h>
 #if defined(OS_MACOSX)
-#include <third_party/WebKit/WebKit/mac/WebCoreSupport/WebSystemInterface.h>
+#include <third_party/WebKit/Source/WebKit/mac/WebCoreSupport/WebSystemInterface.h>
 #elif defined(OS_LINUX)
 #include <app/app_switches.h>
 #include <app/gfx/gl/gl_implementation.h>

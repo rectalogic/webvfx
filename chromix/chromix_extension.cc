@@ -6,7 +6,7 @@
 #include "chromix/scripting_support.h"
 
 #include <v8/include/v8.h>
-#include <third_party/WebKit/WebKit/chromium/public/WebFrame.h>
+#include <third_party/WebKit/Source/WebKit/chromium/public/WebFrame.h>
 
 namespace Chromix {
 

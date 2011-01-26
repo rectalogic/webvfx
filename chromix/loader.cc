@@ -5,13 +5,15 @@
 #include "chromix/loader.h"
 #include "chromix/delegate.h"
 
-#include <third_party/WebKit/WebKit/chromium/public/WebView.h>
-#include <third_party/WebKit/WebKit/chromium/public/WebFrame.h>
-#include <third_party/WebKit/WebKit/chromium/public/WebURLRequest.h>
-#include <third_party/WebKit/WebKit/chromium/public/WebURLError.h>
-#include <third_party/WebKit/WebKit/chromium/public/WebConsoleMessage.h>
+#include <third_party/WebKit/Source/WebKit/chromium/public/WebView.h>
+#include <third_party/WebKit/Source/WebKit/chromium/public/WebFrame.h>
+#include <third_party/WebKit/Source/WebKit/chromium/public/WebURLRequest.h>
+#include <third_party/WebKit/Source/WebKit/chromium/public/WebURLError.h>
+#include <third_party/WebKit/Source/WebKit/chromium/public/WebConsoleMessage.h>
 #include <base/string16.h>
 #include <base/message_loop.h>
+
+#include <ostringstream>
 
 Chromix::Loader::Loader(Delegate* delegate) :
     delegate(delegate),
@@ -43,8 +45,11 @@ bool Chromix::Loader::loadURL(WebKit::WebView *webView, const std::string& url) 
 }
 
 void Chromix::Loader::didAddMessageToConsole(const WebKit::WebConsoleMessage& message, const WebKit::WebString& sourceName, unsigned sourceLine) {
-    if (delegate)
-        delegate->logMessage(std::string(message.text.utf8()));
+    if (delegate) {
+        std::ostringstream oss;
+        oss << std::string(sourceName.utf8()) << ":" << sourceLine << " - " << std::string(message.text.utf8());
+        delegate->logMessage(oss.str());
+    }
 }
 
 void Chromix::Loader::didStopLoading() {

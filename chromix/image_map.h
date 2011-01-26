@@ -6,9 +6,9 @@
 #define CHROMIX_IMAGE_MAP_H_
 
 #include <string>
-#include <third_party/WebKit/WebCore/config.h>
-#include <third_party/WebKit/WebCore/html/ImageData.h>
-#include <third_party/WebKit/JavaScriptCore/wtf/RefPtr.h>
+#include <third_party/WebKit/Source/WebCore/config.h>
+#include <third_party/WebKit/Source/WebCore/html/ImageData.h>
+#include <third_party/WebKit/Source/JavaScriptCore/wtf/RefPtr.h>
 #include <base/hash_tables.h>
 
 namespace v8 {

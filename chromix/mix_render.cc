@@ -8,13 +8,13 @@
 #include "chromix/delegate.h"
 
 #include <base/string16.h>
-#include <third_party/WebKit/WebKit/chromium/public/WebView.h>
-#include <third_party/WebKit/WebKit/chromium/public/WebFrame.h>
-#include <third_party/WebKit/WebKit/chromium/public/WebURL.h>
-#include <third_party/WebKit/WebKit/chromium/public/WebURLRequest.h>
-#include <third_party/WebKit/WebKit/chromium/public/WebRect.h>
-#include <third_party/WebKit/WebKit/chromium/public/WebSettings.h>
-#include <third_party/WebKit/JavaScriptCore/wtf/text/WTFString.h>
+#include <third_party/WebKit/Source/WebKit/chromium/public/WebView.h>
+#include <third_party/WebKit/Source/WebKit/chromium/public/WebFrame.h>
+#include <third_party/WebKit/Source/WebKit/chromium/public/WebURL.h>
+#include <third_party/WebKit/Source/WebKit/chromium/public/WebURLRequest.h>
+#include <third_party/WebKit/Source/WebKit/chromium/public/WebRect.h>
+#include <third_party/WebKit/Source/WebKit/chromium/public/WebSettings.h>
+#include <third_party/WebKit/Source/JavaScriptCore/wtf/text/WTFString.h>
 #include <webkit/glue/webkit_glue.h>
 #include <skia/ext/bitmap_platform_device.h>
 
@@ -26,7 +26,7 @@ Chromix::MixRender::MixRender(Delegate* delegate) :
     loader(delegate),
     scriptingSupport(new Chromix::ScriptingSupport(delegate))
 {
-    webView = WebKit::WebView::create(&loader, NULL);
+    webView = WebKit::WebView::create(&loader, NULL, NULL);
 
     WebKit::WebSettings *settings = webView->settings();
     settings->setStandardFontFamily(WebKit::WebString("Times New Roman"));
@@ -50,6 +50,8 @@ Chromix::MixRender::MixRender(Delegate* delegate) :
     settings->setUsesPageCache(false);
     settings->setShouldPaintCustomScrollbars(false);
     settings->setAllowUniversalAccessFromFileURLs(true);
+    //XXX security issue? should we check command_line.HasSwitch(switches::kAllowFileAccessFromFiles)
+    //XXX http://code.google.com/p/chromium/issues/detail?id=47416
     settings->setAllowFileAccessFromFileURLs(true);
     settings->setExperimentalWebGLEnabled(true);
     //XXX see http://groups.google.com/a/chromium.org/group/chromium-dev/browse_thread/thread/26ce7cbbc758a504/3515ab0391212a37?show_docid=3515ab0391212a37
