@@ -315,6 +315,9 @@ int ChromixTask::initMixRender() {
         return 1;
     }
 
+    // Set an initial size so we aren't 0x0
+    mixRender->resize(targetImage.getWidth(), targetImage.getHeight());
+
     // Load HTML. Look up relative path in service metadata.
     char *htmlPath = mlt_properties_get(metadata, HTML_METADATA_PROP);
     if (!htmlPath) {
