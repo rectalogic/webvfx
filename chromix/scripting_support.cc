@@ -67,6 +67,8 @@ bool Chromix::ScriptingSupport::invokeRenderCallback(double time) {
 
     bool hadException = false;
     callback.call(hadException);
+    if (hadException && delegate)
+        delegate->logMessage(std::string("Render callback threw exception: ") + *v8::String::Utf8Value(scriptState->exception()->ToString()));
     return !hadException;
 }
 
