@@ -7,6 +7,9 @@
 
 #include <QWebPage>
 
+class QWebFrame;
+class QEventLoop;
+
 namespace Chromix
 {
 

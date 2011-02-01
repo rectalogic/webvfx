@@ -1,4 +1,6 @@
 #include <sstream>
+#include <QWebFrame>
+#include <QEventLoop>
 #include "chromix/web_page.h"
 #include "chromix/logger.h"
 
@@ -12,15 +14,15 @@ Chromix::WebPage::WebPage(QObject *parent)
 void Chromix::WebPage::javaScriptAlert(QWebFrame *originatingFrame, const QString &msg)
 {
     Q_UNUSED(originatingFrame);
-    Chromix::log(std::string("JavaScript alert: ") + QString::toStdString(msg));
+    Chromix::log(std::string("JavaScript alert: ") + msg.toStdString());
 }
 
 void Chromix::WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID)
 {
     std::ostringstream oss;
     if (!sourceID.isEmpty())
-        oss << QString::toStdString(sourceID) << ":" << lineNumber << " ";
-    oss << QString::toStdString(message);
+        oss << sourceID.toStdString() << ":" << lineNumber << " ";
+    oss << message.toStdString();
     Chromix::log(oss.str());
 }
 
@@ -56,5 +58,3 @@ bool Chromix::WebPage::loadSync(const QUrl& url)
     syncLoop = 0;
     return result;
 }
-
-#include "web_page.moc"

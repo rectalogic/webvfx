@@ -5,6 +5,8 @@
 #ifndef CHROMIX_LOGGER_H_
 #define CHROMIX_LOGGER_H_
 
+#include <string>
+
 namespace Chromix {
 
 class Logger

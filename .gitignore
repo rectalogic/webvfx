@@ -1,6 +1,5 @@
-chromix.xcodeproj
-chromix.target.mk
-chromix_demo.xcodeproj
-chromix_demo.target.mk
-mltchromix.xcodeproj
-mltchromix.target.mk
+Makefile
+Makefile.*
+debug
+release
+build

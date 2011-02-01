@@ -19,7 +19,7 @@ class WebRenderer : public QObject, public MixKit
 
 public:
     WebRenderer(QObject *parent = 0);
-    void initialize(const std::string& url, int width, int height);
+    bool initialize(const std::string& url, int width, int height);
     void setSize(int width, int height);
     void destroy();
 
@@ -30,9 +30,7 @@ private:
     Q_INVOKABLE void setSizeInvokable(const QSize& size);
 
     // Test if we are currently on the UI thread
-    bool onUIThread() {
-        QThread::currentThread() == QApplication::instance()->thread();
-    };
+    bool onUIThread();
 
     WebPage* webPage;
 };
