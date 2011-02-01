@@ -5,11 +5,21 @@
 #ifndef CHROMIX_CHROMIX_H_
 #define CHROMIX_CHROMIX_H_
 
-namespace Chromix {
-enum InitializeResult { InitializeFailure, InitializeSuccess, InitializeAlready };
+#include <chromix/mix_kit.h>
+#include <chromix/logger.h>
 
-// Chromix must be initialized, used, and shutdown from the same thread
-InitializeResult initialize(int argc=0, const char* argv[]=0);
+namespace Chromix {
+
+// initialize must only be called once.
+// argv must be valid until shutdown() is called.
+// argc must be > 0 and argv must have at least an empty string.
+// argv may be modified.
+// A Logger implementation may be supplied, it will be deleted at shutdown.
+bool initialize(int argc, char* argv[], Logger* logger=0);
+
+MixKit* createMixKit();
+
 void shutdown();
+
 }
 #endif
