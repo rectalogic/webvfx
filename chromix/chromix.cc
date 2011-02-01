@@ -75,6 +75,7 @@ public:
         // webkit_glue::ResourceLoaderBridge::Create() creates a SimpleResourceLoaderBridge
         // which spawns an IO thread - so need to shut it down.
         SimpleResourceLoaderBridge::Shutdown();
+        messageLoop.RunAllPending();
         WebKit::shutdown();
     }
 

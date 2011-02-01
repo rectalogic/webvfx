@@ -99,8 +99,7 @@ const SkBitmap* Chromix::MixRender::render(double time) {
 
     // Get canvas bitmap
     // XXX return wrapper class that internally does SkAutoLockPixels
-    skia::BitmapPlatformDevice &skiaDevice = static_cast<skia::BitmapPlatformDevice&>(skiaCanvas->getTopPlatformDevice());
-    return &skiaDevice.accessBitmap(false);
+    return &static_cast<skia::BitmapPlatformDevice&>(skiaCanvas->getTopPlatformDevice()).accessBitmap(false);
 }
 
 unsigned char* Chromix::MixRender::writeableDataForImageParameter(const std::string& name, unsigned int width, unsigned int height) {

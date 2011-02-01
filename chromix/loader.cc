@@ -44,6 +44,7 @@ bool Chromix::Loader::loadURL(WebKit::WebView *webView, const std::string& url) 
     return didLoadSucceed;
 }
 
+//XXX report message.level to delegate when bug fixed http://code.google.com/p/chromium/issues/detail?id=71153
 void Chromix::Loader::didAddMessageToConsole(const WebKit::WebConsoleMessage& message, const WebKit::WebString& sourceName, unsigned sourceLine) {
     if (delegate) {
         std::ostringstream oss;
@@ -52,6 +53,11 @@ void Chromix::Loader::didAddMessageToConsole(const WebKit::WebConsoleMessage& me
     }
 }
 
+//XXX this may not be enough - loaded html may need to async load assets, so we may need a callback from JS to indicate finished
+//XXX wait for callback to be set and didStopLoading (or load failure and no CB)
+//XXX maybe change cb func to also pass image names - identify srcVideo, dstVideo and extraVideos
+//XXX but that means we won't have that info until first time we run on chromix thread - too late to pull images
+//XXX could init Chromix separately in mlt (special case like we do destroy)
 void Chromix::Loader::didStopLoading() {
     // This is called even after load failure, so don't reset flags if we already failed.
     if (!isLoadFinished) {

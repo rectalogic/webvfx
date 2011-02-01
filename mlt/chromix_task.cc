@@ -352,21 +352,12 @@ int ChromixTask::renderToTarget() {
     const SkBitmap* skiaBitmap = mixRender->render(time);
     if (!skiaBitmap)
         return 1;
-    SkAutoLockPixels bitmapLock(*skiaBitmap);
-    // Do a block copy if no padding, otherwise copy a row at a time
+    //XXX need to confirm SkBitmap::config() is kARGB_8888_Config, and check byte order
+    //XXX see http://codesearch.google.com/codesearch/p?hl=en#OAMlx_jo-ck/src/skia/ext/bitmap_platform_device_linux.h&q=BitmapPlatformDeviceFactory&exact_package=chromium&l=17
+    //XXX probably also need to un-premultiply (there is a method for that)
     unsigned int byteCount = targetImage.getWidth() * targetImage.getHeight() * 4;
-    if (skiaBitmap->getSize() == byteCount)
-        memcpy(targetImage.getImage(), skiaBitmap->getPixels(), byteCount);
-    else {
-        int bytesPerRow = targetImage.getWidth() * 4;
-        const unsigned char* srcP = reinterpret_cast<const unsigned char*>(skiaBitmap->getPixels());
-        unsigned char* dstP = targetImage.getImage();
-        for (int y = 0; y < targetImage.getHeight(); y++) {
-            memcpy(dstP, srcP, bytesPerRow);
-            srcP += skiaBitmap->rowBytes();
-            dstP += bytesPerRow;
-        }
-    }
+    if (!skiaBitmap->copyPixelsTo(targetImage.getImage(), byteCount, targetImage.getWidth() * 4))
+        return 1;
     targetImage.set();
     return 0;
 }
