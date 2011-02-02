@@ -13,12 +13,10 @@ namespace WebFX
 class WebParameters
 {
 public:
-    virtual double getNumberParameter(const std::string& name) = 0;
-    virtual const std::string getStringParameter(const std::string& name) = 0;
-
-protected:
     WebParameters() {};
     virtual ~WebParameters() = 0;
+    virtual double getNumberParameter(const std::string& name) = 0;
+    virtual const std::string getStringParameter(const std::string& name) = 0;
 };
 
 }

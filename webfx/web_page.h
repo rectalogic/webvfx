@@ -7,31 +7,47 @@
 
 #include <QWebPage>
 
-class QWebFrame;
 class QEventLoop;
+class QImage;
+class QWebFrame;
 
 namespace WebFX
 {
+
+class WebImage;
+class WebParameters;
+class WebRenderer;
+class WebScript;
 
 class WebPage : public QWebPage
 {
     Q_OBJECT
 public:
-    WebPage(QObject* parent = 0);
+    WebPage(WebRenderer* parent, WebParameters* parameters);
+    ~WebPage();
 
     // Load URL synchronously, return success
     bool loadSync(const QUrl& url);
+    WebImage render(double time);
 
 private slots:
+    void injectWebScript();
     bool shouldInterruptJavaScript();
-    void loadSyncFinished(bool result);
+    void webPageLoadFinished(bool result);
+    void webScriptLoadFinished(bool result);
 
 protected:
     void javaScriptAlert(QWebFrame* originatingFrame, const QString& msg);
     void javaScriptConsoleMessage(const QString& message, int lineNumber, const QString& sourceID);
+    bool acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& request, NavigationType type);
 
 private:
+    enum LoadStatus { LoadNotFinished, LoadFailed, LoadSucceeded };
+    LoadStatus pageLoadFinished;
+    LoadStatus scriptLoadFinished;
+    WebScript* webScript;
     QEventLoop* syncLoop;
+    QImage* renderImage;
 };
 
 }

@@ -7,35 +7,37 @@
 
 #include <QtWebKit>
 #include "webfx/web_effects.h"
+#include "webfx/web_image.h"
 
 namespace WebFX
 {
 
+class WebImage;
 class WebPage;
-class WebScript;
 class WebParameters;
 
 class WebRenderer : public QObject, public WebEffects
 {
     Q_OBJECT
-
 public:
-    WebRenderer(QObject *parent = 0);
+    WebRenderer();
+    ~WebRenderer() {};
+
     bool initialize(const std::string& url, int width, int height, WebParameters* parameters = 0);
     void setSize(int width, int height);
+    WebImage render(double time, int width, int height);
     void destroy();
 
 private:
-    ~WebRenderer();
-
     Q_INVOKABLE void initializeInvokable(const QUrl& url, const QSize& size, WebParameters* parameters);
     Q_INVOKABLE void setSizeInvokable(const QSize& size);
+    Q_INVOKABLE void renderInvokable(double time, const QSize& size);
 
     // Test if we are currently on the UI thread
     bool onUIThread();
 
     WebPage* webPage;
-    WebScript* webScript;
+    WebImage renderImage;
 };
 
 }

@@ -6,8 +6,8 @@
 #include <string.h>
 #include <QApplication>
 #include "webfx/webfx.h"
-#include "webfx/web_renderer.h"
 #include "webfx/web_logger.h"
+#include "webfx/web_renderer.h"
 
 
 
@@ -77,7 +77,7 @@ bool WebFX::initialize(int argc, char* argv[], WebFX::WebLogger* logger)
 
 WebFX::WebEffects* WebFX::createWebEffects()
 {
-    return new WebFX::WebRenderer(0);
+    return new WebFX::WebRenderer();
 }
 
 void WebFX::shutdown()

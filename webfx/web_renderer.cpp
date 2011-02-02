@@ -4,20 +4,12 @@
 #include "webfx/web_page.h"
 #include "webfx/web_parameters.h"
 #include "webfx/web_renderer.h"
-#include "webfx/web_script.h"
 
 
-WebFX::WebRenderer::WebRenderer(QObject* parent)
-    : QObject(parent)
+WebFX::WebRenderer::WebRenderer()
+    : QObject(0)
     , webPage(0)
-    , webScript(0)
 {
-}
-
-WebFX::WebRenderer::~WebRenderer()
-{
-    delete webPage;
-    delete webScript;
 }
 
 bool WebFX::WebRenderer::initialize(const std::string& url, int width, int height, WebFX::WebParameters* parameters)
@@ -68,14 +60,24 @@ void WebFX::WebRenderer::setSize(int width, int height)
     }
 }
 
+WebFX::WebImage WebFX::WebRenderer::render(double time, int width, int height)
+{
+    QSize size(width, height);
+
+    if (onUIThread()) {
+        renderInvokable(time, size);
+    }
+    else {
+        QMetaObject::invokeMethod(this, "renderInvokable", Qt::BlockingQueuedConnection,
+                                  Q_ARG(double, time), Q_ARG(QSize, size));
+    }
+    return renderImage;
+}
+
 void WebFX::WebRenderer::initializeInvokable(const QUrl& url, const QSize& size, WebFX::WebParameters* parameters)
 {
-    webPage = new WebFX::WebPage();
+    webPage = new WebFX::WebPage(this, parameters);
     webPage->setViewportSize(size);
-
-    //XXX hookup signals
-    //XXX install "webfx" object into page - another Qt class we can own here
-    connect(webPage->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), SLOT(inject()));
 
     //XXX we should enable webgl for our QtWebKit builds
     webPage->settings()->setAttribute(QWebSettings::SiteSpecificQuirksEnabled, false);
@@ -94,4 +96,10 @@ void WebFX::WebRenderer::initializeInvokable(const QUrl& url, const QSize& size,
 void WebFX::WebRenderer::setSizeInvokable(const QSize& size)
 {
     webPage->setViewportSize(size);
+}
+
+void WebFX::WebRenderer::renderInvokable(double time, const QSize& size)
+{
+    webPage->setViewportSize(size);
+    renderImage = webPage->render(time);
 }
