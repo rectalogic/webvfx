@@ -6,6 +6,7 @@
 #define CHROMIX_MIX_KIT_H_
 
 #include <string>
+#include <chromix/parameters.h>
 
 namespace Chromix
 {
@@ -18,11 +19,14 @@ public:
     //XXX render
     //XXX need delegate to get named parameter values
 
-    virtual bool initialize(const std::string& url, int width, int height) = 0;
+    // A Parameters implementation may be supplied to provide parameters to the mix.
+    // MixKit will take ownership of parameters.
+    virtual bool initialize(const std::string& url, int width, int height, Parameters* parameters = 0) = 0;
     virtual void setSize(int width, int height) = 0;
     virtual void destroy() = 0;
 
 protected:
+    MixKit() {};
     virtual ~MixKit() = 0;
 };
 

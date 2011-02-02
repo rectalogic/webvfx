@@ -76,7 +76,7 @@ bool Chromix::initialize(int argc, char* argv[], Chromix::Logger* logger)
 
 Chromix::MixKit* Chromix::createMixKit()
 {
-    return new Chromix::WebRenderer();
+    return new Chromix::WebRenderer(0);
 }
 
 void Chromix::shutdown()
@@ -89,6 +89,7 @@ void Chromix::shutdown()
         pthread_join(Chromix::uiThread, 0);
         Chromix::ownApp = false;
     }
+    //XXX if we don't own, should we post an event and wait for it to ensure any references to our stuff are off the event loop before our lib is unloaded?
 
     if (Chromix::logger) {
         delete Chromix::logger;

@@ -2,21 +2,25 @@
 #include <QThread>
 #include "chromix/web_renderer.h"
 #include "chromix/web_page.h"
+#include "chromix/web_script.h"
+#include "chromix/parameters.h"
 #include "chromix/logger.h"
 
 
 Chromix::WebRenderer::WebRenderer(QObject* parent)
     : QObject(parent)
     , webPage(0)
+    , webScript(0)
 {
 }
 
 Chromix::WebRenderer::~WebRenderer()
 {
     delete webPage;
+    delete webScript;
 }
 
-bool Chromix::WebRenderer::initialize(const std::string& url, int width, int height)
+bool Chromix::WebRenderer::initialize(const std::string& url, int width, int height, Chromix::Parameters* parameters)
 {
     QUrl qurl(QString::fromStdString(url));
 
@@ -28,13 +32,13 @@ bool Chromix::WebRenderer::initialize(const std::string& url, int width, int hei
     QSize size(width, height);
 
     if (onUIThread()) {
-        initializeInvokable(qurl, size);
+        initializeInvokable(qurl, size, parameters);
     }
     else {
-        // Move ourself onto GUI thread and create our QWebPage there
+        // Move ourself onto GUI thread and create our WebPage there
         this->moveToThread(QApplication::instance()->thread());
         QMetaObject::invokeMethod(this, "initializeInvokable", Qt::BlockingQueuedConnection,
-                                  Q_ARG(QUrl, qurl), Q_ARG(QSize, size));
+                                  Q_ARG(QUrl, qurl), Q_ARG(QSize, size), Q_ARG(void*, parameters));
     }
 
     //XXX check actual load status
@@ -64,7 +68,7 @@ void Chromix::WebRenderer::setSize(int width, int height)
     }
 }
 
-void Chromix::WebRenderer::initializeInvokable(const QUrl& url, const QSize& size)
+void Chromix::WebRenderer::initializeInvokable(const QUrl& url, const QSize& size, Chromix::Parameters* parameters)
 {
     webPage = new Chromix::WebPage();
     webPage->setViewportSize(size);

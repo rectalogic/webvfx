@@ -7,11 +7,13 @@
 
 #include <QtWebKit>
 #include "chromix/mix_kit.h"
+#include "chromix/parameters.h"
 
 namespace Chromix
 {
 
 class WebPage;
+class WebScript;
 
 class WebRenderer : public QObject, public MixKit
 {
@@ -19,20 +21,21 @@ class WebRenderer : public QObject, public MixKit
 
 public:
     WebRenderer(QObject *parent = 0);
-    bool initialize(const std::string& url, int width, int height);
+    bool initialize(const std::string& url, int width, int height, Parameters* parameters = 0);
     void setSize(int width, int height);
     void destroy();
 
 private:
     ~WebRenderer();
 
-    Q_INVOKABLE void initializeInvokable(const QUrl& url, const QSize& size);
+    Q_INVOKABLE void initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters);
     Q_INVOKABLE void setSizeInvokable(const QSize& size);
 
     // Test if we are currently on the UI thread
     bool onUIThread();
 
     WebPage* webPage;
+    WebScript* webScript;
 };
 
 }
