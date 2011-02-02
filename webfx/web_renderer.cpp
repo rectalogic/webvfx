@@ -1,10 +1,10 @@
 #include <QApplication>
 #include <QThread>
-#include "webfx/web_renderer.h"
+#include "webfx/web_logger.h"
 #include "webfx/web_page.h"
+#include "webfx/web_parameters.h"
+#include "webfx/web_renderer.h"
 #include "webfx/web_script.h"
-#include "webfx/parameters.h"
-#include "webfx/logger.h"
 
 
 WebFX::WebRenderer::WebRenderer(QObject* parent)
@@ -20,7 +20,7 @@ WebFX::WebRenderer::~WebRenderer()
     delete webScript;
 }
 
-bool WebFX::WebRenderer::initialize(const std::string& url, int width, int height, WebFX::Parameters* parameters)
+bool WebFX::WebRenderer::initialize(const std::string& url, int width, int height, WebFX::WebParameters* parameters)
 {
     QUrl qurl(QString::fromStdString(url));
 
@@ -68,7 +68,7 @@ void WebFX::WebRenderer::setSize(int width, int height)
     }
 }
 
-void WebFX::WebRenderer::initializeInvokable(const QUrl& url, const QSize& size, WebFX::Parameters* parameters)
+void WebFX::WebRenderer::initializeInvokable(const QUrl& url, const QSize& size, WebFX::WebParameters* parameters)
 {
     webPage = new WebFX::WebPage();
     webPage->setViewportSize(size);

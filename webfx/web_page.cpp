@@ -2,7 +2,7 @@
 #include <QWebFrame>
 #include <QEventLoop>
 #include "webfx/web_page.h"
-#include "webfx/logger.h"
+#include "webfx/web_logger.h"
 
 WebFX::WebPage::WebPage(QObject *parent)
     : QWebPage(parent)

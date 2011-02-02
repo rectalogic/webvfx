@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBFX_LOGGER_H_
-#define WEBFX_LOGGER_H_
+#ifndef WEBFX_WEB_LOGGER_H_
+#define WEBFX_WEB_LOGGER_H_
 
 #include <string>
 
 namespace WebFX {
 
-class Logger
+class WebLogger
 {
 public:
-    virtual ~Logger() = 0;
+    virtual ~WebLogger() = 0;
     virtual void log(const std::string& msg) = 0;
 };
 

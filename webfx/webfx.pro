@@ -1,16 +1,18 @@
 TEMPLATE = lib
 #VERSION = 
 
-HEADERS += logger.h
 HEADERS += web_effects.h
+HEADERS += web_logger.h
 HEADERS += web_page.h
+HEADERS += web_parameters.h
 HEADERS += web_renderer.h
 HEADERS += web_script.h
 HEADERS += webfx.h
 
-SOURCES += logger.cpp
 SOURCES += web_effects.cpp
+SOURCES += web_logger.cpp
 SOURCES += web_page.cpp
+SOURCES += web_parameters.cpp
 SOURCES += web_renderer.cpp
 SOURCES += web_script.cpp
 SOURCES += webfx.cpp

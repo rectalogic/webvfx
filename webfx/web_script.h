@@ -10,13 +10,13 @@
 namespace WebFX
 {
 
-class Parameters;
+class WebParameters;
 
 class WebScript : public QObject
 {
     Q_OBJECT
 public:
-    WebScript(QObject* parent = 0, Parameters* parameters = 0);
+    WebScript(QObject* parent = 0, WebParameters* parameters = 0);
 };
 
 }

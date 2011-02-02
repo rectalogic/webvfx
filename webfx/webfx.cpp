@@ -7,7 +7,7 @@
 #include <QApplication>
 #include "webfx/webfx.h"
 #include "webfx/web_renderer.h"
-#include "webfx/logger.h"
+#include "webfx/web_logger.h"
 
 
 
@@ -25,7 +25,7 @@ static pthread_t uiThread;
 static pthread_mutex_t uiMutex;
 static pthread_cond_t uiCond;
 
-static WebFX::Logger* logger = 0;
+static WebFX::WebLogger* logger = 0;
 }
 
 
@@ -48,7 +48,7 @@ void* WebFX::uiEventLoop(void* args)
     return 0;
 }
 
-bool WebFX::initialize(int argc, char* argv[], WebFX::Logger* logger)
+bool WebFX::initialize(int argc, char* argv[], WebFX::WebLogger* logger)
 {
     WebFX::logger = logger;
 

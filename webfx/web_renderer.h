@@ -7,13 +7,13 @@
 
 #include <QtWebKit>
 #include "webfx/web_effects.h"
-#include "webfx/parameters.h"
 
 namespace WebFX
 {
 
 class WebPage;
 class WebScript;
+class WebParameters;
 
 class WebRenderer : public QObject, public WebEffects
 {
@@ -21,14 +21,14 @@ class WebRenderer : public QObject, public WebEffects
 
 public:
     WebRenderer(QObject *parent = 0);
-    bool initialize(const std::string& url, int width, int height, Parameters* parameters = 0);
+    bool initialize(const std::string& url, int width, int height, WebParameters* parameters = 0);
     void setSize(int width, int height);
     void destroy();
 
 private:
     ~WebRenderer();
 
-    Q_INVOKABLE void initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters);
+    Q_INVOKABLE void initializeInvokable(const QUrl& url, const QSize& size, WebParameters* parameters);
     Q_INVOKABLE void setSizeInvokable(const QSize& size);
 
     // Test if we are currently on the UI thread

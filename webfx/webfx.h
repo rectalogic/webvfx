@@ -6,7 +6,7 @@
 #define WEBFX_WEBFX_H_
 
 #include <webfx/web_effects.h>
-#include <webfx/logger.h>
+#include <webfx/web_logger.h>
 
 namespace WebFX {
 
@@ -14,8 +14,8 @@ namespace WebFX {
 // argv must be valid until shutdown() is called.
 // argc must be > 0 and argv must have at least an empty string.
 // argv may be modified.
-// A Logger implementation may be supplied, it will be deleted at shutdown.
-bool initialize(int argc, char* argv[], Logger* logger=0);
+// A WebLogger implementation may be supplied, it will be deleted at shutdown.
+bool initialize(int argc, char* argv[], WebLogger* logger=0);
 
 WebEffects* createWebEffects();
 
