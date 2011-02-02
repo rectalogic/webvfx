@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMIX_WEB_RENDERER_H_
-#define CHROMIX_WEB_RENDERER_H_
+#ifndef WEBFX_WEB_RENDERER_H_
+#define WEBFX_WEB_RENDERER_H_
 
 #include <QtWebKit>
-#include "chromix/mix_kit.h"
-#include "chromix/parameters.h"
+#include "webfx/web_effects.h"
+#include "webfx/parameters.h"
 
-namespace Chromix
+namespace WebFX
 {
 
 class WebPage;
 class WebScript;
 
-class WebRenderer : public QObject, public MixKit
+class WebRenderer : public QObject, public WebEffects
 {
     Q_OBJECT
 

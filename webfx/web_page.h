@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMIX_WEB_PAGE_H_
-#define CHROMIX_WEB_PAGE_H_
+#ifndef WEBFX_WEB_PAGE_H_
+#define WEBFX_WEB_PAGE_H_
 
 #include <QWebPage>
 
 class QWebFrame;
 class QEventLoop;
 
-namespace Chromix
+namespace WebFX
 {
 
 class WebPage : public QWebPage

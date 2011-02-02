@@ -1,6 +1,6 @@
-#include "chromix/web_script.h"
+#include "webfx/web_script.h"
 
-Chromix::WebScript::WebScript(QObject* parent, Chromix::Parameters* parameters)
+WebFX::WebScript::WebScript(QObject* parent, WebFX::Parameters* parameters)
     : QObject(parent)
 {
 

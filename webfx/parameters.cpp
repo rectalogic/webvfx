@@ -1,5 +1,15 @@
-#include "chromix/parameters.h"
+#include "webfx/parameters.h"
 
-Chromix::Paramaters::~Parameters()
+WebFX::Parameters::~Parameters()
 {
+}
+
+double WebFX::Parameters::getNumberParameter(const std::string&)
+{
+    return 0;
+}
+
+const std::string WebFX::Parameters::getStringParameter(const std::string&)
+{
+    return std::string();
 }

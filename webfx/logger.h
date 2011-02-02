@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMIX_LOGGER_H_
-#define CHROMIX_LOGGER_H_
+#ifndef WEBFX_LOGGER_H_
+#define WEBFX_LOGGER_H_
 
 #include <string>
 
-namespace Chromix {
+namespace WebFX {
 
 class Logger
 {

@@ -1,5 +1,5 @@
-#include "chromix/logger.h"
+#include "webfx/logger.h"
 
-Chromix::Logger::~Logger()
+WebFX::Logger::~Logger()
 {
 }

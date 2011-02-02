@@ -1,31 +1,31 @@
 #include <QApplication>
 #include <QThread>
-#include "chromix/web_renderer.h"
-#include "chromix/web_page.h"
-#include "chromix/web_script.h"
-#include "chromix/parameters.h"
-#include "chromix/logger.h"
+#include "webfx/web_renderer.h"
+#include "webfx/web_page.h"
+#include "webfx/web_script.h"
+#include "webfx/parameters.h"
+#include "webfx/logger.h"
 
 
-Chromix::WebRenderer::WebRenderer(QObject* parent)
+WebFX::WebRenderer::WebRenderer(QObject* parent)
     : QObject(parent)
     , webPage(0)
     , webScript(0)
 {
 }
 
-Chromix::WebRenderer::~WebRenderer()
+WebFX::WebRenderer::~WebRenderer()
 {
     delete webPage;
     delete webScript;
 }
 
-bool Chromix::WebRenderer::initialize(const std::string& url, int width, int height, Chromix::Parameters* parameters)
+bool WebFX::WebRenderer::initialize(const std::string& url, int width, int height, WebFX::Parameters* parameters)
 {
     QUrl qurl(QString::fromStdString(url));
 
     if (!qurl.isValid()) {
-        Chromix::log(std::string("Invalid URL: ") + url);
+        WebFX::log(std::string("Invalid URL: ") + url);
         return false;
     }
 
@@ -46,16 +46,16 @@ bool Chromix::WebRenderer::initialize(const std::string& url, int width, int hei
     return true;
 }
 
-void Chromix::WebRenderer::destroy()
+void WebFX::WebRenderer::destroy()
 {
     deleteLater();
 }
 
-bool Chromix::WebRenderer::onUIThread() {
+bool WebFX::WebRenderer::onUIThread() {
     return QThread::currentThread() == QApplication::instance()->thread();
 }
 
-void Chromix::WebRenderer::setSize(int width, int height)
+void WebFX::WebRenderer::setSize(int width, int height)
 {
     QSize size(width, height);
 
@@ -68,13 +68,13 @@ void Chromix::WebRenderer::setSize(int width, int height)
     }
 }
 
-void Chromix::WebRenderer::initializeInvokable(const QUrl& url, const QSize& size, Chromix::Parameters* parameters)
+void WebFX::WebRenderer::initializeInvokable(const QUrl& url, const QSize& size, WebFX::Parameters* parameters)
 {
-    webPage = new Chromix::WebPage();
+    webPage = new WebFX::WebPage();
     webPage->setViewportSize(size);
 
     //XXX hookup signals
-    //XXX install "chromix" object into page - another Qt class we can own here
+    //XXX install "webfx" object into page - another Qt class we can own here
     connect(webPage->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), SLOT(inject()));
 
     //XXX we should enable webgl for our QtWebKit builds
@@ -91,7 +91,7 @@ void Chromix::WebRenderer::initializeInvokable(const QUrl& url, const QSize& siz
 
 }
 
-void Chromix::WebRenderer::setSizeInvokable(const QSize& size)
+void WebFX::WebRenderer::setSizeInvokable(const QSize& size)
 {
     webPage->setViewportSize(size);
 }

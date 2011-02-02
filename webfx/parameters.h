@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMIX_PARAMETERS_H_
-#define CHROMIX_PARAMETERS_H_
+#ifndef WEBFX_PARAMETERS_H_
+#define WEBFX_PARAMETERS_H_
 
 #include <string>
 
-namespace Chromix
+namespace WebFX
 {
 
 class Parameters
 {
 public:
-    virtual double getNumberParameter(const std::string& name) { return 0; };
-    virtual const std::string getStringParameter(const std::string& name) { return std::string(); };
+    virtual double getNumberParameter(const std::string& name) = 0;
+    virtual const std::string getStringParameter(const std::string& name) = 0;
 
 protected:
     Parameters() {};

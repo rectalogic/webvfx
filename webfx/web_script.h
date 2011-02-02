@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMIX_WEB_SCRIPT_H_
-#define CHROMIX_WEB_SCRIPT_H_
+#ifndef WEBFX_WEB_SCRIPT_H_
+#define WEBFX_WEB_SCRIPT_H_
 
 #include <QObject>
 
-namespace Chromix
+namespace WebFX
 {
 
 class Parameters;

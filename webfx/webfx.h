@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMIX_CHROMIX_H_
-#define CHROMIX_CHROMIX_H_
+#ifndef WEBFX_WEBFX_H_
+#define WEBFX_WEBFX_H_
 
-#include <chromix/mix_kit.h>
-#include <chromix/logger.h>
+#include <webfx/web_effects.h>
+#include <webfx/logger.h>
 
-namespace Chromix {
+namespace WebFX {
 
 // initialize must only be called once.
 // argv must be valid until shutdown() is called.
@@ -17,7 +17,7 @@ namespace Chromix {
 // A Logger implementation may be supplied, it will be deleted at shutdown.
 bool initialize(int argc, char* argv[], Logger* logger=0);
 
-MixKit* createMixKit();
+WebEffects* createWebEffects();
 
 void shutdown();
 
