@@ -15,8 +15,8 @@ class WebParameters
 public:
     WebParameters() {};
     virtual ~WebParameters() = 0;
-    virtual double getNumberParameter(const std::string& name) = 0;
-    virtual const std::string getStringParameter(const std::string& name) = 0;
+    virtual double getNumberParameter(const std::string& name);
+    virtual const std::string getStringParameter(const std::string& name);
 };
 
 }

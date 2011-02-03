@@ -23,13 +23,13 @@ INCLUDEPATH = ..
 
 DESTDIR = ../build
 
-CONFIG += qt dll thread warn_on
+CONFIG += shared thread warn_on
 #XXX add opengl?
 QT += webkit
 
 CONFIG += debug_and_release
 CONFIG(debug, debug|release) {
-    TARGET = webfx
+    TARGET = webfx_debug
 } else {
     TARGET = webfx
 }

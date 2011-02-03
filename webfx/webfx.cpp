@@ -53,6 +53,8 @@ bool WebFX::initialize(int argc, char* argv[], WebFX::WebLogger* logger)
     WebFX::logger = logger;
 
     // Spawn GUI application thread if qApp doesn't already exist
+    //XXX This won't work on Mac - Qt has to run on the main thread on Mac.
+    // http://bugreports.qt.nokia.com/browse/QTBUG-7393
     if (!qApp) {
         WebFX::Args args;
         args.argc = argc;
@@ -72,6 +74,10 @@ bool WebFX::initialize(int argc, char* argv[], WebFX::WebLogger* logger)
         pthread_cond_destroy(&WebFX::uiCond);
         pthread_mutex_destroy(&WebFX::uiMutex);
     }
+
+    // Register metatypes for queued connections
+    qRegisterMetaType<WebFX::WebParameters*>("WebFX::WebParameters*");
+
     return true;
 }
 

@@ -8,40 +8,54 @@
 #include <iomanip>
 #include <string>
 
-#include <chromix/chromix.h>
-#include <chromix/mix_render.h>
-#include <chromix/delegate.h>
-#include <gfx/codec/png_codec.h>
+#include <QApplication>
+#include <webfx/webfx.h>
 
 
-int chromix_main(int argc, const char * argv[]) {
+int main(int argc, char* argv[]) {
     if (argc < 2) {
-        std::cerr << "Usage: " << argv[0] << " [chromium-options] <html-template-url>" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <html-template-url>" << std::endl;
         return -1;
     }
 
-    class Delegate : public Chromix::Delegate {
+    //XXX For Mac, we have to initialize Qt on main thread
+    //XXX can we do this in MLT too (initialize in mlt_register?)
+    QApplication app(argc, argv);
+
+    class Logger : public WebFX::WebLogger {
     public:
-        virtual void logMessage(const std::string& message) {
+        virtual void log(const std::string& message) {
             std::cerr << message << std::endl;
         }
-        virtual v8::Handle<v8::Value> getParameterValue(const std::string& name) {
-            if (name == "title")
-                return wrapParameterValue(std::string("This is the title"));
-            return getUndefinedParameterValue();
+    };
+
+    class Parameters : public WebFX::WebParameters {
+    public:
+        virtual const std::string getStringParameter(const std::string&) {
+            return "WebFX Cool Title";
         }
     };
 
-    class AutoChromix {
+    class AutoWebFX {
     public:
-        AutoChromix(int argc, const char * argv[]) { Chromix::initialize(argc, argv); }
-        ~AutoChromix() { Chromix::shutdown(); }
+        AutoWebFX(int argc, char * argv[]) { WebFX::initialize(argc, argv, new Logger()); }
+        ~AutoWebFX() { WebFX::shutdown(); }
     };
-    AutoChromix chromix(argc, argv);
+    AutoWebFX fx(argc, argv);
 
-    Chromix::MixRender mixRender(new Delegate());
-    mixRender.resize(800, 600);
+    WebFX::WebEffects* effects = WebFX::createWebEffects();
+    effects->initialize(argv[1], 320, 240, new Parameters());
+    WebFX::WebImage image = effects->render(0, 320, 240);
 
+    // Write to disk.
+    std::ofstream rawFile;
+    rawFile.open("/tmp/webfx.raw", std::ios::out|std::ios::trunc|std::ios::binary);
+    if (rawFile.fail())
+        return -1;
+    rawFile.write(reinterpret_cast<const char*>(image.pixels()), image.byteCount());
+    rawFile.close();
+
+    /*
     if (!mixRender.loadURL(argv[argc - 1]))
         return -1;
 
@@ -77,6 +91,7 @@ int chromix_main(int argc, const char * argv[]) {
         pngFile.write(reinterpret_cast<const char *>(&pngData[0]), pngData.size());
         pngFile.close();
     }
+    */
 
     return 0;
 }

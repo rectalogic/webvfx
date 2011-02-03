@@ -21,7 +21,6 @@ public:
     // A Parameters implementation may be supplied to provide parameters to the mix.
     // WebEffects will take ownership of parameters.
     virtual bool initialize(const std::string& url, int width, int height, WebParameters* parameters = 0) = 0;
-    virtual void setSize(int width, int height) = 0;
     virtual WebImage render(double time, int width, int height) = 0;
     virtual void destroy() = 0;
 

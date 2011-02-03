@@ -30,7 +30,7 @@ bool WebFX::WebRenderer::initialize(const std::string& url, int width, int heigh
         // Move ourself onto GUI thread and create our WebPage there
         this->moveToThread(QApplication::instance()->thread());
         QMetaObject::invokeMethod(this, "initializeInvokable", Qt::BlockingQueuedConnection,
-                                  Q_ARG(QUrl, qurl), Q_ARG(QSize, size), Q_ARG(void*, parameters));
+                                  Q_ARG(QUrl, qurl), Q_ARG(QSize, size), Q_ARG(WebFX::WebParameters*, parameters));
     }
 
     //XXX check actual load status
@@ -45,19 +45,6 @@ void WebFX::WebRenderer::destroy()
 
 bool WebFX::WebRenderer::onUIThread() {
     return QThread::currentThread() == QApplication::instance()->thread();
-}
-
-void WebFX::WebRenderer::setSize(int width, int height)
-{
-    QSize size(width, height);
-
-    if (onUIThread()) {
-        setSizeInvokable(size);
-    }
-    else {
-        QMetaObject::invokeMethod(this, "setSizeInvokable", Qt::BlockingQueuedConnection,
-                                  Q_ARG(QSize, size));
-    }
 }
 
 WebFX::WebImage WebFX::WebRenderer::render(double time, int width, int height)
@@ -91,11 +78,6 @@ void WebFX::WebRenderer::initializeInvokable(const QUrl& url, const QSize& size,
     bool result = webPage->loadSync(url);
     // 4.8.0 allows BlockingQueuedConnection to return a value http://bugreports.qt.nokia.com/browse/QTBUG-10440
 
-}
-
-void WebFX::WebRenderer::setSizeInvokable(const QSize& size)
-{
-    webPage->setViewportSize(size);
 }
 
 void WebFX::WebRenderer::renderInvokable(double time, const QSize& size)

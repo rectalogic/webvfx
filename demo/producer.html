@@ -7,12 +7,13 @@ function render(time) {
 }
 
 function init() {
-    chromix.setRenderCallback(render);
     // globals
     timeEl = document.getElementById("time");
-    var title = chromix.getParamValue('title');
+    var title = webfx.getStringParameter('title');
     var titleEl = document.getElementById("title");
     titleEl.innerHTML = title;
+    webfx.renderRequested.connect(render);
+    webfx.loadFinished(true);
 }
 window.addEventListener("load", init, false);
 </script>

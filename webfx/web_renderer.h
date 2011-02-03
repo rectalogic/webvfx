@@ -24,13 +24,11 @@ public:
     ~WebRenderer() {};
 
     bool initialize(const std::string& url, int width, int height, WebParameters* parameters = 0);
-    void setSize(int width, int height);
     WebImage render(double time, int width, int height);
     void destroy();
 
 private:
     Q_INVOKABLE void initializeInvokable(const QUrl& url, const QSize& size, WebParameters* parameters);
-    Q_INVOKABLE void setSizeInvokable(const QSize& size);
     Q_INVOKABLE void renderInvokable(double time, const QSize& size);
 
     // Test if we are currently on the UI thread
