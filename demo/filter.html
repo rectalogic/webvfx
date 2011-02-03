@@ -3,26 +3,25 @@
 <script type="text/javascript">
 function render(time) {
     console.log("rendering " + time);
-    var imageData = chromix.getImageParamValue('video');
-    context.putImageData(imageData, 0, 0);
     timeEl.innerHTML = time;
+    webfx.getImage("video").assignToHTMLImageElement(image);
 }
 
 function init() {
-    chromix.setRenderCallback(render);
-    var canvas = document.getElementById("imageCanvas");
     // globals
-    context = canvas.getContext('2d');
+    image = new Image();
+    document.body.appendChild(image);
     timeEl = document.getElementById("time");
-    var title = chromix.getParamValue('title');
+    var title = webfx.getStringParameter('title');
     var titleEl = document.getElementById("title");
     titleEl.innerHTML = title;
+    webfx.renderRequested.connect(render);
+    webfx.loadFinished(true);
 }
 window.addEventListener("load", init, false);
 </script>
 </head>
 <body>
     Canvas time <span id="time">unset</span> title <span id="title">unset</span><br/>
-    <canvas id="imageCanvas" width="325" height="245" style="background-color: #0000FF;"></canvas>
 </body>
 </html>

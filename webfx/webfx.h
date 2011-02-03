@@ -19,6 +19,8 @@ namespace WebFX {
 // http://bugreports.qt.nokia.com/browse/QTBUG-7393
 bool initialize(WebLogger* logger=0);
 
+// Create a WebEffects instance.
+// WebEffects::initialize() should be called to initialize the new instance.
 WebEffects* createWebEffects();
 
 // Must be called after initialize in non-Qt based MacOS applications.

@@ -3,7 +3,6 @@
 #include <QImage>
 #include <QPainter>
 #include <QWebFrame>
-#include "webfx/web_image.h"
 #include "webfx/web_logger.h"
 #include "webfx/web_page.h"
 #include "webfx/web_renderer.h"

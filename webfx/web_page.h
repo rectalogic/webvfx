@@ -6,18 +6,19 @@
 #define WEBFX_WEB_PAGE_H_
 
 #include <QWebPage>
+#include "webfx/web_image.h"
+#include "webfx/web_script.h"
 
 class QEventLoop;
 class QImage;
+class QSize;
 class QWebFrame;
 
 namespace WebFX
 {
 
-class WebImage;
 class WebParameters;
 class WebRenderer;
-class WebScript;
 
 class WebPage : public QWebPage
 {
@@ -29,6 +30,7 @@ public:
     // Load URL synchronously, return success
     bool loadSync(const QUrl& url);
     WebImage render(double time);
+    WebImage getWebImage(const QString& name, const QSize& size) { return webScript->getWebImage(name, size); }
 
 private slots:
     void injectWebScript();

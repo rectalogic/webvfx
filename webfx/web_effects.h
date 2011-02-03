@@ -12,16 +12,19 @@
 namespace WebFX
 {
 
+// Instances of this class can be accessed from any thread,
+// but the class is not threadsafe - access should be serialized.
 class WebEffects
 {
 public:
     //XXX expose src/dst/extra image metadata from JS
-    //XXX set raw image data - can we do that in bulk then marshal all over to UI thread to render?
 
-    // A Parameters implementation may be supplied to provide parameters to the mix.
+    // A Parameters implementation may be supplied to provide parameters to the page.
     // WebEffects will take ownership of parameters.
     virtual bool initialize(const std::string& url, int width, int height, WebParameters* parameters = 0) = 0;
-    virtual WebImage render(double time, int width, int height) = 0;
+    // Return a WebImage of the given size that can be written to.
+    virtual WebImage getImage(const std::string& name, int width, int height) = 0;
+    virtual const WebImage render(double time, int width, int height) = 0;
     virtual void destroy() = 0;
 
 protected:

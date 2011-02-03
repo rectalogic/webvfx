@@ -14,7 +14,7 @@ public:
     WebImage() {};
 
     // pixels must be valid for the lifetime of the WebImage
-    // pixels must be 24 bit RGB
+    // pixels are always 24 bit RGB
     WebImage(unsigned char* pixels, int width, int height, int byteCount)
         : pixels_(pixels)
         , width_(width)
@@ -22,10 +22,11 @@ public:
         , byteCount_(byteCount) {};
 
     unsigned char* pixels() { return pixels_; }
-    int width() { return width_; }
-    int height() { return height_; }
-    int bytePerLine() { return byteCount_ / height_; }
-    int byteCount() { return byteCount_; }
+    const unsigned char* pixels() const { return pixels_; }
+    int width() const { return width_; }
+    int height() const { return height_; }
+    int bytePerLine() const { return byteCount_ / height_; }
+    int byteCount() const { return byteCount_; }
 
     //XXX add copyPixels to/from methods
 

@@ -33,6 +33,7 @@ int main(int argc, char* argv[]) {
 
     class AutoWebFX {
     public:
+        //XXX check return code
         AutoWebFX() { WebFX::initialize(new Logger()); }
         ~AutoWebFX() { WebFX::shutdown(); }
     };
@@ -40,7 +41,15 @@ int main(int argc, char* argv[]) {
 
     WebFX::WebEffects* effects = WebFX::createWebEffects();
     effects->initialize(argv[1], 320, 240, new Parameters());
-    WebFX::WebImage image = effects->render(0, 320, 240);
+    WebFX::WebImage video = effects->getImage("video", 320, 240);
+    // Fill with red XXX need to take into account stride
+    unsigned char* pixels = video.pixels();
+    for (int i = 0; i < video.byteCount(); i+= 3) {
+        pixels[i] = 0xFF;
+        pixels[i+1] = 0x00;
+        pixels[i+2] = 0x00;
+    }
+    const WebFX::WebImage image = effects->render(0.32, 320, 240);
 
     // Write to disk.
     std::ofstream rawFile;
@@ -50,7 +59,7 @@ int main(int argc, char* argv[]) {
     rawFile.write(reinterpret_cast<const char*>(image.pixels()), image.byteCount());
     rawFile.close();
 
-    /*
+    /*XXX
     if (!mixRender.loadURL(argv[argc - 1]))
         return -1;
 

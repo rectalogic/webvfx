@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QThread>
+#include "webfx/web_image.h"
 #include "webfx/web_logger.h"
 #include "webfx/web_page.h"
 #include "webfx/web_parameters.h"
@@ -47,7 +48,14 @@ bool WebFX::WebRenderer::onUIThread() {
     return QThread::currentThread() == QApplication::instance()->thread();
 }
 
-WebFX::WebImage WebFX::WebRenderer::render(double time, int width, int height)
+WebFX::WebImage WebFX::WebRenderer::getImage(const std::string& name, int width, int height)
+{
+    // This may create a QImage and modify QHash - both of those classes are reentrant,
+    // so should be safe to do on calling thread as long as access to this WebRenderer is synchronized.
+    return webPage->getWebImage(QString::fromStdString(name), QSize(width, height));
+}
+
+const WebFX::WebImage WebFX::WebRenderer::render(double time, int width, int height)
 {
     QSize size(width, height);
 
