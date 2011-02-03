@@ -11,11 +11,8 @@
 namespace WebFX {
 
 // initialize must only be called once.
-// argv must be valid until shutdown() is called.
-// argc must be > 0 and argv must have at least an empty string.
-// argv may be modified.
 // A WebLogger implementation may be supplied, it will be deleted at shutdown.
-bool initialize(int argc, char* argv[], WebLogger* logger=0);
+bool initialize(WebLogger* logger=0);
 
 WebEffects* createWebEffects();
 

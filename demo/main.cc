@@ -38,10 +38,10 @@ int main(int argc, char* argv[]) {
 
     class AutoWebFX {
     public:
-        AutoWebFX(int argc, char * argv[]) { WebFX::initialize(argc, argv, new Logger()); }
+        AutoWebFX() { WebFX::initialize(new Logger()); }
         ~AutoWebFX() { WebFX::shutdown(); }
     };
-    AutoWebFX fx(argc, argv);
+    AutoWebFX fx();
 
     WebFX::WebEffects* effects = WebFX::createWebEffects();
     effects->initialize(argv[1], 320, 240, new Parameters());

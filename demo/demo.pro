@@ -4,7 +4,7 @@ DESTDIR = ../build
 
 SOURCES += main.cc
 
-CONFIG += warn_on debug_and_release
+CONFIG += console warn_on debug_and_release
 CONFIG(debug, debug|release) {
     TARGET = demo_debug
     LIBS += -L$$DESTDIR -lwebfx_debug

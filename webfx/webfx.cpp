@@ -30,12 +30,11 @@ static WebFX::WebLogger* logger = 0;
 
 
 
-void* WebFX::uiEventLoop(void* args)
+void* WebFX::uiEventLoop(void*)
 {
-    int argc = static_cast<WebFX::Args*>(args)->argc;
-    char** argv = static_cast<WebFX::Args*>(args)->argv;
-
-    QApplication app(argc, argv);
+    static const char *const empty = "";
+    int argc = 1;
+    QApplication app(argc, (char**)&empty);
     WebFX::ownApp = true;
 
     // Signal initialize() that app has been created
@@ -48,7 +47,7 @@ void* WebFX::uiEventLoop(void* args)
     return 0;
 }
 
-bool WebFX::initialize(int argc, char* argv[], WebFX::WebLogger* logger)
+bool WebFX::initialize(WebFX::WebLogger* logger)
 {
     WebFX::logger = logger;
 
@@ -56,16 +55,12 @@ bool WebFX::initialize(int argc, char* argv[], WebFX::WebLogger* logger)
     //XXX This won't work on Mac - Qt has to run on the main thread on Mac.
     // http://bugreports.qt.nokia.com/browse/QTBUG-7393
     if (!qApp) {
-        WebFX::Args args;
-        args.argc = argc;
-        args.argv = argv;
-
         //XXX check return values from all these
         pthread_mutex_init(&WebFX::uiMutex, 0);
         pthread_cond_init(&WebFX::uiCond, 0);
         pthread_mutex_lock(&WebFX::uiMutex);
 
-        pthread_create(&WebFX::uiThread, 0, WebFX::uiEventLoop, &args);
+        pthread_create(&WebFX::uiThread, 0, WebFX::uiEventLoop, NULL);
 
         // Wait for signal that app has been created
         pthread_cond_wait(&WebFX::uiCond, &WebFX::uiMutex);
