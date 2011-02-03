@@ -3,40 +3,31 @@
 <script type="text/javascript">
 function render(time) {
     console.log("rendering " + time);
-    var srcImage = chromix.getImageParamValue('srcVideo');
-    var dstImage = chromix.getImageParamValue('dstVideo');
-    var demoImage = chromix.getImageParamValue('demoVideo');
-    srcContext.putImageData(srcImage, 0, 0);
-    dstContext.putImageData(dstImage, 0, 0);
-    demoContext.putImageData(demoImage, 0, 0);
-    context.drawImage(srcContext.canvas, 0, 0, 160, 120)
-    context.drawImage(dstContext.canvas, 160, 120, 160, 120)
-    context.drawImage(demoContext.canvas, 0, 120, 160, 120)
+    webfx.getImage('srcImage').assignToHTMLImageElement(srcImage);
+    webfx.getImage('dstImage').assignToHTMLImageElement(dstImage);
+    webfx.getImage('demoImage').assignToHTMLImageElement(demoImage);
+    context.drawImage(srcImage, 0, 0, 160, 120)
+    context.drawImage(dstImage, 160, 120, 160, 120)
+    context.drawImage(demoImage, 0, 120, 160, 120)
     timeEl.innerHTML = time;
 }
 
 function init() {
-    chromix.setRenderCallback(render);
     var canvas = document.getElementById("canvas");
-    var srcCanvas = document.createElement('canvas');
-    srcCanvas.width = 320;
-    srcCanvas.height = 240;
-    var dstCanvas = document.createElement('canvas');
-    dstCanvas.width = 320;
-    dstCanvas.height = 240;
-    var demoCanvas = document.createElement('canvas');
-    demoCanvas.width = 320;
-    demoCanvas.height = 240;
+
     // globals
     context = canvas.getContext('2d');
-    srcContext = srcCanvas.getContext('2d');
-    dstContext = dstCanvas.getContext('2d');
-    demoContext = demoCanvas.getContext('2d');
-
+    srcImage = new Image();
+    dstImage = new Image();
+    demoImage = new Image();
     timeEl = document.getElementById("time");
-    var title = chromix.getParamValue('title');
+
+    var title = webfx.getStringParameter('title');
     var titleEl = document.getElementById("title");
     titleEl.innerHTML = title;
+
+    webfx.renderRequested.connect(render);
+    webfx.loadFinished(true);
 }
 window.addEventListener("load", init, false);
 </script>

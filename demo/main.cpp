@@ -44,7 +44,7 @@ int main(int argc, char* argv[]) {
     WebFX::WebImage video = effects->getImage("video", 320, 240);
     // Fill with red XXX need to take into account stride
     unsigned char* pixels = video.pixels();
-    for (int i = 0; i < video.byteCount(); i+= 3) {
+    for (int i = 0; i < video.byteCount(); i+= WebFX::WebImage::BytesPerPixel) {
         pixels[i] = 0xFF;
         pixels[i+1] = 0x00;
         pixels[i+2] = 0x00;

@@ -11,7 +11,7 @@ HEADERS += web_script.h
 HEADERS += webfx.h
 
 SOURCES += web_effects.cpp
-HEADERS += web_image.h
+SOURCES += web_image.cpp
 SOURCES += web_logger.cpp
 SOURCES += web_page.cpp
 SOURCES += web_parameters.cpp

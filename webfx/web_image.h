@@ -11,6 +11,8 @@ namespace WebFX
 class WebImage
 {
 public:
+    static const int BytesPerPixel = 3;
+
     WebImage() {};
 
     // pixels must be valid for the lifetime of the WebImage
@@ -25,12 +27,21 @@ public:
     const unsigned char* pixels() const { return pixels_; }
     int width() const { return width_; }
     int height() const { return height_; }
-    int bytePerLine() const { return byteCount_ / height_; }
+    int bytesPerLine() const { return byteCount_ / height_; }
     int byteCount() const { return byteCount_; }
 
-    //XXX add copyPixels to/from methods
+    void copyPixelsFrom(const WebImage& sourceImage);
+    void copyPixelsTo(WebImage& destinationImage) const;
+    bool compatible(const WebImage& image) const {
+        return (image.pixels_ && pixels_
+                && image.pixels_ != pixels_
+                && image.width_ == width_
+                && image.height_ == height_);
+    }
 
 private:
+    static void copyPixels(const WebImage& srcImage, WebImage& dstImage);
+
     unsigned char* pixels_;
     int width_;
     int height_;
