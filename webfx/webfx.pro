@@ -18,6 +18,9 @@ SOURCES += web_parameters.cpp
 SOURCES += web_renderer.cpp
 SOURCES += web_script.cpp
 SOURCES += webfx.cpp
+mac:SOURCES += webfx_mac.mm
+
+mac:LIBS += -framework Foundation
 
 INCLUDEPATH = ..
 
@@ -26,6 +29,7 @@ DESTDIR = ../build
 CONFIG += shared thread warn_on
 #XXX add opengl?
 QT += webkit
+
 
 CONFIG += debug_and_release
 CONFIG(debug, debug|release) {

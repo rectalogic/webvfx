@@ -8,7 +8,6 @@
 #include <iomanip>
 #include <string>
 
-#include <QApplication>
 #include <webfx/webfx.h>
 
 
@@ -17,10 +16,6 @@ int main(int argc, char* argv[]) {
         std::cerr << "Usage: " << argv[0] << " <html-template-url>" << std::endl;
         return -1;
     }
-
-    //XXX For Mac, we have to initialize Qt on main thread
-    //XXX can we do this in MLT too (initialize in mlt_register?)
-    QApplication app(argc, argv);
 
     class Logger : public WebFX::WebLogger {
     public:
@@ -41,7 +36,7 @@ int main(int argc, char* argv[]) {
         AutoWebFX() { WebFX::initialize(new Logger()); }
         ~AutoWebFX() { WebFX::shutdown(); }
     };
-    AutoWebFX fx();
+    AutoWebFX fx;
 
     WebFX::WebEffects* effects = WebFX::createWebEffects();
     effects->initialize(argv[1], 320, 240, new Parameters());
