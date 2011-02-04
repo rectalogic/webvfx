@@ -7,6 +7,9 @@
 #endif
 #include <string.h>
 #include <QApplication>
+#include <QMutex>
+#include <QMutexLocker>
+#include <QWaitCondition>
 #include "webfx/webfx.h"
 #include "webfx/web_logger.h"
 #include "webfx/web_renderer.h"
@@ -16,33 +19,40 @@
 namespace WebFX
 {
 
-static WebFX::WebLogger* logger = 0;
+static bool initialized = false;
+
+static WebLogger* logger = 0;
 static bool ownApp = false;
+
+static QMutex initializeMutex;
 
 #ifdef Q_WS_MAC
 bool isMainThread();
 #else
 void* uiEventLoop(void*);
 static pthread_t uiThread;
-static pthread_mutex_t uiMutex;
-static pthread_cond_t uiCond;
+typedef QPair<QMutex*, QWaitCondition*> ThreadSync;
 #endif
 
 }
 
 
 #ifndef Q_WS_MAC
-void* WebFX::uiEventLoop(void*)
+void* WebFX::uiEventLoop(void* data)
 {
+    ThreadSync* threadSync = static_cast<ThreadSync*>(data);
+
     static const char *const empty = "";
     int argc = 1;
     QApplication app(argc, (char**)&empty);
     WebFX::ownApp = true;
 
     // Signal initialize() that app has been created
-    pthread_mutex_lock(&WebFX::uiMutex);
-    pthread_cond_signal(&WebFX::uiCond);
-    pthread_mutex_unlock(&WebFX::uiMutex);
+    {
+        QMutexLocker eventLoopLock(threadSync->first);
+        threadSync->second->wakeOne();
+        threadSync = 0;
+    }
 
     // Enter event loop
     app.exec();
@@ -50,9 +60,17 @@ void* WebFX::uiEventLoop(void*)
 }
 #endif
 
-bool WebFX::initialize(WebFX::WebLogger* logger)
+void WebFX::setLogger(WebFX::WebLogger* logger)
 {
     WebFX::logger = logger;
+}
+
+bool WebFX::initialize()
+{
+    QMutexLocker initLock(&WebFX::initializeMutex);
+
+    if (WebFX::initialized)
+        return true;
 
     // For non-mac, spawn a GUI application thread if qApp doesn't already exist.
     // For mac, the qApp must be created on the main thread, so check we are
@@ -72,25 +90,26 @@ bool WebFX::initialize(WebFX::WebLogger* logger)
         new QApplication(argc, (char**)&empty);
         WebFX::ownApp = true;
 #else
-        //XXX check return values from all these
-        pthread_mutex_init(&WebFX::uiMutex, 0);
-        pthread_cond_init(&WebFX::uiCond, 0);
-        pthread_mutex_lock(&WebFX::uiMutex);
+        {
+            QMutex uiThreadMutex;
+            QWaitCondition uiThreadCondition;
+            ThreadSync uiThreadSync(&uiThreadMutex, &uiThreadCondition);
 
-        pthread_create(&WebFX::uiThread, 0, WebFX::uiEventLoop, NULL);
+            QMutexLocker uiThreadLock(&uiThreadMutex);
 
-        // Wait for signal that app has been created
-        pthread_cond_wait(&WebFX::uiCond, &WebFX::uiMutex);
+            //XXX check return
+            pthread_create(&WebFX::uiThread, 0, WebFX::uiEventLoop, &uiThreadSync);
 
-        pthread_mutex_unlock(&WebFX::uiMutex);
-        pthread_cond_destroy(&WebFX::uiCond);
-        pthread_mutex_destroy(&WebFX::uiMutex);
+            // Wait for signal that ui thread has created qApp
+            uiThreadCondition.wait(&uiThreadMutex);
+        }
 #endif
     }
 
     // Register metatypes for queued connections
     qRegisterMetaType<WebFX::WebParameters*>("WebFX::WebParameters*");
 
+    WebFX::initialized = true;
     return true;
 }
 
@@ -119,6 +138,11 @@ int WebFX::processEvents()
 
 void WebFX::shutdown()
 {
+    QMutexLocker initLock(&WebFX::initializeMutex);
+
+    if (!WebFX::initialized)
+        return;
+
     // If we created uiThread, then we created QApplication.
     if (WebFX::ownApp) {
         // Quit the application

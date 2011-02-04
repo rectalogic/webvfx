@@ -23,6 +23,7 @@ int main(int argc, char* argv[]) {
             std::cerr << message << std::endl;
         }
     };
+    WebFX::setLogger(new Logger());
 
     class Parameters : public WebFX::WebParameters {
     public:
@@ -34,7 +35,7 @@ int main(int argc, char* argv[]) {
     class AutoWebFX {
     public:
         //XXX check return code
-        AutoWebFX() { WebFX::initialize(new Logger()); }
+        AutoWebFX() { WebFX::initialize(); }
         ~AutoWebFX() { WebFX::shutdown(); }
     };
     AutoWebFX fx;

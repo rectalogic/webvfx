@@ -10,14 +10,17 @@
 
 namespace WebFX {
 
-// initialize must only be called once.
-// A WebLogger implementation may be supplied, it will be deleted at shutdown.
+// WebFX will take ownership of the logger and delete at shutdown.
+// setLogger must be called only once and before initialize().
+void setLogger(WebLogger* logger);
+
+// initialize is threadsafe and may be called multiple times,
 // On MacOS, in a non Qt host application, initialize and processEvents
 // must be called from the main thread.
 // In a Qt based MacOS application, or a non-MacOS application,
 // initialize can be called from any thread and processEvents need not be called.
 // http://bugreports.qt.nokia.com/browse/QTBUG-7393
-bool initialize(WebLogger* logger=0);
+bool initialize();
 
 // Create a WebEffects instance.
 // WebEffects::initialize() should be called to initialize the new instance.

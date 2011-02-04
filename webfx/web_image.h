@@ -8,6 +8,9 @@
 namespace WebFX
 {
 
+// WebImage is just a way to pass around a reference to a buffer of image data,
+// along with metadata about it (byte count, width, height etc.)
+// The underlying data is not owned or managed by WebImage.
 class WebImage
 {
 public:

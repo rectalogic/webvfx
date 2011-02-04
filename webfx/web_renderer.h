@@ -29,7 +29,8 @@ public:
     void destroy();
 
 private:
-    Q_INVOKABLE void initializeInvokable(const QUrl& url, const QSize& size, WebParameters* parameters);
+    // Need namespace on WebParamaters to match our registered datatype name
+    Q_INVOKABLE void initializeInvokable(const QUrl& url, const QSize& size, WebFX::WebParameters* parameters);
     Q_INVOKABLE void renderInvokable(double time, const QSize& size);
 
     // Test if we are currently on the UI thread
