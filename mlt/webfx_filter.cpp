@@ -7,8 +7,7 @@ extern "C" {
     #include <mlt/framework/mlt_frame.h>
     #include <mlt/framework/mlt_log.h>
 }
-#include "chromix_task.h"
-#include "chromix_service.h"
+#include "webfx_service.h"
 
 
 class ChromixFilterTask : public ChromixTask {
@@ -83,7 +82,7 @@ static mlt_frame chromix_filter_process(mlt_filter filter, mlt_frame frame) {
     return frame;
 }
 
-mlt_filter chromix_filter_create(const char* service_name) {
+mlt_filter webfx_filter_create(const char* service_name) {
     mlt_filter self = mlt_filter_new();
     if (self) {
         self->process = chromix_filter_process;

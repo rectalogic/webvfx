@@ -7,8 +7,7 @@ extern "C" {
     #include <mlt/framework/mlt_frame.h>
     #include <mlt/framework/mlt_log.h>
 }
-#include "chromix_task.h"
-#include "chromix_service.h"
+#include "webfx_service.h"
 
 
 class ChromixTransitionTask : public ChromixTask {
@@ -107,7 +106,7 @@ static mlt_frame chromix_transition_process(mlt_transition transition, mlt_frame
     return a_frame;
 }
 
-mlt_transition chromix_transition_create(const char* service_name) {
+mlt_transition webfx_transition_create(const char* service_name) {
     mlt_transition self = mlt_transition_new();
     if (self) {
         self->process = chromix_transition_process;

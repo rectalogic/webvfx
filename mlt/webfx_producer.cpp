@@ -6,7 +6,7 @@ extern "C" {
     #include <mlt/framework/mlt_producer.h>
     #include <mlt/framework/mlt_frame.h>
 }
-#include "chromix_task.h"
+#include "webfx_service.h"
 
 class ChromixProducerTask : public ChromixTask {
 public:
@@ -87,7 +87,10 @@ static int chromix_producer_get_frame(mlt_producer producer, mlt_frame_ptr frame
     return 0;
 }
 
-mlt_producer chromix_producer_create(const char* service_name) {
+mlt_producer webfx_producer_create(const char* service_name) {
+    //XXX need to stash metadata on service? or just need html path
+    //XXX defer creating/stashing WebEffects until we render - inside lock
+    //XXX add service helper object that creates auto-lock, sets WebEffects w/html and correct size etc.
     mlt_producer self = mlt_producer_new();
     if (self) {
         self->get_frame = chromix_producer_get_frame;
