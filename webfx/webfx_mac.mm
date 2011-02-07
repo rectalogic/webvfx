@@ -6,12 +6,13 @@
 #include "webfx/webfx.h"
 
 namespace WebFX {
-bool isMainThread();
-}
 
-bool WebFX::isMainThread()
+bool isMainThread()
 {
     return [NSThread isMainThread];
 }
+
+}
+
 
 #endif

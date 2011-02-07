@@ -7,18 +7,21 @@
 #include "webfx/web_renderer.h"
 
 
-WebFX::WebRenderer::WebRenderer()
+namespace WebFX
+{
+
+WebRenderer::WebRenderer()
     : QObject(0)
     , webPage(0)
 {
 }
 
-bool WebFX::WebRenderer::initialize(const std::string& url, int width, int height, WebFX::WebParameters* parameters)
+bool WebRenderer::initialize(const std::string& url, int width, int height, WebParameters* parameters)
 {
     QUrl qurl(QString::fromStdString(url));
 
     if (!qurl.isValid()) {
-        WebFX::log(std::string("Invalid URL: ") + url);
+        log(std::string("Invalid URL: ") + url);
         return false;
     }
 
@@ -31,7 +34,7 @@ bool WebFX::WebRenderer::initialize(const std::string& url, int width, int heigh
         // Move ourself onto GUI thread and create our WebPage there
         this->moveToThread(QApplication::instance()->thread());
         QMetaObject::invokeMethod(this, "initializeInvokable", Qt::BlockingQueuedConnection,
-                                  Q_ARG(QUrl, qurl), Q_ARG(QSize, size), Q_ARG(WebFX::WebParameters*, parameters));
+                                  Q_ARG(QUrl, qurl), Q_ARG(QSize, size), Q_ARG(WebParameters*, parameters));
     }
 
     //XXX check actual load status
@@ -39,28 +42,28 @@ bool WebFX::WebRenderer::initialize(const std::string& url, int width, int heigh
     return true;
 }
 
-void WebFX::WebRenderer::destroy()
+void WebRenderer::destroy()
 {
     deleteLater();
 }
 
-bool WebFX::WebRenderer::onUIThread() {
+bool WebRenderer::onUIThread() {
     return QThread::currentThread() == QApplication::instance()->thread();
 }
 
-const WebFX::WebEffects::ImageTypeMap& WebFX::WebRenderer::getImageTypeMap()
+const WebEffects::ImageTypeMap& WebRenderer::getImageTypeMap()
 {
     return webPage->getImageTypeMap();
 }
 
-WebFX::WebImage WebFX::WebRenderer::getImage(const std::string& name, int width, int height)
+WebImage WebRenderer::getImage(const std::string& name, int width, int height)
 {
     // This may create a QImage and modify QHash - both of those classes are reentrant,
     // so should be safe to do on calling thread as long as access to this WebRenderer is synchronized.
     return webPage->getWebImage(QString::fromStdString(name), QSize(width, height));
 }
 
-const WebFX::WebImage WebFX::WebRenderer::render(double time, int width, int height)
+const WebImage WebRenderer::render(double time, int width, int height)
 {
     QSize size(width, height);
 
@@ -74,9 +77,9 @@ const WebFX::WebImage WebFX::WebRenderer::render(double time, int width, int hei
     return renderImage;
 }
 
-void WebFX::WebRenderer::initializeInvokable(const QUrl& url, const QSize& size, WebFX::WebParameters* parameters)
+void WebRenderer::initializeInvokable(const QUrl& url, const QSize& size, WebParameters* parameters)
 {
-    webPage = new WebFX::WebPage(this, parameters);
+    webPage = new WebPage(this, parameters);
     webPage->setViewportSize(size);
 
     //XXX we should enable webgl for our QtWebKit builds
@@ -93,8 +96,10 @@ void WebFX::WebRenderer::initializeInvokable(const QUrl& url, const QSize& size,
 
 }
 
-void WebFX::WebRenderer::renderInvokable(double time, const QSize& size)
+void WebRenderer::renderInvokable(double time, const QSize& size)
 {
     webPage->setViewportSize(size);
     renderImage = webPage->render(time);
+}
+
 }

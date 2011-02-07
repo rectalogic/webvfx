@@ -26,7 +26,8 @@ public:
     // WebEffects will take ownership of parameters.
     virtual bool initialize(const std::string& url, int width, int height, WebParameters* parameters = 0) = 0;
     // Return a map mapping image names the page content uses to imge type.
-    virtual const ImageTypeMap& getImageTypeMap();
+    // XXX should we expose opaque "cooke" image name that holds QString internally? (and with a toString() method) - so caller can efficiently set image using cookie name
+    virtual const ImageTypeMap& getImageTypeMap() = 0;
     // Return a WebImage of the given size that can be written to.
     virtual WebImage getImage(const std::string& name, int width, int height) = 0;
     virtual const WebImage render(double time, int width, int height) = 0;

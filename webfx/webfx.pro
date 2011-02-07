@@ -18,9 +18,9 @@ SOURCES += web_parameters.cpp
 SOURCES += web_renderer.cpp
 SOURCES += web_script.cpp
 SOURCES += webfx.cpp
-mac:SOURCES += webfx_mac.mm
+macx:SOURCES += webfx_mac.mm
 
-mac:LIBS += -framework Foundation
+macx:LIBS += -framework Foundation
 
 INCLUDEPATH = ..
 

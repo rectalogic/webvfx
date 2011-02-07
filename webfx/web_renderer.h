@@ -24,14 +24,13 @@ public:
     ~WebRenderer() {};
 
     bool initialize(const std::string& url, int width, int height, WebParameters* parameters = 0);
-    const WebEffects::ImageTypeMap& getImageTypeMap();
+    const ImageTypeMap& getImageTypeMap();
     WebImage getImage(const std::string& name, int width, int height);
     const WebImage render(double time, int width, int height);
     void destroy();
 
 private:
-    // Need namespace on WebParamaters to match our registered datatype name
-    Q_INVOKABLE void initializeInvokable(const QUrl& url, const QSize& size, WebFX::WebParameters* parameters);
+    Q_INVOKABLE void initializeInvokable(const QUrl& url, const QSize& size, WebParameters* parameters);
     Q_INVOKABLE void renderInvokable(double time, const QSize& size);
 
     // Test if we are currently on the UI thread

@@ -34,20 +34,19 @@ private:
     mlt_properties properties;
 };
 
-}
 
-MLTWebFX::ServiceManager::ServiceManager(mlt_service service)
+ServiceManager::ServiceManager(mlt_service service)
     : service(service)
 {
     mlt_service_lock(service);
 }
 
-MLTWebFX::ServiceManager::~ServiceManager()
+ServiceManager::~ServiceManager()
 {
     mlt_service_unlock(service);
 }
 
-bool MLTWebFX::ServiceManager::initialize(int width, int height)
+bool ServiceManager::initialize(int width, int height)
 {
     mlt_properties properties = MLT_SERVICE_PROPERTIES(service);
     webEffects = (WebFX::WebEffects*)mlt_properties_get_data(properties, ServiceManager::kWebFXPropertyName, 0);
@@ -64,36 +63,21 @@ bool MLTWebFX::ServiceManager::initialize(int width, int height)
             mlt_log(service, MLT_LOG_ERROR, "Failed to create WebEffects\n");
             return result;
         }
-        //XXX need to initialize, check return - so need html and size
-        //XXX need parameters delegate
-        //XXX need to know src/dst/extra images so caller can get them
-        //XXX should handle extra producers in this class
-        //
-        //XXX should we bail on YAML and use webfx.filter.name.html etc.
-        //XXX so register each of these, and query it to get metadata on demand
-        //XXX and get video names and other param data via html metadata api
-        //XXX when we create the mlt_service we know it's name and should stash the URL on a property
-        //
-        //XXX just need array of names and types - types can be const Q_PROPERTYs (FINAL CONSTANT)
-        //XXX e.g. webfx.SRC_VIDEO, webfx.NUMBER etc.
-        //XXX or hash of names to types, passed back to loadFinished
-        //XXX or should we fire signal into page - requestSrcVideo etc.? hmm signals don't return values
-        //
-        //XXX also allow yaml - if we find one, use it for metadata - and add our video info?
-        //
-        //XXX can we make user specify props? a_video=srcVideo etc.?
-        //XXX or enumerate video.* properties - which specify src/dst/extra
+        //XXX process ImageTypeMap - setup producers and save src/dst names
+
         mlt_properties_set_data(properties, ServiceManager::kWebFXPropertyName, webEffects, 0, (mlt_destructor)destroyWebEffects, NULL);
     }
     return true;
 }
 
-WebFX::WebEffects* MLTWebFX::ServiceManager::getWebEffects()
+WebFX::WebEffects* ServiceManager::getWebEffects()
 {
     return webEffects;
 }
 
-void MLTWebFX::ServiceManager::destroyWebEffects(WebFX::WebEffects* webEffects)
+void ServiceManager::destroyWebEffects(WebFX::WebEffects* webEffects)
 {
     webEffects->destroy();
+}
+
 }

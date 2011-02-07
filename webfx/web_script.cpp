@@ -6,25 +6,28 @@
 #include "webfx/web_page.h"
 #include "webfx/web_script.h"
 
-WebFX::WebScript::WebScript(WebFX::WebPage* parent, WebFX::WebParameters* parameters)
+namespace WebFX
+{
+
+WebScript::WebScript(WebPage* parent, WebParameters* parameters)
     : QObject(parent)
     , parameters(parameters)
 {
 }
 
-WebFX::WebScript::~WebScript()
+WebScript::~WebScript()
 {
     delete parameters;
     // Delete all images in map
     qDeleteAll(imageMap);
 }
 
-void WebFX::WebScript::render(double time)
+void WebScript::render(double time)
 {
     emit renderRequested(time);
 }
 
-WebFX::WebImage WebFX::WebScript::getWebImage(const QString& name, const QSize& size)
+WebImage WebScript::getWebImage(const QString& name, const QSize& size)
 {
     QImage* image = imageMap.value(name);
     if (!image || image->size() != size) {
@@ -32,10 +35,10 @@ WebFX::WebImage WebFX::WebScript::getWebImage(const QString& name, const QSize& 
         image = new QImage(size, QImage::Format_RGB888);
         imageMap.insert(name, image);
     }
-    return WebFX::WebImage(image->bits(), image->width(), image->height(), image->byteCount());
+    return WebImage(image->bits(), image->width(), image->height(), image->byteCount());
 }
 
-double WebFX::WebScript::getNumberParameter(const QString& name)
+double WebScript::getNumberParameter(const QString& name)
 {
     if (parameters)
         return parameters->getNumberParameter(name.toStdString());
@@ -43,7 +46,7 @@ double WebFX::WebScript::getNumberParameter(const QString& name)
         return 0;
 }
 
-const QString WebFX::WebScript::getStringParameter(const QString& name)
+const QString WebScript::getStringParameter(const QString& name)
 {
     if (parameters)
         return QString::fromStdString(parameters->getStringParameter(name.toStdString()));
@@ -55,11 +58,13 @@ const QString WebFX::WebScript::getStringParameter(const QString& name)
 // so better to do the conversion here since handing over a QImage
 // would cause it's shared data to be duplicated the next time we wrote to it's bits.
 // http://doc.qt.nokia.com/latest/qimage.html#bits
-const QPixmap WebFX::WebScript::getImage(const QString& name)
+const QPixmap WebScript::getImage(const QString& name)
 {
     QImage* image = imageMap.value(name);
     if (image)
         return QPixmap::fromImage(*image);
     else
         return QPixmap();
+}
+
 }

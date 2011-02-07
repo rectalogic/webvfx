@@ -2,9 +2,12 @@
 #include <QtGlobal>
 #include "webfx/web_image.h"
 
-const int WebFX::WebImage::BytesPerPixel;
+namespace WebFX
+{
 
-void WebFX::WebImage::copyPixels(const WebFX::WebImage& srcImage, WebFX::WebImage& dstImage)
+const int WebImage::BytesPerPixel;
+
+void WebImage::copyPixels(const WebImage& srcImage, WebImage& dstImage)
 {
     if (dstImage.byteCount_ == srcImage.byteCount_)
         memcpy(dstImage.pixels_, srcImage.pixels_, dstImage.byteCount_);
@@ -22,12 +25,14 @@ void WebFX::WebImage::copyPixels(const WebFX::WebImage& srcImage, WebFX::WebImag
     }
 }
 
-void WebFX::WebImage::copyPixelsFrom(const WebFX::WebImage& sourceImage) {
+void WebImage::copyPixelsFrom(const WebImage& sourceImage) {
     Q_ASSERT(compatible(sourceImage));
     copyPixels(sourceImage, *this);
 }
 
-void WebFX::WebImage::copyPixelsTo(WebFX::WebImage& destinationImage) const {
+void WebImage::copyPixelsTo(WebImage& destinationImage) const {
     Q_ASSERT(compatible(destinationImage));
     copyPixels(*this, destinationImage);
+}
+
 }

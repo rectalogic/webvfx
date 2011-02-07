@@ -9,11 +9,14 @@
 #include "webfx/web_renderer.h"
 #include "webfx/web_script.h"
 
-WebFX::WebPage::WebPage(WebFX::WebRenderer* parent, WebFX::WebParameters* parameters)
+namespace WebFX
+{
+
+WebPage::WebPage(WebRenderer* parent, WebParameters* parameters)
     : QWebPage(parent)
-    , pageLoadFinished(WebFX::WebPage::LoadNotFinished)
-    , scriptLoadFinished(WebFX::WebPage::LoadNotFinished)
-    , webScript(new WebFX::WebScript(this, parameters))
+    , pageLoadFinished(LoadNotFinished)
+    , scriptLoadFinished(LoadNotFinished)
+    , webScript(new WebScript(this, parameters))
     , syncLoop(0)
     , renderImage(0)
 {
@@ -22,27 +25,27 @@ WebFX::WebPage::WebPage(WebFX::WebRenderer* parent, WebFX::WebParameters* parame
     connect(mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), SLOT(injectWebScript()));
 }
 
-WebFX::WebPage::~WebPage()
+WebPage::~WebPage()
 {
     delete renderImage;
 }
 
-void WebFX::WebPage::javaScriptAlert(QWebFrame *originatingFrame, const QString &msg)
+void WebPage::javaScriptAlert(QWebFrame *originatingFrame, const QString &msg)
 {
     Q_UNUSED(originatingFrame);
-    WebFX::log(std::string("JavaScript alert: ") + msg.toStdString());
+    log(std::string("JavaScript alert: ") + msg.toStdString());
 }
 
-void WebFX::WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID)
+void WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID)
 {
     std::ostringstream oss;
     if (!sourceID.isEmpty())
         oss << sourceID.toStdString() << ":" << lineNumber << " ";
     oss << message.toStdString();
-    WebFX::log(oss.str());
+    log(oss.str());
 }
 
-bool WebFX::WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& request, NavigationType type)
+bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& request, NavigationType type)
 {
     Q_UNUSED(frame);
     Q_UNUSED(request);
@@ -52,28 +55,28 @@ bool WebFX::WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkReq
     return true;
 }
 
-void WebFX::WebPage::injectWebScript()
+void WebPage::injectWebScript()
 {
     mainFrame()->addToJavaScriptWindowObject("webfx", webScript);
 }
 
-bool WebFX::WebPage::shouldInterruptJavaScript()
+bool WebPage::shouldInterruptJavaScript()
 {
     return false;
 }
 
-void WebFX::WebPage::webPageLoadFinished(bool result)
+void WebPage::webPageLoadFinished(bool result)
 {
-    if (pageLoadFinished == WebFX::WebPage::LoadNotFinished)
-        pageLoadFinished = result ? WebFX::WebPage::LoadSucceeded : WebFX::WebPage::LoadFailed;
-    if (syncLoop && scriptLoadFinished != WebFX::WebPage::LoadNotFinished)
-        syncLoop->exit(scriptLoadFinished == WebFX::WebPage::LoadSucceeded && pageLoadFinished == WebFX::WebPage::LoadSucceeded);
+    if (pageLoadFinished == LoadNotFinished)
+        pageLoadFinished = result ? LoadSucceeded : LoadFailed;
+    if (syncLoop && scriptLoadFinished != LoadNotFinished)
+        syncLoop->exit(scriptLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
 }
 
-void WebFX::WebPage::webScriptLoadFinished(bool result, const QVariantMap& typeMap)
+void WebPage::webScriptLoadFinished(bool result, const QVariantMap& typeMap)
 {
-    if (scriptLoadFinished == WebFX::WebPage::LoadNotFinished) {
-        scriptLoadFinished = result ? WebFX::WebPage::LoadSucceeded : WebFX::WebPage::LoadFailed;
+    if (scriptLoadFinished == LoadNotFinished) {
+        scriptLoadFinished = result ? LoadSucceeded : LoadFailed;
         // Convert QVariantMap to std::map
         QMapIterator<QString, QVariant> iter(typeMap);
         while (iter.hasNext()) {
@@ -82,19 +85,19 @@ void WebFX::WebPage::webScriptLoadFinished(bool result, const QVariantMap& typeM
             imageTypeMap[iter.key().toStdString()] = static_cast<WebEffects::ImageType>(iter.value().toInt());
         }
     }
-    if (syncLoop && pageLoadFinished != WebFX::WebPage::LoadNotFinished)
-        syncLoop->exit(scriptLoadFinished == WebFX::WebPage::LoadSucceeded && pageLoadFinished == WebFX::WebPage::LoadSucceeded);
+    if (syncLoop && pageLoadFinished != LoadNotFinished)
+        syncLoop->exit(scriptLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
 }
 
-bool WebFX::WebPage::loadSync(const QUrl& url)
+bool WebPage::loadSync(const QUrl& url)
 {
     if (syncLoop) {
-        WebFX::log("loadSync recursive call detected");
+        log("loadSync recursive call detected");
         return false;
     }
 
-    pageLoadFinished = WebFX::WebPage::LoadNotFinished;
-    scriptLoadFinished = WebFX::WebPage::LoadNotFinished;
+    pageLoadFinished = LoadNotFinished;
+    scriptLoadFinished = LoadNotFinished;
 
     mainFrame()->load(url);
 
@@ -110,7 +113,7 @@ bool WebFX::WebPage::loadSync(const QUrl& url)
     return result;
 }
 
-WebFX::WebImage WebFX::WebPage::render(double time)
+WebImage WebPage::render(double time)
 {
     // Allow the page to render for this time
     webScript->render(time);
@@ -133,5 +136,7 @@ WebFX::WebImage WebFX::WebPage::render(double time)
     painter.end();
 
     // Return WebImage referencing our bits
-    return WebFX::WebImage(renderImage->bits(), renderImage->width(), renderImage->height(), renderImage->byteCount());
+    return WebImage(renderImage->bits(), renderImage->width(), renderImage->height(), renderImage->byteCount());
+}
+
 }
