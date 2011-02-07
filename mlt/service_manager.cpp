@@ -4,10 +4,16 @@
 
 #include <string>
 #include <webfx/webfx.h>
+extern "C" {
+    #include <mlt/framework/mlt_log.h>
+}
 #include "effects_manager.h"
 
 
+namespace MLTWebFX
+{
 const char* ServiceManager::kWebFXPropertyName = "WebFX";
+const char* ServiceManager::kURLPropertyName = "WebFXURL";
 
 class ServiceParameters : public WebFX::WebParameters
 {
@@ -28,26 +34,34 @@ private:
     mlt_properties properties;
 };
 
-ServiceManager::ServiceManager(mlt_service service)
+}
+
+MLTWebFX::ServiceManager::ServiceManager(mlt_service service)
     : service(service)
 {
     mlt_service_lock(service);
 }
 
-ServiceManager::~ServiceManager()
+MLTWebFX::ServiceManager::~ServiceManager()
 {
     mlt_service_unlock(service);
 }
 
-bool ServiceManager::initialize(const char* url, int width, int height)
+bool MLTWebFX::ServiceManager::initialize(int width, int height)
 {
     mlt_properties properties = MLT_SERVICE_PROPERTIES(service);
-    webEffects = (WebFX::WebEffects*)mlt_properties_get_data(properties, ServiceManager::kWebFXPropertyName, NULL);
+    webEffects = (WebFX::WebEffects*)mlt_properties_get_data(properties, ServiceManager::kWebFXPropertyName, 0);
     if (!webEffects) {
+        const char* url = mlt_properties_get(properties, ServiceManager::kURLPropertyName);
+        if (!url) {
+            mlt_log(service, MLT_LOG_ERROR, "No %s property found\n", ServiceManager::kURLPropertyName);
+            return false;
+        }
         webEffects = WebFX::createWebEffects();
         bool result = webEffects->initialize(url, width, height, new ServiceParameters(service));
         if (!result) {
             delete webEffects; webEffects = 0;
+            mlt_log(service, MLT_LOG_ERROR, "Failed to create WebEffects\n");
             return result;
         }
         //XXX need to initialize, check return - so need html and size
@@ -71,14 +85,15 @@ bool ServiceManager::initialize(const char* url, int width, int height)
         //XXX or enumerate video.* properties - which specify src/dst/extra
         mlt_properties_set_data(properties, ServiceManager::kWebFXPropertyName, webEffects, 0, (mlt_destructor)destroyWebEffects, NULL);
     }
+    return true;
 }
 
-WebFX::WebEffects* ServiceManager::getWebEffects()
+WebFX::WebEffects* MLTWebFX::ServiceManager::getWebEffects()
 {
     return webEffects;
 }
 
-void ServiceManager::destroyWebEffects(WebFX::WebEffects* webEffects)
+void MLTWebFX::ServiceManager::destroyWebEffects(WebFX::WebEffects* webEffects)
 {
     webEffects->destroy();
 }

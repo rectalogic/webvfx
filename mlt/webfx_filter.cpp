@@ -8,89 +8,54 @@ extern "C" {
     #include <mlt/framework/mlt_log.h>
 }
 #include "webfx_service.h"
+#include "service_manager.h"
 
 
-class ChromixFilterTask : public ChromixTask {
-public:
+static int filterGetImage(mlt_frame frame, uint8_t **image, mlt_image_format *format, int *width, int *height, int writable) {
+    int error = 0;
 
-    static int filterGetImage(mlt_frame frame, uint8_t **image, mlt_image_format *format, int *width, int *height, int writable) {
-        int error = 0;
+    // Get the filter
+    mlt_filter filter = (mlt_filter)mlt_frame_pop_service(frame);
 
-        // Get the filter
-        mlt_filter filter = (mlt_filter)mlt_frame_pop_service(frame);
+    // Compute time
+    char *name = mlt_properties_get(MLT_FILTER_PROPERTIES(filter), "_unique_id");
+    mlt_position position = mlt_properties_get_position(MLT_FRAME_PROPERTIES(frame), name);
 
-        // Compute time
-        char *name = mlt_properties_get(MLT_FILTER_PROPERTIES(filter), "_unique_id");
-        mlt_position position = mlt_properties_get_position(MLT_FRAME_PROPERTIES(frame), name);
-
-        // Get the image, we will write our output to it
-        *format = mlt_image_rgb24a;
-        if ((error = mlt_frame_get_image(frame, image, format, width, height, 1)) != 0)
-            return error;
-
-        { // Scope the ServiceLock
-            mlt_service service = MLT_FILTER_SERVICE(filter);
-            ServiceLock lock(service);
-
-            ChromixFilterTask* task = (ChromixFilterTask*)getTask(service);
-            ChromixRawImage targetImage(*image, *width, *height);
-            task->aTrackImage.set(*image, *width, *height);
-            error = task->renderToImageForPosition(targetImage, position);
-            task->aTrackImage.set();
-        }
-
+    // Get the image, we will write our output to it
+    *format = mlt_image_rgb24;
+    if ((error = mlt_frame_get_image(frame, image, format, width, height, 1)) != 0)
         return error;
+
+    { // Scope the lock
+        MLTWebFX::ServiceManager manager(MLT_FILTER_SERVICE(filter));
+        if (!manager.initialize(*width, *height))
+            return 1;
+        //XXX fix this
+        ChromixRawImage targetImage(*image, *width, *height);
+        task->aTrackImage.set(*image, *width, *height);
+        error = task->renderToImageForPosition(targetImage, position);
+        task->aTrackImage.set();
     }
 
-    ChromixFilterTask(mlt_filter filter, const std::string& serviceName)
-        : ChromixTask(MLT_FILTER_SERVICE(filter), serviceName) {}
+    return error;
+}
 
-    int initialize() {
-        int result = ChromixTask::initialize();
-        if (result == 0) {
-            // Get a image name
-            mlt_properties metadata = getMetadata();
-            const char* name = mlt_properties_get(metadata, A_IMAGE_METADATA_PROP);
-            if (!name) {
-                mlt_log(getService(), MLT_LOG_FATAL, "failed to find " A_IMAGE_METADATA_PROP " specifications in metadata\n");
-                return 1;
-            }
-            aImageName = name;
-        }
-        return result;
-    }
-
-protected:
-    int performTask() {
-        return setImageForName(aTrackImage, aImageName);
-    };
-
-private:
-    std::string aImageName;
-    ChromixRawImage aTrackImage;
-};
-
-
-static mlt_frame chromix_filter_process(mlt_filter filter, mlt_frame frame) {
+static mlt_frame filterProcess(mlt_filter filter, mlt_frame frame) {
     // Store position on frame
     char *name = mlt_properties_get(MLT_FILTER_PROPERTIES(filter), "_unique_id");
     mlt_properties_set_position(MLT_FRAME_PROPERTIES(frame), name, mlt_frame_get_position(frame));
     // Push the frame filter
     mlt_frame_push_service(frame, filter);
-    mlt_frame_push_get_image(frame, ChromixFilterTask::filterGetImage);
+    mlt_frame_push_get_image(frame, filterGetImage);
 
     return frame;
 }
 
-mlt_filter webfx_filter_create(const char* service_name) {
+mlt_service MLTWebFX::createFilter(const char* serviceName) {
     mlt_filter self = mlt_filter_new();
     if (self) {
-        self->process = chromix_filter_process;
-        if (!new ChromixFilterTask(self, std::string(service_name))) {
-            mlt_filter_close(self);
-            self = NULL;
-        }
-        return self;
+        self->process = filterProcess;
+        return MLT_FILTER_SERVICE(self);
     }
-    return NULL;
+    return 0;
 }

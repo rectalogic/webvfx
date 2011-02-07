@@ -27,7 +27,11 @@ function init() {
     titleEl.innerHTML = title;
 
     webfx.renderRequested.connect(render);
-    webfx.loadFinished(true);
+    webfx.loadFinished(true, {
+                               "srcImage" : webfx.SRC_IMAGE_TYPE,
+                               "dstImage" : webfx.DST_IMAGE_TYPE,
+                               "demoImage" : webfx.EXTRA_IMAGE_TYPE
+                             });
 }
 window.addEventListener("load", init, false);
 </script>

@@ -8,9 +8,13 @@
 #include <QHash>
 #include <QObject>
 #include <QPixmap>
+#include "webfx/web_effects.h"
 
 class QImage;
 class QSize;
+class QString;
+class QVariant;
+typedef QMap<QString, QVariant> QVariantMap;
 
 namespace WebFX
 {
@@ -25,6 +29,9 @@ class WebParameters;
 class WebScript : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(int SRC_IMAGE_TYPE READ getSrcImageType CONSTANT FINAL)
+    Q_PROPERTY(int DST_IMAGE_TYPE READ getDstImageType CONSTANT FINAL)
+    Q_PROPERTY(int EXTRA_IMAGE_TYPE READ getExtraImageType CONSTANT FINAL)
 public:
     WebScript(WebPage* parent, WebParameters* parameters);
     ~WebScript();
@@ -48,14 +55,20 @@ public:
     //   webfx.getImage("video").assignToHTMLElement(image);
     Q_INVOKABLE const QPixmap getImage(const QString& name);
 
-    //XXX expose error slot - JS in page can connect window.onerror to it? or use it to signal error during rendering
+    //XXX expose error signal - JS in page can raise on window.onerror? or use it to signal error during rendering
+
+
+    int getSrcImageType() { return WebEffects::SrcImageType; }
+    int getDstImageType() { return WebEffects::DstImageType; }
+    int getExtraImageType() { return WebEffects::ExtraImageType; }
 
 signals:
     // Page contents must signal this when load is complete
     // (which may be after window.onload fires).
     // status indicates load failure/success.
-    // JS: webfx.loadFinished(true);
-    void loadFinished(bool status);
+    // Map should map image names to their ImageType.
+    // JS: webfx.loadFinished(true, { "video" : webfx.SRC_IMAGE_TYPE });
+    void loadFinished(bool status, const QVariantMap& imageTypeMap);
 
     // Signal raised when page contents should render for the given time.
     // time is normalized 0..1.0

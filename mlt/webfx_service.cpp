@@ -6,9 +6,10 @@
 #include "webfx_service.h"
 
 #define YML_SUFFIX ".yml"
+#define HTML_SUFFIX ".html"
 
 
-static const char* service_type_to_name(mlt_service_type service_type) {
+static const char* serviceTypeToName(mlt_service_type service_type) {
     switch (service_type) {
         case producer_type:
             return "producer";
@@ -22,71 +23,82 @@ static const char* service_type_to_name(mlt_service_type service_type) {
 }
 
 // Includes trailing slash
-const std::string webfx_get_metadata_dir() {
-    static const std::string metadata_dir(std::string(mlt_environment("MLT_DATA")).append("/webfx/"));
-    return metadata_dir;
-}
-
-mlt_properties chromix_load_metadata(const std::string& service_name) {
-    std::string metadata_path = webfx_get_metadata_dir() + service_name + YML_SUFFIX;
-	return mlt_properties_parse_yaml(metadata_path.c_str());
+static const std::string getDataDir() {
+    static const std::string dataDir(std::string(mlt_environment("MLT_DATA")).append("/webfx/"));
+    return dataDir;
 }
 
 //XXX http://mltframework.org/twiki/bin/view/MLT/MetadataRequirements
-static mlt_properties chromix_create_metadata(mlt_service_type service_type, const char* service_name, void*) {
-    mlt_properties metadata = chromix_load_metadata(service_name);
-    mlt_properties_set(metadata, "identifier", service_name);
-    mlt_properties_set(metadata, "type", service_type_to_name(service_type));
+static mlt_properties createMetadata(mlt_service_type serviceType, const char* serviceName, void*) {
+    std::string metadataPath(getDataDir());
+    metadataPath.append(serviceName).append(YML_SUFFIX);
+
+    // File may not exists, metadata will be empty properties in that case
+	mlt_properties metadata = mlt_properties_parse_yaml(metadataPath.c_str());
+    mlt_properties_set(metadata, "identifier", serviceName);
+    mlt_properties_set(metadata, "type", serviceTypeToName(serviceType));
     //XXX set extra params implied by images hash
     return metadata;
 }
 
-static void* webfx_service_create(mlt_profile profile, mlt_service_type service_type, const char* service_name, const void*) {
-    if (!WebFX::initialize())
-        return NULL;
 
+static void* createService(mlt_profile profile, mlt_service_type serviceType, const char* serviceName, const void*) {
+    if (!WebFX::initialize())
+        return 0;
+
+    mlt_service service = 0;
     switch (service_type) {
         case producer_type:
-            return webfx_producer_create(service_name);
+            service = MLTWebFX::createProducer(serviceName);
+            break;
         case filter_type:
-            return webfx_filter_create(service_name);
+            service = MLTWebFX::createFilter(serviceName);
+            break;
         case transition_type:
-            return webfx_transition_create(service_name);
+            service = MLTWebFX::createTransition(serviceName);
+            break;
         default:
             break;
     }
 
-    return NULL;
+    if (service) {
+        std::string url("file://");
+        url.append(getDataDir()).append(serviceName).append(HTML_SUFFIX);
+        mlt_properties_set(MLT_SERVICE_PROPERTIES(service), ServiceManager::kURLPropertyName, url.c_str());
+    }
+
+    return service;
 }
 
-void webfx_register_services(mlt_repository repository, mlt_service_type service_type) {
-    // Metadata is named e.g. "webfx.filter.<service_name>.yml" and the ID is "webfx.filter.<service_name>"
-    // This is so we can have e.g. both a filter and transition with the same <service_name> name.
+void MLTWebFX::registerServices(mlt_repository repository, mlt_service_type serviceType) {
+    // For service ID "webfx.<service_type>.<service_name>", we have "webfx.<service_type>.<service_name>.html"
+    // and optional "webfx.<service_type>.<service_name>.yml" metadata.
+    // Where "service_type" is filter, transition or producer.
 
-    const char* service_type_name = service_type_to_name(service_type);
-    if (!service_type_name)
+    const char* serviceTypeName = serviceTypeToName(serviceType);
+    if (!serviceTypeName)
         return;
 
-    std::string webfx_metadata_dir(webfx_get_metadata_dir());
+    std::string dataDir(getDataDir());
 
-    // "webfx.<service_type_name>.*.yml" e.g. "webfx.filter.*.yml"
-    std::string service_type_wildcard("webfx.");
-    service_type_wildcard.append(service_type_name).append(".*" YML_SUFFIX);
+    // "webfx.<service_type>.*.html" e.g. "webfx.filter.*.html"
+    std::string serviceTypeWildcard("webfx.");
+    serviceTypeWildcard.append(serviceTypeName).append(".*" HTML_SUFFIX);
 
-    mlt_properties metadata_entries = mlt_properties_new();
-    mlt_properties_dir_list(metadata_entries, webfx_metadata_dir.c_str(), service_type_wildcard.c_str(), 1);
-    int metadata_count = mlt_properties_count(metadata_entries);
-    for (int i = 0; i < metadata_count; i++) {
-        char* pathname = mlt_properties_get_value(metadata_entries, i);
+    mlt_properties htmlEntries = mlt_properties_new();
+    mlt_properties_dir_list(metadataEntries, dataDir.c_str(), serviceTypeWildcard.c_str(), 1);
+    int htmlCount = mlt_properties_count(metadataEntries);
+    for (int i = 0; i < htmlCount; i++) {
+        char* htmlPath = mlt_properties_get_value(metadataEntries, i);
 
-        // ID is "webfx.<service_type_name>.<service_name>" e.g. "webfx.filter.bubbles"
-        const char* id_start = &pathname[webfx_metadata_dir.length() + 1];
-        int id_length = strlen(id_start) - (sizeof(YML_SUFFIX) - 1);
-        std::string service_id(id_start, id_length);
+        // ID is "webfx.<service_type>.<service_name>" e.g. "webfx.filter.bubbles"
+        const char* idStart = &pathname[dataDir.length() + 1];
+        int idLength = strlen(idStart) - (sizeof(HTML_SUFFIX) - 1);
+        std::string serviceID(idStart, idLength);
 
-        const char* id = service_id.c_str();
-        MLT_REGISTER(service_type, id, webfx_service_create);
-        MLT_REGISTER_METADATA(service_type, id, webfx_create_metadata, NULL);
+        const char* id = serviceID.c_str();
+        MLT_REGISTER(serviceType, id, createService);
+        MLT_REGISTER_METADATA(serviceType, id, createMetadata, NULL);
     }
-    mlt_properties_close(metadata_entries);
+    mlt_properties_close(metadataEntries);
 }

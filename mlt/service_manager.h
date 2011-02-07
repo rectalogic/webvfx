@@ -14,13 +14,18 @@ namespace WebFX
     class WebEffects;
 }
 
+namespace MLTWebFX
+{
+
 class ServiceManager
 {
 public:
     ServiceManager(mlt_service service);
     ~ServiceManager();
-    bool initialize(const char* url, int width, int height);
+    bool initialize(int width, int height);
     WebFX::WebEffects* getWebEffects();
+
+    static const char* kURLPropertyName;
 
 private:
     static const char* kWebFXPropertyName;
@@ -28,5 +33,7 @@ private:
     mlt_service service;
     WebFX::WebEffects* webEffects;
 };
+
+}
 
 #endif

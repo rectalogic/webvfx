@@ -2,6 +2,7 @@
 #include <QEventLoop>
 #include <QImage>
 #include <QPainter>
+#include <QVariant>
 #include <QWebFrame>
 #include "webfx/web_logger.h"
 #include "webfx/web_page.h"
@@ -17,7 +18,7 @@ WebFX::WebPage::WebPage(WebFX::WebRenderer* parent, WebFX::WebParameters* parame
     , renderImage(0)
 {
     connect(this, SIGNAL(loadFinished(bool)), SLOT(webPageLoadFinished(bool)));
-    connect(webScript, SIGNAL(loadFinished(bool)), SLOT(webScriptLoadFinished(bool)));
+    connect(webScript, SIGNAL(loadFinished(bool)), SLOT(webScriptLoadFinished(bool,QVariantMap)));
     connect(mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), SLOT(injectWebScript()));
 }
 
@@ -63,14 +64,24 @@ bool WebFX::WebPage::shouldInterruptJavaScript()
 
 void WebFX::WebPage::webPageLoadFinished(bool result)
 {
-    pageLoadFinished = result ? WebFX::WebPage::LoadSucceeded : WebFX::WebPage::LoadFailed;
+    if (pageLoadFinished == WebFX::WebPage::LoadNotFinished)
+        pageLoadFinished = result ? WebFX::WebPage::LoadSucceeded : WebFX::WebPage::LoadFailed;
     if (syncLoop && scriptLoadFinished != WebFX::WebPage::LoadNotFinished)
         syncLoop->exit(scriptLoadFinished == WebFX::WebPage::LoadSucceeded && pageLoadFinished == WebFX::WebPage::LoadSucceeded);
 }
 
-void WebFX::WebPage::webScriptLoadFinished(bool result)
+void WebFX::WebPage::webScriptLoadFinished(bool result, const QVariantMap& typeMap)
 {
-    scriptLoadFinished = result ? WebFX::WebPage::LoadSucceeded : WebFX::WebPage::LoadFailed;
+    if (scriptLoadFinished == WebFX::WebPage::LoadNotFinished) {
+        scriptLoadFinished = result ? WebFX::WebPage::LoadSucceeded : WebFX::WebPage::LoadFailed;
+        // Convert QVariantMap to std::map
+        QMapIterator<QString, QVariant> iter(typeMap);
+        while (iter.hasNext()) {
+            iter.next();
+            //XXX validate the type enums
+            imageTypeMap[iter.key().toStdString()] = static_cast<WebEffects::ImageType>(iter.value().toInt());
+        }
+    }
     if (syncLoop && pageLoadFinished != WebFX::WebPage::LoadNotFinished)
         syncLoop->exit(scriptLoadFinished == WebFX::WebPage::LoadSucceeded && pageLoadFinished == WebFX::WebPage::LoadSucceeded);
 }

@@ -16,7 +16,7 @@ function init() {
     var titleEl = document.getElementById("title");
     titleEl.innerHTML = title;
     webfx.renderRequested.connect(render);
-    webfx.loadFinished(true);
+    webfx.loadFinished(true, { "video" : webfx.SRC_IMAGE_TYPE });
 }
 window.addEventListener("load", init, false);
 </script>

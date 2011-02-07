@@ -10,6 +10,8 @@ extern "C" {
 #include "webfx_service.h"
 
 
+namespace MLTWebFX
+{
 class Logger : public WebFX::WebLogger
 {
     void log(const std::string& message) {
@@ -18,6 +20,7 @@ class Logger : public WebFX::WebLogger
         mlt_log(NULL, MLT_LOG_INFO, "%s\n", message.c_str());
     }
 };
+}
 
 #if defined(__GNUC__) && __GNUC__ >= 4
 #define EXPORT __attribute__((visibility ("default")))
@@ -27,12 +30,12 @@ class Logger : public WebFX::WebLogger
 
 extern "C" EXPORT MLT_REPOSITORY
 {
-    webfx_register_services(repository, producer_type);
-    webfx_register_services(repository, filter_type);
-    webfx_register_services(repository, transition_type);
+    MLTWebFX::registerServices(repository, producer_type);
+    MLTWebFX::registerServices(repository, filter_type);
+    MLTWebFX::registerServices(repository, transition_type);
 
     // Register shutdown hook - even if we don't initialize WebFX
     // we want our logger deleted.
     mlt_factory_register_for_clean_up(NULL, WebFX::shutdown);
-    WebFX::setLogger(new Logger());
+    WebFX::setLogger(new MLTWebFX::Logger());
 }

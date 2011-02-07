@@ -5,7 +5,9 @@
 #ifndef WEBFX_WEB_PAGE_H_
 #define WEBFX_WEB_PAGE_H_
 
+#include <string>
 #include <QWebPage>
+#include "webfx/web_effects.h"
 #include "webfx/web_image.h"
 #include "webfx/web_script.h"
 
@@ -29,6 +31,7 @@ public:
 
     // Load URL synchronously, return success
     bool loadSync(const QUrl& url);
+    const WebEffects::ImageTypeMap& getImageTypeMap() { return imageTypeMap; };
     WebImage render(double time);
     WebImage getWebImage(const QString& name, const QSize& size) { return webScript->getWebImage(name, size); }
 
@@ -36,7 +39,7 @@ private slots:
     void injectWebScript();
     bool shouldInterruptJavaScript();
     void webPageLoadFinished(bool result);
-    void webScriptLoadFinished(bool result);
+    void webScriptLoadFinished(bool result, const QVariantMap& imageTypeMap);
 
 protected:
     void javaScriptAlert(QWebFrame* originatingFrame, const QString& msg);
@@ -50,6 +53,7 @@ private:
     WebScript* webScript;
     QEventLoop* syncLoop;
     QImage* renderImage;
+    WebEffects::ImageTypeMap imageTypeMap;
 };
 
 }

@@ -48,6 +48,11 @@ bool WebFX::WebRenderer::onUIThread() {
     return QThread::currentThread() == QApplication::instance()->thread();
 }
 
+const WebFX::WebEffects::ImageTypeMap& WebFX::WebRenderer::getImageTypeMap()
+{
+    return webPage->getImageTypeMap();
+}
+
 WebFX::WebImage WebFX::WebRenderer::getImage(const std::string& name, int width, int height)
 {
     // This may create a QImage and modify QHash - both of those classes are reentrant,

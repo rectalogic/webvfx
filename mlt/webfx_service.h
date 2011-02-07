@@ -7,17 +7,19 @@
 
 extern "C" {
     #include <mlt/framework/mlt_factory.h>
-    #include <mlt/framework/mlt_types.h>
+    #include <mlt/framework/mlt_service.h>
 }
 #include <string>
 
-void webfx_register_services(mlt_repository repository, mlt_service_type service_type);
+namespace MLTWebFX
+{
 
-const std::string webfx_get_metadata_dir();
-mlt_properties chromix_load_metadata(const std::string& service_name);
+void registerServices(mlt_repository repository, mlt_service_type serviceType);
 
-mlt_producer webfx_producer_create(const char* service_name);
-mlt_filter webfx_filter_create(const char* service_name);
-mlt_producer webfx_transition_create(const char* service_name);
+mlt_service createProducer(const char* serviceName);
+mlt_service createFilter(const char* serviceName);
+mlt_service createTransition(const char* serviceName);
+
+}
 
 #endif

@@ -24,6 +24,7 @@ public:
     ~WebRenderer() {};
 
     bool initialize(const std::string& url, int width, int height, WebParameters* parameters = 0);
+    const WebEffects::ImageTypeMap& getImageTypeMap();
     WebImage getImage(const std::string& name, int width, int height);
     const WebImage render(double time, int width, int height);
     void destroy();

@@ -1,5 +1,5 @@
 schema_version: 0.1
-title: Chromix Demo Producer
+title: WebFX Demo Producer
 version: 0.0.1
 copyright: Copyright (C) 2010 Hewlett-Packard Development Company, L.P.
 license: BSD-new
@@ -8,9 +8,7 @@ language: en
 creator: Andrew Wason
 tags:
   - Video # this may produce video
-description: Simple Chromix test
-
-chromix.html: producer.html
+description: Simple WebFX test
 
 parameters:
   - identifier: title
