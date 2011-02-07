@@ -29,8 +29,12 @@ WebEffects* createWebEffects();
 // Must be called after initialize from the main thread in
 // non-Qt based MacOS applications if WebEffects is going to be used
 // from any other threads.
+// It is a noop on other platforms.
 int processEvents();
 
+// Shut down WebFX. All WebEffects should be destroyed before calling shutdown.
+// shutdown can be called from any thread.
+// It is safe to call shutdown more than once, or without having called initialize.
 void shutdown();
 
 }
