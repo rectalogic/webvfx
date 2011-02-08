@@ -36,6 +36,6 @@ extern "C" EXPORT MLT_REPOSITORY
 
     // Register shutdown hook - even if we don't initialize WebVFX
     // we want our logger deleted.
-    mlt_factory_register_for_clean_up(0, WebVFX::shutdown);
+    mlt_factory_register_for_clean_up(0, reinterpret_cast<mlt_destructor>(WebVFX::shutdown));
     WebVFX::setLogger(new MLTWebVFX::Logger());
 }

@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
 
     WebVFX::WebEffects* effects = WebVFX::createWebEffects();
     effects->initialize(argv[1], 320, 240, new Parameters());
-    WebVFX::WebImage video = effects->getImage("video", 320, 240);
+    WebVFX::WebImage video = effects->getImage("sourceImage", 320, 240);
     // Fill with red XXX need to take into account stride
     unsigned char* pixels = video.pixels();
     for (int i = 0; i < video.byteCount(); i+= WebVFX::WebImage::BytesPerPixel) {

@@ -29,8 +29,8 @@ class WebParameters;
 class WebScript : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(int SRC_IMAGE_TYPE READ getSrcImageType CONSTANT FINAL)
-    Q_PROPERTY(int DST_IMAGE_TYPE READ getDstImageType CONSTANT FINAL)
+    Q_PROPERTY(int SOURCE_IMAGE_TYPE READ getSourceImageType CONSTANT FINAL)
+    Q_PROPERTY(int TARGET_IMAGE_TYPE READ getTargetImageType CONSTANT FINAL)
     Q_PROPERTY(int EXTRA_IMAGE_TYPE READ getExtraImageType CONSTANT FINAL)
 public:
     WebScript(WebPage* parent, WebParameters* parameters);
@@ -58,8 +58,8 @@ public:
     //XXX expose error signal - JS in page can raise on window.onerror? or use it to signal error during rendering
 
 
-    int getSrcImageType() { return WebEffects::SrcImageType; }
-    int getDstImageType() { return WebEffects::DstImageType; }
+    int getSourceImageType() { return WebEffects::SourceImageType; }
+    int getTargetImageType() { return WebEffects::TargetImageType; }
     int getExtraImageType() { return WebEffects::ExtraImageType; }
 
 signals:
@@ -67,7 +67,7 @@ signals:
     // (which may be after window.onload fires).
     // status indicates load failure/success.
     // Map should map image names to their ImageType.
-    // JS: webvfx.loadFinished(true, { "video" : webvfx.SRC_IMAGE_TYPE });
+    // JS: webvfx.loadFinished(true, { "video" : webvfx.SOURCE_IMAGE_TYPE });
     void loadFinished(bool status, const QVariantMap& imageTypeMap);
 
     // Signal raised when page contents should render for the given time.

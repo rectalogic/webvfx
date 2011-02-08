@@ -34,7 +34,7 @@ public:
     int byteCount() const { return byteCount_; }
 
     void copyPixelsFrom(const WebImage& sourceImage);
-    void copyPixelsTo(WebImage& destinationImage) const;
+    void copyPixelsTo(WebImage& targetImage) const;
     bool compatible(const WebImage& image) const {
         return (image.pixels_ && pixels_
                 && image.pixels_ != pixels_
@@ -43,7 +43,7 @@ public:
     }
 
 private:
-    static void copyPixels(const WebImage& srcImage, WebImage& dstImage);
+    static void copyPixels(const WebImage& sourceImage, WebImage& targetImage);
 
     unsigned char* pixels_;
     int width_;

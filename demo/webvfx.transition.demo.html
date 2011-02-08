@@ -3,11 +3,11 @@
 <script type="text/javascript">
 function render(time) {
     console.log("rendering " + time);
-    webvfx.getImage('srcImage').assignToHTMLImageElement(srcImage);
-    webvfx.getImage('dstImage').assignToHTMLImageElement(dstImage);
+    webvfx.getImage('sourceImage').assignToHTMLImageElement(sourceImage);
+    webvfx.getImage('targetImage').assignToHTMLImageElement(targetImage);
     webvfx.getImage('demoImage').assignToHTMLImageElement(demoImage);
-    context.drawImage(srcImage, 0, 0, 160, 120)
-    context.drawImage(dstImage, 160, 120, 160, 120)
+    context.drawImage(sourceImage, 0, 0, 160, 120)
+    context.drawImage(targetImage, 160, 120, 160, 120)
     context.drawImage(demoImage, 0, 120, 160, 120)
     timeEl.innerHTML = time;
 }
@@ -17,8 +17,8 @@ function init() {
 
     // globals
     context = canvas.getContext('2d');
-    srcImage = new Image();
-    dstImage = new Image();
+    sourceImage = new Image();
+    targetImage = new Image();
     demoImage = new Image();
     timeEl = document.getElementById("time");
 
@@ -28,8 +28,8 @@ function init() {
 
     webvfx.renderRequested.connect(render);
     webvfx.loadFinished(true, {
-                               "srcImage" : webvfx.SRC_IMAGE_TYPE,
-                               "dstImage" : webvfx.DST_IMAGE_TYPE,
+                               "sourceImage" : webvfx.SOURCE_IMAGE_TYPE,
+                               "targetImage" : webvfx.TARGET_IMAGE_TYPE,
                                "demoImage" : webvfx.EXTRA_IMAGE_TYPE
                              });
 }

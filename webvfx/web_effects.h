@@ -18,7 +18,7 @@ namespace WebVFX
 class WebEffects
 {
 public:
-    enum ImageType { SrcImageType=1, DstImageType, ExtraImageType };
+    enum ImageType { SourceImageType=1, TargetImageType, ExtraImageType };
 
     typedef std::map<const std::string, ImageType> ImageTypeMap;
 
@@ -30,6 +30,7 @@ public:
     virtual const ImageTypeMap& getImageTypeMap() = 0;
     // Return a WebImage of the given size that can be written to.
     virtual WebImage getImage(const std::string& name, int width, int height) = 0;
+    //XXX need to return an error code?
     virtual const WebImage render(double time, int width, int height) = 0;
     virtual void destroy() = 0;
 

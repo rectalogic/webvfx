@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <cstring>
+#include <webvfx/webvfx.h>
 #include "webvfx_service.h"
+#include "service_manager.h"
 
 #define YML_SUFFIX ".yml"
 #define HTML_SUFFIX ".html"
@@ -42,29 +45,30 @@ static mlt_properties createMetadata(mlt_service_type serviceType, const char* s
 }
 
 
-static void* createService(mlt_profile profile, mlt_service_type serviceType, const char* serviceName, const void*) {
+static void* createService(mlt_profile /*profile*/, mlt_service_type serviceType, const char* serviceName, const void*) {
     if (!WebVFX::initialize())
         return 0;
 
     mlt_service service = 0;
-    switch (service_type) {
+    switch (serviceType) {
         case producer_type:
-            service = MLTWebVFX::createProducer(serviceName);
+            service = MLTWebVFX::createProducer();
             break;
         case filter_type:
-            service = MLTWebVFX::createFilter(serviceName);
+            service = MLTWebVFX::createFilter();
             break;
         case transition_type:
-            service = MLTWebVFX::createTransition(serviceName);
+            service = MLTWebVFX::createTransition();
             break;
         default:
             break;
     }
 
+    // Store URL property on service
     if (service) {
         std::string url("file://");
         url.append(getDataDir()).append(serviceName).append(HTML_SUFFIX);
-        mlt_properties_set(MLT_SERVICE_PROPERTIES(service), ServiceManager::kURLPropertyName, url.c_str());
+        mlt_properties_set(MLT_SERVICE_PROPERTIES(service), MLTWebVFX::ServiceManager::kURLPropertyName, url.c_str());
     }
 
     return service;
@@ -86,19 +90,19 @@ void MLTWebVFX::registerServices(mlt_repository repository, mlt_service_type ser
     serviceTypeWildcard.append(serviceTypeName).append(".*" HTML_SUFFIX);
 
     mlt_properties htmlEntries = mlt_properties_new();
-    mlt_properties_dir_list(metadataEntries, dataDir.c_str(), serviceTypeWildcard.c_str(), 1);
-    int htmlCount = mlt_properties_count(metadataEntries);
+    mlt_properties_dir_list(htmlEntries, dataDir.c_str(), serviceTypeWildcard.c_str(), 1);
+    int htmlCount = mlt_properties_count(htmlEntries);
     for (int i = 0; i < htmlCount; i++) {
-        char* htmlPath = mlt_properties_get_value(metadataEntries, i);
+        char* htmlPath = mlt_properties_get_value(htmlEntries, i);
 
         // ID is "webvfx.<service_type>.<service_name>" e.g. "webvfx.filter.bubbles"
-        const char* idStart = &pathname[dataDir.length() + 1];
-        int idLength = strlen(idStart) - (sizeof(HTML_SUFFIX) - 1);
+        const char* idStart = &htmlPath[dataDir.length() + 1];
+        int idLength = std::strlen(idStart) - (sizeof(HTML_SUFFIX) - 1);
         std::string serviceID(idStart, idLength);
 
         const char* id = serviceID.c_str();
         MLT_REGISTER(serviceType, id, createService);
         MLT_REGISTER_METADATA(serviceType, id, createMetadata, NULL);
     }
-    mlt_properties_close(metadataEntries);
+    mlt_properties_close(htmlEntries);
 }

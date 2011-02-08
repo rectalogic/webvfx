@@ -7,20 +7,20 @@ namespace WebVFX
 
 const int WebImage::BytesPerPixel;
 
-void WebImage::copyPixels(const WebImage& srcImage, WebImage& dstImage)
+void WebImage::copyPixels(const WebImage& sourceImage, WebImage& targetImage)
 {
-    if (dstImage.byteCount_ == srcImage.byteCount_)
-        memcpy(dstImage.pixels_, srcImage.pixels_, dstImage.byteCount_);
+    if (targetImage.byteCount_ == sourceImage.byteCount_)
+        memcpy(targetImage.pixels_, sourceImage.pixels_, targetImage.byteCount_);
     else {
-        unsigned char* srcP = srcImage.pixels_;
-        int srcRowBytes = srcImage.bytesPerLine();
-        unsigned char* dstP = dstImage.pixels_;
-        int dstRowBytes = dstImage.bytesPerLine();
-        int widthBytes = dstImage.width_ * BytesPerPixel;
-        for (int i = 0; i < dstImage.height_; i++) {
-            memcpy(dstP, srcP, widthBytes);
-            srcP += srcRowBytes;
-            dstP += dstRowBytes;
+        unsigned char* sourceP = sourceImage.pixels_;
+        int sourceRowBytes = sourceImage.bytesPerLine();
+        unsigned char* targetP = targetImage.pixels_;
+        int targetRowBytes = targetImage.bytesPerLine();
+        int widthBytes = targetImage.width_ * BytesPerPixel;
+        for (int i = 0; i < targetImage.height_; i++) {
+            memcpy(targetP, sourceP, widthBytes);
+            sourceP += sourceRowBytes;
+            targetP += targetRowBytes;
         }
     }
 }
@@ -30,9 +30,9 @@ void WebImage::copyPixelsFrom(const WebImage& sourceImage) {
     copyPixels(sourceImage, *this);
 }
 
-void WebImage::copyPixelsTo(WebImage& destinationImage) const {
-    Q_ASSERT(compatible(destinationImage));
-    copyPixels(*this, destinationImage);
+void WebImage::copyPixelsTo(WebImage& targetImage) const {
+    Q_ASSERT(compatible(targetImage));
+    copyPixels(*this, targetImage);
 }
 
 }

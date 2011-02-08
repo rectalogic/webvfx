@@ -7,11 +7,14 @@ extern "C" {
     #include <mlt/framework/mlt_frame.h>
     #include <mlt/framework/mlt_log.h>
 }
-#include "webvfx_service.h"
+#include <cstring>
+#include <webvfx/web_image.h>
 #include "service_locker.h"
+#include "service_manager.h"
+#include "webvfx_service.h"
 
 
-static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_format *format, int *width, int *height, int writable) {
+static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_format *format, int *width, int *height, int /*writable*/) {
     int error = 0;
 
     mlt_frame bFrame = mlt_frame_pop_frame(aFrame);
@@ -27,7 +30,7 @@ static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_forma
         mlt_properties_set_double(b_props, "aspect_ratio", mlt_properties_get_double(a_props, "consumer_aspect_ratio"));
     mlt_properties_set_double(b_props, "consumer_aspect_ratio", mlt_properties_get_double(a_props, "consumer_aspect_ratio"));
 
-    if (mlt_properties_get(b_props, "rescale.interp") == NULL || !strcmp(mlt_properties_get(b_props, "rescale.interp"), "none"))
+    if (mlt_properties_get(b_props, "rescale.interp") == NULL || !std::strcmp(mlt_properties_get(b_props, "rescale.interp"), "none"))
         mlt_properties_set(b_props, "rescale.interp", mlt_properties_get(a_props, "rescale.interp"));
 
     // Compute position
@@ -49,14 +52,12 @@ static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_forma
         if (!locker.initialize(*width, *height))
             return 1;
 
-        //XXX fix this
-        ChromixTransitionTask* task = (ChromixTransitionTask*)getTask(service);
-        ChromixRawImage targetImage(*image, *width, *height);
-        task->aTrackImage.set(*image, *width, *height);
-        task->bTrackImage.set(bImage, bWidth, bHeight);
-        error = task->renderToImageForPosition(targetImage, position);
-        task->aTrackImage.set();
-        task->bTrackImage.set();
+        MLTWebVFX::ServiceManager* manager = locker.getManager();
+        WebVFX::WebImage renderedImage(*image, *width, *height, *width * *height * WebVFX::WebImage::BytesPerPixel);
+        manager->copyImageForName(manager->getSourceImageName(), renderedImage);
+        WebVFX::WebImage targetImage(bImage, bWidth, bHeight, bWidth * bHeight * WebVFX::WebImage::BytesPerPixel);
+        manager->copyImageForName(manager->getTargetImageName(), targetImage);
+        manager->render(renderedImage, position);
     }
 
     return error;
@@ -71,7 +72,7 @@ static mlt_frame transitionProcess(mlt_transition transition, mlt_frame aFrame, 
     return aFrame;
 }
 
-mlt_service MLTWebVFX::createTransition(const char* serviceName) {
+mlt_service MLTWebVFX::createTransition() {
     mlt_transition self = mlt_transition_new();
     if (self) {
         self->process = transitionProcess;

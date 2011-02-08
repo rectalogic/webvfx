@@ -16,9 +16,9 @@ namespace MLTWebVFX
 
 void registerServices(mlt_repository repository, mlt_service_type serviceType);
 
-mlt_service createProducer(const char* serviceName);
-mlt_service createFilter(const char* serviceName);
-mlt_service createTransition(const char* serviceName);
+mlt_service createProducer();
+mlt_service createFilter();
+mlt_service createTransition();
 
 }
 

@@ -8,11 +8,12 @@ extern "C" {
     #include <mlt/framework/mlt_log.h>
 }
 #include "service_locker.h"
+#include "service_manager.h"
 
 
 namespace MLTWebVFX
 {
-const char* ServiceManager::kManagerPropertyName = "WebVFXManager";
+const char* ServiceLocker::kManagerPropertyName = "WebVFXManager";
 
 
 ServiceLocker::ServiceLocker(mlt_service service)
@@ -28,18 +29,19 @@ ServiceLocker::~ServiceLocker()
 
 bool ServiceLocker::initialize(int width, int height)
 {
+    // If we don't have a ServiceManager, create one and store on service
     mlt_properties properties = MLT_SERVICE_PROPERTIES(service);
-    manager = (ServiceManager*)mlt_properties_get_data(properties, ServiceManager::kManagerPropertyName, 0);
+    manager = static_cast<ServiceManager*>(mlt_properties_get_data(properties, ServiceLocker::kManagerPropertyName, 0));
     if (!manager) {
         manager = new ServiceManager(service);
         bool result = manager->initialize(width, height);
         if (!result) {
-            destroyManager();
+            destroyManager(manager);
             mlt_log(service, MLT_LOG_ERROR, "Failed to create WebVFX ServiceManager\n");
             return result;
         }
 
-        mlt_properties_set_data(properties, ServiceManager::kManagerPropertyName, manager, 0, (mlt_destructor)destroyManager, NULL);
+        mlt_properties_set_data(properties, kManagerPropertyName, manager, 0, reinterpret_cast<mlt_destructor>(destroyManager), NULL);
     }
     return true;
 }
@@ -49,9 +51,9 @@ ServiceManager* ServiceLocker::getManager()
     return manager;
 }
 
-void ServiceManager::destroyManager(ServiceManager* manager)
+void ServiceLocker::destroyManager(ServiceManager* manager)
 {
-    delete manager; manager = 0
+    delete manager;
 }
 
 }

@@ -6,12 +6,14 @@ extern "C" {
     #include <mlt/framework/mlt_producer.h>
     #include <mlt/framework/mlt_frame.h>
 }
-#include "webvfx_service.h"
+#include <webvfx/web_image.h>
 #include "service_locker.h"
+#include "service_manager.h"
+#include "webvfx_service.h"
 
 static const char* kWebVFXProducerPropertyName = "WebVFXProducer";
 
-static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format *format, int *width, int *height, int writable) {
+static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format *format, int *width, int *height, int /*writable*/) {
     int error = 0;
 
     // Obtain properties of frame
@@ -25,7 +27,7 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
 
     // Allocate the image
     *format = mlt_image_rgb24;
-    int size = *width * *height * 4;
+    int size = *width * *height * WebVFX::WebImage::BytesPerPixel;
     *buffer = (uint8_t*)mlt_pool_alloc(size);
     if (!*buffer)
         return 1;
@@ -40,16 +42,14 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
         if (!locker.initialize(*width, *height))
             return 1;
 
-        //XXX fix this
-        ChromixProducerTask* task = (ChromixProducerTask*)getTask(service);
-        ChromixRawImage targetImage(*buffer, *width, *height);
-        error = task->renderToImageForPosition(targetImage, position);
+        WebVFX::WebImage outputImage(*buffer, *width, *height, size);
+        locker.getManager()->render(outputImage, position);
     }
 
     return error;
 }
 
-static int getFrame(mlt_producer producer, mlt_frame_ptr frame, int index) {
+static int getFrame(mlt_producer producer, mlt_frame_ptr frame, int /*index*/) {
     // Generate a frame
     *frame = mlt_frame_init(MLT_PRODUCER_SERVICE(producer));
 
@@ -80,7 +80,7 @@ static int getFrame(mlt_producer producer, mlt_frame_ptr frame, int index) {
     return 0;
 }
 
-mlt_service MLTWebVFX::createProducer(const char* serviceName) {
+mlt_service MLTWebVFX::createProducer() {
     mlt_producer self = mlt_producer_new();
     if (self) {
         self->get_frame = getFrame;
