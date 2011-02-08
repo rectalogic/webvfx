@@ -8,7 +8,7 @@ HEADERS += web_page.h
 HEADERS += web_parameters.h
 HEADERS += web_renderer.h
 HEADERS += web_script.h
-HEADERS += webfx.h
+HEADERS += webvfx.h
 
 SOURCES += web_effects.cpp
 SOURCES += web_image.cpp
@@ -17,8 +17,8 @@ SOURCES += web_page.cpp
 SOURCES += web_parameters.cpp
 SOURCES += web_renderer.cpp
 SOURCES += web_script.cpp
-SOURCES += webfx.cpp
-macx:SOURCES += webfx_mac.mm
+SOURCES += webvfx.cpp
+macx:SOURCES += webvfx_mac.mm
 
 macx:LIBS += -framework Foundation
 
@@ -33,7 +33,7 @@ QT += webkit
 
 CONFIG += debug_and_release
 CONFIG(debug, debug|release) {
-    TARGET = webfx_debug
+    TARGET = webvfx_debug
 } else {
-    TARGET = webfx
+    TARGET = webvfx
 }

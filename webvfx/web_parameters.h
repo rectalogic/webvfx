@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBFX_WEB_PARAMETERS_H_
-#define WEBFX_WEB_PARAMETERS_H_
+#ifndef WEBVFX_WEB_PARAMETERS_H_
+#define WEBVFX_WEB_PARAMETERS_H_
 
 #include <string>
 
-namespace WebFX
+namespace WebVFX
 {
 
 class WebParameters

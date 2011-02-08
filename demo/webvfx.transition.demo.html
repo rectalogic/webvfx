@@ -3,9 +3,9 @@
 <script type="text/javascript">
 function render(time) {
     console.log("rendering " + time);
-    webfx.getImage('srcImage').assignToHTMLImageElement(srcImage);
-    webfx.getImage('dstImage').assignToHTMLImageElement(dstImage);
-    webfx.getImage('demoImage').assignToHTMLImageElement(demoImage);
+    webvfx.getImage('srcImage').assignToHTMLImageElement(srcImage);
+    webvfx.getImage('dstImage').assignToHTMLImageElement(dstImage);
+    webvfx.getImage('demoImage').assignToHTMLImageElement(demoImage);
     context.drawImage(srcImage, 0, 0, 160, 120)
     context.drawImage(dstImage, 160, 120, 160, 120)
     context.drawImage(demoImage, 0, 120, 160, 120)
@@ -22,15 +22,15 @@ function init() {
     demoImage = new Image();
     timeEl = document.getElementById("time");
 
-    var title = webfx.getStringParameter('title');
+    var title = webvfx.getStringParameter('title');
     var titleEl = document.getElementById("title");
     titleEl.innerHTML = title;
 
-    webfx.renderRequested.connect(render);
-    webfx.loadFinished(true, {
-                               "srcImage" : webfx.SRC_IMAGE_TYPE,
-                               "dstImage" : webfx.DST_IMAGE_TYPE,
-                               "demoImage" : webfx.EXTRA_IMAGE_TYPE
+    webvfx.renderRequested.connect(render);
+    webvfx.loadFinished(true, {
+                               "srcImage" : webvfx.SRC_IMAGE_TYPE,
+                               "dstImage" : webvfx.DST_IMAGE_TYPE,
+                               "demoImage" : webvfx.EXTRA_IMAGE_TYPE
                              });
 }
 window.addEventListener("load", init, false);

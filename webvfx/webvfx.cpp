@@ -10,12 +10,12 @@
 #include <QMutex>
 #include <QMutexLocker>
 #include <QWaitCondition>
-#include "webfx/webfx.h"
-#include "webfx/web_logger.h"
-#include "webfx/web_renderer.h"
+#include "webvfx/webvfx.h"
+#include "webvfx/web_logger.h"
+#include "webvfx/web_renderer.h"
 
 
-namespace WebFX
+namespace WebVFX
 {
 
 static bool s_initialized = false;
@@ -73,7 +73,7 @@ bool initialize()
     if (!qApp) {
 #ifdef Q_WS_MAC
         if (!isMainThread()) {
-            log("WebFX must be initialized on the main thread on MacOS");
+            log("WebVFX must be initialized on the main thread on MacOS");
             return false;
         }
 
@@ -118,7 +118,7 @@ int processEvents()
     if (!s_ownApp)
         return 0;
     if (!isMainThread()) {
-        log("WebFX::processEvents() must be called from the main thread.");
+        log("WebVFX::processEvents() must be called from the main thread.");
         return 1;
     }
     int result = qApp->exec();

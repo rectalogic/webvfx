@@ -1,8 +1,8 @@
 #include <string.h>
 #include <QtGlobal>
-#include "webfx/web_image.h"
+#include "webvfx/web_image.h"
 
-namespace WebFX
+namespace WebVFX
 {
 
 const int WebImage::BytesPerPixel;

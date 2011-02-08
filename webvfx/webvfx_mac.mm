@@ -3,9 +3,9 @@
 #ifdef Q_WS_MAC
 
 #include <Foundation/NSThread.h>
-#include "webfx/webfx.h"
+#include "webvfx/webvfx.h"
 
-namespace WebFX {
+namespace WebVFX {
 
 bool isMainThread()
 {

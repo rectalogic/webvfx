@@ -1,5 +1,5 @@
 schema_version: 0.1
-title: WebFX Demo Producer
+title: WebVFX Demo Filter
 version: 0.0.1
 copyright: Copyright (C) 2010 Hewlett-Packard Development Company, L.P.
 license: BSD-new
@@ -8,7 +8,7 @@ language: en
 creator: Andrew Wason
 tags:
   - Video # this may produce video
-description: Simple WebFX test
+description: Simple WebVFX test
 
 parameters:
   - identifier: title

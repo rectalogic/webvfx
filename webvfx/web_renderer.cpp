@@ -1,13 +1,13 @@
 #include <QApplication>
 #include <QThread>
-#include "webfx/web_image.h"
-#include "webfx/web_logger.h"
-#include "webfx/web_page.h"
-#include "webfx/web_parameters.h"
-#include "webfx/web_renderer.h"
+#include "webvfx/web_image.h"
+#include "webvfx/web_logger.h"
+#include "webvfx/web_page.h"
+#include "webvfx/web_parameters.h"
+#include "webvfx/web_renderer.h"
 
 
-namespace WebFX
+namespace WebVFX
 {
 
 WebRenderer::WebRenderer()

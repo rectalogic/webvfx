@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBFX_WEB_SCRIPT_H_
-#define WEBFX_WEB_SCRIPT_H_
+#ifndef WEBVFX_WEB_SCRIPT_H_
+#define WEBVFX_WEB_SCRIPT_H_
 
 #include <QHash>
 #include <QObject>
 #include <QPixmap>
-#include "webfx/web_effects.h"
+#include "webvfx/web_effects.h"
 
 class QImage;
 class QSize;
@@ -16,7 +16,7 @@ class QString;
 class QVariant;
 typedef QMap<QString, QVariant> QVariantMap;
 
-namespace WebFX
+namespace WebVFX
 {
 
 class WebImage;
@@ -45,14 +45,14 @@ public:
     WebImage getWebImage(const QString& name, const QSize& size);
 
     // Page contents can use these to retrieve parameters.
-    // JS: var title = webfx.getStringParameter("title");
+    // JS: var title = webvfx.getStringParameter("title");
     Q_INVOKABLE double getNumberParameter(const QString& name);
     Q_INVOKABLE const QString getStringParameter(const QString& name);
 
     // Page contents can retrieve named images.
     // JS:
     //   var image = new Image();
-    //   webfx.getImage("video").assignToHTMLElement(image);
+    //   webvfx.getImage("video").assignToHTMLElement(image);
     Q_INVOKABLE const QPixmap getImage(const QString& name);
 
     //XXX expose error signal - JS in page can raise on window.onerror? or use it to signal error during rendering
@@ -67,12 +67,12 @@ signals:
     // (which may be after window.onload fires).
     // status indicates load failure/success.
     // Map should map image names to their ImageType.
-    // JS: webfx.loadFinished(true, { "video" : webfx.SRC_IMAGE_TYPE });
+    // JS: webvfx.loadFinished(true, { "video" : webvfx.SRC_IMAGE_TYPE });
     void loadFinished(bool status, const QVariantMap& imageTypeMap);
 
     // Signal raised when page contents should render for the given time.
     // time is normalized 0..1.0
-    // JS: webfx.renderRequested.connect(function (time) { doSomething(); })
+    // JS: webvfx.renderRequested.connect(function (time) { doSomething(); })
     void renderRequested(double time);
 
 private:

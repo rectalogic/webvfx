@@ -8,7 +8,7 @@
 #include <iomanip>
 #include <string>
 
-#include <webfx/webfx.h>
+#include <webvfx/webvfx.h>
 
 
 int main(int argc, char* argv[]) {
@@ -17,44 +17,44 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
-    class Logger : public WebFX::WebLogger {
+    class Logger : public WebVFX::WebLogger {
     public:
         virtual void log(const std::string& message) {
             std::cerr << message << std::endl;
         }
     };
-    WebFX::setLogger(new Logger());
+    WebVFX::setLogger(new Logger());
 
-    class Parameters : public WebFX::WebParameters {
+    class Parameters : public WebVFX::WebParameters {
     public:
         virtual const std::string getStringParameter(const std::string&) {
-            return "WebFX Cool Title";
+            return "WebVFX Cool Title";
         }
     };
 
-    class AutoWebFX {
+    class AutoWebVFX {
     public:
         //XXX check return code
-        AutoWebFX() { WebFX::initialize(); }
-        ~AutoWebFX() { WebFX::shutdown(); }
+        AutoWebVFX() { WebVFX::initialize(); }
+        ~AutoWebVFX() { WebVFX::shutdown(); }
     };
-    AutoWebFX fx;
+    AutoWebVFX vfx;
 
-    WebFX::WebEffects* effects = WebFX::createWebEffects();
+    WebVFX::WebEffects* effects = WebVFX::createWebEffects();
     effects->initialize(argv[1], 320, 240, new Parameters());
-    WebFX::WebImage video = effects->getImage("video", 320, 240);
+    WebVFX::WebImage video = effects->getImage("video", 320, 240);
     // Fill with red XXX need to take into account stride
     unsigned char* pixels = video.pixels();
-    for (int i = 0; i < video.byteCount(); i+= WebFX::WebImage::BytesPerPixel) {
+    for (int i = 0; i < video.byteCount(); i+= WebVFX::WebImage::BytesPerPixel) {
         pixels[i] = 0xFF;
         pixels[i+1] = 0x00;
         pixels[i+2] = 0x00;
     }
-    const WebFX::WebImage image = effects->render(0.32, 320, 240);
+    const WebVFX::WebImage image = effects->render(0.32, 320, 240);
 
     // Write to disk.
     std::ofstream rawFile;
-    rawFile.open("/tmp/webfx.raw", std::ios::out|std::ios::trunc|std::ios::binary);
+    rawFile.open("/tmp/webvfx.raw", std::ios::out|std::ios::trunc|std::ios::binary);
     if (rawFile.fail())
         return -1;
     rawFile.write(reinterpret_cast<const char*>(image.pixels()), image.byteCount());

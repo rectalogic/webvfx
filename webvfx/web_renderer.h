@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBFX_WEB_RENDERER_H_
-#define WEBFX_WEB_RENDERER_H_
+#ifndef WEBVFX_WEB_RENDERER_H_
+#define WEBVFX_WEB_RENDERER_H_
 
 #include <QtWebKit>
-#include "webfx/web_effects.h"
-#include "webfx/web_image.h"
+#include "webvfx/web_effects.h"
+#include "webvfx/web_image.h"
 
-namespace WebFX
+namespace WebVFX
 {
 
 class WebImage;

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBFX_WEB_EFFECTS_H_
-#define WEBFX_WEB_EFFECTS_H_
+#ifndef WEBVFX_WEB_EFFECTS_H_
+#define WEBVFX_WEB_EFFECTS_H_
 
 #include <string>
 #include <map>
-#include <webfx/web_image.h>
-#include <webfx/web_parameters.h>
+#include <webvfx/web_image.h>
+#include <webvfx/web_parameters.h>
 
-namespace WebFX
+namespace WebVFX
 {
 
 // Instances of this class can be accessed from any thread,

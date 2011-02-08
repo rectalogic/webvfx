@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBFX_WEBFX_H_
-#define WEBFX_WEBFX_H_
+#ifndef WEBVFX_WEBVFX_H_
+#define WEBVFX_WEBVFX_H_
 
-#include <webfx/web_effects.h>
-#include <webfx/web_logger.h>
+#include <webvfx/web_effects.h>
+#include <webvfx/web_logger.h>
 
-namespace WebFX {
+namespace WebVFX {
 
-// WebFX will take ownership of the logger and delete at shutdown.
+// WebVFX will take ownership of the logger and delete at shutdown.
 // setLogger must be called only once and before initialize().
 void setLogger(WebLogger* logger);
 
@@ -32,7 +32,7 @@ WebEffects* createWebEffects();
 // It is a noop on other platforms.
 int processEvents();
 
-// Shut down WebFX. All WebEffects should be destroyed before calling shutdown.
+// Shut down WebVFX. All WebEffects should be destroyed before calling shutdown.
 // shutdown can be called from any thread.
 // It is safe to call shutdown more than once, or without having called initialize.
 void shutdown();

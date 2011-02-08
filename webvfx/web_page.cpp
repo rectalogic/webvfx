@@ -4,12 +4,12 @@
 #include <QPainter>
 #include <QVariant>
 #include <QWebFrame>
-#include "webfx/web_logger.h"
-#include "webfx/web_page.h"
-#include "webfx/web_renderer.h"
-#include "webfx/web_script.h"
+#include "webvfx/web_logger.h"
+#include "webvfx/web_page.h"
+#include "webvfx/web_renderer.h"
+#include "webvfx/web_script.h"
 
-namespace WebFX
+namespace WebVFX
 {
 
 WebPage::WebPage(WebRenderer* parent, WebParameters* parameters)
@@ -57,7 +57,7 @@ bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& r
 
 void WebPage::injectWebScript()
 {
-    mainFrame()->addToJavaScriptWindowObject("webfx", webScript);
+    mainFrame()->addToJavaScriptWindowObject("webvfx", webScript);
 }
 
 bool WebPage::shouldInterruptJavaScript()

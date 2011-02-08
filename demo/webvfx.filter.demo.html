@@ -4,21 +4,24 @@
 function render(time) {
     console.log("rendering " + time);
     timeEl.innerHTML = time;
+    webvfx.getImage("video").assignToHTMLImageElement(image);
 }
 
 function init() {
     // globals
+    image = new Image();
+    document.body.appendChild(image);
     timeEl = document.getElementById("time");
-    var title = webfx.getStringParameter('title');
+    var title = webvfx.getStringParameter('title');
     var titleEl = document.getElementById("title");
     titleEl.innerHTML = title;
-    webfx.renderRequested.connect(render);
-    webfx.loadFinished(true);//XXX what happens to map?
+    webvfx.renderRequested.connect(render);
+    webvfx.loadFinished(true, { "video" : webvfx.SRC_IMAGE_TYPE });
 }
 window.addEventListener("load", init, false);
 </script>
 </head>
 <body>
-    Producer time <span id="time">unset</span> title <span id="title">unset</span><br/>
+    Canvas time <span id="time">unset</span> title <span id="title">unset</span><br/>
 </body>
 </html>

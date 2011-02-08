@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBFX_WEB_IMAGE_H_
-#define WEBFX_WEB_IMAGE_H_
+#ifndef WEBVFX_WEB_IMAGE_H_
+#define WEBVFX_WEB_IMAGE_H_
 
-namespace WebFX
+namespace WebVFX
 {
 
 // WebImage is just a way to pass around a reference to a buffer of image data,

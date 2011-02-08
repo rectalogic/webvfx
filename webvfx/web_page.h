@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBFX_WEB_PAGE_H_
-#define WEBFX_WEB_PAGE_H_
+#ifndef WEBVFX_WEB_PAGE_H_
+#define WEBVFX_WEB_PAGE_H_
 
 #include <string>
 #include <QWebPage>
-#include "webfx/web_effects.h"
-#include "webfx/web_image.h"
-#include "webfx/web_script.h"
+#include "webvfx/web_effects.h"
+#include "webvfx/web_image.h"
+#include "webvfx/web_script.h"
 
 class QEventLoop;
 class QImage;
 class QSize;
 class QWebFrame;
 
-namespace WebFX
+namespace WebVFX
 {
 
 class WebParameters;

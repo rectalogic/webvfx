@@ -8,8 +8,8 @@ CONFIG += console warn_on debug_and_release
 CONFIG -= qt
 CONFIG(debug, debug|release) {
     TARGET = demo_debug
-    LIBS += -L$$DESTDIR -lwebfx_debug
+    LIBS += -L$$DESTDIR -lwebvfx_debug
 } else {
     TARGET = demo
-    LIBS += -L$$DESTDIR -lwebfx
+    LIBS += -L$$DESTDIR -lwebvfx
 }
