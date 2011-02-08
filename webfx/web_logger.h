@@ -13,6 +13,7 @@ class WebLogger
 {
 public:
     virtual ~WebLogger() = 0;
+    //XXX should add log level enum
     virtual void log(const std::string& msg) = 0;
 };
 

@@ -16,7 +16,7 @@ class WebImage
 public:
     static const int BytesPerPixel = 3;
 
-    WebImage() {};
+    WebImage() {}
 
     // pixels must be valid for the lifetime of the WebImage
     // pixels are always 24 bit RGB
@@ -24,7 +24,7 @@ public:
         : pixels_(pixels)
         , width_(width)
         , height_(height)
-        , byteCount_(byteCount) {};
+        , byteCount_(byteCount) {}
 
     unsigned char* pixels() { return pixels_; }
     const unsigned char* pixels() const { return pixels_; }
