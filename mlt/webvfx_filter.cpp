@@ -7,8 +7,8 @@ extern "C" {
     #include <mlt/framework/mlt_frame.h>
     #include <mlt/framework/mlt_log.h>
 }
-#include "webfx_service.h"
-#include "service_manager.h"
+#include "webvfx_service.h"
+#include "service_locker.h"
 
 
 static int filterGetImage(mlt_frame frame, uint8_t **image, mlt_image_format *format, int *width, int *height, int writable) {
@@ -27,8 +27,8 @@ static int filterGetImage(mlt_frame frame, uint8_t **image, mlt_image_format *fo
         return error;
 
     { // Scope the lock
-        MLTWebFX::ServiceManager manager(MLT_FILTER_SERVICE(filter));
-        if (!manager.initialize(*width, *height))
+        MLTWebVFX::ServiceLocker locker(MLT_FILTER_SERVICE(filter));
+        if (!locker.initialize(*width, *height))
             return 1;
         //XXX fix this
         ChromixRawImage targetImage(*image, *width, *height);
@@ -51,7 +51,7 @@ static mlt_frame filterProcess(mlt_filter filter, mlt_frame frame) {
     return frame;
 }
 
-mlt_service MLTWebFX::createFilter(const char* serviceName) {
+mlt_service MLTWebVFX::createFilter(const char* serviceName) {
     mlt_filter self = mlt_filter_new();
     if (self) {
         self->process = filterProcess;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MLTWEBVFX_EFFECTS_MANAGER_H_
-#define MLTWEBVFX_EFFECTS_MANAGER_H_
+#ifndef MLTWEBVFX_SERVICE_LOCKER_H_
+#define MLTWEBVFX_SERVICE_LOCKER_H_
 
 extern "C" {
     #include <mlt/framework/mlt_service.h>
@@ -16,23 +16,22 @@ namespace WebVFX
 
 namespace MLTWebVFX
 {
-class ServiceLock;
+class ServiceManager;
 
-class ServiceManager
+class ServiceLocker
 {
 public:
-    WebVFX::WebEffects* getWebEffects();
+    ServiceLocker(mlt_service service);
+    ~ServiceLocker();
 
-    static const char* kURLPropertyName;
+    bool initialize(int width, int height);
+    ServiceManager* getManager();
 
 private:
-    friend class ServiceLock;
-    ServiceManager(mlt_service service);
-    ~ServiceManager();
-    bool initialize(int width, int height);
-
+    static const char* kManagerPropertyName;
+    static void destroyManager(ServiceManager* manager);
     mlt_service service;
-    WebVFX::WebEffects* webEffects;
+    ServiceManager* manager;
 };
 
 }

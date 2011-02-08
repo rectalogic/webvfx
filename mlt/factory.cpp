@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <webfx/webfx.h>
+#include <webvfx/webvfx.h>
 extern "C" {
     #include <mlt/framework/mlt_log.h>
     #include <mlt/framework/mlt_repository.h>
 }
-#include "webfx_service.h"
+#include "webvfx_service.h"
 
 
-namespace MLTWebFX
+namespace MLTWebVFX
 {
-class Logger : public WebFX::WebLogger
+class Logger : public WebVFX::WebLogger
 {
     void log(const std::string& message) {
         //XXX use log level once passed
@@ -30,12 +30,12 @@ class Logger : public WebFX::WebLogger
 
 extern "C" EXPORT MLT_REPOSITORY
 {
-    MLTWebFX::registerServices(repository, producer_type);
-    MLTWebFX::registerServices(repository, filter_type);
-    MLTWebFX::registerServices(repository, transition_type);
+    MLTWebVFX::registerServices(repository, producer_type);
+    MLTWebVFX::registerServices(repository, filter_type);
+    MLTWebVFX::registerServices(repository, transition_type);
 
-    // Register shutdown hook - even if we don't initialize WebFX
+    // Register shutdown hook - even if we don't initialize WebVFX
     // we want our logger deleted.
-    mlt_factory_register_for_clean_up(0, WebFX::shutdown);
-    WebFX::setLogger(new MLTWebFX::Logger());
+    mlt_factory_register_for_clean_up(0, WebVFX::shutdown);
+    WebVFX::setLogger(new MLTWebVFX::Logger());
 }

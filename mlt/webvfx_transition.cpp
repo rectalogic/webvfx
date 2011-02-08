@@ -7,8 +7,8 @@ extern "C" {
     #include <mlt/framework/mlt_frame.h>
     #include <mlt/framework/mlt_log.h>
 }
-#include "webfx_service.h"
-#include "service_manager.h"
+#include "webvfx_service.h"
+#include "service_locker.h"
 
 
 static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_format *format, int *width, int *height, int writable) {
@@ -45,8 +45,8 @@ static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_forma
         return error;
 
     { // Scope the lock
-        MLTWebFX::ServiceManager manager(MLT_TRANSITION_SERVICE(transition));
-        if (!manager.initialize(*width, *height))
+        MLTWebVFX::ServiceLocker locker(MLT_TRANSITION_SERVICE(transition));
+        if (!locker.initialize(*width, *height))
             return 1;
 
         //XXX fix this
@@ -71,7 +71,7 @@ static mlt_frame transitionProcess(mlt_transition transition, mlt_frame aFrame, 
     return aFrame;
 }
 
-mlt_service MLTWebFX::createTransition(const char* serviceName) {
+mlt_service MLTWebVFX::createTransition(const char* serviceName) {
     mlt_transition self = mlt_transition_new();
     if (self) {
         self->process = transitionProcess;

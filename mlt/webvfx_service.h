@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MLTWEBFX_WEBFX_SERVICE_H_
-#define MLTWEBFX_WEBFX_SERVICE_H_
+#ifndef MLTWEBVFX_WEBVFX_SERVICE_H_
+#define MLTWEBVFX_WEBVFX_SERVICE_H_
 
 extern "C" {
     #include <mlt/framework/mlt_factory.h>
@@ -11,7 +11,7 @@ extern "C" {
 }
 #include <string>
 
-namespace MLTWebFX
+namespace MLTWebVFX
 {
 
 void registerServices(mlt_repository repository, mlt_service_type serviceType);
