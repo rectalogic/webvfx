@@ -1,5 +1,7 @@
 #include <QApplication>
 #include <QThread>
+#include <QWebFrame>
+#include <QWebSettings>
 #include "webvfx/web_image.h"
 #include "webvfx/web_logger.h"
 #include "webvfx/web_page.h"
@@ -13,6 +15,7 @@ namespace WebVFX
 WebRenderer::WebRenderer()
     : QObject(0)
     , webPage(0)
+    , loadResult(false)
 {
 }
 
@@ -27,6 +30,8 @@ bool WebRenderer::initialize(const std::string& url, int width, int height, WebP
 
     QSize size(width, height);
 
+    loadResult = false;
+
     if (onUIThread()) {
         initializeInvokable(qurl, size, parameters);
     }
@@ -37,9 +42,7 @@ bool WebRenderer::initialize(const std::string& url, int width, int height, WebP
                                   Q_ARG(QUrl, qurl), Q_ARG(QSize, size), Q_ARG(WebParameters*, parameters));
     }
 
-    //XXX check actual load status
-
-    return true;
+    return loadResult;
 }
 
 void WebRenderer::destroy()
@@ -85,15 +88,16 @@ void WebRenderer::initializeInvokable(const QUrl& url, const QSize& size, WebPar
     //XXX we should enable webgl for our QtWebKit builds
     webPage->settings()->setAttribute(QWebSettings::SiteSpecificQuirksEnabled, false);
     webPage->settings()->setAttribute(QWebSettings::AcceleratedCompositingEnabled, false);
+#if (QTWEBKIT_VERSION >= QTWEBKIT_VERSION_CHECK(2, 2, 0))
+    webPage->settings()->setAttribute(QWebSettings::WebGLEnabled, true);
+#endif
 
     // Turn off scrollbars
     webPage->mainFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
     webPage->mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOff);
 
-    //XXX need to get result back to initialize()
-    bool result = webPage->loadSync(url);
-    // 4.8.0 allows BlockingQueuedConnection to return a value http://bugreports.qt.nokia.com/browse/QTBUG-10440
-
+    // Qt 4.8.0 allows BlockingQueuedConnection to return a value http://bugreports.qt.nokia.com/browse/QTBUG-10440
+    loadResult = webPage->loadSync(url);
 }
 
 void WebRenderer::renderInvokable(double time, const QSize& size)

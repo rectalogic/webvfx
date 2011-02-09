@@ -7,6 +7,7 @@
 #endif
 #include <string.h>
 #include <QApplication>
+#include <QMetaType>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QWaitCondition>

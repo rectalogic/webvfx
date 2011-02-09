@@ -5,7 +5,9 @@
 #ifndef WEBVFX_WEB_RENDERER_H_
 #define WEBVFX_WEB_RENDERER_H_
 
-#include <QtWebKit>
+#include <QObject>
+#include <QSize>
+#include <QUrl>
 #include "webvfx/web_effects.h"
 #include "webvfx/web_image.h"
 
@@ -38,6 +40,7 @@ private:
 
     WebPage* webPage;
     WebImage renderImage;
+    bool loadResult;
 };
 
 }
