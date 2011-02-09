@@ -21,7 +21,7 @@ WebPage::WebPage(WebRenderer* parent, WebParameters* parameters)
     , renderImage(0)
 {
     connect(this, SIGNAL(loadFinished(bool)), SLOT(webPageLoadFinished(bool)));
-    connect(webScript, SIGNAL(loadFinished(bool)), SLOT(webScriptLoadFinished(bool,QVariantMap)));
+    connect(webScript, SIGNAL(loadFinished(bool,QVariantMap)), SLOT(webScriptLoadFinished(bool,QVariantMap)));
     connect(mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), SLOT(injectWebScript()));
 }
 

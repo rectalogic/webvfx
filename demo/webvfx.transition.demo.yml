@@ -6,8 +6,6 @@ license: BSD-new
 language: en
 #url:
 creator: Andrew Wason
-tags:
-  - Video # this may produce video
 description: Simple WebVFX test
 
 parameters:

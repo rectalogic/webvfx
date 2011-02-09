@@ -31,7 +31,7 @@ static const std::string getDataDir() {
     return dataDir;
 }
 
-//XXX http://mltframework.org/twiki/bin/view/MLT/MetadataRequirements
+// See http://mltframework.org/twiki/bin/view/MLT/MetadataRequirements
 static mlt_properties createMetadata(mlt_service_type serviceType, const char* serviceName, void*) {
     std::string metadataPath(getDataDir());
     metadataPath.append(serviceName).append(YML_SUFFIX);
@@ -40,6 +40,10 @@ static mlt_properties createMetadata(mlt_service_type serviceType, const char* s
 	mlt_properties metadata = mlt_properties_parse_yaml(metadataPath.c_str());
     mlt_properties_set(metadata, "identifier", serviceName);
     mlt_properties_set(metadata, "type", serviceTypeToName(serviceType));
+    // tags array
+    mlt_properties tags = mlt_properties_new();
+    mlt_properties_set(tags, "0", "Video");
+    mlt_properties_set_data(metadata, "tags", tags, 0, reinterpret_cast<mlt_destructor>(mlt_properties_close), 0);
     //XXX set extra params implied by images hash
     return metadata;
 }
