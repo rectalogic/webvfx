@@ -30,7 +30,7 @@ public:
         return mlt_properties_get_double(properties, name.c_str());
     }
 
-    const std::string getStringParameter(const std::string& name) {
+    std::string getStringParameter(const std::string& name) {
         return mlt_properties_get(properties, name.c_str());
     }
 

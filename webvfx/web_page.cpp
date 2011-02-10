@@ -2,17 +2,17 @@
 #include <QEventLoop>
 #include <QImage>
 #include <QPainter>
+#include <QSize>
 #include <QVariant>
 #include <QWebFrame>
 #include "webvfx/web_logger.h"
 #include "webvfx/web_page.h"
-#include "webvfx/web_renderer.h"
 #include "webvfx/web_script.h"
 
 namespace WebVFX
 {
 
-WebPage::WebPage(WebRenderer* parent, WebParameters* parameters)
+WebPage::WebPage(QObject* parent, QSize size, WebParameters* parameters)
     : QWebPage(parent)
     , pageLoadFinished(LoadNotFinished)
     , scriptLoadFinished(LoadNotFinished)
@@ -23,6 +23,18 @@ WebPage::WebPage(WebRenderer* parent, WebParameters* parameters)
     connect(this, SIGNAL(loadFinished(bool)), SLOT(webPageLoadFinished(bool)));
     connect(webScript, SIGNAL(loadFinished(bool,QVariantMap)), SLOT(webScriptLoadFinished(bool,QVariantMap)));
     connect(mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), SLOT(injectWebScript()));
+
+    setViewportSize(size);
+
+    settings()->setAttribute(QWebSettings::SiteSpecificQuirksEnabled, false);
+    settings()->setAttribute(QWebSettings::AcceleratedCompositingEnabled, false);
+#if (QTWEBKIT_VERSION >= QTWEBKIT_VERSION_CHECK(2, 2, 0))
+    settings()->setAttribute(QWebSettings::WebGLEnabled, true);
+#endif
+
+    // Turn off scrollbars
+    mainFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
+    mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOff);
 }
 
 WebPage::~WebPage()

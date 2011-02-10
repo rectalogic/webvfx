@@ -82,19 +82,7 @@ const WebImage WebRenderer::render(double time, int width, int height)
 
 void WebRenderer::initializeInvokable(const QUrl& url, const QSize& size, WebParameters* parameters)
 {
-    webPage = new WebPage(this, parameters);
-    webPage->setViewportSize(size);
-
-    //XXX we should enable webgl for our QtWebKit builds
-    webPage->settings()->setAttribute(QWebSettings::SiteSpecificQuirksEnabled, false);
-    webPage->settings()->setAttribute(QWebSettings::AcceleratedCompositingEnabled, false);
-#if (QTWEBKIT_VERSION >= QTWEBKIT_VERSION_CHECK(2, 2, 0))
-    webPage->settings()->setAttribute(QWebSettings::WebGLEnabled, true);
-#endif
-
-    // Turn off scrollbars
-    webPage->mainFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
-    webPage->mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOff);
+    webPage = new WebPage(this, size, parameters);
 
     // Qt 4.8.0 allows BlockingQueuedConnection to return a value http://bugreports.qt.nokia.com/browse/QTBUG-10440
     loadResult = webPage->loadSync(url);

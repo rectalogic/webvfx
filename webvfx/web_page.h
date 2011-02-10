@@ -20,13 +20,12 @@ namespace WebVFX
 {
 
 class WebParameters;
-class WebRenderer;
 
 class WebPage : public QWebPage
 {
     Q_OBJECT
 public:
-    WebPage(WebRenderer* parent, WebParameters* parameters);
+    WebPage(QObject* parent, QSize size, WebParameters* parameters);
     ~WebPage();
 
     // Load URL synchronously, return success
