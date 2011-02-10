@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>801</width>
-    <height>564</height>
+    <width>830</width>
+    <height>599</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -38,8 +38,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>166</width>
-             <height>427</height>
+             <width>173</width>
+             <height>428</height>
             </rect>
            </property>
            <attribute name="label">
@@ -112,8 +112,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>185</width>
-             <height>495</height>
+             <width>173</width>
+             <height>428</height>
             </rect>
            </property>
            <attribute name="label">
@@ -201,25 +201,31 @@
        <widget class="QWidget" name="scrollAreaWidgetContents">
         <property name="geometry">
          <rect>
-          <x>0</x>
-          <y>0</y>
+          <x>11</x>
+          <y>1</y>
           <width>600</width>
           <height>495</height>
          </rect>
         </property>
-        <layout class="QGridLayout" name="gridLayout_2">
-         <item row="0" column="1">
-          <widget class="QWebView" name="webView">
-           <property name="url">
-            <url>
-             <string>about:blank</string>
-            </url>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <layout class="QGridLayout" name="gridLayout_2"/>
        </widget>
       </widget>
+     </widget>
+    </item>
+    <item row="1" column="0">
+     <widget class="QSlider" name="timeSlider">
+      <property name="maximum">
+       <number>1000</number>
+      </property>
+      <property name="singleStep">
+       <number>10</number>
+      </property>
+      <property name="pageStep">
+       <number>100</number>
+      </property>
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
      </widget>
     </item>
    </layout>
@@ -229,7 +235,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>801</width>
+     <width>830</width>
      <height>22</height>
     </rect>
    </property>
@@ -251,13 +257,6 @@
    </property>
   </action>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>QWebView</class>
-   <extends>QWidget</extends>
-   <header>QtWebKit/QWebView</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections/>
 </ui>

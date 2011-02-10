@@ -10,6 +10,7 @@ namespace WebVFX
 }
 
 class QLabel;
+class QWebView;
 
 class Viewer : public QMainWindow, private Ui::Viewer
 {
@@ -21,11 +22,13 @@ public:
 private slots:
     void on_actionOpen_triggered(bool);
     void on_resizeButton_clicked();
+    void on_timeSlider_valueChanged(int);
     void on_addParameterButton_clicked();
     void on_deleteParameterButton_clicked();
 private:
     bool loadPage(const QUrl& url);
     QLabel* sizeLabel;
+    QWebView* webView;
     WebVFX::WebPage* webPage;
 };
 

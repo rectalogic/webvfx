@@ -5,6 +5,8 @@
 #include <QStringBuilder>
 #include <QTableWidget>
 #include <QUrl>
+#include <QWebView>
+#include <webvfx/webvfx.h>
 #include <webvfx/web_page.h>
 #include <webvfx/web_parameters.h>
 #include "viewer.h"
@@ -44,12 +46,35 @@ private:
 
 /////////////////
 
+class ViewerLogger : public WebVFX::WebLogger
+{
+public:
+    ViewerLogger(QStatusBar* statusBar) : statusBar(statusBar) {}
+    void log(const std::string& msg) {
+        statusBar->showMessage(QString::fromStdString(msg));
+    }
+
+private:
+    QStatusBar* statusBar;
+};
+
+/////////////////
+
 Viewer::Viewer(QWidget *parent)
     : QMainWindow(parent)
 {
     setupUi(this);
+
+    WebVFX::setLogger(new ViewerLogger(statusBar()));
+
+    // Set QWebView as direct widget of QScrollArea,
+    // otherwise it creates an intermediate QWidget which messes up resizing.
+    webView = new QWebView(scrollArea);
+    scrollArea->setWidget(webView);
+
     sizeLabel = new QLabel();
     statusBar()->addPermanentWidget(sizeLabel);
+
     on_resizeButton_clicked();
 }
 
@@ -71,6 +96,15 @@ void Viewer::on_resizeButton_clicked()
     sizeLabel->setText(QString::number(width) % QLatin1Literal("x") % QString::number(height));
 }
 
+void Viewer::on_timeSlider_valueChanged(int value)
+{
+    if (webPage) {
+        double time = value / (double)timeSlider->maximum();
+        // Just ignore the returned WebImage
+        webPage->render(time);
+    }
+}
+
 void Viewer::on_addParameterButton_clicked()
 {
     int row = parametersTable->currentRow();
@@ -86,8 +120,11 @@ void Viewer::on_deleteParameterButton_clicked()
 
 bool Viewer::loadPage(const QUrl& url)
 {
-    //XXX query for image data
+    //XXX query for image data - create QImages and QPainter color and text into them
+    //XXX need to do this each time resized - rebuild images at new size
     webPage = new WebVFX::WebPage(webView, webView->size(), new ViewerParameters(parametersTable));
+    // User can right-click to open WebInspector on the page
+    webPage->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     webView->setPage(webPage);
     return webPage->loadSync(url);
 }
