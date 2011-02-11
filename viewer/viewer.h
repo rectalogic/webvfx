@@ -10,6 +10,7 @@
 
 namespace WebVFX
 {
+    class WebImage;
     class WebPage;
 }
 
@@ -29,9 +30,11 @@ private slots:
     void on_timeSlider_valueChanged(int);
     void on_addParameterButton_clicked();
     void on_deleteParameterButton_clicked();
+    void onImageChanged(const QString& name, const WebVFX::WebImage& webImage);
+
 private:
     bool loadPage(const QUrl& url);
-    void setupImages();
+    void setupImages(const QSize& size);
     double sliderTimeValue(int value);
     QLabel* sizeLabel;
     QLabel* timeLabel;

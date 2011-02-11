@@ -13,11 +13,13 @@
 #include <QTableWidgetItem>
 #include <QUrl>
 #include <QWebView>
+#include <QtGlobal>
 #include <webvfx/webvfx.h>
 #include <webvfx/web_effects.h>
+#include <webvfx/web_image.h>
 #include <webvfx/web_page.h>
 #include <webvfx/web_parameters.h>
-#include "color_swatch.h"
+#include "image_color.h"
 #include "viewer.h"
 
 
@@ -112,6 +114,15 @@ void Viewer::on_resizeButton_clicked()
     int height = heightSpinBox->value();
     scrollArea->widget()->resize(width, height);
     sizeLabel->setText(QString::number(width) % QLatin1Literal("x") % QString::number(height));
+
+    // Iterate over ImageColor widgets in table and change their sizes
+    QSize size(width, height);
+    int rowCount = imagesTable->rowCount();
+    for (int i = 0; i < rowCount; i++) {
+        ImageColor* imageColor = static_cast<ImageColor*>(imagesTable->cellWidget(i, 1));
+        if (imageColor)
+            imageColor->setImageSize(size);
+    }
 }
 
 void Viewer::on_timeSlider_valueChanged(int value)
@@ -145,8 +156,6 @@ double Viewer::sliderTimeValue(int value)
 
 bool Viewer::loadPage(const QUrl& url)
 {
-    //XXX query for image data - create QImages and QPainter color and text into them
-    //XXX need to do this each time resized - rebuild images at new size
     webPage = new WebVFX::WebPage(webView, webView->size(), new ViewerParameters(parametersTable));
     // User can right-click to open WebInspector on the page
     webPage->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
@@ -156,7 +165,7 @@ bool Viewer::loadPage(const QUrl& url)
     timeSlider->setValue(0);
     logTextEdit->clear();
 
-    setupImages();
+    setupImages(webView->size());
 
     // Install WebInspector action on tool button
     inspectorButton->setDefaultAction(webPage->action(QWebPage::InspectElement));
@@ -164,7 +173,7 @@ bool Viewer::loadPage(const QUrl& url)
     return result;
 }
 
-void Viewer::setupImages()
+void Viewer::setupImages(const QSize& size)
 {
     imagesTable->setRowCount(0);
     const WebVFX::WebEffects::ImageTypeMap& imageMap = webPage->getImageTypeMap();
@@ -173,16 +182,21 @@ void Viewer::setupImages()
          it != imageMap.end(); it++) {
         imagesTable->insertRow(row);
 
+        QString imageName(QString::fromStdString(it->first));
+
         // Image name in column 0
-        QTableWidgetItem* item = new QTableWidgetItem(QString::fromStdString(it->first));
+        QTableWidgetItem* item = new QTableWidgetItem(imageName);
         item->setFlags(Qt::NoItemFlags);
         imagesTable->setItem(row, 0, item);
 
         // Image color swatch in column 1
-        ColorSwatch* colorSwatch = new ColorSwatch();
-        //XXX generate random color
-        //XXX connect to colorChanged signal and regenerate image when fired
-        imagesTable->setCellWidget(row, 1, colorSwatch);
+        ImageColor* imageColor = new ImageColor();
+        imageColor->setImageSize(size);
+        imageColor->setObjectName(imageName);
+        connect(imageColor, SIGNAL(imageChanged(QString,WebVFX::WebImage)), SLOT(onImageChanged(QString,WebVFX::WebImage)));
+        // Set color here so signal fires
+        imageColor->setImageColor(QColor::fromHsv(qrand() % 360, 200, 230));
+        imagesTable->setCellWidget(row, 1, imageColor);
 
         // Type name in column 2
         QString typeName;
@@ -203,5 +217,12 @@ void Viewer::setupImages()
 
         row++;
     }
-    //XXX need to create QImages too
+}
+
+void Viewer::onImageChanged(const QString& name, const WebVFX::WebImage& webImage)
+{
+    if (!webPage)
+        return;
+    WebVFX::WebImage targetImage = webPage->getWebImage(name, QSize(webImage.width(), webImage.height()));
+    targetImage.copyPixelsFrom(webImage);
 }

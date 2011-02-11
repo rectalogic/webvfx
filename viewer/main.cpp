@@ -11,7 +11,7 @@
 
     app.setOrganizationDomain("webvfx.org");
     app.setOrganizationName("WebVFX");
-    app.setApplicationName("Viewer");
+    app.setApplicationName("WebVFX Viewer");
 
     Viewer viewer;
     viewer.show();
