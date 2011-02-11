@@ -2,8 +2,8 @@ TEMPLATE = app
 INCLUDEPATH += ..
 DESTDIR = ../build
 
-SOURCES = main.cpp viewer.cpp
-HEADERS = viewer.h
+SOURCES = color_swatch.cpp main.cpp viewer.cpp
+HEADERS = color_swatch.h viewer.h
 FORMS = viewer.ui
 
 CONFIG += warn_on debug_and_release

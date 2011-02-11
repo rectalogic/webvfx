@@ -1,5 +1,9 @@
-#ifndef VIEWER_FORM_H
-#define VIEWER_FORM_H
+// Copyright (c) 2011 Hewlett-Packard Development Company, L.P. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef VIEWER_H
+#define VIEWER_H
 
 #include <QMainWindow>
 #include "ui_viewer.h"
@@ -27,6 +31,7 @@ private slots:
     void on_deleteParameterButton_clicked();
 private:
     bool loadPage(const QUrl& url);
+    void setupImages();
     double sliderTimeValue(int value);
     QLabel* sizeLabel;
     QLabel* timeLabel;
