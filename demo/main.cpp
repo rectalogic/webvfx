@@ -19,7 +19,7 @@ int main(int argc, char* argv[]) {
 
     class Logger : public WebVFX::WebLogger {
     public:
-        virtual void log(const std::string& message) {
+        void log(const std::string& message) {
             std::cerr << message << std::endl;
         }
     };
@@ -27,7 +27,7 @@ int main(int argc, char* argv[]) {
 
     class Parameters : public WebVFX::WebParameters {
     public:
-        virtual const std::string getStringParameter(const std::string&) {
+        std::string getStringParameter(const std::string&) {
             return "WebVFX Cool Title";
         }
     };

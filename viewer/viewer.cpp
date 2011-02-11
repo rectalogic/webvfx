@@ -1,7 +1,8 @@
-#include <QtGui>
 #include <QDir>
+#include <QFileDialog>
 #include <QLabel>
 #include <QList>
+#include <QPlainTextEdit>
 #include <QStringBuilder>
 #include <QTableWidget>
 #include <QUrl>
@@ -10,6 +11,7 @@
 #include <webvfx/web_page.h>
 #include <webvfx/web_parameters.h>
 #include "viewer.h"
+
 
 // Expose parameter name/value pairs from the table to the page content
 class ViewerParameters : public WebVFX::WebParameters
@@ -49,13 +51,13 @@ private:
 class ViewerLogger : public WebVFX::WebLogger
 {
 public:
-    ViewerLogger(QStatusBar* statusBar) : statusBar(statusBar) {}
+    ViewerLogger(QPlainTextEdit* logText) : logText(logText) {}
     void log(const std::string& msg) {
-        statusBar->showMessage(QString::fromStdString(msg));
+        logText->appendPlainText(QString::fromStdString(msg));
     }
 
 private:
-    QStatusBar* statusBar;
+    QPlainTextEdit* logText;
 };
 
 /////////////////
@@ -65,14 +67,20 @@ Viewer::Viewer(QWidget *parent)
 {
     setupUi(this);
 
-    WebVFX::setLogger(new ViewerLogger(statusBar()));
+    WebVFX::setLogger(new ViewerLogger(logTextEdit));
 
     // Set QWebView as direct widget of QScrollArea,
     // otherwise it creates an intermediate QWidget which messes up resizing.
     webView = new QWebView(scrollArea);
     scrollArea->setWidget(webView);
 
-    sizeLabel = new QLabel();
+    // Time display
+    timeLabel = new QLabel(statusBar());
+    timeLabel->setNum(sliderTimeValue(timeSlider->value()));
+    statusBar()->addPermanentWidget(timeLabel);
+
+    // Size display
+    sizeLabel = new QLabel(statusBar());
     statusBar()->addPermanentWidget(sizeLabel);
 
     on_resizeButton_clicked();
@@ -98,11 +106,12 @@ void Viewer::on_resizeButton_clicked()
 
 void Viewer::on_timeSlider_valueChanged(int value)
 {
+    double time = sliderTimeValue(value);
     if (webPage) {
-        double time = value / (double)timeSlider->maximum();
         // Just ignore the returned WebImage
         webPage->render(time);
     }
+    timeLabel->setNum(time);
 }
 
 void Viewer::on_addParameterButton_clicked()
@@ -118,6 +127,12 @@ void Viewer::on_deleteParameterButton_clicked()
         parametersTable->removeRow(row);
 }
 
+double Viewer::sliderTimeValue(int value)
+{
+    return value / (double)timeSlider->maximum();
+}
+
+
 bool Viewer::loadPage(const QUrl& url)
 {
     //XXX query for image data - create QImages and QPainter color and text into them
@@ -126,5 +141,8 @@ bool Viewer::loadPage(const QUrl& url)
     // User can right-click to open WebInspector on the page
     webPage->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     webView->setPage(webPage);
-    return webPage->loadSync(url);
+    bool result = webPage->loadSync(url);
+    timeSlider->setValue(0);
+    logTextEdit->clear();
+    return result;
 }

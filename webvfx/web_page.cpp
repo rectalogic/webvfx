@@ -51,9 +51,9 @@ void WebPage::javaScriptAlert(QWebFrame *originatingFrame, const QString &msg)
 void WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID)
 {
     std::ostringstream oss;
-    if (!sourceID.isEmpty())
-        oss << sourceID.toStdString() << ":" << lineNumber << " ";
     oss << message.toStdString();
+    if (!sourceID.isEmpty())
+        oss << " (" << sourceID.section('/', -1).toStdString() << ":" << lineNumber << ")";
     log(oss.str());
 }
 

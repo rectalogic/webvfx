@@ -27,7 +27,9 @@ private slots:
     void on_deleteParameterButton_clicked();
 private:
     bool loadPage(const QUrl& url);
+    double sliderTimeValue(int value);
     QLabel* sizeLabel;
+    QLabel* timeLabel;
     QWebView* webView;
     WebVFX::WebPage* webPage;
 };
