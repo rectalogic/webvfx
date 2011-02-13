@@ -9,10 +9,6 @@ extern "C" {
     #include <mlt/framework/mlt_service.h>
 }
 
-namespace WebVFX
-{
-    class WebEffects;
-}
 
 namespace MLTWebVFX
 {

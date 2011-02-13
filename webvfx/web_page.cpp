@@ -93,7 +93,7 @@ void WebPage::renderingContextLoadFinished(bool result, const QVariantMap& typeM
         while (iter.hasNext()) {
             iter.next();
             //XXX validate the type enums
-            imageTypeMap[iter.key().toStdString()] = static_cast<WebEffects::ImageType>(iter.value().toInt());
+            imageTypeMap[iter.key().toStdString()] = static_cast<Effects::ImageType>(iter.value().toInt());
         }
     }
     if (syncLoop && pageLoadFinished != LoadNotFinished)

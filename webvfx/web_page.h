@@ -9,7 +9,7 @@
 #include <QWebPage>
 #include "webvfx/image.h"
 #include "webvfx/rendering_context.h"
-#include "webvfx/web_effects.h"
+#include "webvfx/effects.h"
 
 class QEventLoop;
 class QImage;
@@ -30,7 +30,7 @@ public:
 
     // Load URL synchronously, return success
     bool loadSync(const QUrl& url);
-    const WebEffects::ImageTypeMap& getImageTypeMap() { return imageTypeMap; };
+    const Effects::ImageTypeMap& getImageTypeMap() { return imageTypeMap; };
     Image render(double time);
     Image getImage(const QString& name, const QSize& size) { return renderingContext->getImage(name, size); }
 
@@ -52,7 +52,7 @@ private:
     RenderingContext* renderingContext;
     QEventLoop* syncLoop;
     QImage* renderImage;
-    WebEffects::ImageTypeMap imageTypeMap;
+    Effects::ImageTypeMap imageTypeMap;
 };
 
 }

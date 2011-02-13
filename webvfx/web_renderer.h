@@ -8,7 +8,7 @@
 #include <QObject>
 #include <QSize>
 #include <QUrl>
-#include "webvfx/web_effects.h"
+#include "webvfx/effects.h"
 
 namespace WebVFX
 {
@@ -17,7 +17,7 @@ class Image;
 class WebPage;
 class Parameters;
 
-class WebRenderer : public QObject, public WebEffects
+class WebRenderer : public QObject, public Effects
 {
     Q_OBJECT
 public:

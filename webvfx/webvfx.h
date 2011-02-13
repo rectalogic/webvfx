@@ -5,7 +5,7 @@
 #ifndef WEBVFX_WEBVFX_H_
 #define WEBVFX_WEBVFX_H_
 
-#include <webvfx/web_effects.h>
+#include <webvfx/effects.h>
 #include <webvfx/logger.h>
 
 namespace WebVFX {
@@ -22,17 +22,17 @@ void setLogger(Logger* logger);
 // http://bugreports.qt.nokia.com/browse/QTBUG-7393
 bool initialize();
 
-// Create a WebEffects instance.
-// WebEffects::initialize() should be called to initialize the new instance.
-WebEffects* createWebEffects();
+// Create a Effects instance.
+// Effects::initialize() should be called to initialize the new instance.
+Effects* createEffects();
 
 // Must be called after initialize from the main thread in
-// non-Qt based MacOS applications if WebEffects is going to be used
+// non-Qt based MacOS applications if Effects is going to be used
 // from any other threads.
 // It is a noop on other platforms.
 int processEvents();
 
-// Shut down WebVFX. All WebEffects should be destroyed before calling shutdown.
+// Shut down WebVFX. All Effects should be destroyed before calling shutdown.
 // shutdown can be called from any thread.
 // It is safe to call shutdown more than once, or without having called initialize.
 void shutdown();

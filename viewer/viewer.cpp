@@ -14,11 +14,11 @@
 #include <QUrl>
 #include <QWebView>
 #include <QtGlobal>
-#include <webvfx/webvfx.h>
-#include <webvfx/web_effects.h>
+#include <webvfx/effects.h>
 #include <webvfx/image.h>
-#include <webvfx/web_page.h>
 #include <webvfx/parameters.h>
+#include <webvfx/webvfx.h>
+#include <webvfx/web_page.h>
 #include "image_color.h"
 #include "viewer.h"
 
@@ -177,9 +177,9 @@ bool Viewer::loadPage(const QUrl& url)
 void Viewer::setupImages(const QSize& size)
 {
     imagesTable->setRowCount(0);
-    const WebVFX::WebEffects::ImageTypeMap& imageMap = webPage->getImageTypeMap();
+    const WebVFX::Effects::ImageTypeMap& imageMap = webPage->getImageTypeMap();
     int row = 0;
-    for (WebVFX::WebEffects::ImageTypeMap::const_iterator it = imageMap.begin();
+    for (WebVFX::Effects::ImageTypeMap::const_iterator it = imageMap.begin();
          it != imageMap.end(); it++) {
         imagesTable->insertRow(row);
 
@@ -202,13 +202,13 @@ void Viewer::setupImages(const QSize& size)
         // Type name in column 2
         QString typeName;
         switch (it->second) {
-            case WebVFX::WebEffects::SourceImageType:
+            case WebVFX::Effects::SourceImageType:
                 typeName = tr("Source");
                 break;
-            case WebVFX::WebEffects::TargetImageType:
+            case WebVFX::Effects::TargetImageType:
                 typeName = tr("Target");
                 break;
-            case WebVFX::WebEffects::ExtraImageType:
+            case WebVFX::Effects::ExtraImageType:
                 typeName = tr("Extra");
                 break;
         }

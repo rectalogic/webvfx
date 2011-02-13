@@ -40,7 +40,7 @@ int main(int argc, char* argv[]) {
     };
     AutoWebVFX vfx;
 
-    WebVFX::WebEffects* effects = WebVFX::createWebEffects();
+    WebVFX::Effects* effects = WebVFX::createEffects();
     effects->initialize(argv[1], 320, 240, new Parameters());
     WebVFX::Image video = effects->getImage("sourceImage", 320, 240);
     // Fill with red XXX need to take into account stride

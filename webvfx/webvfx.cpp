@@ -11,8 +11,8 @@
 #include <QMutex>
 #include <QMutexLocker>
 #include <QWaitCondition>
-#include "webvfx/webvfx.h"
 #include "webvfx/logger.h"
+#include "webvfx/webvfx.h"
 #include "webvfx/web_renderer.h"
 
 
@@ -107,7 +107,7 @@ bool initialize()
     return true;
 }
 
-WebEffects* createWebEffects()
+Effects* createEffects()
 {
     return new WebRenderer();
 }

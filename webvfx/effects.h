@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBVFX_WEB_EFFECTS_H_
-#define WEBVFX_WEB_EFFECTS_H_
+#ifndef WEBVFX_EFFECTS_H_
+#define WEBVFX_EFFECTS_H_
 
 #include <string>
 #include <map>
@@ -15,7 +15,7 @@ namespace WebVFX
 
 // Instances of this class can be accessed from any thread,
 // but the class is not threadsafe - access should be serialized.
-class WebEffects
+class Effects
 {
 public:
     enum ImageType { SourceImageType=1, TargetImageType, ExtraImageType };
@@ -23,7 +23,7 @@ public:
     typedef std::map<const std::string, ImageType> ImageTypeMap;
 
     // A Parameters implementation may be supplied to provide parameters to the page.
-    // WebEffects will take ownership of parameters.
+    // Effects will take ownership of parameters.
     virtual bool initialize(const std::string& url, int width, int height, Parameters* parameters = 0) = 0;
     // Return a map mapping image names the page content uses to imge type.
     // XXX should we expose opaque "cooke" image name that holds QString internally? (and with a toString() method) - so caller can efficiently set image using cookie name
@@ -35,8 +35,8 @@ public:
     virtual void destroy() = 0;
 
 protected:
-    WebEffects() {};
-    virtual ~WebEffects() = 0;
+    Effects() {};
+    virtual ~Effects() = 0;
 };
 
 }

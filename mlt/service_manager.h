@@ -13,7 +13,7 @@ extern "C" {
 
 namespace WebVFX
 {
-    class WebEffects;
+    class Effects;
     class Image;
 }
 
@@ -39,7 +39,7 @@ private:
     bool initialize(int width, int height);
 
     mlt_service service;
-    WebVFX::WebEffects* webEffects;
+    WebVFX::Effects* effects;
 
     std::string sourceImageName;
     std::string targetImageName;

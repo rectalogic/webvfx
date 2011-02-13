@@ -54,7 +54,7 @@ bool WebRenderer::onUIThread() {
     return QThread::currentThread() == QApplication::instance()->thread();
 }
 
-const WebEffects::ImageTypeMap& WebRenderer::getImageTypeMap()
+const Effects::ImageTypeMap& WebRenderer::getImageTypeMap()
 {
     return webPage->getImageTypeMap();
 }

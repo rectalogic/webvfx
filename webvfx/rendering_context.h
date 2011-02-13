@@ -8,7 +8,7 @@
 #include <QHash>
 #include <QObject>
 #include <QPixmap>
-#include "webvfx/web_effects.h"
+#include "webvfx/effects.h"
 
 class QImage;
 class QSize;
@@ -58,9 +58,9 @@ public:
     //XXX expose error signal - JS in page can raise on window.onerror? or use it to signal error during rendering
 
 
-    int getSourceImageType() { return WebEffects::SourceImageType; }
-    int getTargetImageType() { return WebEffects::TargetImageType; }
-    int getExtraImageType() { return WebEffects::ExtraImageType; }
+    int getSourceImageType() { return Effects::SourceImageType; }
+    int getTargetImageType() { return Effects::TargetImageType; }
+    int getExtraImageType() { return Effects::ExtraImageType; }
 
 signals:
     // Page contents must signal this when load is complete
