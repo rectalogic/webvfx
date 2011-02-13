@@ -12,7 +12,7 @@ extern "C" {
 
 namespace MLTWebVFX
 {
-class Logger : public WebVFX::WebLogger
+class Logger : public WebVFX::Logger
 {
     void log(const std::string& message) {
         //XXX use log level once passed

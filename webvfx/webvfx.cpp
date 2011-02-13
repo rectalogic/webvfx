@@ -12,7 +12,7 @@
 #include <QMutexLocker>
 #include <QWaitCondition>
 #include "webvfx/webvfx.h"
-#include "webvfx/web_logger.h"
+#include "webvfx/logger.h"
 #include "webvfx/web_renderer.h"
 
 
@@ -21,7 +21,7 @@ namespace WebVFX
 
 static bool s_initialized = false;
 
-static WebLogger* s_logger = 0;
+static Logger* s_logger = 0;
 static bool s_ownApp = false;
 
 static QMutex s_initializedMutex;
@@ -54,7 +54,7 @@ void* uiEventLoop(void* data)
 }
 #endif
 
-void setLogger(WebLogger* logger)
+void setLogger(Logger* logger)
 {
     s_logger = logger;
 }

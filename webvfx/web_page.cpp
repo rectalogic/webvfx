@@ -5,7 +5,7 @@
 #include <QSize>
 #include <QVariant>
 #include <QWebFrame>
-#include "webvfx/web_logger.h"
+#include "webvfx/logger.h"
 #include "webvfx/web_page.h"
 #include "webvfx/web_script.h"
 

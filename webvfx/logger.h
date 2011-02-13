@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBVFX_WEB_LOGGER_H_
-#define WEBVFX_WEB_LOGGER_H_
+#ifndef WEBVFX_LOGGER_H_
+#define WEBVFX_LOGGER_H_
 
 #include <string>
 
 namespace WebVFX {
 
-class WebLogger
+class Logger
 {
 public:
-    virtual ~WebLogger() = 0;
+    virtual ~Logger() = 0;
     //XXX should add log level enum
     virtual void log(const std::string& msg) = 0;
 };

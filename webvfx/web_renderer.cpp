@@ -3,7 +3,7 @@
 #include <QWebFrame>
 #include <QWebSettings>
 #include "webvfx/image.h"
-#include "webvfx/web_logger.h"
+#include "webvfx/logger.h"
 #include "webvfx/web_page.h"
 #include "webvfx/web_parameters.h"
 #include "webvfx/web_renderer.h"

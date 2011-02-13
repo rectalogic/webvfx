@@ -58,7 +58,7 @@ private:
 
 /////////////////
 
-class ViewerLogger : public WebVFX::WebLogger
+class ViewerLogger : public WebVFX::Logger
 {
 public:
     ViewerLogger(QPlainTextEdit* logText) : logText(logText) {}

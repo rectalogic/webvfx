@@ -6,13 +6,13 @@
 #define WEBVFX_WEBVFX_H_
 
 #include <webvfx/web_effects.h>
-#include <webvfx/web_logger.h>
+#include <webvfx/logger.h>
 
 namespace WebVFX {
 
 // WebVFX will take ownership of the logger and delete at shutdown.
 // setLogger must be called only once and before initialize().
-void setLogger(WebLogger* logger);
+void setLogger(Logger* logger);
 
 // initialize is threadsafe and may be called multiple times,
 // On MacOS, in a non Qt host application, initialize and processEvents

@@ -17,7 +17,7 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
-    class Logger : public WebVFX::WebLogger {
+    class Logger : public WebVFX::Logger {
     public:
         void log(const std::string& message) {
             std::cerr << message << std::endl;
