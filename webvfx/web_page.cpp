@@ -7,7 +7,6 @@
 #include <QWebFrame>
 #include "webvfx/logger.h"
 #include "webvfx/web_page.h"
-#include "webvfx/web_script.h"
 
 namespace WebVFX
 {
@@ -16,13 +15,13 @@ WebPage::WebPage(QObject* parent, QSize size, Parameters* parameters)
     : QWebPage(parent)
     , pageLoadFinished(LoadNotFinished)
     , scriptLoadFinished(LoadNotFinished)
-    , webScript(new WebScript(this, parameters))
+    , renderingContext(new RenderingContext(this, parameters))
     , syncLoop(0)
     , renderImage(0)
 {
     connect(this, SIGNAL(loadFinished(bool)), SLOT(webPageLoadFinished(bool)));
-    connect(webScript, SIGNAL(loadFinished(bool,QVariantMap)), SLOT(webScriptLoadFinished(bool,QVariantMap)));
-    connect(mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), SLOT(injectWebScript()));
+    connect(renderingContext, SIGNAL(loadFinished(bool,QVariantMap)), SLOT(renderingContextLoadFinished(bool,QVariantMap)));
+    connect(mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), SLOT(injectRenderingContext()));
 
     setViewportSize(size);
 
@@ -67,9 +66,9 @@ bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& r
     return true;
 }
 
-void WebPage::injectWebScript()
+void WebPage::injectRenderingContext()
 {
-    mainFrame()->addToJavaScriptWindowObject("webvfx", webScript);
+    mainFrame()->addToJavaScriptWindowObject("webvfx", renderingContext);
 }
 
 bool WebPage::shouldInterruptJavaScript()
@@ -85,7 +84,7 @@ void WebPage::webPageLoadFinished(bool result)
         syncLoop->exit(scriptLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
 }
 
-void WebPage::webScriptLoadFinished(bool result, const QVariantMap& typeMap)
+void WebPage::renderingContextLoadFinished(bool result, const QVariantMap& typeMap)
 {
     if (scriptLoadFinished == LoadNotFinished) {
         scriptLoadFinished = result ? LoadSucceeded : LoadFailed;
@@ -114,7 +113,7 @@ bool WebPage::loadSync(const QUrl& url)
     mainFrame()->load(url);
 
     // Run a nested event loop which will be exited when both
-    // webPageLoadFinished and webScriptLoadFinished signal,
+    // webPageLoadFinished and renderingContextLoadFinished signal,
     // returning the result code here.
     // http://wiki.forum.nokia.com/index.php/How_to_wait_synchronously_for_a_Signal_in_Qt
     // http://qt.gitorious.org/qt/qt/blobs/4.7/src/gui/dialogs/qdialog.cpp#line549
@@ -128,7 +127,7 @@ bool WebPage::loadSync(const QUrl& url)
 Image WebPage::render(double time)
 {
     // Allow the page to render for this time
-    webScript->render(time);
+    renderingContext->render(time);
 
     // Create/recreate image with correct size
     QSize size = viewportSize();

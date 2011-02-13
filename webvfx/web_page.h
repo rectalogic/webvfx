@@ -7,9 +7,9 @@
 
 #include <string>
 #include <QWebPage>
-#include "webvfx/web_effects.h"
 #include "webvfx/image.h"
-#include "webvfx/web_script.h"
+#include "webvfx/rendering_context.h"
+#include "webvfx/web_effects.h"
 
 class QEventLoop;
 class QImage;
@@ -32,13 +32,13 @@ public:
     bool loadSync(const QUrl& url);
     const WebEffects::ImageTypeMap& getImageTypeMap() { return imageTypeMap; };
     Image render(double time);
-    Image getImage(const QString& name, const QSize& size) { return webScript->getImage(name, size); }
+    Image getImage(const QString& name, const QSize& size) { return renderingContext->getImage(name, size); }
 
 private slots:
-    void injectWebScript();
+    void injectRenderingContext();
     bool shouldInterruptJavaScript();
     void webPageLoadFinished(bool result);
-    void webScriptLoadFinished(bool result, const QVariantMap& imageTypeMap);
+    void renderingContextLoadFinished(bool result, const QVariantMap& imageTypeMap);
 
 protected:
     void javaScriptAlert(QWebFrame* originatingFrame, const QString& msg);
@@ -49,7 +49,7 @@ private:
     enum LoadStatus { LoadNotFinished, LoadFailed, LoadSucceeded };
     LoadStatus pageLoadFinished;
     LoadStatus scriptLoadFinished;
-    WebScript* webScript;
+    RenderingContext* renderingContext;
     QEventLoop* syncLoop;
     QImage* renderImage;
     WebEffects::ImageTypeMap imageTypeMap;

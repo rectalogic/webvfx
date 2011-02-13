@@ -1,22 +1,22 @@
 TEMPLATE = lib
 #VERSION = 
 
-HEADERS += web_effects.h
 HEADERS += image.h
 HEADERS += logger.h
-HEADERS += web_page.h
 HEADERS += parameters.h
+HEADERS += rendering_context.h
+HEADERS += web_effects.h
+HEADERS += web_page.h
 HEADERS += web_renderer.h
-HEADERS += web_script.h
 HEADERS += webvfx.h
 
-SOURCES += web_effects.cpp
 SOURCES += image.cpp
 SOURCES += logger.cpp
-SOURCES += web_page.cpp
 SOURCES += parameters.cpp
+SOURCES += rendering_context.cpp
+SOURCES += web_effects.cpp
+SOURCES += web_page.cpp
 SOURCES += web_renderer.cpp
-SOURCES += web_script.cpp
 SOURCES += webvfx.cpp
 macx:SOURCES += webvfx_mac.mm
 
