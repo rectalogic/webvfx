@@ -21,7 +21,7 @@ namespace WebVFX
 
 class Image;
 class WebPage;
-class WebParameters;
+class Parameters;
 
 // See QtWebKit Bridge docs:
 // http://doc.qt.nokia.com/4.7-snapshot/qtwebkit-bridge.html
@@ -33,7 +33,7 @@ class WebScript : public QObject
     Q_PROPERTY(int TARGET_IMAGE_TYPE READ getTargetImageType CONSTANT FINAL)
     Q_PROPERTY(int EXTRA_IMAGE_TYPE READ getExtraImageType CONSTANT FINAL)
 public:
-    WebScript(WebPage* parent, WebParameters* parameters);
+    WebScript(WebPage* parent, Parameters* parameters);
     ~WebScript();
 
     // Inform page contents to render at time.
@@ -76,7 +76,7 @@ signals:
     void renderRequested(double time);
 
 private:
-    WebParameters* parameters;
+    Parameters* parameters;
     QHash<QString, QImage*> imageMap;
 };
 

@@ -12,7 +12,7 @@
 namespace WebVFX
 {
 
-WebPage::WebPage(QObject* parent, QSize size, WebParameters* parameters)
+WebPage::WebPage(QObject* parent, QSize size, Parameters* parameters)
     : QWebPage(parent)
     , pageLoadFinished(LoadNotFinished)
     , scriptLoadFinished(LoadNotFinished)

@@ -18,13 +18,13 @@
 #include <webvfx/web_effects.h>
 #include <webvfx/image.h>
 #include <webvfx/web_page.h>
-#include <webvfx/web_parameters.h>
+#include <webvfx/parameters.h>
 #include "image_color.h"
 #include "viewer.h"
 
 
 // Expose parameter name/value pairs from the table to the page content
-class ViewerParameters : public WebVFX::WebParameters
+class ViewerParameters : public WebVFX::Parameters
 {
 public:
     ViewerParameters(QTableWidget* tableWidget) : tableWidget(tableWidget) {}

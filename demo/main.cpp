@@ -25,7 +25,7 @@ int main(int argc, char* argv[]) {
     };
     WebVFX::setLogger(new Logger());
 
-    class Parameters : public WebVFX::WebParameters {
+    class Parameters : public WebVFX::Parameters {
     public:
         std::string getStringParameter(const std::string&) {
             return "WebVFX Cool Title";

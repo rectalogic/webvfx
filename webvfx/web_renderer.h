@@ -15,7 +15,7 @@ namespace WebVFX
 
 class Image;
 class WebPage;
-class WebParameters;
+class Parameters;
 
 class WebRenderer : public QObject, public WebEffects
 {
@@ -24,14 +24,14 @@ public:
     WebRenderer();
     ~WebRenderer() {};
 
-    bool initialize(const std::string& url, int width, int height, WebParameters* parameters = 0);
+    bool initialize(const std::string& url, int width, int height, Parameters* parameters = 0);
     const ImageTypeMap& getImageTypeMap();
     Image getImage(const std::string& name, int width, int height);
     const Image render(double time, int width, int height);
     void destroy();
 
 private:
-    Q_INVOKABLE void initializeInvokable(const QUrl& url, const QSize& size, WebParameters* parameters);
+    Q_INVOKABLE void initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters);
     Q_INVOKABLE void renderInvokable(double time, const QSize& size);
 
     // Test if we are currently on the UI thread

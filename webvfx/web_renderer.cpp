@@ -5,7 +5,7 @@
 #include "webvfx/image.h"
 #include "webvfx/logger.h"
 #include "webvfx/web_page.h"
-#include "webvfx/web_parameters.h"
+#include "webvfx/parameters.h"
 #include "webvfx/web_renderer.h"
 
 
@@ -19,7 +19,7 @@ WebRenderer::WebRenderer()
 {
 }
 
-bool WebRenderer::initialize(const std::string& url, int width, int height, WebParameters* parameters)
+bool WebRenderer::initialize(const std::string& url, int width, int height, Parameters* parameters)
 {
     QUrl qurl(QString::fromStdString(url));
 
@@ -39,7 +39,7 @@ bool WebRenderer::initialize(const std::string& url, int width, int height, WebP
         // Move ourself onto GUI thread and create our WebPage there
         this->moveToThread(QApplication::instance()->thread());
         QMetaObject::invokeMethod(this, "initializeInvokable", Qt::BlockingQueuedConnection,
-                                  Q_ARG(QUrl, qurl), Q_ARG(QSize, size), Q_ARG(WebParameters*, parameters));
+                                  Q_ARG(QUrl, qurl), Q_ARG(QSize, size), Q_ARG(Parameters*, parameters));
     }
 
     return loadResult;
@@ -80,7 +80,7 @@ const Image WebRenderer::render(double time, int width, int height)
     return renderImage;
 }
 
-void WebRenderer::initializeInvokable(const QUrl& url, const QSize& size, WebParameters* parameters)
+void WebRenderer::initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters)
 {
     webPage = new WebPage(this, size, parameters);
 

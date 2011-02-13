@@ -19,7 +19,7 @@ const char* ServiceManager::kURLPropertyName = "WebVFXURL";
 
 ////////////////////////
 
-class ServiceParameters : public WebVFX::WebParameters
+class ServiceParameters : public WebVFX::Parameters
 {
 public:
     ServiceParameters(mlt_service service)

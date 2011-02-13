@@ -2,14 +2,14 @@
 #include <QPixmap>
 #include <QtAlgorithms>
 #include "webvfx/image.h"
-#include "webvfx/web_parameters.h"
+#include "webvfx/parameters.h"
 #include "webvfx/web_page.h"
 #include "webvfx/web_script.h"
 
 namespace WebVFX
 {
 
-WebScript::WebScript(WebPage* parent, WebParameters* parameters)
+WebScript::WebScript(WebPage* parent, Parameters* parameters)
     : QObject(parent)
     , parameters(parameters)
 {

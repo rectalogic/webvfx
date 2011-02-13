@@ -101,7 +101,7 @@ bool initialize()
     }
 
     // Register metatypes for queued connections
-    qRegisterMetaType<WebParameters*>("WebParameters*");
+    qRegisterMetaType<Parameters*>("Parameters*");
 
     s_initialized = true;
     return true;

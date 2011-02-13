@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBVFX_WEB_PARAMETERS_H_
-#define WEBVFX_WEB_PARAMETERS_H_
+#ifndef WEBVFX_PARAMETERS_H_
+#define WEBVFX_PARAMETERS_H_
 
 #include <string>
 
 namespace WebVFX
 {
 
-class WebParameters
+class Parameters
 {
 public:
-    WebParameters() {};
-    virtual ~WebParameters() = 0;
+    Parameters() {};
+    virtual ~Parameters() = 0;
     virtual double getNumberParameter(const std::string& name);
     virtual std::string getStringParameter(const std::string& name);
 };
