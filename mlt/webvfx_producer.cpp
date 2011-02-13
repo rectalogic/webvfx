@@ -6,7 +6,7 @@ extern "C" {
     #include <mlt/framework/mlt_producer.h>
     #include <mlt/framework/mlt_frame.h>
 }
-#include <webvfx/web_image.h>
+#include <webvfx/image.h>
 #include "service_locker.h"
 #include "service_manager.h"
 #include "webvfx_service.h"
@@ -27,7 +27,7 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
 
     // Allocate the image
     *format = mlt_image_rgb24;
-    int size = *width * *height * WebVFX::WebImage::BytesPerPixel;
+    int size = *width * *height * WebVFX::Image::BytesPerPixel;
     *buffer = (uint8_t*)mlt_pool_alloc(size);
     if (!*buffer)
         return 1;
@@ -42,7 +42,7 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
         if (!locker.initialize(*width, *height))
             return 1;
 
-        WebVFX::WebImage outputImage(*buffer, *width, *height, size);
+        WebVFX::Image outputImage(*buffer, *width, *height, size);
         locker.getManager()->render(outputImage, position);
     }
 

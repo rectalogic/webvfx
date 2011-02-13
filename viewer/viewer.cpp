@@ -16,7 +16,7 @@
 #include <QtGlobal>
 #include <webvfx/webvfx.h>
 #include <webvfx/web_effects.h>
-#include <webvfx/web_image.h>
+#include <webvfx/image.h>
 #include <webvfx/web_page.h>
 #include <webvfx/web_parameters.h>
 #include "image_color.h"
@@ -129,7 +129,7 @@ void Viewer::on_timeSlider_valueChanged(int value)
 {
     double time = sliderTimeValue(value);
     if (webPage) {
-        // Just ignore the returned WebImage
+        // Just ignore the returned Image
         webPage->render(time);
     }
     timeLabel->setNum(time);
@@ -194,7 +194,7 @@ void Viewer::setupImages(const QSize& size)
         ImageColor* imageColor = new ImageColor();
         imageColor->setImageSize(size);
         imageColor->setObjectName(imageName);
-        connect(imageColor, SIGNAL(imageChanged(QString,WebVFX::WebImage)), SLOT(onImageChanged(QString,WebVFX::WebImage)));
+        connect(imageColor, SIGNAL(imageChanged(QString,WebVFX::Image)), SLOT(onImageChanged(QString,WebVFX::Image)));
         // Set color here so signal fires
         imageColor->setImageColor(QColor::fromHsv(qrand() % 360, 200, 230));
         imagesTable->setCellWidget(row, 1, imageColor);
@@ -220,10 +220,10 @@ void Viewer::setupImages(const QSize& size)
     }
 }
 
-void Viewer::onImageChanged(const QString& name, const WebVFX::WebImage& webImage)
+void Viewer::onImageChanged(const QString& name, const WebVFX::Image& image)
 {
     if (!webPage)
         return;
-    WebVFX::WebImage targetImage = webPage->getWebImage(name, QSize(webImage.width(), webImage.height()));
-    targetImage.copyPixelsFrom(webImage);
+    WebVFX::Image targetImage = webPage->getImage(name, QSize(image.width(), image.height()));
+    targetImage.copyPixelsFrom(image);
 }

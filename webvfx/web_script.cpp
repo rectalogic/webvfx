@@ -1,7 +1,7 @@
 #include <QImage>
 #include <QPixmap>
 #include <QtAlgorithms>
-#include "webvfx/web_image.h"
+#include "webvfx/image.h"
 #include "webvfx/web_parameters.h"
 #include "webvfx/web_page.h"
 #include "webvfx/web_script.h"
@@ -27,7 +27,7 @@ void WebScript::render(double time)
     emit renderRequested(time);
 }
 
-WebImage WebScript::getWebImage(const QString& name, const QSize& size)
+Image WebScript::getImage(const QString& name, const QSize& size)
 {
     QImage* image = imageMap.value(name);
     if (!image || image->size() != size) {
@@ -35,7 +35,7 @@ WebImage WebScript::getWebImage(const QString& name, const QSize& size)
         image = new QImage(size, QImage::Format_RGB888);
         imageMap.insert(name, image);
     }
-    return WebImage(image->bits(), image->width(), image->height(), image->byteCount());
+    return Image(image->bits(), image->width(), image->height(), image->byteCount());
 }
 
 double WebScript::getNumberParameter(const QString& name)

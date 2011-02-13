@@ -8,7 +8,7 @@ extern "C" {
     #include <mlt/framework/mlt_log.h>
 }
 #include <cstring>
-#include <webvfx/web_image.h>
+#include <webvfx/image.h>
 #include "service_locker.h"
 #include "service_manager.h"
 #include "webvfx_service.h"
@@ -53,9 +53,9 @@ static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_forma
             return 1;
 
         MLTWebVFX::ServiceManager* manager = locker.getManager();
-        WebVFX::WebImage renderedImage(*image, *width, *height, *width * *height * WebVFX::WebImage::BytesPerPixel);
+        WebVFX::Image renderedImage(*image, *width, *height, *width * *height * WebVFX::Image::BytesPerPixel);
         manager->copyImageForName(manager->getSourceImageName(), renderedImage);
-        WebVFX::WebImage targetImage(bImage, bWidth, bHeight, bWidth * bHeight * WebVFX::WebImage::BytesPerPixel);
+        WebVFX::Image targetImage(bImage, bWidth, bHeight, bWidth * bHeight * WebVFX::Image::BytesPerPixel);
         manager->copyImageForName(manager->getTargetImageName(), targetImage);
         manager->render(renderedImage, position);
     }

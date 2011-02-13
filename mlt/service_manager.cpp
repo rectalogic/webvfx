@@ -53,7 +53,7 @@ public:
 
     const std::string& getName() { return name; }
 
-    int produceImage(mlt_position position, WebVFX::WebImage& targetImage) {
+    int produceImage(mlt_position position, WebVFX::Image& targetImage) {
         if (position > mlt_producer_get_out(producer))
             return 0;
         mlt_producer_seek(producer, position);
@@ -69,7 +69,7 @@ public:
         int height = targetImage.height();
         error = mlt_frame_get_image(frame, &image, &format, &width, &height, 0);
         if (!error)
-            targetImage.copyPixelsFrom(WebVFX::WebImage(image, width, height, width * height * WebVFX::WebImage::BytesPerPixel));
+            targetImage.copyPixelsFrom(WebVFX::Image(image, width, height, width * height * WebVFX::Image::BytesPerPixel));
         mlt_frame_close(frame);
         return error;
     }
@@ -180,15 +180,15 @@ bool ServiceManager::initialize(int width, int height)
     return true;
 }
 
-void ServiceManager::copyImageForName(const std::string& name, const WebVFX::WebImage& fromImage)
+void ServiceManager::copyImageForName(const std::string& name, const WebVFX::Image& fromImage)
 {
     if (!name.empty()) {
-        WebVFX::WebImage toImage = webEffects->getImage(name, fromImage.width(), fromImage.height());
+        WebVFX::Image toImage = webEffects->getImage(name, fromImage.width(), fromImage.height());
         toImage.copyPixelsFrom(fromImage);
     }
 }
 
-int ServiceManager::render(WebVFX::WebImage& outputImage, mlt_position position)
+int ServiceManager::render(WebVFX::Image& outputImage, mlt_position position)
 {
     int error = 0;
 
@@ -204,7 +204,7 @@ int ServiceManager::render(WebVFX::WebImage& outputImage, mlt_position position)
              it != imageProducers->end(); it++) {
             ImageProducer* imageProducer = *it;
             if (imageProducer) {
-                WebVFX::WebImage extraImage = webEffects->getImage(imageProducer->getName(), outputImage.width(), outputImage.height());
+                WebVFX::Image extraImage = webEffects->getImage(imageProducer->getName(), outputImage.width(), outputImage.height());
                 error = imageProducer->produceImage(position, extraImage);
                 if (error) {
                     mlt_log(service, MLT_LOG_ERROR, "WebVFX failed to produce image for name %s\n", imageProducer->getName().c_str());
@@ -214,7 +214,7 @@ int ServiceManager::render(WebVFX::WebImage& outputImage, mlt_position position)
         }
     }
 
-    const WebVFX::WebImage renderedImage = webEffects->render(time, outputImage.width(), outputImage.height());
+    const WebVFX::Image renderedImage = webEffects->render(time, outputImage.width(), outputImage.height());
     renderedImage.copyPixelsTo(outputImage);
 
     return error;

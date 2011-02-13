@@ -7,7 +7,7 @@
 
 #include <string>
 #include <map>
-#include <webvfx/web_image.h>
+#include <webvfx/image.h>
 #include <webvfx/web_parameters.h>
 
 namespace WebVFX
@@ -28,10 +28,10 @@ public:
     // Return a map mapping image names the page content uses to imge type.
     // XXX should we expose opaque "cooke" image name that holds QString internally? (and with a toString() method) - so caller can efficiently set image using cookie name
     virtual const ImageTypeMap& getImageTypeMap() = 0;
-    // Return a WebImage of the given size that can be written to.
-    virtual WebImage getImage(const std::string& name, int width, int height) = 0;
+    // Return a Image of the given size that can be written to.
+    virtual Image getImage(const std::string& name, int width, int height) = 0;
     //XXX need to return an error code?
-    virtual const WebImage render(double time, int width, int height) = 0;
+    virtual const Image render(double time, int width, int height) = 0;
     virtual void destroy() = 0;
 
 protected:

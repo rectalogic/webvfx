@@ -9,12 +9,11 @@
 #include <QSize>
 #include <QUrl>
 #include "webvfx/web_effects.h"
-#include "webvfx/web_image.h"
 
 namespace WebVFX
 {
 
-class WebImage;
+class Image;
 class WebPage;
 class WebParameters;
 
@@ -27,8 +26,8 @@ public:
 
     bool initialize(const std::string& url, int width, int height, WebParameters* parameters = 0);
     const ImageTypeMap& getImageTypeMap();
-    WebImage getImage(const std::string& name, int width, int height);
-    const WebImage render(double time, int width, int height);
+    Image getImage(const std::string& name, int width, int height);
+    const Image render(double time, int width, int height);
     void destroy();
 
 private:
@@ -39,7 +38,7 @@ private:
     bool onUIThread();
 
     WebPage* webPage;
-    WebImage renderImage;
+    Image renderImage;
     bool loadResult;
 };
 

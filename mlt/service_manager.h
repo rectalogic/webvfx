@@ -14,7 +14,7 @@ extern "C" {
 namespace WebVFX
 {
     class WebEffects;
-    class WebImage;
+    class Image;
 }
 
 namespace MLTWebVFX
@@ -27,8 +27,8 @@ class ServiceManager
 public:
     const std::string& getSourceImageName() { return sourceImageName; }
     const std::string& getTargetImageName() { return targetImageName; }
-    void copyImageForName(const std::string& name, const WebVFX::WebImage& fromImage);
-    int render(WebVFX::WebImage& outputImage, mlt_position position);
+    void copyImageForName(const std::string& name, const WebVFX::Image& fromImage);
+    int render(WebVFX::Image& outputImage, mlt_position position);
 
     static const char* kURLPropertyName;
 

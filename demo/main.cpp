@@ -42,15 +42,15 @@ int main(int argc, char* argv[]) {
 
     WebVFX::WebEffects* effects = WebVFX::createWebEffects();
     effects->initialize(argv[1], 320, 240, new Parameters());
-    WebVFX::WebImage video = effects->getImage("sourceImage", 320, 240);
+    WebVFX::Image video = effects->getImage("sourceImage", 320, 240);
     // Fill with red XXX need to take into account stride
     unsigned char* pixels = video.pixels();
-    for (int i = 0; i < video.byteCount(); i+= WebVFX::WebImage::BytesPerPixel) {
+    for (int i = 0; i < video.byteCount(); i+= WebVFX::Image::BytesPerPixel) {
         pixels[i] = 0xFF;
         pixels[i+1] = 0x00;
         pixels[i+2] = 0x00;
     }
-    const WebVFX::WebImage image = effects->render(0.32, 320, 240);
+    const WebVFX::Image image = effects->render(0.32, 320, 240);
 
     // Write to disk.
     std::ofstream rawFile;

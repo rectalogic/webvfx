@@ -7,7 +7,7 @@ extern "C" {
     #include <mlt/framework/mlt_frame.h>
     #include <mlt/framework/mlt_log.h>
 }
-#include <webvfx/web_image.h>
+#include <webvfx/image.h>
 #include "service_locker.h"
 #include "service_manager.h"
 #include "webvfx_service.h"
@@ -34,7 +34,7 @@ static int filterGetImage(mlt_frame frame, uint8_t **image, mlt_image_format *fo
             return 1;
 
         MLTWebVFX::ServiceManager* manager = locker.getManager();
-        WebVFX::WebImage renderedImage(*image, *width, *height, *width * *height * WebVFX::WebImage::BytesPerPixel);
+        WebVFX::Image renderedImage(*image, *width, *height, *width * *height * WebVFX::Image::BytesPerPixel);
         manager->copyImageForName(manager->getSourceImageName(), renderedImage);
         manager->render(renderedImage, position);
     }

@@ -19,7 +19,7 @@ typedef QMap<QString, QVariant> QVariantMap;
 namespace WebVFX
 {
 
-class WebImage;
+class Image;
 class WebPage;
 class WebParameters;
 
@@ -40,9 +40,9 @@ public:
     // emits renderRequested signal to the page contents.
     void render(double time);
 
-    // Get a WebImage of the specified size for writing image data to.
-    // The returned image is only valid until the next call to getWebImage.
-    WebImage getWebImage(const QString& name, const QSize& size);
+    // Get a Image of the specified size for writing image data to.
+    // The returned image is only valid until the next call to getImage.
+    Image getImage(const QString& name, const QSize& size);
 
     // Page contents can use these to retrieve parameters.
     // JS: var title = webvfx.getStringParameter("title");

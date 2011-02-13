@@ -1,13 +1,13 @@
 #include <string.h>
 #include <QtGlobal>
-#include "webvfx/web_image.h"
+#include "webvfx/image.h"
 
 namespace WebVFX
 {
 
-const int WebImage::BytesPerPixel;
+const int Image::BytesPerPixel;
 
-void WebImage::copyPixels(const WebImage& sourceImage, WebImage& targetImage)
+void Image::copyPixels(const Image& sourceImage, Image& targetImage)
 {
     if (targetImage.byteCount_ == sourceImage.byteCount_)
         memcpy(targetImage.pixels_, sourceImage.pixels_, targetImage.byteCount_);
@@ -25,12 +25,12 @@ void WebImage::copyPixels(const WebImage& sourceImage, WebImage& targetImage)
     }
 }
 
-void WebImage::copyPixelsFrom(const WebImage& sourceImage) {
+void Image::copyPixelsFrom(const Image& sourceImage) {
     Q_ASSERT(compatible(sourceImage));
     copyPixels(sourceImage, *this);
 }
 
-void WebImage::copyPixelsTo(WebImage& targetImage) const {
+void Image::copyPixelsTo(Image& targetImage) const {
     Q_ASSERT(compatible(targetImage));
     copyPixels(*this, targetImage);
 }

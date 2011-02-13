@@ -125,7 +125,7 @@ bool WebPage::loadSync(const QUrl& url)
     return result;
 }
 
-WebImage WebPage::render(double time)
+Image WebPage::render(double time)
 {
     // Allow the page to render for this time
     webScript->render(time);
@@ -147,8 +147,8 @@ WebImage WebPage::render(double time)
     mainFrame()->render(&painter);
     painter.end();
 
-    // Return WebImage referencing our bits
-    return WebImage(renderImage->bits(), renderImage->width(), renderImage->height(), renderImage->byteCount());
+    // Return Image referencing our bits
+    return Image(renderImage->bits(), renderImage->width(), renderImage->height(), renderImage->byteCount());
 }
 
 }

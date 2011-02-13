@@ -10,7 +10,7 @@
 #include <QSize>
 
 namespace WebVFX {
-    class WebImage;
+    class Image;
 }
 
 class ImageColor : public QPushButton
@@ -28,14 +28,14 @@ public:
     void setImageSize(const QSize& size);
 
 signals:
-    void imageChanged(const QString& name, const WebVFX::WebImage& webImage);
+    void imageChanged(const QString& name, const WebVFX::Image& image);
 
 private slots:
     void onClicked(bool);
 
 private:
     void fillImage();
-    const WebVFX::WebImage getImage();
+    const WebVFX::Image getImage();
     QColor color;
     QImage image;
 };

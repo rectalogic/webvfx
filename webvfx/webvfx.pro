@@ -2,7 +2,7 @@ TEMPLATE = lib
 #VERSION = 
 
 HEADERS += web_effects.h
-HEADERS += web_image.h
+HEADERS += image.h
 HEADERS += web_logger.h
 HEADERS += web_page.h
 HEADERS += web_parameters.h
@@ -11,7 +11,7 @@ HEADERS += web_script.h
 HEADERS += webvfx.h
 
 SOURCES += web_effects.cpp
-SOURCES += web_image.cpp
+SOURCES += image.cpp
 SOURCES += web_logger.cpp
 SOURCES += web_page.cpp
 SOURCES += web_parameters.cpp

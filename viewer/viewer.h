@@ -10,7 +10,7 @@
 
 namespace WebVFX
 {
-    class WebImage;
+    class Image;
     class WebPage;
 }
 
@@ -30,7 +30,7 @@ private slots:
     void on_timeSlider_valueChanged(int);
     void on_addParameterButton_clicked();
     void on_deleteParameterButton_clicked();
-    void onImageChanged(const QString& name, const WebVFX::WebImage& webImage);
+    void onImageChanged(const QString& name, const WebVFX::Image& image);
 
 private:
     bool loadPage(const QUrl& url);

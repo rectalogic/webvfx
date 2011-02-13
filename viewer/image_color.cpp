@@ -7,7 +7,7 @@
 #include <QImage>
 #include <QPainter>
 #include <QPalette>
-#include <webvfx/web_image.h>
+#include <webvfx/image.h>
 #include "image_color.h"
 
 ImageColor::ImageColor(QWidget* parent)
@@ -38,9 +38,9 @@ void ImageColor::setImageSize(const QSize& size)
     emit imageChanged(objectName(), getImage());
 }
 
-const WebVFX::WebImage ImageColor::getImage()
+const WebVFX::Image ImageColor::getImage()
 {
-    return WebVFX::WebImage(image.bits(), image.width(), image.height(), image.byteCount());
+    return WebVFX::Image(image.bits(), image.width(), image.height(), image.byteCount());
 }
 
 void ImageColor::onClicked(bool)

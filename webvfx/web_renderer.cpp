@@ -2,7 +2,7 @@
 #include <QThread>
 #include <QWebFrame>
 #include <QWebSettings>
-#include "webvfx/web_image.h"
+#include "webvfx/image.h"
 #include "webvfx/web_logger.h"
 #include "webvfx/web_page.h"
 #include "webvfx/web_parameters.h"
@@ -59,14 +59,14 @@ const WebEffects::ImageTypeMap& WebRenderer::getImageTypeMap()
     return webPage->getImageTypeMap();
 }
 
-WebImage WebRenderer::getImage(const std::string& name, int width, int height)
+Image WebRenderer::getImage(const std::string& name, int width, int height)
 {
     // This may create a QImage and modify QHash - both of those classes are reentrant,
     // so should be safe to do on calling thread as long as access to this WebRenderer is synchronized.
-    return webPage->getWebImage(QString::fromStdString(name), QSize(width, height));
+    return webPage->getImage(QString::fromStdString(name), QSize(width, height));
 }
 
-const WebImage WebRenderer::render(double time, int width, int height)
+const Image WebRenderer::render(double time, int width, int height)
 {
     QSize size(width, height);
 

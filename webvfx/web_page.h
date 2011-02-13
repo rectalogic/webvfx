@@ -8,7 +8,7 @@
 #include <string>
 #include <QWebPage>
 #include "webvfx/web_effects.h"
-#include "webvfx/web_image.h"
+#include "webvfx/image.h"
 #include "webvfx/web_script.h"
 
 class QEventLoop;
@@ -31,8 +31,8 @@ public:
     // Load URL synchronously, return success
     bool loadSync(const QUrl& url);
     const WebEffects::ImageTypeMap& getImageTypeMap() { return imageTypeMap; };
-    WebImage render(double time);
-    WebImage getWebImage(const QString& name, const QSize& size) { return webScript->getWebImage(name, size); }
+    Image render(double time);
+    Image getImage(const QString& name, const QSize& size) { return webScript->getImage(name, size); }
 
 private slots:
     void injectWebScript();
