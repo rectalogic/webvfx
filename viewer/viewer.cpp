@@ -156,19 +156,20 @@ double Viewer::sliderTimeValue(int value)
 
 bool Viewer::loadPage(const QUrl& url)
 {
+    logTextEdit->clear();
+
     webPage = new WebVFX::WebPage(webView, webView->size(), new ViewerParameters(parametersTable));
     // User can right-click to open WebInspector on the page
     webPage->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+    // Install WebInspector action on tool button
+    inspectorButton->setDefaultAction(webPage->action(QWebPage::InspectElement));
     webView->setPage(webPage);
+
     bool result = webPage->loadSync(url);
 
     timeSlider->setValue(0);
-    logTextEdit->clear();
 
     setupImages(webView->size());
-
-    // Install WebInspector action on tool button
-    inspectorButton->setDefaultAction(webPage->action(QWebPage::InspectElement));
 
     return result;
 }

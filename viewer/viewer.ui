@@ -17,7 +17,7 @@
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
-      <widget class="QWidget" name="">
+      <widget class="QWidget" name="layoutWidget">
        <layout class="QVBoxLayout" name="verticalLayout">
         <item>
          <widget class="QToolBox" name="toolBox">
@@ -35,7 +35,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>173</width>
+             <width>261</width>
              <height>360</height>
             </rect>
            </property>
@@ -109,7 +109,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>173</width>
+             <width>261</width>
              <height>360</height>
             </rect>
            </property>
@@ -185,6 +185,14 @@
            </layout>
           </widget>
           <widget class="QWidget" name="imagesPage">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>261</width>
+             <height>360</height>
+            </rect>
+           </property>
            <attribute name="label">
             <string>Images</string>
            </attribute>
@@ -235,6 +243,14 @@
            </layout>
           </widget>
           <widget class="QWidget" name="debugPage">
+           <property name="geometry">
+            <rect>
+             <x>0</x>
+             <y>0</y>
+             <width>261</width>
+             <height>360</height>
+            </rect>
+           </property>
            <attribute name="label">
             <string>Debug</string>
            </attribute>
@@ -281,8 +297,8 @@
        <widget class="QWidget" name="scrollAreaWidgetContents">
         <property name="geometry">
          <rect>
-          <x>11</x>
-          <y>1</y>
+          <x>0</x>
+          <y>0</y>
           <width>600</width>
           <height>495</height>
          </rect>
@@ -324,6 +340,7 @@
      <string>File</string>
     </property>
     <addaction name="actionOpen"/>
+    <addaction name="actionQuit"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -336,7 +353,35 @@
     <string>Ctrl+O</string>
    </property>
   </action>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::QuitRole</enum>
+   </property>
+  </action>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>actionQuit</sender>
+   <signal>triggered()</signal>
+   <receiver>Viewer</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>414</x>
+     <y>299</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
