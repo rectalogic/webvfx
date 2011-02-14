@@ -5,10 +5,12 @@
 #ifndef WEBVFX_EFFECTS_H_
 #define WEBVFX_EFFECTS_H_
 
-#include <string>
-#include <map>
+#include <QMap>
+#include <QString>
 #include <webvfx/image.h>
 #include <webvfx/parameters.h>
+
+class QString;
 
 namespace WebVfx
 {
@@ -20,12 +22,13 @@ class Effects
 public:
     enum ImageType { SourceImageType=1, TargetImageType, ExtraImageType };
 
-    typedef std::map<const std::string, ImageType> ImageTypeMap;
+    typedef QMap<QString, ImageType> ImageTypeMap;
+    typedef QMapIterator<QString, ImageType> ImageTypeMapIterator;
 
     // Return a map mapping image names the page content uses to imge type.
     virtual const ImageTypeMap& getImageTypeMap() = 0;
     // Return a Image of the given size that can be written to.
-    virtual Image getImage(const std::string& name, int width, int height) = 0;
+    virtual Image getImage(const QString& name, int width, int height) = 0;
     //XXX need to return an error code?
     virtual const Image render(double time, int width, int height) = 0;
     virtual void destroy() = 0;

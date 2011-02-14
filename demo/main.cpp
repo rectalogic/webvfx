@@ -13,21 +13,21 @@
 
 int main(int argc, char* argv[]) {
     if (argc < 2) {
-        std::cerr << "Usage: " << argv[0] << " <html-template-url>" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <html-path>" << std::endl;
         return -1;
     }
 
     class Logger : public WebVfx::Logger {
     public:
-        void log(const std::string& message) {
-            std::cerr << message << std::endl;
+        void log(const QString& message) {
+            std::cerr << message.toStdString() << std::endl;
         }
     };
     WebVfx::setLogger(new Logger());
 
     class Parameters : public WebVfx::Parameters {
     public:
-        std::string getStringParameter(const std::string&) {
+        QString getStringParameter(const QString&) {
             return "WebVfx Cool Title";
         }
     };

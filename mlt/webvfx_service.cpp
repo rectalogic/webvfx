@@ -68,11 +68,11 @@ static void* createService(mlt_profile /*profile*/, mlt_service_type serviceType
             break;
     }
 
-    // Store URL property on service
+    // Store filename property on service
     if (service) {
-        std::string url("file://");
-        url.append(getDataDir()).append(serviceName).append(HTML_SUFFIX);
-        mlt_properties_set(MLT_SERVICE_PROPERTIES(service), MLTWebVfx::ServiceManager::kURLPropertyName, url.c_str());
+        std::string fileName(getDataDir());
+        fileName.append(serviceName).append(HTML_SUFFIX);
+        mlt_properties_set(MLT_SERVICE_PROPERTIES(service), MLTWebVfx::ServiceManager::kFilePropertyName, fileName.c_str());
     }
 
     return service;

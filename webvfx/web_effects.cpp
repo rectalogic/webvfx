@@ -1,5 +1,8 @@
 #include <QApplication>
+#include <QSize>
+#include <QStringBuilder>
 #include <QThread>
+#include <QUrl>
 #include <QWebFrame>
 #include <QWebSettings>
 #include "webvfx/image.h"
@@ -19,12 +22,12 @@ WebEffects::WebEffects()
 {
 }
 
-bool WebEffects::initialize(const std::string& url, int width, int height, Parameters* parameters)
+bool WebEffects::initialize(const QString& fileName, int width, int height, Parameters* parameters)
 {
-    QUrl qurl(QString::fromStdString(url));
+    QUrl url(QUrl::fromLocalFile(fileName));
 
-    if (!qurl.isValid()) {
-        log(std::string("Invalid URL: ") + url);
+    if (!url.isValid()) {
+        log(QLatin1Literal("Invalid URL: ") % fileName);
         return false;
     }
 
@@ -33,13 +36,13 @@ bool WebEffects::initialize(const std::string& url, int width, int height, Param
     loadResult = false;
 
     if (onUIThread()) {
-        initializeInvokable(qurl, size, parameters);
+        initializeInvokable(url, size, parameters);
     }
     else {
         // Move ourself onto GUI thread and create our WebPage there
         this->moveToThread(QApplication::instance()->thread());
         QMetaObject::invokeMethod(this, "initializeInvokable", Qt::BlockingQueuedConnection,
-                                  Q_ARG(QUrl, qurl), Q_ARG(QSize, size), Q_ARG(Parameters*, parameters));
+                                  Q_ARG(QUrl, url), Q_ARG(QSize, size), Q_ARG(Parameters*, parameters));
     }
 
     return loadResult;
@@ -59,11 +62,11 @@ const Effects::ImageTypeMap& WebEffects::getImageTypeMap()
     return webPage->getImageTypeMap();
 }
 
-Image WebEffects::getImage(const std::string& name, int width, int height)
+Image WebEffects::getImage(const QString& name, int width, int height)
 {
     // This may create a QImage and modify QHash - both of those classes are reentrant,
     // so should be safe to do on calling thread as long as access to this WebEffects is synchronized.
-    return webPage->getImage(QString::fromStdString(name), QSize(width, height));
+    return webPage->getImage(name, QSize(width, height));
 }
 
 const Image WebEffects::render(double time, int width, int height)

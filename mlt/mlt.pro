@@ -17,8 +17,8 @@ INCLUDEPATH = ..
 
 DESTDIR = ../build
 
-CONFIG -= qt
 CONFIG += shared warn_on
+QT -= gui
 
 CONFIG += link_pkgconfig
 PKGCONFIG += mlt-framework

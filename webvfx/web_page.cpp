@@ -1,8 +1,9 @@
-#include <sstream>
 #include <QEventLoop>
 #include <QImage>
+#include <QMap>
 #include <QPainter>
 #include <QSize>
+#include <QStringBuilder>
 #include <QVariant>
 #include <QWebFrame>
 #include "webvfx/logger.h"
@@ -20,7 +21,7 @@ WebPage::WebPage(QObject* parent, QSize size, Parameters* parameters)
     , renderImage(0)
 {
     connect(this, SIGNAL(loadFinished(bool)), SLOT(webPageLoadFinished(bool)));
-    connect(effectsContext, SIGNAL(loadFinished(bool,QVariantMap)), SLOT(effectsContextLoadFinished(bool,QVariantMap)));
+    connect(effectsContext, SIGNAL(loadFinished(bool)), SLOT(effectsContextLoadFinished(bool)));
     connect(mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), SLOT(injectEffectsContext()));
 
     setViewportSize(size);
@@ -41,26 +42,21 @@ WebPage::~WebPage()
     delete renderImage;
 }
 
-void WebPage::javaScriptAlert(QWebFrame *originatingFrame, const QString &msg)
+void WebPage::javaScriptAlert(QWebFrame *, const QString &msg)
 {
-    Q_UNUSED(originatingFrame);
-    log(std::string("JavaScript alert: ") + msg.toStdString());
+    log(QLatin1Literal("JavaScript alert: ") % msg);
 }
 
 void WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID)
 {
-    std::ostringstream oss;
-    oss << message.toStdString();
+    QString msg(message);
     if (!sourceID.isEmpty())
-        oss << " (" << sourceID.section('/', -1).toStdString() << ":" << lineNumber << ")";
-    log(oss.str());
+        msg % QLatin1Literal(" (") % sourceID.section('/', -1) % QLatin1Literal(":") % QString::number(lineNumber) % QLatin1Literal(")");
+    log(msg);
 }
 
-bool WebPage::acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& request, NavigationType type)
+bool WebPage::acceptNavigationRequest(QWebFrame*, const QNetworkRequest&, NavigationType)
 {
-    Q_UNUSED(frame);
-    Q_UNUSED(request);
-    Q_UNUSED(type);
     //XXX we want to prevent JS from navigating the page - does this prevent our initial load?
     //return false;
     return true;
@@ -84,18 +80,10 @@ void WebPage::webPageLoadFinished(bool result)
         syncLoop->exit(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
 }
 
-void WebPage::effectsContextLoadFinished(bool result, const QVariantMap& typeMap)
+void WebPage::effectsContextLoadFinished(bool result)
 {
-    if (contextLoadFinished == LoadNotFinished) {
+    if (contextLoadFinished == LoadNotFinished)
         contextLoadFinished = result ? LoadSucceeded : LoadFailed;
-        // Convert QVariantMap to std::map
-        QMapIterator<QString, QVariant> iter(typeMap);
-        while (iter.hasNext()) {
-            iter.next();
-            //XXX validate the type enums
-            imageTypeMap[iter.key().toStdString()] = static_cast<Effects::ImageType>(iter.value().toInt());
-        }
-    }
     if (syncLoop && pageLoadFinished != LoadNotFinished)
         syncLoop->exit(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
 }

@@ -5,11 +5,12 @@
 #ifndef MLTWEBVFX_SERVICE_MANAGER_H_
 #define MLTWEBVFX_SERVICE_MANAGER_H_
 
+#include <QString>
 extern "C" {
     #include <mlt/framework/mlt_service.h>
 }
-#include <string>
 #include <vector>
+
 
 namespace WebVfx
 {
@@ -25,12 +26,12 @@ class ServiceLocker;
 class ServiceManager
 {
 public:
-    const std::string& getSourceImageName() { return sourceImageName; }
-    const std::string& getTargetImageName() { return targetImageName; }
-    void copyImageForName(const std::string& name, const WebVfx::Image& fromImage);
+    const QString& getSourceImageName() { return sourceImageName; }
+    const QString& getTargetImageName() { return targetImageName; }
+    void copyImageForName(const QString& name, const WebVfx::Image& fromImage);
     int render(WebVfx::Image& outputImage, mlt_position position);
 
-    static const char* kURLPropertyName;
+    static const char* kFilePropertyName;
 
 private:
     friend class ServiceLocker;
@@ -41,8 +42,8 @@ private:
     mlt_service service;
     WebVfx::Effects* effects;
 
-    std::string sourceImageName;
-    std::string targetImageName;
+    QString sourceImageName;
+    QString targetImageName;
     std::vector<ImageProducer*>* imageProducers;
 };
 

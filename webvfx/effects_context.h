@@ -6,6 +6,7 @@
 #define WEBVFX_EFFECTS_CONTEXT_H_
 
 #include <QHash>
+#include <QMap>
 #include <QObject>
 #include <QPixmap>
 #include "webvfx/effects.h"
@@ -32,6 +33,11 @@ class EffectsContext : public QObject
     Q_PROPERTY(int SOURCE_IMAGE_TYPE READ getSourceImageType CONSTANT FINAL)
     Q_PROPERTY(int TARGET_IMAGE_TYPE READ getTargetImageType CONSTANT FINAL)
     Q_PROPERTY(int EXTRA_IMAGE_TYPE READ getExtraImageType CONSTANT FINAL)
+    // Page contents should set this if it consumes images.
+    // JS:
+    //   webvfx.imageTypeMap = { "video" : webvfx.SOURCE_IMAGE_TYPE }
+    Q_PROPERTY(QVariantMap imageTypeMap WRITE setImageTypeMap)
+
 public:
     EffectsContext(WebPage* parent, Parameters* parameters);
     ~EffectsContext();
@@ -61,14 +67,15 @@ public:
     int getSourceImageType() { return Effects::SourceImageType; }
     int getTargetImageType() { return Effects::TargetImageType; }
     int getExtraImageType() { return Effects::ExtraImageType; }
+    void setImageTypeMap(const QVariantMap& imageTypeMap);
+
+    const Effects::ImageTypeMap& getImageTypeMap() { return imageTypeMap; }
 
 signals:
     // Page contents must signal this when load is complete
     // (which may be after window.onload fires).
     // status indicates load failure/success.
-    // Map should map image names to their ImageType.
-    // JS: webvfx.loadFinished(true, { "video" : webvfx.SOURCE_IMAGE_TYPE });
-    void loadFinished(bool status, const QVariantMap& imageTypeMap);
+    void loadFinished(bool status);
 
     // Signal raised when page contents should render for the given time.
     // time is normalized 0..1.0
@@ -78,6 +85,7 @@ signals:
 private:
     Parameters* parameters;
     QHash<QString, QImage*> imageMap;
+    Effects::ImageTypeMap imageTypeMap;
 };
 
 }

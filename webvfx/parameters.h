@@ -5,7 +5,8 @@
 #ifndef WEBVFX_PARAMETERS_H_
 #define WEBVFX_PARAMETERS_H_
 
-#include <string>
+
+class QString;
 
 namespace WebVfx
 {
@@ -15,8 +16,8 @@ class Parameters
 public:
     Parameters() {};
     virtual ~Parameters() = 0;
-    virtual double getNumberParameter(const std::string& name);
-    virtual std::string getStringParameter(const std::string& name);
+    virtual double getNumberParameter(const QString& name);
+    virtual QString getStringParameter(const QString& name);
 };
 
 }

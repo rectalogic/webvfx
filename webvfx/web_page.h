@@ -5,7 +5,7 @@
 #ifndef WEBVFX_WEB_PAGE_H_
 #define WEBVFX_WEB_PAGE_H_
 
-#include <string>
+#include <QMap>
 #include <QWebPage>
 #include "webvfx/effects_context.h"
 #include "webvfx/image.h"
@@ -30,7 +30,7 @@ public:
 
     // Load URL synchronously, return success
     bool loadSync(const QUrl& url);
-    const Effects::ImageTypeMap& getImageTypeMap() { return imageTypeMap; };
+    const Effects::ImageTypeMap& getImageTypeMap() { return effectsContext->getImageTypeMap(); };
     Image render(double time);
     Image getImage(const QString& name, const QSize& size) { return effectsContext->getImage(name, size); }
 
@@ -38,7 +38,7 @@ private slots:
     void injectEffectsContext();
     bool shouldInterruptJavaScript();
     void webPageLoadFinished(bool result);
-    void effectsContextLoadFinished(bool result, const QVariantMap& imageTypeMap);
+    void effectsContextLoadFinished(bool result);
 
 protected:
     void javaScriptAlert(QWebFrame* originatingFrame, const QString& msg);
@@ -52,7 +52,6 @@ private:
     EffectsContext* effectsContext;
     QEventLoop* syncLoop;
     QImage* renderImage;
-    Effects::ImageTypeMap imageTypeMap;
 };
 
 }

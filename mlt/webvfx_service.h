@@ -9,7 +9,6 @@ extern "C" {
     #include <mlt/framework/mlt_factory.h>
     #include <mlt/framework/mlt_service.h>
 }
-#include <string>
 
 namespace MLTWebVfx
 {

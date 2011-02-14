@@ -1,15 +1,16 @@
+#include <QString>
 #include "webvfx/parameters.h"
 
 WebVfx::Parameters::~Parameters()
 {
 }
 
-double WebVfx::Parameters::getNumberParameter(const std::string&)
+double WebVfx::Parameters::getNumberParameter(const QString&)
 {
     return 0;
 }
 
-std::string WebVfx::Parameters::getStringParameter(const std::string&)
+QString WebVfx::Parameters::getStringParameter(const QString&)
 {
-    return std::string();
+    return QString();
 }

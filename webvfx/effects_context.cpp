@@ -1,5 +1,6 @@
 #include <QImage>
 #include <QPixmap>
+#include <QVariant>
 #include <QtAlgorithms>
 #include "webvfx/effects_context.h"
 #include "webvfx/image.h"
@@ -41,7 +42,7 @@ Image EffectsContext::getImage(const QString& name, const QSize& size)
 double EffectsContext::getNumberParameter(const QString& name)
 {
     if (parameters)
-        return parameters->getNumberParameter(name.toStdString());
+        return parameters->getNumberParameter(name);
     else
         return 0;
 }
@@ -49,9 +50,20 @@ double EffectsContext::getNumberParameter(const QString& name)
 const QString EffectsContext::getStringParameter(const QString& name)
 {
     if (parameters)
-        return QString::fromStdString(parameters->getStringParameter(name.toStdString()));
+        return parameters->getStringParameter(name);
     else
         return QString();
+}
+
+void EffectsContext::setImageTypeMap(const QVariantMap& variantMap)
+{
+    // Convert QVariantMap to ImageTypeMap
+    QMapIterator<QString, QVariant> it(variantMap);
+    while (it.hasNext()) {
+        it.next();
+        //XXX validate the type enums
+        imageTypeMap[it.key()] = static_cast<Effects::ImageType>(it.value().toInt());
+    }
 }
 
 // QtWebkit Bridge converts QImages to QPixmaps anyway,

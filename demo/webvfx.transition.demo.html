@@ -27,11 +27,12 @@ function init() {
     titleEl.innerHTML = title;
 
     webvfx.renderRequested.connect(render);
-    webvfx.loadFinished(true, {
-                               "sourceImage" : webvfx.SOURCE_IMAGE_TYPE,
-                               "targetImage" : webvfx.TARGET_IMAGE_TYPE,
-                               "demoImage" : webvfx.EXTRA_IMAGE_TYPE
-                             });
+    webvfx.imageTypeMap = {
+                              "sourceImage" : webvfx.SOURCE_IMAGE_TYPE,
+                              "targetImage" : webvfx.TARGET_IMAGE_TYPE,
+                              "demoImage" : webvfx.EXTRA_IMAGE_TYPE
+                          };
+    webvfx.loadFinished(true)
 }
 window.addEventListener("load", init, false);
 </script>

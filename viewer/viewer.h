@@ -33,7 +33,7 @@ private slots:
     void onImageChanged(const QString& name, const WebVfx::Image& image);
 
 private:
-    bool loadPage(const QUrl& url);
+    bool loadPage(const QString& fileName);
     void setupImages(const QSize& size);
     double sliderTimeValue(int value);
     QLabel* sizeLabel;

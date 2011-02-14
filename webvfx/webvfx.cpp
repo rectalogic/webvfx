@@ -5,11 +5,12 @@
 #ifndef Q_WS_MAC
 #include <pthread.h>
 #endif
-#include <string.h>
 #include <QApplication>
 #include <QMetaType>
 #include <QMutex>
 #include <QMutexLocker>
+#include <QPair>
+#include <QString>
 #include <QWaitCondition>
 #include "webvfx/logger.h"
 #include "webvfx/webvfx.h"
@@ -107,10 +108,10 @@ bool initialize()
     return true;
 }
 
-Effects* createEffects(const std::string& url, int width, int height, Parameters* parameters)
+Effects* createEffects(const QString& fileName, int width, int height, Parameters* parameters)
 {
     WebEffects* effects = new WebEffects();
-    if (!effects->initialize(url, width, height, parameters)) {
+    if (!effects->initialize(fileName, width, height, parameters)) {
         effects->destroy();
         return 0;
     }
@@ -160,7 +161,7 @@ void shutdown()
 
 }
 
-void log(const std::string& msg)
+void log(const QString& msg)
 {
     if (s_logger)
         s_logger->log(msg);

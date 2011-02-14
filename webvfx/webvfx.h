@@ -23,7 +23,7 @@ void setLogger(Logger* logger);
 bool initialize();
 
 // Create an Effects instance.
-Effects* createEffects(const std::string& url, int width, int height, Parameters* parameters = 0);
+Effects* createEffects(const QString& fileName, int width, int height, Parameters* parameters = 0);
 
 // Must be called after initialize from the main thread in
 // non-Qt based MacOS applications if Effects is going to be used

@@ -6,9 +6,11 @@
 #define WEBVFX_WEB_EFFECTS_H_
 
 #include <QObject>
-#include <QSize>
-#include <QUrl>
 #include "webvfx/effects.h"
+
+class QSize;
+class QString;
+class QUrl;
 
 namespace WebVfx
 {
@@ -24,9 +26,9 @@ public:
     WebEffects();
 
     // WebEffects will take ownership of Parameters
-    bool initialize(const std::string& url, int width, int height, Parameters* parameters = 0);
+    bool initialize(const QString& fileName, int width, int height, Parameters* parameters = 0);
     const ImageTypeMap& getImageTypeMap();
-    Image getImage(const std::string& name, int width, int height);
+    Image getImage(const QString& name, int width, int height);
     const Image render(double time, int width, int height);
     void destroy();
 

@@ -5,7 +5,7 @@ DESTDIR = ../build
 SOURCES += main.cpp
 
 CONFIG += console warn_on debug_and_release
-CONFIG -= qt
+QT -= gui
 CONFIG(debug, debug|release) {
     TARGET = demo_debug
     LIBS += -L$$DESTDIR -lwebvfx_debug

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <QString>
 #include <webvfx/webvfx.h>
 extern "C" {
     #include <mlt/framework/mlt_log.h>
@@ -14,10 +15,10 @@ namespace MLTWebVfx
 {
 class Logger : public WebVfx::Logger
 {
-    void log(const std::string& message) {
+    void log(const QString& message) {
         //XXX use log level once passed
         //XXX any way to get service into here?
-        mlt_log(NULL, MLT_LOG_INFO, "%s\n", message.c_str());
+        mlt_log(NULL, MLT_LOG_INFO, "%s\n", message.toLatin1().constData());
     }
 };
 }

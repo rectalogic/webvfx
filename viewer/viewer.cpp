@@ -29,19 +29,18 @@ class ViewerParameters : public WebVfx::Parameters
 public:
     ViewerParameters(QTableWidget* tableWidget) : tableWidget(tableWidget) {}
 
-    double getNumberParameter(const std::string& name) {
+    double getNumberParameter(const QString& name) {
         QString value = findValue(name);
         return value.toDouble();
     }
 
-    std::string getStringParameter(const std::string& name) {
-        QString value = findValue(name);
-        return value.toStdString();
+    QString getStringParameter(const QString& name) {
+        return findValue(name);
     }
 
 private:
-    QString findValue(const std::string& name) {
-        QList<QTableWidgetItem*> itemList = tableWidget->findItems(QString::fromStdString(name), Qt::MatchFixedString|Qt::MatchCaseSensitive);
+    QString findValue(const QString& name) {
+        QList<QTableWidgetItem*> itemList = tableWidget->findItems(name, Qt::MatchFixedString|Qt::MatchCaseSensitive);
         foreach (const QTableWidgetItem* item, itemList) {
             // If the string matches column 0 (Name), then return column 1 (Value)
             if (item->column() == 0) {
@@ -62,8 +61,8 @@ class ViewerLogger : public WebVfx::Logger
 {
 public:
     ViewerLogger(QPlainTextEdit* logText) : logText(logText) {}
-    void log(const std::string& msg) {
-        logText->appendPlainText(QString::fromStdString(msg));
+    void log(const QString& msg) {
+        logText->appendPlainText(msg);
     }
 
 private:
@@ -102,7 +101,7 @@ void Viewer::on_actionOpen_triggered(bool)
         tr("Open Page"), QDir::homePath(), tr("HTML Files (*.html)"));
     if (fileName.isNull())
         return;
-    if (!loadPage(QUrl::fromLocalFile(fileName)))
+    if (!loadPage(fileName))
         statusBar()->showMessage(tr("Load failed"), 2000);
     else
         setWindowFilePath(fileName);
@@ -154,7 +153,7 @@ double Viewer::sliderTimeValue(int value)
 }
 
 
-bool Viewer::loadPage(const QUrl& url)
+bool Viewer::loadPage(const QString& fileName)
 {
     logTextEdit->clear();
 
@@ -165,7 +164,7 @@ bool Viewer::loadPage(const QUrl& url)
     inspectorButton->setDefaultAction(webPage->action(QWebPage::InspectElement));
     webView->setPage(webPage);
 
-    bool result = webPage->loadSync(url);
+    bool result = webPage->loadSync(fileName);
 
     timeSlider->setValue(0);
 
@@ -177,13 +176,14 @@ bool Viewer::loadPage(const QUrl& url)
 void Viewer::setupImages(const QSize& size)
 {
     imagesTable->setRowCount(0);
-    const WebVfx::Effects::ImageTypeMap& imageMap = webPage->getImageTypeMap();
     int row = 0;
-    for (WebVfx::Effects::ImageTypeMap::const_iterator it = imageMap.begin();
-         it != imageMap.end(); it++) {
+    WebVfx::Effects::ImageTypeMapIterator it(webPage->getImageTypeMap());
+    while (it.hasNext()) {
+        it.next();
+
         imagesTable->insertRow(row);
 
-        QString imageName(QString::fromStdString(it->first));
+        QString imageName(it.key());
 
         // Image name in column 0
         QTableWidgetItem* item = new QTableWidgetItem(imageName);
@@ -201,7 +201,7 @@ void Viewer::setupImages(const QSize& size)
 
         // Type name in column 2
         QString typeName;
-        switch (it->second) {
+        switch (it.value()) {
             case WebVfx::Effects::SourceImageType:
                 typeName = tr("Source");
                 break;

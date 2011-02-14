@@ -5,7 +5,7 @@
 #ifndef WEBVFX_LOGGER_H_
 #define WEBVFX_LOGGER_H_
 
-#include <string>
+#include <QString>
 
 namespace WebVfx {
 
@@ -14,10 +14,10 @@ class Logger
 public:
     virtual ~Logger() = 0;
     //XXX should add log level enum
-    virtual void log(const std::string& msg) = 0;
+    virtual void log(const QString& msg) = 0;
 };
 
-void log(const std::string& msg);
+void log(const QString& msg);
 
 }
 
