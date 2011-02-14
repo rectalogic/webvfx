@@ -14,7 +14,7 @@ namespace WebVfx
 WebPage::WebPage(QObject* parent, QSize size, Parameters* parameters)
     : QWebPage(parent)
     , pageLoadFinished(LoadNotFinished)
-    , scriptLoadFinished(LoadNotFinished)
+    , contextLoadFinished(LoadNotFinished)
     , effectsContext(new EffectsContext(this, parameters))
     , syncLoop(0)
     , renderImage(0)
@@ -80,14 +80,14 @@ void WebPage::webPageLoadFinished(bool result)
 {
     if (pageLoadFinished == LoadNotFinished)
         pageLoadFinished = result ? LoadSucceeded : LoadFailed;
-    if (syncLoop && scriptLoadFinished != LoadNotFinished)
-        syncLoop->exit(scriptLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
+    if (syncLoop && contextLoadFinished != LoadNotFinished)
+        syncLoop->exit(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
 }
 
 void WebPage::effectsContextLoadFinished(bool result, const QVariantMap& typeMap)
 {
-    if (scriptLoadFinished == LoadNotFinished) {
-        scriptLoadFinished = result ? LoadSucceeded : LoadFailed;
+    if (contextLoadFinished == LoadNotFinished) {
+        contextLoadFinished = result ? LoadSucceeded : LoadFailed;
         // Convert QVariantMap to std::map
         QMapIterator<QString, QVariant> iter(typeMap);
         while (iter.hasNext()) {
@@ -97,18 +97,18 @@ void WebPage::effectsContextLoadFinished(bool result, const QVariantMap& typeMap
         }
     }
     if (syncLoop && pageLoadFinished != LoadNotFinished)
-        syncLoop->exit(scriptLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
+        syncLoop->exit(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
 }
 
 bool WebPage::loadSync(const QUrl& url)
 {
     if (syncLoop) {
-        log("loadSync recursive call detected");
+        log("WebPage::loadSync recursive call detected");
         return false;
     }
 
     pageLoadFinished = LoadNotFinished;
-    scriptLoadFinished = LoadNotFinished;
+    contextLoadFinished = LoadNotFinished;
 
     mainFrame()->load(url);
 

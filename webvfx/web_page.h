@@ -48,7 +48,7 @@ protected:
 private:
     enum LoadStatus { LoadNotFinished, LoadFailed, LoadSucceeded };
     LoadStatus pageLoadFinished;
-    LoadStatus scriptLoadFinished;
+    LoadStatus contextLoadFinished;
     EffectsContext* effectsContext;
     QEventLoop* syncLoop;
     QImage* renderImage;
