@@ -7,7 +7,7 @@
 
 #include <QDeclarativeView>
 #include "webvfx/content.h"
-#include "webvfx/effects_context.h"
+#include "webvfx/content_context.h"
 #include "webvfx/effects.h"
 #include "webvfx/image.h"
 
@@ -31,19 +31,19 @@ public:
     // Load QML synchronously, return success
     bool loadContent(const QUrl& url);
 	void setContentSize(const QSize& size) { resize(size); }
-    const Effects::ImageTypeMap& getImageTypeMap() { return effectsContext->getImageTypeMap(); };
+    const Effects::ImageTypeMap& getImageTypeMap() { return contentContext->getImageTypeMap(); };
     Image renderContent(double time);
-    Image getImage(const QString& name, const QSize& size) { return effectsContext->getImage(name, size); }
+    Image getImage(const QString& name, const QSize& size) { return contentContext->getImage(name, size); }
 
 private slots:
     void qmlViewStatusChanged(QDeclarativeView::Status status);
-    void effectsContextLoadFinished(bool result);
+    void contentContextLoadFinished(bool result);
 
 private:
     enum LoadStatus { LoadNotFinished, LoadFailed, LoadSucceeded };
     LoadStatus pageLoadFinished;
     LoadStatus contextLoadFinished;
-    EffectsContext* effectsContext;
+    ContentContext* contentContext;
     QEventLoop* syncLoop;
     QImage* renderImage;
 };

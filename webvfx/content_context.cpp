@@ -2,32 +2,32 @@
 #include <QPixmap>
 #include <QVariant>
 #include <QtAlgorithms>
-#include "webvfx/effects_context.h"
+#include "webvfx/content_context.h"
 #include "webvfx/image.h"
 #include "webvfx/parameters.h"
 
 namespace WebVfx
 {
 
-EffectsContext::EffectsContext(QObject* parent, Parameters* parameters)
+ContentContext::ContentContext(QObject* parent, Parameters* parameters)
     : QObject(parent)
     , parameters(parameters)
 {
 }
 
-EffectsContext::~EffectsContext()
+ContentContext::~ContentContext()
 {
     delete parameters;
     // Delete all images in map
     qDeleteAll(imageMap);
 }
 
-void EffectsContext::render(double time)
+void ContentContext::render(double time)
 {
     emit renderRequested(time);
 }
 
-Image EffectsContext::getImage(const QString& name, const QSize& size)
+Image ContentContext::getImage(const QString& name, const QSize& size)
 {
     QImage* image = imageMap.value(name);
     if (!image || image->size() != size) {
@@ -38,7 +38,7 @@ Image EffectsContext::getImage(const QString& name, const QSize& size)
     return Image(image->bits(), image->width(), image->height(), image->byteCount());
 }
 
-double EffectsContext::getNumberParameter(const QString& name)
+double ContentContext::getNumberParameter(const QString& name)
 {
     if (parameters)
         return parameters->getNumberParameter(name);
@@ -46,7 +46,7 @@ double EffectsContext::getNumberParameter(const QString& name)
         return 0;
 }
 
-const QString EffectsContext::getStringParameter(const QString& name)
+const QString ContentContext::getStringParameter(const QString& name)
 {
     if (parameters)
         return parameters->getStringParameter(name);
@@ -54,7 +54,7 @@ const QString EffectsContext::getStringParameter(const QString& name)
         return QString();
 }
 
-void EffectsContext::setImageTypeMap(const QVariantMap& variantMap)
+void ContentContext::setImageTypeMap(const QVariantMap& variantMap)
 {
     // Convert QVariantMap to ImageTypeMap
     QMapIterator<QString, QVariant> it(variantMap);
@@ -69,7 +69,7 @@ void EffectsContext::setImageTypeMap(const QVariantMap& variantMap)
 // so better to do the conversion here since handing over a QImage
 // would cause it's shared data to be duplicated the next time we wrote to it's bits.
 // http://doc.qt.nokia.com/latest/qimage.html#bits
-const QPixmap EffectsContext::getImage(const QString& name)
+const QPixmap ContentContext::getImage(const QString& name)
 {
     QImage* image = imageMap.value(name);
     if (image)

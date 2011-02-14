@@ -8,7 +8,7 @@
 #include <QMap>
 #include <QWebPage>
 #include "webvfx/content.h"
-#include "webvfx/effects_context.h"
+#include "webvfx/content_context.h"
 #include "webvfx/image.h"
 #include "webvfx/effects.h"
 
@@ -32,15 +32,15 @@ public:
     // Load URL synchronously, return success
     bool loadContent(const QUrl& url);
 	void setContentSize(const QSize& size) { setViewportSize(size); }
-    const Effects::ImageTypeMap& getImageTypeMap() { return effectsContext->getImageTypeMap(); };
+    const Effects::ImageTypeMap& getImageTypeMap() { return contentContext->getImageTypeMap(); };
     Image renderContent(double time);
-    Image getImage(const QString& name, const QSize& size) { return effectsContext->getImage(name, size); }
+    Image getImage(const QString& name, const QSize& size) { return contentContext->getImage(name, size); }
 
 private slots:
-    void injectEffectsContext();
+    void injectContentContext();
     bool shouldInterruptJavaScript();
     void webPageLoadFinished(bool result);
-    void effectsContextLoadFinished(bool result);
+    void contentContextLoadFinished(bool result);
 
 protected:
     void javaScriptAlert(QWebFrame* originatingFrame, const QString& msg);
@@ -51,7 +51,7 @@ private:
     enum LoadStatus { LoadNotFinished, LoadFailed, LoadSucceeded };
     LoadStatus pageLoadFinished;
     LoadStatus contextLoadFinished;
-    EffectsContext* effectsContext;
+    ContentContext* contentContext;
     QEventLoop* syncLoop;
     QImage* renderImage;
 };

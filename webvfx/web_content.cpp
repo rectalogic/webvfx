@@ -16,13 +16,13 @@ WebContent::WebContent(QObject* parent, QSize size, Parameters* parameters)
     : QWebPage(parent)
     , pageLoadFinished(LoadNotFinished)
     , contextLoadFinished(LoadNotFinished)
-    , effectsContext(new EffectsContext(this, parameters))
+    , contentContext(new ContentContext(this, parameters))
     , syncLoop(0)
     , renderImage(0)
 {
     connect(this, SIGNAL(loadFinished(bool)), SLOT(webPageLoadFinished(bool)));
-    connect(effectsContext, SIGNAL(loadFinished(bool)), SLOT(effectsContextLoadFinished(bool)));
-    connect(mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), SLOT(injectEffectsContext()));
+    connect(contentContext, SIGNAL(loadFinished(bool)), SLOT(contentContextLoadFinished(bool)));
+    connect(mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), SLOT(injectContentContext()));
 
     setContentSize(size);
 
@@ -62,9 +62,9 @@ bool WebContent::acceptNavigationRequest(QWebFrame*, const QNetworkRequest&, Nav
     return true;
 }
 
-void WebContent::injectEffectsContext()
+void WebContent::injectContentContext()
 {
-    mainFrame()->addToJavaScriptWindowObject("webvfx", effectsContext);
+    mainFrame()->addToJavaScriptWindowObject("webvfx", contentContext);
 }
 
 bool WebContent::shouldInterruptJavaScript()
@@ -80,7 +80,7 @@ void WebContent::webPageLoadFinished(bool result)
         syncLoop->exit(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
 }
 
-void WebContent::effectsContextLoadFinished(bool result)
+void WebContent::contentContextLoadFinished(bool result)
 {
     if (contextLoadFinished == LoadNotFinished)
         contextLoadFinished = result ? LoadSucceeded : LoadFailed;
@@ -101,7 +101,7 @@ bool WebContent::loadContent(const QUrl& url)
     mainFrame()->load(url);
 
     // Run a nested event loop which will be exited when both
-    // webPageLoadFinished and effectsContextLoadFinished signal,
+    // webPageLoadFinished and contentContextLoadFinished signal,
     // returning the result code here.
     // http://wiki.forum.nokia.com/index.php/How_to_wait_synchronously_for_a_Signal_in_Qt
     // http://qt.gitorious.org/qt/qt/blobs/4.7/src/gui/dialogs/qdialog.cpp#line549
@@ -115,7 +115,7 @@ bool WebContent::loadContent(const QUrl& url)
 Image WebContent::renderContent(double time)
 {
     // Allow the page to render for this time
-    effectsContext->render(time);
+    contentContext->render(time);
 
     // Create/recreate image with correct size
     QSize size = viewportSize();

@@ -5,7 +5,6 @@
 #include <QSize>
 #include <QString>
 #include <QVariant>
-#include "webvfx/effects_context.h"
 #include "webvfx/image.h"
 #include "webvfx/logger.h"
 #include "webvfx/qml_content.h"
@@ -17,15 +16,15 @@ QmlContent::QmlContent(QWidget* parent, QSize size, Parameters* parameters)
     : QDeclarativeView(parent)
     , pageLoadFinished(LoadNotFinished)
     , contextLoadFinished(LoadNotFinished)
-    , effectsContext(new EffectsContext(this, parameters))
+    , contentContext(new ContentContext(this, parameters))
     , syncLoop(0)
     , renderImage(0)
 {
     // Expose context to the QML
-    rootContext()->setContextProperty("webvfx", effectsContext);
+    rootContext()->setContextProperty("webvfx", contentContext);
 
     connect(this, SIGNAL(statusChanged(QDeclarativeView::Status)), SLOT(qmlViewStatusChanged(QDeclarativeView::Status)));
-    connect(effectsContext, SIGNAL(loadFinished(bool)), SLOT(effectsContextLoadFinished(bool)));
+    connect(contentContext, SIGNAL(loadFinished(bool)), SLOT(contentContextLoadFinished(bool)));
 
     setResizeMode(QDeclarativeView::SizeRootObjectToView);
     setContentSize(size);
@@ -51,7 +50,7 @@ void QmlContent::qmlViewStatusChanged(QDeclarativeView::Status status)
         syncLoop->exit(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
 }
 
-void QmlContent::effectsContextLoadFinished(bool result)
+void QmlContent::contentContextLoadFinished(bool result)
 {
     if (contextLoadFinished == LoadNotFinished)
         contextLoadFinished = result ? LoadSucceeded : LoadFailed;
@@ -72,7 +71,7 @@ bool QmlContent::loadContent(const QUrl& url)
 	setSource(url);
 
     // Run a nested event loop which will be exited when both
-    // qmlViewStatusChanged and effectsContextLoadFinished signal,
+    // qmlViewStatusChanged and contentContextLoadFinished signal,
     // returning the result code here.
     // http://wiki.forum.nokia.com/index.php/How_to_wait_synchronously_for_a_Signal_in_Qt
     // http://qt.gitorious.org/qt/qt/blobs/4.7/src/gui/dialogs/qdialog.cpp#line549
@@ -88,7 +87,7 @@ bool QmlContent::loadContent(const QUrl& url)
 Image QmlContent::renderContent(double time)
 {
     // Allow the content to render for this time
-    effectsContext->render(time);
+    contentContext->render(time);
 
     // Create/recreate image with correct size
     QSize size(this->size());

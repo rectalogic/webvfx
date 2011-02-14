@@ -2,8 +2,8 @@ TEMPLATE = lib
 #VERSION = 
 
 HEADERS += content.h
+HEADERS += content_context.h
 HEADERS += effects.h
-HEADERS += effects_context.h
 HEADERS += effects_impl.h
 HEADERS += image.h
 HEADERS += logger.h
@@ -13,8 +13,8 @@ HEADERS += web_content.h
 HEADERS += webvfx.h
 
 SOURCES += content.cpp
+SOURCES += content_context.cpp
 SOURCES += effects.cpp
-SOURCES += effects_context.cpp
 SOURCES += effects_impl.cpp
 SOURCES += image.cpp
 SOURCES += logger.cpp

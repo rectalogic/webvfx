@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBVFX_EFFECTS_CONTEXT_H_
-#define WEBVFX_EFFECTS_CONTEXT_H_
+#ifndef WEBVFX_CONTENT_CONTEXT_H_
+#define WEBVFX_CONTENT_CONTEXT_H_
 
 #include <QHash>
 #include <QMap>
@@ -26,7 +26,7 @@ class Parameters;
 // See QtWebKit Bridge docs:
 // http://doc.qt.nokia.com/4.7-snapshot/qtwebkit-bridge.html
 
-class EffectsContext : public QObject
+class ContentContext : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(int SOURCE_IMAGE_TYPE READ getSourceImageType CONSTANT FINAL)
@@ -38,8 +38,8 @@ class EffectsContext : public QObject
     Q_PROPERTY(QVariantMap imageTypeMap WRITE setImageTypeMap)
 
 public:
-    EffectsContext(QObject* parent, Parameters* parameters);
-    ~EffectsContext();
+    ContentContext(QObject* parent, Parameters* parameters);
+    ~ContentContext();
 
     // Inform page contents to render at time.
     // emits renderRequested signal to the page contents.
