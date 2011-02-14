@@ -7,12 +7,12 @@
 #include <QVariant>
 #include <QWebFrame>
 #include "webvfx/logger.h"
-#include "webvfx/web_page.h"
+#include "webvfx/web_content.h"
 
 namespace WebVfx
 {
 
-WebPage::WebPage(QObject* parent, QSize size, Parameters* parameters)
+WebContent::WebContent(QObject* parent, QSize size, Parameters* parameters)
     : QWebPage(parent)
     , pageLoadFinished(LoadNotFinished)
     , contextLoadFinished(LoadNotFinished)
@@ -24,7 +24,7 @@ WebPage::WebPage(QObject* parent, QSize size, Parameters* parameters)
     connect(effectsContext, SIGNAL(loadFinished(bool)), SLOT(effectsContextLoadFinished(bool)));
     connect(mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), SLOT(injectEffectsContext()));
 
-    setViewportSize(size);
+    setContentSize(size);
 
     settings()->setAttribute(QWebSettings::SiteSpecificQuirksEnabled, false);
     settings()->setAttribute(QWebSettings::AcceleratedCompositingEnabled, false);
@@ -37,17 +37,17 @@ WebPage::WebPage(QObject* parent, QSize size, Parameters* parameters)
     mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOff);
 }
 
-WebPage::~WebPage()
+WebContent::~WebContent()
 {
     delete renderImage;
 }
 
-void WebPage::javaScriptAlert(QWebFrame *, const QString &msg)
+void WebContent::javaScriptAlert(QWebFrame *, const QString &msg)
 {
     log(QLatin1Literal("JavaScript alert: ") % msg);
 }
 
-void WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID)
+void WebContent::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID)
 {
     QString msg(message);
     if (!sourceID.isEmpty())
@@ -55,24 +55,24 @@ void WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, c
     log(msg);
 }
 
-bool WebPage::acceptNavigationRequest(QWebFrame*, const QNetworkRequest&, NavigationType)
+bool WebContent::acceptNavigationRequest(QWebFrame*, const QNetworkRequest&, NavigationType)
 {
     //XXX we want to prevent JS from navigating the page - does this prevent our initial load?
     //return false;
     return true;
 }
 
-void WebPage::injectEffectsContext()
+void WebContent::injectEffectsContext()
 {
     mainFrame()->addToJavaScriptWindowObject("webvfx", effectsContext);
 }
 
-bool WebPage::shouldInterruptJavaScript()
+bool WebContent::shouldInterruptJavaScript()
 {
     return false;
 }
 
-void WebPage::webPageLoadFinished(bool result)
+void WebContent::webPageLoadFinished(bool result)
 {
     if (pageLoadFinished == LoadNotFinished)
         pageLoadFinished = result ? LoadSucceeded : LoadFailed;
@@ -80,7 +80,7 @@ void WebPage::webPageLoadFinished(bool result)
         syncLoop->exit(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
 }
 
-void WebPage::effectsContextLoadFinished(bool result)
+void WebContent::effectsContextLoadFinished(bool result)
 {
     if (contextLoadFinished == LoadNotFinished)
         contextLoadFinished = result ? LoadSucceeded : LoadFailed;
@@ -88,10 +88,10 @@ void WebPage::effectsContextLoadFinished(bool result)
         syncLoop->exit(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
 }
 
-bool WebPage::loadSync(const QUrl& url)
+bool WebContent::loadContent(const QUrl& url)
 {
     if (syncLoop) {
-        log("WebPage::loadSync recursive call detected");
+        log("WebContent::loadContent recursive call detected");
         return false;
     }
 
@@ -112,7 +112,7 @@ bool WebPage::loadSync(const QUrl& url)
     return result;
 }
 
-Image WebPage::render(double time)
+Image WebContent::renderContent(double time)
 {
     // Allow the page to render for this time
     effectsContext->render(time);

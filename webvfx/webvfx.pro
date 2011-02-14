@@ -1,22 +1,26 @@
 TEMPLATE = lib
 #VERSION = 
 
+HEADERS += content.h
 HEADERS += effects.h
 HEADERS += effects_context.h
+HEADERS += effects_impl.h
 HEADERS += image.h
 HEADERS += logger.h
 HEADERS += parameters.h
-HEADERS += web_effects.h
-HEADERS += web_page.h
+HEADERS += qml_content.h
+HEADERS += web_content.h
 HEADERS += webvfx.h
 
+SOURCES += content.cpp
 SOURCES += effects.cpp
 SOURCES += effects_context.cpp
+SOURCES += effects_impl.cpp
 SOURCES += image.cpp
 SOURCES += logger.cpp
 SOURCES += parameters.cpp
-SOURCES += web_effects.cpp
-SOURCES += web_page.cpp
+SOURCES += qml_content.cpp
+SOURCES += web_content.cpp
 SOURCES += webvfx.cpp
 macx:SOURCES += webvfx_mac.mm
 
@@ -28,7 +32,7 @@ DESTDIR = ../build
 
 CONFIG += shared thread warn_on
 #XXX add opengl?
-QT += webkit
+QT += webkit declarative
 
 
 CONFIG += debug_and_release

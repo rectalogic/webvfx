@@ -21,7 +21,6 @@ namespace WebVfx
 {
 
 class Image;
-class WebPage;
 class Parameters;
 
 // See QtWebKit Bridge docs:
@@ -39,7 +38,7 @@ class EffectsContext : public QObject
     Q_PROPERTY(QVariantMap imageTypeMap WRITE setImageTypeMap)
 
 public:
-    EffectsContext(WebPage* parent, Parameters* parameters);
+    EffectsContext(QObject* parent, Parameters* parameters);
     ~EffectsContext();
 
     // Inform page contents to render at time.

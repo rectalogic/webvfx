@@ -18,7 +18,7 @@
 #include <webvfx/image.h>
 #include <webvfx/parameters.h>
 #include <webvfx/webvfx.h>
-#include <webvfx/web_page.h>
+#include <webvfx/web_content.h>
 #include "image_color.h"
 #include "viewer.h"
 
@@ -127,9 +127,9 @@ void Viewer::on_resizeButton_clicked()
 void Viewer::on_timeSlider_valueChanged(int value)
 {
     double time = sliderTimeValue(value);
-    if (webPage) {
+    if (webContent) {
         // Just ignore the returned Image
-        webPage->render(time);
+        webContent->renderContent(time);
     }
     timeLabel->setNum(time);
 }
@@ -157,14 +157,14 @@ bool Viewer::loadPage(const QString& fileName)
 {
     logTextEdit->clear();
 
-    webPage = new WebVfx::WebPage(webView, webView->size(), new ViewerParameters(parametersTable));
+    webContent = new WebVfx::WebContent(webView, webView->size(), new ViewerParameters(parametersTable));
     // User can right-click to open WebInspector on the page
-    webPage->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+    webContent->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     // Install WebInspector action on tool button
-    inspectorButton->setDefaultAction(webPage->action(QWebPage::InspectElement));
-    webView->setPage(webPage);
+    inspectorButton->setDefaultAction(webContent->action(QWebPage::InspectElement));
+    webView->setPage(webContent);
 
-    bool result = webPage->loadSync(fileName);
+    bool result = webContent->loadContent(fileName);
 
     timeSlider->setValue(0);
 
@@ -177,7 +177,7 @@ void Viewer::setupImages(const QSize& size)
 {
     imagesTable->setRowCount(0);
     int row = 0;
-    WebVfx::Effects::ImageTypeMapIterator it(webPage->getImageTypeMap());
+    WebVfx::Effects::ImageTypeMapIterator it(webContent->getImageTypeMap());
     while (it.hasNext()) {
         it.next();
 
@@ -222,8 +222,8 @@ void Viewer::setupImages(const QSize& size)
 
 void Viewer::onImageChanged(const QString& name, const WebVfx::Image& image)
 {
-    if (!webPage)
+    if (!webContent)
         return;
-    WebVfx::Image targetImage = webPage->getImage(name, QSize(image.width(), image.height()));
+    WebVfx::Image targetImage = webContent->getImage(name, QSize(image.width(), image.height()));
     targetImage.copyPixelsFrom(image);
 }

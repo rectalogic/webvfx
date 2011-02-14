@@ -14,7 +14,7 @@
 #include <QWaitCondition>
 #include "webvfx/logger.h"
 #include "webvfx/webvfx.h"
-#include "webvfx/web_effects.h"
+#include "webvfx/effects_impl.h"
 
 
 namespace WebVfx
@@ -110,7 +110,7 @@ bool initialize()
 
 Effects* createEffects(const QString& fileName, int width, int height, Parameters* parameters)
 {
-    WebEffects* effects = new WebEffects();
+    EffectsImpl* effects = new EffectsImpl();
     if (!effects->initialize(fileName, width, height, parameters)) {
         effects->destroy();
         return 0;

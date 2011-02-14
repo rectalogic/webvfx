@@ -2,48 +2,42 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBVFX_WEB_PAGE_H_
-#define WEBVFX_WEB_PAGE_H_
+#ifndef WEBVFX_QML_VIEW_H_
+#define WEBVFX_QML_VIEW_H_
 
-#include <QMap>
-#include <QWebPage>
+#include <QDeclarativeView>
+#include "webvfx/content.h"
 #include "webvfx/effects_context.h"
-#include "webvfx/image.h"
 #include "webvfx/effects.h"
+#include "webvfx/image.h"
 
 class QEventLoop;
-class QImage;
 class QSize;
-class QWebFrame;
+class QUrl;
 
 namespace WebVfx
 {
 
+class Image;
 class Parameters;
 
-class WebPage : public QWebPage
+class QmlContent : public QDeclarativeView, public Content
 {
     Q_OBJECT
 public:
-    WebPage(QObject* parent, QSize size, Parameters* parameters);
-    ~WebPage();
+    QmlContent(QWidget* parent, QSize size, Parameters* parameters);
+    ~QmlContent();
 
-    // Load URL synchronously, return success
-    bool loadSync(const QUrl& url);
+    // Load QML synchronously, return success
+    bool loadContent(const QUrl& url);
+	void setContentSize(const QSize& size) { resize(size); }
     const Effects::ImageTypeMap& getImageTypeMap() { return effectsContext->getImageTypeMap(); };
-    Image render(double time);
+    Image renderContent(double time);
     Image getImage(const QString& name, const QSize& size) { return effectsContext->getImage(name, size); }
 
 private slots:
-    void injectEffectsContext();
-    bool shouldInterruptJavaScript();
-    void webPageLoadFinished(bool result);
+    void qmlViewStatusChanged(QDeclarativeView::Status status);
     void effectsContextLoadFinished(bool result);
-
-protected:
-    void javaScriptAlert(QWebFrame* originatingFrame, const QString& msg);
-    void javaScriptConsoleMessage(const QString& message, int lineNumber, const QString& sourceID);
-    bool acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& request, NavigationType type);
 
 private:
     enum LoadStatus { LoadNotFinished, LoadFailed, LoadSucceeded };

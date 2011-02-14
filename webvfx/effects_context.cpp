@@ -5,12 +5,11 @@
 #include "webvfx/effects_context.h"
 #include "webvfx/image.h"
 #include "webvfx/parameters.h"
-#include "webvfx/web_page.h"
 
 namespace WebVfx
 {
 
-EffectsContext::EffectsContext(WebPage* parent, Parameters* parameters)
+EffectsContext::EffectsContext(QObject* parent, Parameters* parameters)
     : QObject(parent)
     , parameters(parameters)
 {

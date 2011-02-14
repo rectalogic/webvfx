@@ -11,7 +11,7 @@
 namespace WebVfx
 {
     class Image;
-    class WebPage;
+    class WebContent;
 }
 
 class QLabel;
@@ -39,7 +39,7 @@ private:
     QLabel* sizeLabel;
     QLabel* timeLabel;
     QWebView* webView;
-    WebVfx::WebPage* webPage;
+    WebVfx::WebContent* webContent;
 };
 
 #endif
