@@ -22,9 +22,8 @@ void setLogger(Logger* logger);
 // http://bugreports.qt.nokia.com/browse/QTBUG-7393
 bool initialize();
 
-// Create a Effects instance.
-// Effects::initialize() should be called to initialize the new instance.
-Effects* createEffects();
+// Create an Effects instance.
+Effects* createEffects(const std::string& url, int width, int height, Parameters* parameters = 0);
 
 // Must be called after initialize from the main thread in
 // non-Qt based MacOS applications if Effects is going to be used

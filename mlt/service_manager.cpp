@@ -115,12 +115,10 @@ bool ServiceManager::initialize(int width, int height)
         mlt_log(service, MLT_LOG_ERROR, "No %s property found\n", ServiceManager::kURLPropertyName);
         return false;
     }
-    effects = WebVfx::createEffects();
-    bool result = effects->initialize(url, width, height, new ServiceParameters(service));
-    if (!result) {
-        effects->destroy(); effects = 0;
+    effects = WebVfx::createEffects(url, width, height, new ServiceParameters(service));
+    if (!effects) {
         mlt_log(service, MLT_LOG_ERROR, "Failed to create WebVfx Effects\n");
-        return result;
+        return false;
     }
 
     // Iterate over image map - save source and target image names,

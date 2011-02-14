@@ -40,8 +40,9 @@ int main(int argc, char* argv[]) {
     };
     AutoWebVfx vfx;
 
-    WebVfx::Effects* effects = WebVfx::createEffects();
-    effects->initialize(argv[1], 320, 240, new Parameters());
+    WebVfx::Effects* effects = WebVfx::createEffects(argv[1], 320, 240, new Parameters());
+    if (!effects)
+        return -1;
     WebVfx::Image video = effects->getImage("sourceImage", 320, 240);
     // Fill with red XXX need to take into account stride
     unsigned char* pixels = video.pixels();

@@ -107,9 +107,14 @@ bool initialize()
     return true;
 }
 
-Effects* createEffects()
+Effects* createEffects(const std::string& url, int width, int height, Parameters* parameters)
 {
-    return new WebEffects();
+    WebEffects* effects = new WebEffects();
+    if (!effects->initialize(url, width, height, parameters)) {
+        effects->destroy();
+        return 0;
+    }
+    return effects;
 }
 
 int processEvents()

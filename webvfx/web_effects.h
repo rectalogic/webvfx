@@ -22,8 +22,8 @@ class WebEffects : public QObject, public Effects
     Q_OBJECT
 public:
     WebEffects();
-    ~WebEffects() {};
 
+    // WebEffects will take ownership of Parameters
     bool initialize(const std::string& url, int width, int height, Parameters* parameters = 0);
     const ImageTypeMap& getImageTypeMap();
     Image getImage(const std::string& name, int width, int height);
@@ -31,6 +31,7 @@ public:
     void destroy();
 
 private:
+    ~WebEffects() {};
     Q_INVOKABLE void initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters);
     Q_INVOKABLE void renderInvokable(double time, const QSize& size);
 

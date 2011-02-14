@@ -22,9 +22,6 @@ public:
 
     typedef std::map<const std::string, ImageType> ImageTypeMap;
 
-    // A Parameters implementation may be supplied to provide parameters to the page.
-    // Effects will take ownership of parameters.
-    virtual bool initialize(const std::string& url, int width, int height, Parameters* parameters = 0) = 0;
     // Return a map mapping image names the page content uses to imge type.
     // XXX should we expose opaque "cooke" image name that holds QString internally? (and with a toString() method) - so caller can efficiently set image using cookie name
     virtual const ImageTypeMap& getImageTypeMap() = 0;
