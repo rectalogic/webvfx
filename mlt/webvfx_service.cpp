@@ -37,7 +37,7 @@ static mlt_properties createMetadata(mlt_service_type serviceType, const char* s
     metadataPath.append(serviceName).append(YML_SUFFIX);
 
     // File may not exists, metadata will be empty properties in that case
-	mlt_properties metadata = mlt_properties_parse_yaml(metadataPath.c_str());
+    mlt_properties metadata = mlt_properties_parse_yaml(metadataPath.c_str());
     mlt_properties_set(metadata, "identifier", serviceName);
     mlt_properties_set(metadata, "type", serviceTypeToName(serviceType));
     // tags array

@@ -33,7 +33,7 @@ public:
     void destroy();
 
 private:
-    ~EffectsImpl() {};
+    ~EffectsImpl();
     Q_INVOKABLE void initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters);
     Q_INVOKABLE void renderInvokable(double time, const QSize& size);
 

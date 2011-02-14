@@ -22,9 +22,9 @@ public:
     Content() {};
     virtual ~Content() = 0;
 
-	// This should synchronously load content
-	virtual bool loadContent(const QUrl& url) = 0;
-	virtual void setContentSize(const QSize& size) = 0;
+    // This should synchronously load content
+    virtual bool loadContent(const QUrl& url) = 0;
+    virtual void setContentSize(const QSize& size) = 0;
     virtual const Effects::ImageTypeMap& getImageTypeMap() = 0;
     virtual Image getImage(const QString& name, const QSize& size) = 0;
     virtual Image renderContent(double time) = 0;

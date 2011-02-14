@@ -31,7 +31,7 @@ public:
 
     // Load URL synchronously, return success
     bool loadContent(const QUrl& url);
-	void setContentSize(const QSize& size) { setViewportSize(size); }
+    void setContentSize(const QSize& size) { setViewportSize(size); }
     const Effects::ImageTypeMap& getImageTypeMap() { return contentContext->getImageTypeMap(); };
     Image renderContent(double time);
     Image getImage(const QString& name, const QSize& size) { return contentContext->getImage(name, size); }

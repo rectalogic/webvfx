@@ -61,7 +61,7 @@ void QmlContent::contentContextLoadFinished(bool result)
 bool QmlContent::loadContent(const QUrl& url)
 {
     if (syncLoop) {
-        log("QmlContent::setSourceSync recursive call detected");
+        log("QmlContent::loadContent recursive call detected");
         return false;
     }
 

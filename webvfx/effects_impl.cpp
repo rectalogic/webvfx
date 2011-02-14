@@ -8,6 +8,7 @@
 #include "webvfx/image.h"
 #include "webvfx/logger.h"
 #include "webvfx/parameters.h"
+#include "webvfx/qml_content.h"
 #include "webvfx/web_content.h"
 
 
@@ -19,6 +20,11 @@ EffectsImpl::EffectsImpl()
     , content(0)
     , loadResult(false)
 {
+}
+
+EffectsImpl::~EffectsImpl()
+{
+    delete content;
 }
 
 bool EffectsImpl::initialize(const QString& fileName, int width, int height, Parameters* parameters)
@@ -84,9 +90,18 @@ const Image EffectsImpl::render(double time, int width, int height)
 
 void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters)
 {
-    content = new WebContent(this, size, parameters);
-	//XXX figure out which to create based on url
-    //content = new QmlContent(this, size, parameters);
+    QString path(url.path());
+    // We can't parewnt QmlContent since we aren't a QWidget.
+    // So don't parent either content, and destroy them explicitly.
+    if (path.endsWith(".html", Qt::CaseInsensitive))
+        content = new WebContent(0, size, parameters);
+    else if (path.endsWith(".qml", Qt::CaseInsensitive))
+        content = new QmlContent(0, size, parameters);
+    else {
+        log(QLatin1Literal("WebVfx Filename must end with '.html' or '.qml': ") % path);
+        loadResult = false;
+        return;
+    }
 
     // Qt 4.8.0 allows BlockingQueuedConnection to return a value http://bugreports.qt.nokia.com/browse/QTBUG-10440
     loadResult = content->loadContent(url);
