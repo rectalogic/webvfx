@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBVFX_RENDERING_CONTEXT_H_
-#define WEBVFX_RENDERING_CONTEXT_H_
+#ifndef WEBVFX_EFFECTS_CONTEXT_H_
+#define WEBVFX_EFFECTS_CONTEXT_H_
 
 #include <QHash>
 #include <QObject>
@@ -26,15 +26,15 @@ class Parameters;
 // See QtWebKit Bridge docs:
 // http://doc.qt.nokia.com/4.7-snapshot/qtwebkit-bridge.html
 
-class RenderingContext : public QObject
+class EffectsContext : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(int SOURCE_IMAGE_TYPE READ getSourceImageType CONSTANT FINAL)
     Q_PROPERTY(int TARGET_IMAGE_TYPE READ getTargetImageType CONSTANT FINAL)
     Q_PROPERTY(int EXTRA_IMAGE_TYPE READ getExtraImageType CONSTANT FINAL)
 public:
-    RenderingContext(WebPage* parent, Parameters* parameters);
-    ~RenderingContext();
+    EffectsContext(WebPage* parent, Parameters* parameters);
+    ~EffectsContext();
 
     // Inform page contents to render at time.
     // emits renderRequested signal to the page contents.
