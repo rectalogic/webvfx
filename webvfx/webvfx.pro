@@ -6,8 +6,8 @@ HEADERS += effects_context.h
 HEADERS += image.h
 HEADERS += logger.h
 HEADERS += parameters.h
+HEADERS += web_effects.h
 HEADERS += web_page.h
-HEADERS += web_renderer.h
 HEADERS += webvfx.h
 
 SOURCES += effects.cpp
@@ -15,8 +15,8 @@ SOURCES += effects_context.cpp
 SOURCES += image.cpp
 SOURCES += logger.cpp
 SOURCES += parameters.cpp
+SOURCES += web_effects.cpp
 SOURCES += web_page.cpp
-SOURCES += web_renderer.cpp
 SOURCES += webvfx.cpp
 macx:SOURCES += webvfx_mac.mm
 

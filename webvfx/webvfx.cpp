@@ -13,7 +13,7 @@
 #include <QWaitCondition>
 #include "webvfx/logger.h"
 #include "webvfx/webvfx.h"
-#include "webvfx/web_renderer.h"
+#include "webvfx/web_effects.h"
 
 
 namespace WebVfx
@@ -109,7 +109,7 @@ bool initialize()
 
 Effects* createEffects()
 {
-    return new WebRenderer();
+    return new WebEffects();
 }
 
 int processEvents()

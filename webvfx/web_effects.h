@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBVFX_WEB_RENDERER_H_
-#define WEBVFX_WEB_RENDERER_H_
+#ifndef WEBVFX_WEB_EFFECTS_H_
+#define WEBVFX_WEB_EFFECTS_H_
 
 #include <QObject>
 #include <QSize>
@@ -17,12 +17,12 @@ class Image;
 class WebPage;
 class Parameters;
 
-class WebRenderer : public QObject, public Effects
+class WebEffects : public QObject, public Effects
 {
     Q_OBJECT
 public:
-    WebRenderer();
-    ~WebRenderer() {};
+    WebEffects();
+    ~WebEffects() {};
 
     bool initialize(const std::string& url, int width, int height, Parameters* parameters = 0);
     const ImageTypeMap& getImageTypeMap();
