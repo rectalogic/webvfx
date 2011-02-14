@@ -10,9 +10,9 @@ extern "C" {
 #include "webvfx_service.h"
 
 
-namespace MLTWebVFX
+namespace MLTWebVfx
 {
-class Logger : public WebVFX::Logger
+class Logger : public WebVfx::Logger
 {
     void log(const std::string& message) {
         //XXX use log level once passed
@@ -30,12 +30,12 @@ class Logger : public WebVFX::Logger
 
 extern "C" EXPORT MLT_REPOSITORY
 {
-    MLTWebVFX::registerServices(repository, producer_type);
-    MLTWebVFX::registerServices(repository, filter_type);
-    MLTWebVFX::registerServices(repository, transition_type);
+    MLTWebVfx::registerServices(repository, producer_type);
+    MLTWebVfx::registerServices(repository, filter_type);
+    MLTWebVfx::registerServices(repository, transition_type);
 
-    // Register shutdown hook - even if we don't initialize WebVFX
+    // Register shutdown hook - even if we don't initialize WebVfx
     // we want our logger deleted.
-    mlt_factory_register_for_clean_up(0, reinterpret_cast<mlt_destructor>(WebVFX::shutdown));
-    WebVFX::setLogger(new MLTWebVFX::Logger());
+    mlt_factory_register_for_clean_up(0, reinterpret_cast<mlt_destructor>(WebVfx::shutdown));
+    WebVfx::setLogger(new MLTWebVfx::Logger());
 }

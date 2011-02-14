@@ -38,9 +38,9 @@ void ImageColor::setImageSize(const QSize& size)
     emit imageChanged(objectName(), getImage());
 }
 
-const WebVFX::Image ImageColor::getImage()
+const WebVfx::Image ImageColor::getImage()
 {
-    return WebVFX::Image(image.bits(), image.width(), image.height(), image.byteCount());
+    return WebVfx::Image(image.bits(), image.width(), image.height(), image.byteCount());
 }
 
 void ImageColor::onClicked(bool)

@@ -6,7 +6,7 @@
 #include "webvfx/rendering_context.h"
 #include "webvfx/web_page.h"
 
-namespace WebVFX
+namespace WebVfx
 {
 
 RenderingContext::RenderingContext(WebPage* parent, Parameters* parameters)

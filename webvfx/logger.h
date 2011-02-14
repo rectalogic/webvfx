@@ -7,7 +7,7 @@
 
 #include <string>
 
-namespace WebVFX {
+namespace WebVfx {
 
 class Logger
 {

@@ -16,7 +16,7 @@ class QString;
 class QVariant;
 typedef QMap<QString, QVariant> QVariantMap;
 
-namespace WebVFX
+namespace WebVfx
 {
 
 class Image;

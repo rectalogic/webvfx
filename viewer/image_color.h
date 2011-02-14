@@ -9,7 +9,7 @@
 #include <QColor>
 #include <QSize>
 
-namespace WebVFX {
+namespace WebVfx {
     class Image;
 }
 
@@ -28,14 +28,14 @@ public:
     void setImageSize(const QSize& size);
 
 signals:
-    void imageChanged(const QString& name, const WebVFX::Image& image);
+    void imageChanged(const QString& name, const WebVfx::Image& image);
 
 private slots:
     void onClicked(bool);
 
 private:
     void fillImage();
-    const WebVFX::Image getImage();
+    const WebVfx::Image getImage();
     QColor color;
     QImage image;
 };

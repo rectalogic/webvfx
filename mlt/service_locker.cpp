@@ -11,9 +11,9 @@ extern "C" {
 #include "service_manager.h"
 
 
-namespace MLTWebVFX
+namespace MLTWebVfx
 {
-const char* ServiceLocker::kManagerPropertyName = "WebVFXManager";
+const char* ServiceLocker::kManagerPropertyName = "WebVfxManager";
 
 
 ServiceLocker::ServiceLocker(mlt_service service)
@@ -37,7 +37,7 @@ bool ServiceLocker::initialize(int width, int height)
         bool result = manager->initialize(width, height);
         if (!result) {
             destroyManager(manager);
-            mlt_log(service, MLT_LOG_ERROR, "Failed to create WebVFX ServiceManager\n");
+            mlt_log(service, MLT_LOG_ERROR, "Failed to create WebVfx ServiceManager\n");
             return result;
         }
 

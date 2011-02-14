@@ -9,7 +9,7 @@
 #include "webvfx/web_renderer.h"
 
 
-namespace WebVFX
+namespace WebVfx
 {
 
 WebRenderer::WebRenderer()

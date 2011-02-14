@@ -8,7 +8,7 @@
 #include <QMainWindow>
 #include "ui_viewer.h"
 
-namespace WebVFX
+namespace WebVfx
 {
     class Image;
     class WebPage;
@@ -30,7 +30,7 @@ private slots:
     void on_timeSlider_valueChanged(int);
     void on_addParameterButton_clicked();
     void on_deleteParameterButton_clicked();
-    void onImageChanged(const QString& name, const WebVFX::Image& image);
+    void onImageChanged(const QString& name, const WebVfx::Image& image);
 
 private:
     bool loadPage(const QUrl& url);
@@ -39,7 +39,7 @@ private:
     QLabel* sizeLabel;
     QLabel* timeLabel;
     QWebView* webView;
-    WebVFX::WebPage* webPage;
+    WebVfx::WebPage* webPage;
 };
 
 #endif

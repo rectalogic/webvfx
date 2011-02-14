@@ -17,40 +17,40 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
-    class Logger : public WebVFX::Logger {
+    class Logger : public WebVfx::Logger {
     public:
         void log(const std::string& message) {
             std::cerr << message << std::endl;
         }
     };
-    WebVFX::setLogger(new Logger());
+    WebVfx::setLogger(new Logger());
 
-    class Parameters : public WebVFX::Parameters {
+    class Parameters : public WebVfx::Parameters {
     public:
         std::string getStringParameter(const std::string&) {
-            return "WebVFX Cool Title";
+            return "WebVfx Cool Title";
         }
     };
 
-    class AutoWebVFX {
+    class AutoWebVfx {
     public:
         //XXX check return code
-        AutoWebVFX() { WebVFX::initialize(); }
-        ~AutoWebVFX() { WebVFX::shutdown(); }
+        AutoWebVfx() { WebVfx::initialize(); }
+        ~AutoWebVfx() { WebVfx::shutdown(); }
     };
-    AutoWebVFX vfx;
+    AutoWebVfx vfx;
 
-    WebVFX::Effects* effects = WebVFX::createEffects();
+    WebVfx::Effects* effects = WebVfx::createEffects();
     effects->initialize(argv[1], 320, 240, new Parameters());
-    WebVFX::Image video = effects->getImage("sourceImage", 320, 240);
+    WebVfx::Image video = effects->getImage("sourceImage", 320, 240);
     // Fill with red XXX need to take into account stride
     unsigned char* pixels = video.pixels();
-    for (int i = 0; i < video.byteCount(); i+= WebVFX::Image::BytesPerPixel) {
+    for (int i = 0; i < video.byteCount(); i+= WebVfx::Image::BytesPerPixel) {
         pixels[i] = 0xFF;
         pixels[i+1] = 0x00;
         pixels[i+2] = 0x00;
     }
-    const WebVFX::Image image = effects->render(0.32, 320, 240);
+    const WebVfx::Image image = effects->render(0.32, 320, 240);
 
     // Write to disk.
     std::ofstream rawFile;

@@ -10,7 +10,7 @@
 #include <webvfx/image.h>
 #include <webvfx/parameters.h>
 
-namespace WebVFX
+namespace WebVfx
 {
 
 // Instances of this class can be accessed from any thread,

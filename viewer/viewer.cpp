@@ -24,7 +24,7 @@
 
 
 // Expose parameter name/value pairs from the table to the page content
-class ViewerParameters : public WebVFX::Parameters
+class ViewerParameters : public WebVfx::Parameters
 {
 public:
     ViewerParameters(QTableWidget* tableWidget) : tableWidget(tableWidget) {}
@@ -58,7 +58,7 @@ private:
 
 /////////////////
 
-class ViewerLogger : public WebVFX::Logger
+class ViewerLogger : public WebVfx::Logger
 {
 public:
     ViewerLogger(QPlainTextEdit* logText) : logText(logText) {}
@@ -77,7 +77,7 @@ Viewer::Viewer(QWidget *parent)
 {
     setupUi(this);
 
-    WebVFX::setLogger(new ViewerLogger(logTextEdit));
+    WebVfx::setLogger(new ViewerLogger(logTextEdit));
 
     // Set QWebView as direct widget of QScrollArea,
     // otherwise it creates an intermediate QWidget which messes up resizing.
@@ -158,7 +158,7 @@ bool Viewer::loadPage(const QUrl& url)
 {
     logTextEdit->clear();
 
-    webPage = new WebVFX::WebPage(webView, webView->size(), new ViewerParameters(parametersTable));
+    webPage = new WebVfx::WebPage(webView, webView->size(), new ViewerParameters(parametersTable));
     // User can right-click to open WebInspector on the page
     webPage->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     // Install WebInspector action on tool button
@@ -177,9 +177,9 @@ bool Viewer::loadPage(const QUrl& url)
 void Viewer::setupImages(const QSize& size)
 {
     imagesTable->setRowCount(0);
-    const WebVFX::Effects::ImageTypeMap& imageMap = webPage->getImageTypeMap();
+    const WebVfx::Effects::ImageTypeMap& imageMap = webPage->getImageTypeMap();
     int row = 0;
-    for (WebVFX::Effects::ImageTypeMap::const_iterator it = imageMap.begin();
+    for (WebVfx::Effects::ImageTypeMap::const_iterator it = imageMap.begin();
          it != imageMap.end(); it++) {
         imagesTable->insertRow(row);
 
@@ -194,7 +194,7 @@ void Viewer::setupImages(const QSize& size)
         ImageColor* imageColor = new ImageColor();
         imageColor->setImageSize(size);
         imageColor->setObjectName(imageName);
-        connect(imageColor, SIGNAL(imageChanged(QString,WebVFX::Image)), SLOT(onImageChanged(QString,WebVFX::Image)));
+        connect(imageColor, SIGNAL(imageChanged(QString,WebVfx::Image)), SLOT(onImageChanged(QString,WebVfx::Image)));
         // Set color here so signal fires
         imageColor->setImageColor(QColor::fromHsv(qrand() % 360, 200, 230));
         imagesTable->setCellWidget(row, 1, imageColor);
@@ -202,13 +202,13 @@ void Viewer::setupImages(const QSize& size)
         // Type name in column 2
         QString typeName;
         switch (it->second) {
-            case WebVFX::Effects::SourceImageType:
+            case WebVfx::Effects::SourceImageType:
                 typeName = tr("Source");
                 break;
-            case WebVFX::Effects::TargetImageType:
+            case WebVfx::Effects::TargetImageType:
                 typeName = tr("Target");
                 break;
-            case WebVFX::Effects::ExtraImageType:
+            case WebVfx::Effects::ExtraImageType:
                 typeName = tr("Extra");
                 break;
         }
@@ -220,10 +220,10 @@ void Viewer::setupImages(const QSize& size)
     }
 }
 
-void Viewer::onImageChanged(const QString& name, const WebVFX::Image& image)
+void Viewer::onImageChanged(const QString& name, const WebVfx::Image& image)
 {
     if (!webPage)
         return;
-    WebVFX::Image targetImage = webPage->getImage(name, QSize(image.width(), image.height()));
+    WebVfx::Image targetImage = webPage->getImage(name, QSize(image.width(), image.height()));
     targetImage.copyPixelsFrom(image);
 }

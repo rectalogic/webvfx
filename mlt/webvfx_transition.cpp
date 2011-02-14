@@ -48,14 +48,14 @@ static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_forma
         return error;
 
     { // Scope the lock
-        MLTWebVFX::ServiceLocker locker(MLT_TRANSITION_SERVICE(transition));
+        MLTWebVfx::ServiceLocker locker(MLT_TRANSITION_SERVICE(transition));
         if (!locker.initialize(*width, *height))
             return 1;
 
-        MLTWebVFX::ServiceManager* manager = locker.getManager();
-        WebVFX::Image renderedImage(*image, *width, *height, *width * *height * WebVFX::Image::BytesPerPixel);
+        MLTWebVfx::ServiceManager* manager = locker.getManager();
+        WebVfx::Image renderedImage(*image, *width, *height, *width * *height * WebVfx::Image::BytesPerPixel);
         manager->copyImageForName(manager->getSourceImageName(), renderedImage);
-        WebVFX::Image targetImage(bImage, bWidth, bHeight, bWidth * bHeight * WebVFX::Image::BytesPerPixel);
+        WebVfx::Image targetImage(bImage, bWidth, bHeight, bWidth * bHeight * WebVfx::Image::BytesPerPixel);
         manager->copyImageForName(manager->getTargetImageName(), targetImage);
         manager->render(renderedImage, position);
     }
@@ -72,7 +72,7 @@ static mlt_frame transitionProcess(mlt_transition transition, mlt_frame aFrame, 
     return aFrame;
 }
 
-mlt_service MLTWebVFX::createTransition() {
+mlt_service MLTWebVfx::createTransition() {
     mlt_transition self = mlt_transition_new();
     if (self) {
         self->process = transitionProcess;

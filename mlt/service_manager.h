@@ -11,13 +11,13 @@ extern "C" {
 #include <string>
 #include <vector>
 
-namespace WebVFX
+namespace WebVfx
 {
     class Effects;
     class Image;
 }
 
-namespace MLTWebVFX
+namespace MLTWebVfx
 {
 class ImageProducer;
 class ServiceLocker;
@@ -27,8 +27,8 @@ class ServiceManager
 public:
     const std::string& getSourceImageName() { return sourceImageName; }
     const std::string& getTargetImageName() { return targetImageName; }
-    void copyImageForName(const std::string& name, const WebVFX::Image& fromImage);
-    int render(WebVFX::Image& outputImage, mlt_position position);
+    void copyImageForName(const std::string& name, const WebVfx::Image& fromImage);
+    int render(WebVfx::Image& outputImage, mlt_position position);
 
     static const char* kURLPropertyName;
 
@@ -39,7 +39,7 @@ private:
     bool initialize(int width, int height);
 
     mlt_service service;
-    WebVFX::Effects* effects;
+    WebVfx::Effects* effects;
 
     std::string sourceImageName;
     std::string targetImageName;

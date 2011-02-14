@@ -10,7 +10,7 @@ extern "C" {
 }
 
 
-namespace MLTWebVFX
+namespace MLTWebVfx
 {
 class ServiceManager;
 

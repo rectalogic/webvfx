@@ -1,12 +1,12 @@
 schema_version: 0.1
-title: WebVFX Demo Transition
+title: WebVfx Demo Transition
 version: 0.0.1
 copyright: Copyright (C) 2010 Hewlett-Packard Development Company, L.P.
 license: BSD-new
 language: en
 #url:
 creator: Andrew Wason
-description: Simple WebVFX test
+description: Simple WebVfx test
 
 parameters:
   - identifier: title

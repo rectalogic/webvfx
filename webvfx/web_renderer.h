@@ -10,7 +10,7 @@
 #include <QUrl>
 #include "webvfx/effects.h"
 
-namespace WebVFX
+namespace WebVfx
 {
 
 class Image;

@@ -50,19 +50,19 @@ static mlt_properties createMetadata(mlt_service_type serviceType, const char* s
 
 
 static void* createService(mlt_profile /*profile*/, mlt_service_type serviceType, const char* serviceName, const void*) {
-    if (!WebVFX::initialize())
+    if (!WebVfx::initialize())
         return 0;
 
     mlt_service service = 0;
     switch (serviceType) {
         case producer_type:
-            service = MLTWebVFX::createProducer();
+            service = MLTWebVfx::createProducer();
             break;
         case filter_type:
-            service = MLTWebVFX::createFilter();
+            service = MLTWebVfx::createFilter();
             break;
         case transition_type:
-            service = MLTWebVFX::createTransition();
+            service = MLTWebVfx::createTransition();
             break;
         default:
             break;
@@ -72,13 +72,13 @@ static void* createService(mlt_profile /*profile*/, mlt_service_type serviceType
     if (service) {
         std::string url("file://");
         url.append(getDataDir()).append(serviceName).append(HTML_SUFFIX);
-        mlt_properties_set(MLT_SERVICE_PROPERTIES(service), MLTWebVFX::ServiceManager::kURLPropertyName, url.c_str());
+        mlt_properties_set(MLT_SERVICE_PROPERTIES(service), MLTWebVfx::ServiceManager::kURLPropertyName, url.c_str());
     }
 
     return service;
 }
 
-void MLTWebVFX::registerServices(mlt_repository repository, mlt_service_type serviceType) {
+void MLTWebVfx::registerServices(mlt_repository repository, mlt_service_type serviceType) {
     // For service ID "webvfx.<service_type>.<service_name>", we have "webvfx.<service_type>.<service_name>.html"
     // and optional "webvfx.<service_type>.<service_name>.yml" metadata.
     // Where "service_type" is filter, transition or producer.

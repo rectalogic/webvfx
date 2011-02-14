@@ -16,7 +16,7 @@
 #include "webvfx/web_renderer.h"
 
 
-namespace WebVFX
+namespace WebVfx
 {
 
 static bool s_initialized = false;
@@ -74,7 +74,7 @@ bool initialize()
     if (!qApp) {
 #ifdef Q_WS_MAC
         if (!isMainThread()) {
-            log("WebVFX must be initialized on the main thread on MacOS");
+            log("WebVfx must be initialized on the main thread on MacOS");
             return false;
         }
 
@@ -119,7 +119,7 @@ int processEvents()
     if (!s_ownApp)
         return 0;
     if (!isMainThread()) {
-        log("WebVFX::processEvents() must be called from the main thread.");
+        log("WebVfx::processEvents() must be called from the main thread.");
         return 1;
     }
     int result = qApp->exec();

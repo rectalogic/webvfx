@@ -10,8 +10,8 @@
     QApplication app(argc, argv);
 
     app.setOrganizationDomain("webvfx.org");
-    app.setOrganizationName("WebVFX");
-    app.setApplicationName("WebVFX Viewer");
+    app.setOrganizationName("WebVfx");
+    app.setApplicationName("WebVfx Viewer");
 
     Viewer viewer;
     viewer.show();

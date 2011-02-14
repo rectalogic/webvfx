@@ -5,7 +5,7 @@
 #include <Foundation/NSThread.h>
 #include "webvfx/webvfx.h"
 
-namespace WebVFX {
+namespace WebVfx {
 
 bool isMainThread()
 {

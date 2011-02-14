@@ -11,7 +11,7 @@ extern "C" {
 #include "service_manager.h"
 #include "webvfx_service.h"
 
-static const char* kWebVFXProducerPropertyName = "WebVFXProducer";
+static const char* kWebVfxProducerPropertyName = "WebVfxProducer";
 
 static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format *format, int *width, int *height, int /*writable*/) {
     int error = 0;
@@ -20,14 +20,14 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
     mlt_properties properties = MLT_FRAME_PROPERTIES(frame);
 
     // Obtain the producer for this frame
-    mlt_producer producer = (mlt_producer)mlt_properties_get_data(properties, kWebVFXProducerPropertyName, NULL);
+    mlt_producer producer = (mlt_producer)mlt_properties_get_data(properties, kWebVfxProducerPropertyName, NULL);
 
     // Compute position
     mlt_position position = mlt_frame_get_position(frame);
 
     // Allocate the image
     *format = mlt_image_rgb24;
-    int size = *width * *height * WebVFX::Image::BytesPerPixel;
+    int size = *width * *height * WebVfx::Image::BytesPerPixel;
     *buffer = (uint8_t*)mlt_pool_alloc(size);
     if (!*buffer)
         return 1;
@@ -38,11 +38,11 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
     mlt_properties_set_int(properties, "height", *height);
 
     { // Scope the lock
-        MLTWebVFX::ServiceLocker locker(MLT_PRODUCER_SERVICE(producer));
+        MLTWebVfx::ServiceLocker locker(MLT_PRODUCER_SERVICE(producer));
         if (!locker.initialize(*width, *height))
             return 1;
 
-        WebVFX::Image outputImage(*buffer, *width, *height, size);
+        WebVfx::Image outputImage(*buffer, *width, *height, size);
         locker.getManager()->render(outputImage, position);
     }
 
@@ -61,7 +61,7 @@ static int getFrame(mlt_producer producer, mlt_frame_ptr frame, int /*index*/) {
         mlt_properties producer_props = MLT_PRODUCER_PROPERTIES(producer);
 
         // Set the producer on the frame properties
-        mlt_properties_set_data(properties, kWebVFXProducerPropertyName, producer, 0, NULL, NULL);
+        mlt_properties_set_data(properties, kWebVfxProducerPropertyName, producer, 0, NULL, NULL);
 
         // Update timecode on the frame we're creating
         mlt_frame_set_position(*frame, mlt_producer_position(producer));
@@ -80,7 +80,7 @@ static int getFrame(mlt_producer producer, mlt_frame_ptr frame, int /*index*/) {
     return 0;
 }
 
-mlt_service MLTWebVFX::createProducer() {
+mlt_service MLTWebVfx::createProducer() {
     mlt_producer self = mlt_producer_new();
     if (self) {
         self->get_frame = getFrame;

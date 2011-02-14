@@ -16,7 +16,7 @@ class QImage;
 class QSize;
 class QWebFrame;
 
-namespace WebVFX
+namespace WebVfx
 {
 
 class Parameters;

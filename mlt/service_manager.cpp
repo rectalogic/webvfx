@@ -13,13 +13,13 @@ extern "C" {
 #include "service_manager.h"
 
 
-namespace MLTWebVFX
+namespace MLTWebVfx
 {
-const char* ServiceManager::kURLPropertyName = "WebVFXURL";
+const char* ServiceManager::kURLPropertyName = "WebVfxURL";
 
 ////////////////////////
 
-class ServiceParameters : public WebVFX::Parameters
+class ServiceParameters : public WebVfx::Parameters
 {
 public:
     ServiceParameters(mlt_service service)
@@ -53,7 +53,7 @@ public:
 
     const std::string& getName() { return name; }
 
-    int produceImage(mlt_position position, WebVFX::Image& targetImage) {
+    int produceImage(mlt_position position, WebVfx::Image& targetImage) {
         if (position > mlt_producer_get_out(producer))
             return 0;
         mlt_producer_seek(producer, position);
@@ -69,7 +69,7 @@ public:
         int height = targetImage.height();
         error = mlt_frame_get_image(frame, &image, &format, &width, &height, 0);
         if (!error)
-            targetImage.copyPixelsFrom(WebVFX::Image(image, width, height, width * height * WebVFX::Image::BytesPerPixel));
+            targetImage.copyPixelsFrom(WebVfx::Image(image, width, height, width * height * WebVfx::Image::BytesPerPixel));
         mlt_frame_close(frame);
         return error;
     }
@@ -115,34 +115,34 @@ bool ServiceManager::initialize(int width, int height)
         mlt_log(service, MLT_LOG_ERROR, "No %s property found\n", ServiceManager::kURLPropertyName);
         return false;
     }
-    effects = WebVFX::createEffects();
+    effects = WebVfx::createEffects();
     bool result = effects->initialize(url, width, height, new ServiceParameters(service));
     if (!result) {
         effects->destroy(); effects = 0;
-        mlt_log(service, MLT_LOG_ERROR, "Failed to create WebVFX Effects\n");
+        mlt_log(service, MLT_LOG_ERROR, "Failed to create WebVfx Effects\n");
         return result;
     }
 
     // Iterate over image map - save source and target image names,
     // and create an ImageProducer for each extra image.
     char* factory = mlt_properties_get(properties, "factory");
-    const WebVFX::Effects::ImageTypeMap& imageMap = effects->getImageTypeMap();
-    for (WebVFX::Effects::ImageTypeMap::const_iterator it = imageMap.begin();
+    const WebVfx::Effects::ImageTypeMap& imageMap = effects->getImageTypeMap();
+    for (WebVfx::Effects::ImageTypeMap::const_iterator it = imageMap.begin();
          it != imageMap.end(); it++) {
 
         const std::string& imageName = it->first;
 
         switch (it->second) {
 
-        case WebVFX::Effects::SourceImageType:
+        case WebVfx::Effects::SourceImageType:
             sourceImageName = imageName;
             break;
 
-        case WebVFX::Effects::TargetImageType:
+        case WebVfx::Effects::TargetImageType:
             targetImageName = imageName;
             break;
 
-        case WebVFX::Effects::ExtraImageType:
+        case WebVfx::Effects::ExtraImageType:
         {
             if (!imageProducers)
                 imageProducers = new std::vector<ImageProducer*>(3);
@@ -158,7 +158,7 @@ bool ServiceManager::initialize(int width, int height)
             if (resource) {
                 mlt_producer producer = mlt_factory_producer(mlt_service_profile(service), factory, resource);
                 if (!producer) {
-                    mlt_log(service, MLT_LOG_ERROR, "WebVFX failed to create extra image producer for %s\n", resourceName.c_str());
+                    mlt_log(service, MLT_LOG_ERROR, "WebVfx failed to create extra image producer for %s\n", resourceName.c_str());
                     return false;
                 }
                 // Copy producer.<name>.* properties onto producer
@@ -167,12 +167,12 @@ bool ServiceManager::initialize(int width, int height)
                 imageProducers->insert(imageProducers->end(), new ImageProducer(imageName, producer));
             }
             else
-                mlt_log(service, MLT_LOG_WARNING, "WebVFX no producer resource property specified for extra image %s\n", resourceName.c_str());
+                mlt_log(service, MLT_LOG_WARNING, "WebVfx no producer resource property specified for extra image %s\n", resourceName.c_str());
             break;
         }
 
         default:
-            mlt_log(service, MLT_LOG_ERROR, "Invalid WebVFX image type %d\n", it->second);
+            mlt_log(service, MLT_LOG_ERROR, "Invalid WebVfx image type %d\n", it->second);
             break;
         }
     }
@@ -180,15 +180,15 @@ bool ServiceManager::initialize(int width, int height)
     return true;
 }
 
-void ServiceManager::copyImageForName(const std::string& name, const WebVFX::Image& fromImage)
+void ServiceManager::copyImageForName(const std::string& name, const WebVfx::Image& fromImage)
 {
     if (!name.empty()) {
-        WebVFX::Image toImage = effects->getImage(name, fromImage.width(), fromImage.height());
+        WebVfx::Image toImage = effects->getImage(name, fromImage.width(), fromImage.height());
         toImage.copyPixelsFrom(fromImage);
     }
 }
 
-int ServiceManager::render(WebVFX::Image& outputImage, mlt_position position)
+int ServiceManager::render(WebVfx::Image& outputImage, mlt_position position)
 {
     int error = 0;
 
@@ -204,17 +204,17 @@ int ServiceManager::render(WebVFX::Image& outputImage, mlt_position position)
              it != imageProducers->end(); it++) {
             ImageProducer* imageProducer = *it;
             if (imageProducer) {
-                WebVFX::Image extraImage = effects->getImage(imageProducer->getName(), outputImage.width(), outputImage.height());
+                WebVfx::Image extraImage = effects->getImage(imageProducer->getName(), outputImage.width(), outputImage.height());
                 error = imageProducer->produceImage(position, extraImage);
                 if (error) {
-                    mlt_log(service, MLT_LOG_ERROR, "WebVFX failed to produce image for name %s\n", imageProducer->getName().c_str());
+                    mlt_log(service, MLT_LOG_ERROR, "WebVfx failed to produce image for name %s\n", imageProducer->getName().c_str());
                     return error;
                 }
             }
         }
     }
 
-    const WebVFX::Image renderedImage = effects->render(time, outputImage.width(), outputImage.height());
+    const WebVfx::Image renderedImage = effects->render(time, outputImage.width(), outputImage.height());
     renderedImage.copyPixelsTo(outputImage);
 
     return error;

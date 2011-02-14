@@ -8,7 +8,7 @@
 #include "webvfx/logger.h"
 #include "webvfx/web_page.h"
 
-namespace WebVFX
+namespace WebVfx
 {
 
 WebPage::WebPage(QObject* parent, QSize size, Parameters* parameters)

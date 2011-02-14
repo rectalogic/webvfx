@@ -11,7 +11,7 @@ extern "C" {
 }
 #include <string>
 
-namespace MLTWebVFX
+namespace MLTWebVfx
 {
 
 void registerServices(mlt_repository repository, mlt_service_type serviceType);

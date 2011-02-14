@@ -2,7 +2,7 @@
 #include <QtGlobal>
 #include "webvfx/image.h"
 
-namespace WebVFX
+namespace WebVfx
 {
 
 const int Image::BytesPerPixel;
