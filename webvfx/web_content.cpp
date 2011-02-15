@@ -100,16 +100,20 @@ bool WebContent::loadContent(const QUrl& url)
 
     mainFrame()->load(url);
 
-    // Run a nested event loop which will be exited when both
-    // webPageLoadFinished and contentContextLoadFinished signal,
-    // returning the result code here.
-    // http://wiki.forum.nokia.com/index.php/How_to_wait_synchronously_for_a_Signal_in_Qt
-    // http://qt.gitorious.org/qt/qt/blobs/4.7/src/gui/dialogs/qdialog.cpp#line549
-    QEventLoop loop;
-    syncLoop = &loop;
-    bool result = loop.exec();
-    syncLoop = 0;
-    return result;
+    if (pageLoadFinished == LoadNotFinished || contextLoadFinished == LoadNotFinished) {
+		// Run a nested event loop which will be exited when both
+		// webPageLoadFinished and contentContextLoadFinished signal,
+		// returning the result code here.
+		// http://wiki.forum.nokia.com/index.php/How_to_wait_synchronously_for_a_Signal_in_Qt
+		// http://qt.gitorious.org/qt/qt/blobs/4.7/src/gui/dialogs/qdialog.cpp#line549
+        QEventLoop loop;
+        syncLoop = &loop;
+        bool result = loop.exec();
+        syncLoop = 0;
+        return result;
+    }
+    else
+        return pageLoadFinished == LoadSucceeded && contextLoadFinished == LoadSucceeded;
 }
 
 Image WebContent::renderContent(double time)

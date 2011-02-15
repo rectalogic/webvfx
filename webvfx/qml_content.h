@@ -38,6 +38,7 @@ public:
 private slots:
     void qmlViewStatusChanged(QDeclarativeView::Status status);
     void contentContextLoadFinished(bool result);
+    void logWarnings(const QList<QDeclarativeError>& warnings);
 
 private:
     enum LoadStatus { LoadNotFinished, LoadFailed, LoadSucceeded };

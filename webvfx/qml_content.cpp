@@ -1,6 +1,8 @@
 #include <QDeclarativeContext>
+#include <QDeclarativeError>
 #include <QEventLoop>
 #include <QImage>
+#include <QList>
 #include <QPainter>
 #include <QSize>
 #include <QString>
@@ -24,6 +26,7 @@ QmlContent::QmlContent(QWidget* parent, QSize size, Parameters* parameters)
     rootContext()->setContextProperty("webvfx", contentContext);
 
     connect(this, SIGNAL(statusChanged(QDeclarativeView::Status)), SLOT(qmlViewStatusChanged(QDeclarativeView::Status)));
+    connect(this, SIGNAL(warnings(QList<QDeclarativeError>)), SLOT(logWarnings(QList<QDeclarativeError>)));
     connect(contentContext, SIGNAL(loadFinished(bool)), SLOT(contentContextLoadFinished(bool)));
 
     setResizeMode(QDeclarativeView::SizeRootObjectToView);
@@ -58,6 +61,13 @@ void QmlContent::contentContextLoadFinished(bool result)
         syncLoop->exit(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
 }
 
+void QmlContent::logWarnings(const QList<QDeclarativeError>& warnings)
+{
+    foreach (const QDeclarativeError& warning, warnings) {
+        log(warning.toString());
+    }
+}
+
 bool QmlContent::loadContent(const QUrl& url)
 {
     if (syncLoop) {
@@ -68,20 +78,26 @@ bool QmlContent::loadContent(const QUrl& url)
     pageLoadFinished = LoadNotFinished;
     contextLoadFinished = LoadNotFinished;
 
-	setSource(url);
+    setSource(url);
 
-    // Run a nested event loop which will be exited when both
-    // qmlViewStatusChanged and contentContextLoadFinished signal,
-    // returning the result code here.
-    // http://wiki.forum.nokia.com/index.php/How_to_wait_synchronously_for_a_Signal_in_Qt
-    // http://qt.gitorious.org/qt/qt/blobs/4.7/src/gui/dialogs/qdialog.cpp#line549
-    QEventLoop loop;
-    syncLoop = &loop;
-    bool result = loop.exec();
-    syncLoop = 0;
+    bool result = false;
+    if (pageLoadFinished == LoadNotFinished || contextLoadFinished == LoadNotFinished) {
+        // Run a nested event loop which will be exited when both
+        // qmlViewStatusChanged and contentContextLoadFinished signal,
+        // returning the result code here.
+        // http://wiki.forum.nokia.com/index.php/How_to_wait_synchronously_for_a_Signal_in_Qt
+        // http://qt.gitorious.org/qt/qt/blobs/4.7/src/gui/dialogs/qdialog.cpp#line549
+        QEventLoop loop;
+        syncLoop = &loop;
+        result = loop.exec();
+        syncLoop = 0;
+    }
+    else
+        result = pageLoadFinished == LoadSucceeded && contextLoadFinished == LoadSucceeded;
+
+    logWarnings(errors());
+
     return result;
-    //XXX examine and log errors()
-    //XXX also QDeclarativeEngine::warnings signal
 }
 
 Image QmlContent::renderContent(double time)
