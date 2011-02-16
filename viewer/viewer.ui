@@ -339,15 +339,16 @@
     <property name="title">
      <string>File</string>
     </property>
-    <addaction name="actionOpen"/>
+    <addaction name="actionOpenHtml"/>
+    <addaction name="actionOpenQml"/>
     <addaction name="actionQuit"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="actionOpen">
+  <action name="actionOpenHtml">
    <property name="text">
-    <string>Open...</string>
+    <string>Open HTML...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+O</string>
@@ -362,6 +363,11 @@
    </property>
    <property name="menuRole">
     <enum>QAction::QuitRole</enum>
+   </property>
+  </action>
+  <action name="actionOpenQml">
+   <property name="text">
+    <string>Open QML...</string>
    </property>
   </action>
  </widget>

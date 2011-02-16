@@ -18,6 +18,7 @@
 #include <webvfx/image.h>
 #include <webvfx/parameters.h>
 #include <webvfx/webvfx.h>
+#include <webvfx/qml_content.h>
 #include <webvfx/web_content.h>
 #include "image_color.h"
 #include "viewer.h"
@@ -78,11 +79,6 @@ Viewer::Viewer(QWidget *parent)
 
     WebVfx::setLogger(new ViewerLogger(logTextEdit));
 
-    // Set QWebView as direct widget of QScrollArea,
-    // otherwise it creates an intermediate QWidget which messes up resizing.
-    webView = new QWebView(scrollArea);
-    scrollArea->setWidget(webView);
-
     // Time display
     timeLabel = new QLabel(statusBar());
     timeLabel->setNum(sliderTimeValue(timeSlider->value()));
@@ -95,13 +91,25 @@ Viewer::Viewer(QWidget *parent)
     on_resizeButton_clicked();
 }
 
-void Viewer::on_actionOpen_triggered(bool)
+void Viewer::on_actionOpenHtml_triggered(bool)
 {
     QString fileName = QFileDialog::getOpenFileName(this,
-        tr("Open Page"), QDir::homePath(), tr("HTML Files (*.html)"));
+        tr("Open HTML"), QDir::homePath(), tr("HTML Files (*.html)"));
     if (fileName.isNull())
         return;
-    if (!loadPage(fileName))
+    if (!loadHtml(fileName))
+        statusBar()->showMessage(tr("Load failed"), 2000);
+    else
+        setWindowFilePath(fileName);
+}
+
+void Viewer::on_actionOpenQml_triggered(bool)
+{
+    QString fileName = QFileDialog::getOpenFileName(this,
+        tr("Open QML"), QDir::homePath(), tr("QML Files (*.qml)"));
+    if (fileName.isNull())
+        return;
+    if (!loadQml(fileName))
         statusBar()->showMessage(tr("Load failed"), 2000);
     else
         setWindowFilePath(fileName);
@@ -127,9 +135,9 @@ void Viewer::on_resizeButton_clicked()
 void Viewer::on_timeSlider_valueChanged(int value)
 {
     double time = sliderTimeValue(value);
-    if (webContent) {
+    if (content) {
         // Just ignore the returned Image
-        webContent->renderContent(time);
+        content->renderContent(time);
     }
     timeLabel->setNum(time);
 }
@@ -152,17 +160,22 @@ double Viewer::sliderTimeValue(int value)
     return value / (double)timeSlider->maximum();
 }
 
-
-bool Viewer::loadPage(const QString& fileName)
+bool Viewer::loadHtml(const QString& fileName)
 {
     logTextEdit->clear();
 
-    webContent = new WebVfx::WebContent(webView, webView->size(), new ViewerParameters(parametersTable));
+    // Set QWebView as direct widget of QScrollArea,
+    // otherwise it creates an intermediate QWidget which messes up resizing.
+    QWebView* webView = new QWebView(scrollArea);
+    scrollArea->setWidget(webView);
+
+    WebVfx::WebContent* webContent = new WebVfx::WebContent(webView, webView->size(), new ViewerParameters(parametersTable));
     // User can right-click to open WebInspector on the page
     webContent->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     // Install WebInspector action on tool button
     inspectorButton->setDefaultAction(webContent->action(QWebPage::InspectElement));
     webView->setPage(webContent);
+    content = webContent;
 
     bool result = webContent->loadContent(fileName);
 
@@ -173,11 +186,30 @@ bool Viewer::loadPage(const QString& fileName)
     return result;
 }
 
+bool Viewer::loadQml(const QString& fileName)
+{
+    logTextEdit->clear();
+
+    // Set QmlContent as direct widget of QScrollArea,
+    // otherwise it creates an intermediate QWidget which messes up resizing.
+    WebVfx::QmlContent* qmlContent = new WebVfx::QmlContent(scrollArea, scrollArea->widget()->size(), new ViewerParameters(parametersTable));
+    scrollArea->setWidget(qmlContent);
+    content = qmlContent;
+
+    bool result = qmlContent->loadContent(fileName);
+
+    timeSlider->setValue(0);
+
+    setupImages(qmlContent->size());
+
+    return result;
+}
+
 void Viewer::setupImages(const QSize& size)
 {
     imagesTable->setRowCount(0);
     int row = 0;
-    WebVfx::Effects::ImageTypeMapIterator it(webContent->getImageTypeMap());
+    WebVfx::Effects::ImageTypeMapIterator it(content->getImageTypeMap());
     while (it.hasNext()) {
         it.next();
 
@@ -222,8 +254,8 @@ void Viewer::setupImages(const QSize& size)
 
 void Viewer::onImageChanged(const QString& name, const WebVfx::Image& image)
 {
-    if (!webContent)
+    if (!content)
         return;
-    WebVfx::Image targetImage = webContent->getImage(name, QSize(image.width(), image.height()));
+    WebVfx::Image targetImage = content->getImage(name, QSize(image.width(), image.height()));
     targetImage.copyPixelsFrom(image);
 }

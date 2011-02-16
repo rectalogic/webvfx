@@ -114,7 +114,13 @@ bool QmlContent::loadContent(const QUrl& url)
     pageLoadFinished = LoadNotFinished;
     contextLoadFinished = LoadNotFinished;
 
+    QSize originalSize(size());
+
     setSource(url);
+
+    // XXX QDeclarativeView::SizeRootObjectToView is broken, so resize after loading
+    // http://bugreports.qt.nokia.com/browse/QTBUG-15863
+    setContentSize(originalSize);
 
     bool result = false;
     if (pageLoadFinished == LoadNotFinished || contextLoadFinished == LoadNotFinished) {

@@ -11,7 +11,7 @@
 namespace WebVfx
 {
     class Image;
-    class WebContent;
+    class Content;
 }
 
 class QLabel;
@@ -25,7 +25,8 @@ public:
     Viewer(QWidget *parent = 0);
 
 private slots:
-    void on_actionOpen_triggered(bool);
+    void on_actionOpenHtml_triggered(bool);
+    void on_actionOpenQml_triggered(bool);
     void on_resizeButton_clicked();
     void on_timeSlider_valueChanged(int);
     void on_addParameterButton_clicked();
@@ -33,13 +34,13 @@ private slots:
     void onImageChanged(const QString& name, const WebVfx::Image& image);
 
 private:
-    bool loadPage(const QString& fileName);
+    bool loadHtml(const QString& fileName);
+    bool loadQml(const QString& fileName);
     void setupImages(const QSize& size);
     double sliderTimeValue(int value);
     QLabel* sizeLabel;
     QLabel* timeLabel;
-    QWebView* webView;
-    WebVfx::WebContent* webContent;
+    WebVfx::Content* content;
 };
 
 #endif
