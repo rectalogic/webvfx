@@ -1,4 +1,6 @@
 #include <QDeclarativeContext>
+#include <QDeclarativeEngine>
+#include <QDeclarativeImageProvider>
 #include <QDeclarativeError>
 #include <QEventLoop>
 #include <QImage>
@@ -11,8 +13,39 @@
 #include "webvfx/logger.h"
 #include "webvfx/qml_content.h"
 
+
 namespace WebVfx
 {
+
+class PixmapProvider : public QDeclarativeImageProvider
+{
+ public:
+     PixmapProvider(ContentContext* contentContext)
+         : QDeclarativeImageProvider(QDeclarativeImageProvider::Pixmap)
+	 , contentContext(contentContext)
+     {
+     }
+
+    QPixmap requestPixmap(const QString& id, QSize* size, const QSize& requestedSize)
+    {
+	// URLs are of the form image://webvfx/<name>/<count>
+	// where <count> is a unique ID to force refresh and is ignored.
+	QPixmap pixmap(contentContext->getImage(id.section('/', 0, 0)));
+
+	if (size)
+	    *size = pixmap.size();
+
+	if (!requestedSize.isEmpty())
+	    return pixmap.scaled(requestedSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+
+	return pixmap;
+    }
+
+private:
+    ContentContext* contentContext;
+ };
+
+////////////////////
 
 QmlContent::QmlContent(QWidget* parent, QSize size, Parameters* parameters)
     : QDeclarativeView(parent)
@@ -25,8 +58,11 @@ QmlContent::QmlContent(QWidget* parent, QSize size, Parameters* parameters)
     // Expose context to the QML
     rootContext()->setContextProperty("webvfx", contentContext);
 
+    // Register image provider for image://webvfx/<name>/<counter>
+    engine()->addImageProvider(QLatin1String("webvfx"), new PixmapProvider(contentContext));
+
     connect(this, SIGNAL(statusChanged(QDeclarativeView::Status)), SLOT(qmlViewStatusChanged(QDeclarativeView::Status)));
-    connect(this, SIGNAL(warnings(QList<QDeclarativeError>)), SLOT(logWarnings(QList<QDeclarativeError>)));
+    connect(engine(), SIGNAL(warnings(QList<QDeclarativeError>)), SLOT(logWarnings(QList<QDeclarativeError>)));
     connect(contentContext, SIGNAL(loadFinished(bool)), SLOT(contentContextLoadFinished(bool)));
 
     setResizeMode(QDeclarativeView::SizeRootObjectToView);

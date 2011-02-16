@@ -9,6 +9,7 @@
 #include <QMap>
 #include <QObject>
 #include <QPixmap>
+#include <QUrl>
 #include "webvfx/effects.h"
 
 class QImage;
@@ -52,13 +53,16 @@ public:
     // Page contents can use these to retrieve parameters.
     // JS: var title = webvfx.getStringParameter("title");
     Q_INVOKABLE double getNumberParameter(const QString& name);
-    Q_INVOKABLE const QString getStringParameter(const QString& name);
+    Q_INVOKABLE QString getStringParameter(const QString& name);
 
     // Page contents can retrieve named images.
     // JS:
     //   var image = new Image();
     //   webvfx.getImage("video").assignToHTMLElement(image);
-    Q_INVOKABLE const QPixmap getImage(const QString& name);
+    Q_INVOKABLE QPixmap getImage(const QString& name);
+
+    // Return URL for use in QML to reference the named image
+    Q_INVOKABLE QUrl getImageUrl(const QString& name);
 
     //XXX expose error signal - JS in page can raise on window.onerror? or use it to signal error during rendering
 
@@ -85,6 +89,7 @@ private:
     Parameters* parameters;
     QHash<QString, QImage*> imageMap;
     Effects::ImageTypeMap imageTypeMap;
+    unsigned int renderCount;
 };
 
 }

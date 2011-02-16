@@ -1,5 +1,4 @@
 #include <QImage>
-#include <QPixmap>
 #include <QVariant>
 #include <QtAlgorithms>
 #include "webvfx/content_context.h"
@@ -12,6 +11,7 @@ namespace WebVfx
 ContentContext::ContentContext(QObject* parent, Parameters* parameters)
     : QObject(parent)
     , parameters(parameters)
+    , renderCount(0)
 {
 }
 
@@ -24,6 +24,7 @@ ContentContext::~ContentContext()
 
 void ContentContext::render(double time)
 {
+    renderCount++;
     emit renderRequested(time);
 }
 
@@ -46,7 +47,7 @@ double ContentContext::getNumberParameter(const QString& name)
         return 0;
 }
 
-const QString ContentContext::getStringParameter(const QString& name)
+QString ContentContext::getStringParameter(const QString& name)
 {
     if (parameters)
         return parameters->getStringParameter(name);
@@ -69,13 +70,20 @@ void ContentContext::setImageTypeMap(const QVariantMap& variantMap)
 // so better to do the conversion here since handing over a QImage
 // would cause it's shared data to be duplicated the next time we wrote to it's bits.
 // http://doc.qt.nokia.com/latest/qimage.html#bits
-const QPixmap ContentContext::getImage(const QString& name)
+QPixmap ContentContext::getImage(const QString& name)
 {
     QImage* image = imageMap.value(name);
     if (image)
         return QPixmap::fromImage(*image);
     else
         return QPixmap();
+}
+
+QUrl ContentContext::getImageUrl(const QString& name)
+{
+    // Include renderCount in URL - this makes the URL unique
+    // so QML will actually reload the image.
+    return QUrl::fromEncoded(QString("image://webvfx/%1/%2").arg(name).arg(renderCount).toAscii(), QUrl::StrictMode);
 }
 
 }
