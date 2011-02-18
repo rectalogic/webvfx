@@ -26,7 +26,7 @@ class WebContent : public QWebPage, public Content
 {
     Q_OBJECT
 public:
-    WebContent(QObject* parent, QSize size, Parameters* parameters);
+    WebContent(QObject* parent, const QSize& size, Parameters* parameters);
     ~WebContent();
 
     // Load URL synchronously, return success

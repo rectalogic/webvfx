@@ -12,6 +12,8 @@
 #include "webvfx/image.h"
 
 class QEventLoop;
+class QGLFramebufferObject;
+class QGLWidget;
 class QSize;
 class QUrl;
 
@@ -25,7 +27,7 @@ class QmlContent : public QDeclarativeView, public Content
 {
     Q_OBJECT
 public:
-    QmlContent(QWidget* parent, QSize size, Parameters* parameters);
+    QmlContent(QWidget* parent, const QSize& size, Parameters* parameters);
     ~QmlContent();
 
     // Load QML synchronously, return success
@@ -41,12 +43,17 @@ private slots:
     void logWarnings(const QList<QDeclarativeError>& warnings);
 
 private:
+    bool createFBO(const QSize& size);
+
     enum LoadStatus { LoadNotFinished, LoadFailed, LoadSucceeded };
     LoadStatus pageLoadFinished;
     LoadStatus contextLoadFinished;
     ContentContext* contentContext;
     QEventLoop* syncLoop;
     QImage* renderImage;
+    QGLWidget* glWidget;
+    QGLFramebufferObject* multisampleFBO;
+    QGLFramebufferObject* resolveFBO;
 };
 
 }

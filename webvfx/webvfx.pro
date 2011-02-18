@@ -30,12 +30,9 @@ INCLUDEPATH = ..
 
 DESTDIR = ../build
 
-CONFIG += shared thread warn_on
-#XXX add opengl?
-QT += webkit declarative
+CONFIG += shared thread warn_on debug_and_release
+QT += webkit opengl declarative
 
-
-CONFIG += debug_and_release
 CONFIG(debug, debug|release) {
     TARGET = webvfx_debug
 } else {

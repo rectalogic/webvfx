@@ -9,11 +9,13 @@ FORMS = viewer.ui
 CONFIG += warn_on debug_and_release
 QT += webkit declarative
 CONFIG(debug, debug|release) {
-    TARGET = viewer_debug
+    !mac:TARGET = viewer_debug
+    mac:TARGET = Viewer_debug
     LIBS += -L$$DESTDIR -lwebvfx_debug
     UI_DIR = debug
 } else {
-    TARGET = viewer
+    !mac:TARGET = viewer
+    mac:TARGET = Viewer
     LIBS += -L$$DESTDIR -lwebvfx
     UI_DIR = release
 }

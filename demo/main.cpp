@@ -53,6 +53,8 @@ int main(int argc, char* argv[]) {
     }
     const WebVfx::Image image = effects->render(0.32, 320, 240);
 
+    effects->destroy(); effects = 0;
+
     // Write to disk.
     std::ofstream rawFile;
     rawFile.open("/tmp/webvfx.raw", std::ios::out|std::ios::trunc|std::ios::binary);

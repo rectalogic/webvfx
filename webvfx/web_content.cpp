@@ -12,7 +12,7 @@
 namespace WebVfx
 {
 
-WebContent::WebContent(QObject* parent, QSize size, Parameters* parameters)
+WebContent::WebContent(QObject* parent, const QSize& size, Parameters* parameters)
     : QWebPage(parent)
     , pageLoadFinished(LoadNotFinished)
     , contextLoadFinished(LoadNotFinished)
