@@ -25,23 +25,23 @@ class PixmapProvider : public QDeclarativeImageProvider
  public:
      PixmapProvider(ContentContext* contentContext)
          : QDeclarativeImageProvider(QDeclarativeImageProvider::Pixmap)
-	 , contentContext(contentContext)
+         , contentContext(contentContext)
      {
      }
 
     QPixmap requestPixmap(const QString& id, QSize* size, const QSize& requestedSize)
     {
-	// URLs are of the form image://webvfx/<name>/<count>
-	// where <count> is a unique ID to force refresh and is ignored.
-	QPixmap pixmap(contentContext->getImage(id.section('/', 0, 0)));
+        // URLs are of the form image://webvfx/<name>/<count>
+        // where <count> is a unique ID to force refresh and is ignored.
+        QPixmap pixmap(contentContext->getImage(id.section('/', 0, 0)));
 
-	if (size)
-	    *size = pixmap.size();
+        if (size)
+            *size = pixmap.size();
 
-	if (!requestedSize.isEmpty())
-	    return pixmap.scaled(requestedSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+        if (!requestedSize.isEmpty())
+            return pixmap.scaled(requestedSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
-	return pixmap;
+        return pixmap;
     }
 
 private:
@@ -144,8 +144,8 @@ bool QmlContent::loadContent(const QUrl& url)
 
     bool result = false;
     if (pageLoadFinished != LoadFailed
-	&& (pageLoadFinished == LoadNotFinished
-	    || contextLoadFinished == LoadNotFinished)) {
+        && (pageLoadFinished == LoadNotFinished
+            || contextLoadFinished == LoadNotFinished)) {
         // Run a nested event loop which will be exited when both
         // qmlViewStatusChanged and contentContextLoadFinished signal,
         // returning the result code here.
@@ -176,8 +176,8 @@ Image QmlContent::renderContent(double time)
     else if (renderImage->size() != size) {
         delete renderImage;
         renderImage = new QImage(size, QImage::Format_RGB888);
-	// Recreate FBOs on size change
-	createFBO(size);
+        // Recreate FBOs on size change
+        createFBO(size);
     }
 
     glWidget->makeCurrent();
@@ -197,7 +197,7 @@ Image QmlContent::renderContent(double time)
     QRect srcRect(QPoint(0, 0), size);
     QRect dstRect(0, size.height(), size.width(), -size.height());
     QGLFramebufferObject::blitFramebuffer(resolveFBO, srcRect,
-					  multisampleFBO, dstRect);
+                                          multisampleFBO, dstRect);
 
     // Read back the pixels from the resolve FBO, in the format our QImage needs
     resolveFBO->bind();
@@ -205,8 +205,8 @@ Image QmlContent::renderContent(double time)
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glPixelStorei(GL_PACK_ROW_LENGTH, renderImage->bytesPerLine() / 3);
     glReadPixels(0, 0, size.width(), size.height(),
-		 QSysInfo::ByteOrder == QSysInfo::BigEndian ? GL_BGR : GL_RGB,
-		 GL_UNSIGNED_BYTE, renderImage->bits());
+                 QSysInfo::ByteOrder == QSysInfo::BigEndian ? GL_BGR : GL_RGB,
+                 GL_UNSIGNED_BYTE, renderImage->bits());
     glPopClientAttrib();
 
     resolveFBO->release();
@@ -220,9 +220,9 @@ Image QmlContent::renderContent(double time)
 bool QmlContent::createFBO(const QSize& size)
 {
     if (!QGLFramebufferObject::hasOpenGLFramebufferObjects()
-	|| !QGLFramebufferObject::hasOpenGLFramebufferBlit()) {
-	log("QmlContent: FBOs not fully supported, rendering will fail");
-	return false;
+        || !QGLFramebufferObject::hasOpenGLFramebufferBlit()) {
+        log("QmlContent: FBOs not fully supported, rendering will fail");
+        return false;
     }
 
     // Create a multisample FBO and an FBO to resolve into
