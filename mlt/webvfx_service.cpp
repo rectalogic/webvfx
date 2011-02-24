@@ -10,6 +10,7 @@
 
 #define YML_SUFFIX ".yml"
 #define HTML_SUFFIX ".html"
+#define QML_SUFFIX ".qml"
 
 
 static const char* serviceTypeToName(mlt_service_type service_type) {
@@ -71,17 +72,32 @@ static void* createService(mlt_profile /*profile*/, mlt_service_type serviceType
     // Store filename property on service
     if (service) {
         std::string fileName(getDataDir());
-        fileName.append(serviceName).append(HTML_SUFFIX);
+        fileName.append(serviceName);
         mlt_properties_set(MLT_SERVICE_PROPERTIES(service), MLTWebVfx::ServiceManager::kFilePropertyName, fileName.c_str());
     }
 
     return service;
 }
 
+static void registerServices(mlt_repository repository, mlt_service_type serviceType, const std::string& wildcard, const std::string& dataDir)
+{
+    mlt_properties entries = mlt_properties_new();
+    mlt_properties_dir_list(entries, dataDir.c_str(), wildcard.c_str(), 1);
+    int entryCount = mlt_properties_count(entries);
+    for (int i = 0; i < entryCount; i++) {
+        char* path = mlt_properties_get_value(entries, i);
+        const char* id = &path[dataDir.length() + 1];
+        MLT_REGISTER(serviceType, id, createService);
+        MLT_REGISTER_METADATA(serviceType, id, createMetadata, NULL);
+    }
+    mlt_properties_close(entries);
+}
+
 void MLTWebVfx::registerServices(mlt_repository repository, mlt_service_type serviceType) {
-    // For service ID "webvfx.<service_type>.<service_name>", we have "webvfx.<service_type>.<service_name>.html"
-    // and optional "webvfx.<service_type>.<service_name>.yml" metadata.
+    // For service ID "webvfx.<service_type>.<service_name>.<suffix>"
+    // we may have an optional "webvfx.<service_type>.<service_name>.<suffix>.yml" metadata.
     // Where "service_type" is filter, transition or producer.
+    // And "suffix" is ".html" or ".qml"
 
     const char* serviceTypeName = serviceTypeToName(serviceType);
     if (!serviceTypeName)
@@ -89,24 +105,9 @@ void MLTWebVfx::registerServices(mlt_repository repository, mlt_service_type ser
 
     std::string dataDir(getDataDir());
 
-    // "webvfx.<service_type>.*.html" e.g. "webvfx.filter.*.html"
     std::string serviceTypeWildcard("webvfx.");
-    serviceTypeWildcard.append(serviceTypeName).append(".*" HTML_SUFFIX);
+    serviceTypeWildcard.append(serviceTypeName).append(".*");
 
-    mlt_properties htmlEntries = mlt_properties_new();
-    mlt_properties_dir_list(htmlEntries, dataDir.c_str(), serviceTypeWildcard.c_str(), 1);
-    int htmlCount = mlt_properties_count(htmlEntries);
-    for (int i = 0; i < htmlCount; i++) {
-        char* htmlPath = mlt_properties_get_value(htmlEntries, i);
-
-        // ID is "webvfx.<service_type>.<service_name>" e.g. "webvfx.filter.bubbles"
-        const char* idStart = &htmlPath[dataDir.length() + 1];
-        int idLength = std::strlen(idStart) - (sizeof(HTML_SUFFIX) - 1);
-        std::string serviceID(idStart, idLength);
-
-        const char* id = serviceID.c_str();
-        MLT_REGISTER(serviceType, id, createService);
-        MLT_REGISTER_METADATA(serviceType, id, createMetadata, NULL);
-    }
-    mlt_properties_close(htmlEntries);
+    registerServices(repository, serviceType, serviceTypeWildcard + HTML_SUFFIX, dataDir);
+    registerServices(repository, serviceType, serviceTypeWildcard + QML_SUFFIX, dataDir);
 }

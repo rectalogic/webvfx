@@ -93,8 +93,8 @@ Viewer::Viewer(QWidget *parent)
 
 void Viewer::on_actionOpenHtml_triggered(bool)
 {
-    QString fileName = QFileDialog::getOpenFileName(this,
-        tr("Open HTML"), QDir::homePath(), tr("HTML Files (*.html)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open HTML"), QString(),
+						    tr("HTML Files (*.html)"));
     if (fileName.isNull())
         return;
     if (!loadHtml(fileName))
@@ -105,8 +105,8 @@ void Viewer::on_actionOpenHtml_triggered(bool)
 
 void Viewer::on_actionOpenQml_triggered(bool)
 {
-    QString fileName = QFileDialog::getOpenFileName(this,
-        tr("Open QML"), QDir::homePath(), tr("QML Files (*.qml)"));
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open QML"), QString(),
+						    tr("QML Files (*.qml)"));
     if (fileName.isNull())
         return;
     if (!loadQml(fileName))

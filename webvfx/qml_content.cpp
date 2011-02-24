@@ -143,7 +143,9 @@ bool QmlContent::loadContent(const QUrl& url)
     centerOn(sceneRect().center());
 
     bool result = false;
-    if (pageLoadFinished == LoadNotFinished || contextLoadFinished == LoadNotFinished) {
+    if (pageLoadFinished != LoadFailed
+	&& (pageLoadFinished == LoadNotFinished
+	    || contextLoadFinished == LoadNotFinished)) {
         // Run a nested event loop which will be exited when both
         // qmlViewStatusChanged and contentContextLoadFinished signal,
         // returning the result code here.
