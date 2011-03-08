@@ -1,3 +1,4 @@
+include(../common.pri)
 TEMPLATE = lib
 #VERSION = 
 
@@ -13,15 +14,13 @@ SOURCES += webvfx_producer.cpp
 SOURCES += webvfx_service.cpp
 SOURCES += webvfx_transition.cpp
 
-INCLUDEPATH = ..
-
-DESTDIR = ../build
-
 CONFIG += shared warn_on
 QT -= gui
 
-CONFIG += link_pkgconfig
-PKGCONFIG += mlt-framework
+unix {
+    CONFIG += link_pkgconfig
+    PKGCONFIG += mlt-framework
+}
 
 CONFIG += debug_and_release
 CONFIG(debug, debug|release) {
@@ -31,3 +30,9 @@ CONFIG(debug, debug|release) {
     TARGET = mltwebvfx
     LIBS += -L$$DESTDIR -lwebvfx
 }
+
+QMAKE_RPATHDIR += $$PREFIX/lib
+
+# Install in mlt plugins directory
+unix:target.path = $$system(pkg-config --variable=libdir mlt-framework)/mlt
+INSTALLS += target

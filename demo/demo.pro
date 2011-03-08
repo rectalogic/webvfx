@@ -1,6 +1,5 @@
+include(../common.pri)
 TEMPLATE = app
-INCLUDEPATH += ..
-DESTDIR = ../build
 
 SOURCES += main.cpp
 
@@ -13,3 +12,5 @@ CONFIG(debug, debug|release) {
     TARGET = demo
     LIBS += -L$$DESTDIR -lwebvfx
 }
+
+QMAKE_RPATHDIR += $$PREFIX/lib

@@ -1,3 +1,4 @@
+include(../common.pri)
 TEMPLATE = lib
 #VERSION = 
 
@@ -26,10 +27,6 @@ macx:SOURCES += webvfx_mac.mm
 
 macx:LIBS += -framework Foundation
 
-INCLUDEPATH = ..
-
-DESTDIR = ../build
-
 CONFIG += shared thread warn_on debug_and_release
 QT += webkit opengl declarative
 
@@ -38,3 +35,6 @@ CONFIG(debug, debug|release) {
 } else {
     TARGET = webvfx
 }
+
+target.path = $$PREFIX/lib
+INSTALLS += target

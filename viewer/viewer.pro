@@ -1,6 +1,5 @@
+include(../common.pri)
 TEMPLATE = app
-INCLUDEPATH += ..
-DESTDIR = ../build
 
 SOURCES = main.cpp image_color.cpp viewer.cpp
 HEADERS = image_color.h viewer.h
@@ -19,3 +18,8 @@ CONFIG(debug, debug|release) {
     LIBS += -L$$DESTDIR -lwebvfx
     UI_DIR = release
 }
+
+QMAKE_RPATHDIR += $$PREFIX/lib
+
+target.path = $$PREFIX/bin
+INSTALLS += target
