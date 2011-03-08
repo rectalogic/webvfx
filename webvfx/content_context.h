@@ -30,12 +30,14 @@ class Parameters;
 class ContentContext : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(int SOURCE_IMAGE_TYPE READ getSourceImageType CONSTANT FINAL)
-    Q_PROPERTY(int TARGET_IMAGE_TYPE READ getTargetImageType CONSTANT FINAL)
-    Q_PROPERTY(int EXTRA_IMAGE_TYPE READ getExtraImageType CONSTANT FINAL)
+    //XXX We could use Q_ENUMS for this once this bug is fixed
+    // http://bugreports.qt.nokia.com/browse/QTBUG-12706
+    Q_PROPERTY(int SourceImageType READ getSourceImageType CONSTANT FINAL)
+    Q_PROPERTY(int TargetImageType READ getTargetImageType CONSTANT FINAL)
+    Q_PROPERTY(int ExtraImageType READ getExtraImageType CONSTANT FINAL)
     // Page contents should set this if it consumes images.
     // JS:
-    //   webvfx.imageTypeMap = { "video" : webvfx.SOURCE_IMAGE_TYPE }
+    //   webvfx.imageTypeMap = { "video" : webvfx.SourceImageType }
     Q_PROPERTY(QVariantMap imageTypeMap WRITE setImageTypeMap)
 
 public:

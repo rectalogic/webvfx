@@ -28,9 +28,9 @@ function init() {
 
     webvfx.renderRequested.connect(render);
     webvfx.imageTypeMap = {
-                              "sourceImage" : webvfx.SOURCE_IMAGE_TYPE,
-                              "targetImage" : webvfx.TARGET_IMAGE_TYPE,
-                              "demoImage" : webvfx.EXTRA_IMAGE_TYPE
+                              "sourceImage" : webvfx.SourceImageType,
+                              "targetImage" : webvfx.TargetImageType,
+                              "demoImage" : webvfx.ExtraImageType
                           };
     webvfx.loadFinished(true)
 }
