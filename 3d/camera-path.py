@@ -29,6 +29,9 @@ def dumpText(context, title, msg):
             area.active_space.text = text
             break
 
+def reportError(op, msg):
+    op.report({'ERROR'}, msg)
+
 class GenerateCameraQml(bpy.types.Operator):
     '''Generate QML Qt3D camera declaration.'''
     bl_idname = "view3d.generate_camera_qml"
@@ -107,7 +110,7 @@ class FitViewToFace(bpy.types.Operator):
 
         # Make sure view location is very close to face center
         if (center - region_3d.view_location).length > 2.5e-07:
-            self.report({'ERROR'}, "View not aligned on active face center")
+            reportError(self, "View not aligned on active face center")
             return
 
         # Get views up vector
@@ -131,7 +134,7 @@ class FitViewToFace(bpy.types.Operator):
         elif up.angle(e2, 0) <= epsilon:
             height = e2.length / 2
         else:
-            self.report({'ERROR'}, "Could not find vertical edge in face")
+            reportError(self, "Could not find vertical edge in face")
             return
 
         # Angle from eye, halve for triangle.
@@ -185,38 +188,46 @@ class GenerateCameraAnimationJson(bpy.types.Operator):
     bl_label = "Generate Camera Animation JSON"
     bl_description = "Generate JSON data for camera animation keyframes"
 
+    CoordNames = ['X', 'Y', 'Z']
+    CurveNames = { 'location': 'location', 'rotation_euler': 'rotation'}
+
     @classmethod
     def poll(cls, context):
         return context.active_object and context.active_object.type == 'CAMERA'
 
     def generateCameraAnimation(self, action):
         fcurves = action.fcurves
-        location_fcurves = [None, None, None]
-        rotation_fcurves = [None, None, None]
-        keyframes = set()
+        frame_range = list(action.frame_range)
+
+        animation = {}
         for f in fcurves:
-            if f.data_path == 'location':
-                location_fcurves[f.array_index] = f
-            elif f.data_path == 'rotation_euler':
-                rotation_fcurves[f.array_index] = f
-            for k in f.keyframe_points:
-                keyframes.add(k.co[0])
+            segments = []
+            if len(f.keyframe_points) == 1:
+                segments.append({'range': frame_range,
+                                 'constant': f.keyframe_points[0].co[1]})
+            else:
+                for i in range(len(f.keyframe_points) - 1):
+                    k = f.keyframe_points[i]
+                    nextk = f.keyframe_points[i+1]
+                    segments.append({'range': [k.co[0], nextk.co[0]],
+                                     'bezier': [list(k.co),
+                                                list(k.handle_right),
+                                                list(nextk.handle_left),
+                                                list(nextk.co)]})
 
-        frame_range = action.frame_range
-        keyframe_data = []
-        for k in sorted(keyframes):
-            location = [f.evaluate(k) for f in location_fcurves]
-            rotation = mathutils.Euler([f.evaluate(k) for f in rotation_fcurves])
-            # Rotate -90 around X to convert from Blender space to QML space
-            rotation.rotate_axis('X', ROT_N90)
-            rotation = rotation.to_quat()
-            rotation = [rotation.x, rotation.y, rotation.z, rotation.w]
+            name = self.CurveNames[f.data_path] + self.CoordNames[f.array_index]
+            animation[name] = segments
 
-            keyframe_data.append({'time': (k - frame_range[0]) / (frame_range[1] - frame_range[0]),
-                                  'position': location,
-                                  'quaternion': rotation})
+        # Adjust X rotation to convert from Blender space to Qt3D space
+        for segment in animation['rotationX']:
+            if 'constant' in segment:
+                segment['constant'] += ROT_N90
+            elif 'bezier' in segment:
+                for c in segment['bezier']:
+                    c[1] += ROT_N90
 
-        return json.dumps(keyframe_data, sort_keys=True, indent=4)
+        return json.dumps({ 'range': frame_range, 'animation': animation },
+                          sort_keys=True, indent=4)
 
     def execute(self, context):
         action = context.active_object.animation_data.action
