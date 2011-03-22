@@ -11,18 +11,31 @@ function BezierSegment(range, points) {
     this.yCoefficients = this.polynomialCoefficients(points, 1);
 }
 
+BezierSegment.prototype.TOLERANCE = 0.000001;
+BezierSegment.prototype.ITERATIONS = 5;
+
 // Return y value for given x.
 BezierSegment.prototype.evaluate = function(x) {
-    //XXX optimize when at t=0 or 1 (i.e. end of range)
-    //XXX divide by zero if x is zero...
-    // Solve for t given x (using Newton-Raphelson), then solve for y given t.
-    // For first guess, linearly interpolate to get t.
-    var t = (this.range[1] - this.range[0]) / x;
-    for (var i = 0; i < 5; i++) {
-        var currentX = this.evaluatePolynomial(t, this.xCoefficients);
-        var currentSlope = this.slope(t, this.xCoefficients);
-        t -= (currentX - x) * currentSlope;
-        t = this.clamp(t);
+    var t;
+    if (x == this.range[0])
+        t = 0;
+    else if (x == this.range[1])
+        t = 1;
+    else {
+        // Solve for t given x (using Newton-Raphson),
+        // then solve for y given t.
+        // For first guess, linearly interpolate to get t.
+        t = (this.range[1] - this.range[0]) / x;
+        var oldt = t;
+        for (var i = 0; i < this.ITERATIONS; i++) {
+            var currentX = this.evaluatePolynomial(t, this.xCoefficients);
+            var currentSlope = this.slope(t, this.xCoefficients);
+            t -= (currentX - x) * currentSlope;
+            t = this.clamp(t);
+            if (Math.abs(oldt - t) <= this.TOLERANCE)
+                break;
+            oldt = t;
+        }
     }
     return this.evaluatePolynomial(t, this.yCoefficients);
 }
@@ -67,11 +80,29 @@ function BezierCurve(range, segments) {
     this.currentSegment = null;
 }
 
-BezierCurve.prototype.evaluate = function(x) {
-    // Check if we're still inside the current segment
-    if (this.currentSegment && x >= this.currentSegment.range[0] &&
-        x <= this.currentSegment.range[1])
-        return this.currentSegment.evaluate(x);
+// Binary search to find segment that contains x
+BezierCurve.prototype.findSegment = function(x) {
+    var startIndex = 0;
+    var stopIndex = this.segments.length - 1;
+    var middleIndex = Math.floor((stopIndex + startIndex) / 2);
+    while (startIndex < stopIndex) {
+        var segment = this.segments[middleIndex];
+        if (x < segment.range[0])
+            stopIndex = middleIndex - 1;
+        else if (x > segment.range[1])
+            startIndex = middleIndex + 1;
+        else
+            return segment;
+        middleIndex = Math.floor((stopIndex + startIndex) / 2);
+    }
+    return null;
+}
 
-//XXX binary search and set currentSegment
+BezierCurve.prototype.evaluate = function(x) {
+    // Find current segment if we are out of range
+    if (this.currentSegment == null || x < this.currentSegment.range[0] ||
+        x > this.currentSegment.range[1])
+        this.currentSegment = this.findSegment(x);
+
+    return this.currentSegment.evaluate(x);
 }
