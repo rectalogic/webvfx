@@ -19,9 +19,7 @@ static int filterGetImage(mlt_frame frame, uint8_t **image, mlt_image_format *fo
     // Get the filter
     mlt_filter filter = (mlt_filter)mlt_frame_pop_service(frame);
 
-    // Compute time
-    char *name = mlt_properties_get(MLT_FILTER_PROPERTIES(filter), "_unique_id");
-    mlt_position position = mlt_properties_get_position(MLT_FRAME_PROPERTIES(frame), name);
+    mlt_position position = mlt_filter_get_position(filter, frame);
 
     // Get the source image, we will also write our output to it
     *format = mlt_image_rgb24;
@@ -43,9 +41,6 @@ static int filterGetImage(mlt_frame frame, uint8_t **image, mlt_image_format *fo
 }
 
 static mlt_frame filterProcess(mlt_filter filter, mlt_frame frame) {
-    // Store position on frame
-    char *name = mlt_properties_get(MLT_FILTER_PROPERTIES(filter), "_unique_id");
-    mlt_properties_set_position(MLT_FRAME_PROPERTIES(frame), name, mlt_frame_get_position(frame));
     // Push the frame filter
     mlt_frame_push_service(frame, filter);
     mlt_frame_push_get_image(frame, filterGetImage);

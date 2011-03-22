@@ -8,6 +8,7 @@
 extern "C" {
     #include <mlt/framework/mlt_factory.h>
     #include <mlt/framework/mlt_service.h>
+    #include <mlt/framework/mlt_profile.h>
 }
 
 namespace MLTWebVfx
@@ -15,7 +16,7 @@ namespace MLTWebVfx
 
 void registerServices(mlt_repository repository, mlt_service_type serviceType);
 
-mlt_service createProducer();
+mlt_service createProducer(mlt_profile profile);
 mlt_service createFilter();
 mlt_service createTransition();
 

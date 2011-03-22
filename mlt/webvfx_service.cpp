@@ -50,14 +50,14 @@ static mlt_properties createMetadata(mlt_service_type serviceType, const char* s
 }
 
 
-static void* createService(mlt_profile /*profile*/, mlt_service_type serviceType, const char* serviceName, const void*) {
+static void* createService(mlt_profile profile, mlt_service_type serviceType, const char* serviceName, const void*) {
     if (!WebVfx::initialize())
         return 0;
 
     mlt_service service = 0;
     switch (serviceType) {
         case producer_type:
-            service = MLTWebVfx::createProducer();
+            service = MLTWebVfx::createProducer(profile);
             break;
         case filter_type:
             service = MLTWebVfx::createFilter();

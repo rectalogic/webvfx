@@ -172,8 +172,6 @@ bool Viewer::loadHtml(const QString& fileName)
     WebVfx::WebContent* webContent = new WebVfx::WebContent(webView, webView->size(), new ViewerParameters(parametersTable));
     // User can right-click to open WebInspector on the page
     webContent->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
-    // Install WebInspector action on tool button
-    inspectorButton->setDefaultAction(webContent->action(QWebPage::InspectElement));
     webView->setPage(webContent);
     content = webContent;
 

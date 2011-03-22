@@ -80,8 +80,8 @@ static int getFrame(mlt_producer producer, mlt_frame_ptr frame, int /*index*/) {
     return 0;
 }
 
-mlt_service MLTWebVfx::createProducer() {
-    mlt_producer self = mlt_producer_new();
+mlt_service MLTWebVfx::createProducer(mlt_profile profile) {
+    mlt_producer self = mlt_producer_new(profile);
     if (self) {
         self->get_frame = getFrame;
         return MLT_PRODUCER_SERVICE(self);

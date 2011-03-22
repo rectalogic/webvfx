@@ -33,9 +33,7 @@ static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_forma
     if (mlt_properties_get(b_props, "rescale.interp") == NULL || !std::strcmp(mlt_properties_get(b_props, "rescale.interp"), "none"))
         mlt_properties_set(b_props, "rescale.interp", mlt_properties_get(a_props, "rescale.interp"));
 
-    // Compute position
-    char *name = mlt_properties_get(transition_props, "_unique_id");
-    mlt_position position = mlt_properties_get_position(a_props, name);
+    mlt_position position = mlt_transition_get_position(transition, frame);
 
     // Get the aFrame image, we will write our output to it
     *format = mlt_image_rgb24;
@@ -64,8 +62,6 @@ static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_forma
 }
 
 static mlt_frame transitionProcess(mlt_transition transition, mlt_frame aFrame, mlt_frame bFrame) {
-    char* name = mlt_properties_get(MLT_TRANSITION_PROPERTIES(transition), "_unique_id");
-    mlt_properties_set_position(MLT_FRAME_PROPERTIES(aFrame), name, mlt_frame_get_position(aFrame));
     mlt_frame_push_service(aFrame, transition);
     mlt_frame_push_frame(aFrame, bFrame);
     mlt_frame_push_get_image(aFrame, transitionGetImage);
