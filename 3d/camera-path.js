@@ -35,7 +35,7 @@ BezierSegment.prototype.evaluate = function(x) {
 
 // Return polynomial coefficients [a,b,c,d] for control
 // points in p (array of 4 [x,y] control points),
-// for coordinate i.
+// for coordinate i (0 for x, 1 for y).
 // See http://www.cs.binghamton.edu/~reckert/460/bezier.htm
 BezierSegment.prototype.polynomialCoefficients = function(p, i) {
     return [p[3][i] - 3 * p[2][i] + 3 * p[1][i] - p[0][i],
@@ -113,9 +113,14 @@ ConstantValue.prototype.evaluate = function(x) {
 // animation is the animation data exported from Blender tool
 function CameraAnimation(animation) {
     this.range = animation['range'];
-    for (var attr in ['locationX', 'locationY', 'locationZ',
-                      'rotationX', 'rotationY', 'rotationZ'])
-        this[attr] = this.processAnimation(animation[attr]);
+
+    this.locationX = this.processAnimation(animation['locationX']);
+    this.locationY = this.processAnimation(animation['locationY']);
+    this.locationZ = this.processAnimation(animation['locationZ']);
+    this.rotationX = this.processAnimation(animation['rotationX']);
+    this.rotationY = this.processAnimation(animation['rotationY']);
+    this.rotationZ = this.processAnimation(animation['rotationZ']);
+
     this.upVector = [0,1,0];
     this.lookAt = [0,0,-1];
     this.eye = [0,0,0];
@@ -126,9 +131,9 @@ CameraAnimation.prototype.processAnimation = function(animation) {
         return new ConstantValue(animation);
     else {
         var segments = [];
-        for (var segment in animation) {
-            segments.push(new BezierSegment(segment['range'],
-                                            segment['bezierPoints']));
+        for (var i = 0; i < animation.length; i++) {
+            segments[i] = new BezierSegment(animation[i]['range'],
+                                            animation[i]['bezierPoints']);
         }
         return new BezierCurve(segments);
     }

@@ -200,7 +200,7 @@ class GenerateCameraAnimationJson(bpy.types.Operator):
         fcurves = action.fcurves
         frame_range = list(action.frame_range)
 
-        animation = {}
+        animation = {'range': frame_range}
         for f in fcurves:
             name = (self.CurveNames[f.data_path] +
                     self.CoordNames[f.array_index])
@@ -226,8 +226,7 @@ class GenerateCameraAnimationJson(bpy.types.Operator):
                 for c in s['bezierPoints']:
                     c[1] += ROT_N90
 
-        return json.dumps({ 'range': frame_range, 'animation': animation },
-                          sort_keys=True, indent=4)
+        return json.dumps(animation, sort_keys=True, indent=4)
 
     def execute(self, context):
         action = context.active_object.animation_data.action
