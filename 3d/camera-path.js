@@ -115,23 +115,29 @@ function CameraAnimation(animation) {
     this.range = animation['range'];
     for (var attr in ['locationX', 'locationY', 'locationZ',
                       'rotationX', 'rotationY', 'rotationZ'])
-        this[attr] = this.processAnimation[animation[attr]);
+        this[attr] = this.processAnimation(animation[attr]);
     this.upVector = [0,1,0];
     this.lookAt = [0,0,-1];
     this.eye = [0,0,0];
 }
 
-CameraAnimation.prototype.processAnimation(animation) {
+CameraAnimation.prototype.processAnimation = function(animation) {
     if (typeof(animation) == 'number')
         return new ConstantValue(animation);
-    else
-        return new BezierCurve(animation['bezierSegments']);
+    else {
+        var segments = [];
+        for (var segment in animation) {
+            segments.push(new BezierSegment(segment['range'],
+                                            segment['bezierPoints']));
+        }
+        return new BezierCurve(segments);
+    }
     return null;
 }
 
 // t is 0..1
 // After evaluating, upVector, lookAt and eye will be updated.
-CameraAnimation.prototype.evaluate(t) {
+CameraAnimation.prototype.evaluate = function(t) {
     // Find x corresponding to t
     var x = this.range[0] + t * (this.range[1] - this.range[0] + 1);
 
@@ -165,3 +171,6 @@ CameraAnimation.prototype.evaluate(t) {
     this.upVector[1] = c1*c3 - s1*s2*s3;
     this.upVector[2] = -c2*s1;
 }
+
+// QML doesn't allow global variables, so provide one here to store the instance
+var camera = null;

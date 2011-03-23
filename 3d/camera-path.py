@@ -110,7 +110,7 @@ class FitViewToFace(bpy.types.Operator):
         center = face.center * obj.matrix_world
 
         # Make sure view location is very close to face center
-        if (center - region_3d.view_location).length > 2.5e-07:
+        if (center - region_3d.view_location).length > 3e-07:
             reportError(self, "View not aligned on active face center")
             return
 
@@ -212,7 +212,7 @@ class GenerateCameraAnimationJson(bpy.types.Operator):
                     k = f.keyframe_points[i]
                     nextk = f.keyframe_points[i+1]
                     segments.append({'range': [k.co[0], nextk.co[0]],
-                                     'bezierSegments': [list(k.co),
+                                     'bezierPoints': [list(k.co),
                                                 list(k.handle_right),
                                                 list(nextk.handle_left),
                                                 list(nextk.co)]})
@@ -223,7 +223,7 @@ class GenerateCameraAnimationJson(bpy.types.Operator):
             animation['rotationX'] += ROT_N90
         else:
             for s in animation['rotationX']:
-                for c in s['bezierSegments']:
+                for c in s['bezierPoints']:
                     c[1] += ROT_N90
 
         return json.dumps({ 'range': frame_range, 'animation': animation },
