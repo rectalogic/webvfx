@@ -16,26 +16,19 @@ BezierSegment.prototype.ITERATIONS = 5;
 
 // Return y value for given x.
 BezierSegment.prototype.evaluate = function(x) {
-    var t;
-    if (x == this.range[0])
-        t = 0;
-    else if (x == this.range[1])
-        t = 1;
-    else {
-        // Solve for t given x (using Newton-Raphson),
-        // then solve for y given t.
-        // For first guess, linearly interpolate to get t.
-        t = (this.range[1] - this.range[0]) / x;
-        var oldt = t;
-        for (var i = 0; i < this.ITERATIONS; i++) {
-            var currentX = this.evaluatePolynomial(t, this.xCoefficients);
-            var currentSlope = this.slope(t, this.xCoefficients);
-            t -= (currentX - x) * currentSlope;
-            t = this.clamp(t);
-            if (Math.abs(oldt - t) <= this.TOLERANCE)
-                break;
-            oldt = t;
-        }
+    // Solve for t given x (using Newton-Raphson),
+    // then solve for y given t.
+    // For first guess, linearly interpolate to get t.
+    var t = (this.range[1] - this.range[0]) / x;
+    var oldt = t;
+    for (var i = 0; i < this.ITERATIONS; i++) {
+        var currentX = this.evaluatePolynomial(t, this.xCoefficients);
+        var currentSlope = this.slope(t, this.xCoefficients);
+        t -= (currentX - x) * currentSlope;
+        t = this.clamp(t);
+        if (Math.abs(oldt - t) <= this.TOLERANCE)
+            break;
+        oldt = t;
     }
     return this.evaluatePolynomial(t, this.yCoefficients);
 }
@@ -72,10 +65,8 @@ BezierSegment.prototype.clamp = function(v) {
 }
 
 
-// range is the [beginX,endX] range of x coordinates this curve covers.
 // segments is an ordered array of non overlapping BezierSegments
-function BezierCurve(range, segments) {
-    this.range = range;
+function BezierCurve(segments) {
     this.segments = segments;
     this.currentSegment = null;
 }
@@ -95,7 +86,9 @@ BezierCurve.prototype.findSegment = function(x) {
             return segment;
         middleIndex = Math.floor((stopIndex + startIndex) / 2);
     }
-    return null;
+    // We failed to find the segment, return first or last.
+    // Segment will clamp x to it's range.
+    return this.segments[middleIndex];
 }
 
 BezierCurve.prototype.evaluate = function(x) {
@@ -105,4 +98,70 @@ BezierCurve.prototype.evaluate = function(x) {
         this.currentSegment = this.findSegment(x);
 
     return this.currentSegment.evaluate(x);
+}
+
+
+function ConstantValue(value) {
+    this.value = value;
+}
+
+ConstantValue.prototype.evaluate = function(x) {
+    return this.value;
+}
+
+
+// animation is the animation data exported from Blender tool
+function CameraAnimation(animation) {
+    this.range = animation['range'];
+    for (var attr in ['locationX', 'locationY', 'locationZ',
+                      'rotationX', 'rotationY', 'rotationZ'])
+        this[attr] = this.processAnimation[animation[attr]);
+    this.upVector = [0,1,0];
+    this.lookAt = [0,0,-1];
+    this.eye = [0,0,0];
+}
+
+CameraAnimation.prototype.processAnimation(animation) {
+    if (typeof(animation) == 'number')
+        return new ConstantValue(animation);
+    else
+        return new BezierCurve(animation['bezierSegments']);
+    return null;
+}
+
+// t is 0..1
+// After evaluating, upVector, lookAt and eye will be updated.
+CameraAnimation.prototype.evaluate(t) {
+    // Find x corresponding to t
+    var x = this.range[0] + t * (this.range[1] - this.range[0] + 1);
+
+    this.eye[0] = this.locationX.evaluate(x);
+    this.eye[1] = this.locationY.evaluate(x);
+    this.eye[2] = this.locationZ.evaluate(x);
+
+    var rotX = this.rotationX.evaluate(x);
+    var rotY = this.rotationY.evaluate(x);
+    var rotZ = this.rotationZ.evaluate(x);
+
+    // Using values from rotation matrix for XYZ Euler angles
+    // http://en.wikipedia.org/wiki/Euler_angles#Matrix_orientation
+    var c1 = Math.cos(rotX);
+    var c2 = Math.cos(rotY);
+    var c3 = Math.cos(rotZ);
+    var s1 = Math.sin(rotX);
+    var s2 = Math.sin(rotY);
+    var s3 = Math.sin(rotZ);
+
+    // Get the direction vector (camera looking down z)
+    // (m[2][0], m[2][1], m[2][2])
+    var direction = [s1*s3 - c1*c3*s2, c1*s2*s3 + c3*s1, c1*c2];
+    // Lookat is the eye position - the direction
+    this.lookAt[0] = this.eye[0] - direction[0];
+    this.lookAt[1] = this.eye[1] - direction[1];
+    this.lookAt[2] = this.eye[2] - direction[2];
+    // Up vector can just be read out of the matrix (y axis)
+    // (m[1][0], m[1][1], m[1][2])
+    this.upVector[0] = c1*s3 + c3*s1*s2;
+    this.upVector[1] = c1*c3 - s1*s2*s3;
+    this.upVector[2] = -c2*s1;
 }

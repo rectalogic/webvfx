@@ -1,5 +1,6 @@
 import bpy
 import math
+import numbers
 import mathutils
 import json
 
@@ -201,29 +202,28 @@ class GenerateCameraAnimationJson(bpy.types.Operator):
 
         animation = {}
         for f in fcurves:
-            segments = []
+            name = (self.CurveNames[f.data_path] +
+                    self.CoordNames[f.array_index])
             if len(f.keyframe_points) == 1:
-                segments.append({'range': frame_range,
-                                 'constant': f.keyframe_points[0].co[1]})
+                animation[name] = f.keyframe_points[0].co[1]
             else:
+                segments = []
                 for i in range(len(f.keyframe_points) - 1):
                     k = f.keyframe_points[i]
                     nextk = f.keyframe_points[i+1]
                     segments.append({'range': [k.co[0], nextk.co[0]],
-                                     'bezier': [list(k.co),
+                                     'bezierSegments': [list(k.co),
                                                 list(k.handle_right),
                                                 list(nextk.handle_left),
                                                 list(nextk.co)]})
-
-            name = self.CurveNames[f.data_path] + self.CoordNames[f.array_index]
-            animation[name] = segments
+                animation[name] = segments
 
         # Adjust X rotation to convert from Blender space to Qt3D space
-        for segment in animation['rotationX']:
-            if 'constant' in segment:
-                segment['constant'] += ROT_N90
-            elif 'bezier' in segment:
-                for c in segment['bezier']:
+        if isinstance(animation['rotationX'], numbers.Number):
+            animation['rotationX'] += ROT_N90
+        else:
+            for s in animation['rotationX']:
+                for c in s['bezierSegments']:
                     c[1] += ROT_N90
 
         return json.dumps({ 'range': frame_range, 'animation': animation },
