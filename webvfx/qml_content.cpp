@@ -78,7 +78,7 @@ QmlContent::QmlContent(QWidget* parent, const QSize& size, Parameters* parameter
 
     connect(this, SIGNAL(statusChanged(QDeclarativeView::Status)), SLOT(qmlViewStatusChanged(QDeclarativeView::Status)));
     connect(engine(), SIGNAL(warnings(QList<QDeclarativeError>)), SLOT(logWarnings(QList<QDeclarativeError>)));
-    connect(contentContext, SIGNAL(loadFinished(bool)), SLOT(contentContextLoadFinished(bool)));
+    connect(contentContext, SIGNAL(readyRender(bool)), SLOT(contentContextLoadFinished(bool)));
 
     // Turn off scrollbars
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);

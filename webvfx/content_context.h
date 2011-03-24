@@ -77,10 +77,9 @@ public:
     const Effects::ImageTypeMap& getImageTypeMap() { return imageTypeMap; }
 
 signals:
-    // Page contents must signal this when load is complete
-    // (which may be after window.onload fires).
-    // status indicates load failure/success.
-    void loadFinished(bool status);
+    // Page contents must signal this when ready to render.
+    // status indicates setup failure/success.
+    void readyRender(bool status);
 
     // Signal raised when page contents should render for the given time.
     // time is normalized 0..1.0
