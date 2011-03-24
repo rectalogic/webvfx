@@ -154,27 +154,39 @@ CameraAnimation.prototype.evaluate = function(t) {
     var rotY = this.rotationY.evaluate(x);
     var rotZ = this.rotationZ.evaluate(x);
 
-    // Using values from rotation matrix for XYZ Euler angles
+    // Blender Euler order is XYZ, so angles are applied in ZYX order.
+    // Using the ZYX matrix from, but transposed (so passive transformation
+    // instead of active)
     // http://en.wikipedia.org/wiki/Euler_angles#Matrix_orientation
-    var c1 = Math.cos(rotX);
-    var c2 = Math.cos(rotY);
-    var c3 = Math.cos(rotZ);
-    var s1 = Math.sin(rotX);
-    var s2 = Math.sin(rotY);
-    var s3 = Math.sin(rotZ);
+    var cx = Math.cos(rotX);
+    var cy = Math.cos(rotY);
+    var cz = Math.cos(rotZ);
+    var sx = Math.sin(rotX);
+    var sy = Math.sin(rotY);
+    var sz = Math.sin(rotZ);
 
-    // Get the direction vector (camera looking down z)
-    // (m[2][0], m[2][1], m[2][2])
-    var direction = [s1*s3 - c1*c3*s2, c1*s2*s3 + c3*s1, c1*c2];
-    // Lookat is the eye position - the direction
-    this.lookAt[0] = this.eye[0] - direction[0];
-    this.lookAt[1] = this.eye[1] - direction[1];
-    this.lookAt[2] = this.eye[2] - direction[2];
+    var cc = cx*cz;
+    var cs = cx*sz;
+    var sc = sx*cz;
+    var ss = sx*sz;
+
+    var m10 = sy*sc-cs;
+    var m11 = sy*ss+cc;
+    var m12 = cy*sx;
+    var m20 = sy*cc+ss;
+    var m21 = sy*cs-sc;
+    var m22 = cy*cx;
+
     // Up vector can just be read out of the matrix (y axis)
-    // (m[1][0], m[1][1], m[1][2])
-    this.upVector[0] = c1*s3 + c3*s1*s2;
-    this.upVector[1] = c1*c3 - s1*s2*s3;
-    this.upVector[2] = -c2*s1;
+    // (m10, m11, m12)
+    this.lookAt[0] = this.eye[0] - m20;
+    this.lookAt[1] = this.eye[1] - m21;
+    this.lookAt[2] = this.eye[2] - m22;
+    // Up vector can just be read out of the matrix (y axis)
+    // (m10, m11, m12)
+    this.upVector[0] = m10;
+    this.upVector[1] = m11;
+    this.upVector[2] = m12;
 }
 
 // QML doesn't allow global variables, so provide one here to store the instance

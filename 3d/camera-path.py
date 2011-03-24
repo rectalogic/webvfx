@@ -4,11 +4,6 @@ import numbers
 import mathutils
 import json
 
-# Rotate -90 degrees
-ROT_N90 = -math.pi / 2
-# Transform from Blender coordinate system to Qml
-QML_TRANSFORM = mathutils.Matrix.Rotation(ROT_N90, 4, "X")
-
 def convertCameraFOV(context, camera):
     '''Blender uses horizontal fov, convert to vertical for Qt3D'''
     render = context.scene.render
@@ -41,8 +36,9 @@ class GenerateCameraQml(bpy.types.Operator):
 
     def generateCameraQml(self, context):
         scene = context.scene
+        render = scene.render
         camera = scene.camera
-        matrix = QML_TRANSFORM * camera.matrix_world
+        matrix = camera.matrix_world
 
         # eye position can just be read out of the matrix
         w = matrix[3][3]
@@ -58,14 +54,26 @@ class GenerateCameraQml(bpy.types.Operator):
         nearPlane = camera.data.clip_start
         farPlane = camera.data.clip_end
 
-        return ("camera: Camera {\n"
-                "    nearPlane: %f\n"
-                "    farPlane: %f\n"
-                "    fieldOfView: %f\n"
-                "    upVector: Qt.vector3d%s\n"
-                "    center: Qt.vector3d%s\n"
-                "    eye: Qt.vector3d%s\n"
-                "}\n" % (nearPlane, farPlane, fov, up, look, eye))
+        return ("Viewport {\n"
+                "    width: %d\n"
+                "    height: %d\n"
+                "    camera: Camera {\n"
+                "        nearPlane: %f\n"
+                "        farPlane: %f\n"
+                "        fieldOfView: %f\n"
+                "        upVector: Qt.vector3d%s\n"
+                "        center: Qt.vector3d%s\n"
+                "        eye: Qt.vector3d%s\n"
+                "    }\n"
+                "}\n"
+                "// Rotate models 90 around X axis to convert from Blender coordinate space\n"
+                "pretransform: [\n"
+                "    Rotation3D {\n"
+                "        angle: 90\n"
+                "        axis: Qt.vector3d(1, 0, 0)\n"
+                "    }\n"
+                "]\n" % (render.resolution_x, render.resolution_y,
+                         nearPlane, farPlane, fov, up, look, eye))
 
     def execute(self, context):
         dumpText(context, 'QML Camera', self.generateCameraQml(context))
@@ -213,18 +221,10 @@ class GenerateCameraAnimationJson(bpy.types.Operator):
                     nextk = f.keyframe_points[i+1]
                     segments.append({'range': [k.co[0], nextk.co[0]],
                                      'bezierPoints': [list(k.co),
-                                                list(k.handle_right),
-                                                list(nextk.handle_left),
-                                                list(nextk.co)]})
+                                                      list(k.handle_right),
+                                                      list(nextk.handle_left),
+                                                      list(nextk.co)]})
                 animation[name] = segments
-
-        # Adjust X rotation to convert from Blender space to Qt3D space
-        if isinstance(animation['rotationX'], numbers.Number):
-            animation['rotationX'] += ROT_N90
-        else:
-            for s in animation['rotationX']:
-                for c in s['bezierPoints']:
-                    c[1] += ROT_N90
 
         return json.dumps(animation, sort_keys=True, indent=4)
 
