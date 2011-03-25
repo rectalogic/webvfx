@@ -77,31 +77,24 @@ class GenerateCameraQml(bpy.types.Operator):
         look = (eye[0] - direction[0], eye[1] - direction[1], eye[2] - direction[2])
         up = getUpVector(matrix)
 
-        fov = math.degrees(convertCameraFOV(context, camera))
+        # Blender fov is horizontal, Qt3D is vertical.
+        # Precompute part factor to convert at runtime based on viewport size.
+        fovFactor = math.tan(camera.data.angle / 2)
 
         nearPlane = camera.data.clip_start
         farPlane = camera.data.clip_end
 
         return ("Viewport {\n"
-                "    width: %d\n"
-                "    height: %d\n"
                 "    camera: Camera {\n"
                 "        nearPlane: %f\n"
                 "        farPlane: %f\n"
-                "        fieldOfView: %f\n"
+                "        fieldOfView: (2 * Math.atan(%f / (parent.width / parent.height))) * 180 / Math.PI\n"
+                "\n"
                 "        upVector: Qt.vector3d%s\n"
                 "        center: Qt.vector3d%s\n"
                 "        eye: Qt.vector3d%s\n"
                 "    }\n"
-                "}\n"
-                "// Rotate models 90 around X axis to convert from Blender coordinate space\n"
-                "pretransform: [\n"
-                "    Rotation3D {\n"
-                "        angle: 90\n"
-                "        axis: Qt.vector3d(1, 0, 0)\n"
-                "    }\n"
-                "]\n" % (render.resolution_x, render.resolution_y,
-                         nearPlane, farPlane, fov, up, look, eye))
+                "}\n" % (nearPlane, farPlane, fovFactor, up, look, eye))
 
     def execute(self, context):
         dumpText(context, 'QML Camera', self.generateCameraQml(context))
