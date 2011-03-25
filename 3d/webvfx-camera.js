@@ -20,7 +20,7 @@ BezierSegment.prototype.evaluate = function(x) {
     // Solve for t given x (using Newton-Raphson),
     // then solve for y given t.
     // For first guess, linearly interpolate to get t.
-    var t = (this.range[1] - this.range[0]) / x;
+    var t = x / (this.range[1] - this.range[0] + 1);
     var oldt = t;
     for (var i = 0; i < this.ITERATIONS; i++) {
         var currentX = this.evaluatePolynomial(t, this.xCoefficients);
