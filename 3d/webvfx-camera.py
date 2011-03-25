@@ -235,14 +235,10 @@ class RemoveCameraKeyframe(bpy.types.Operator):
 class GenerateCameraAnimationJson(bpy.types.Operator):
     bl_idname = "anim.generate_camera_animation_json"
     bl_label = "Generate Camera Animation JSON"
-    bl_description = "Generate JSON data for camera animation keyframes"
+    bl_description = "Generate JSON data for active camera animation keyframes"
 
     CoordNames = ['X', 'Y', 'Z']
     CurveNames = { 'location': 'location', 'rotation_euler': 'rotation'}
-
-    @classmethod
-    def poll(cls, context):
-        return context.active_object and context.active_object.type == 'CAMERA'
 
     def generateCameraAnimation(self, action):
         fcurves = action.fcurves
@@ -269,7 +265,7 @@ class GenerateCameraAnimationJson(bpy.types.Operator):
         return json.dumps(animation, sort_keys=True, indent=4)
 
     def execute(self, context):
-        action = context.active_object.animation_data.action
+        action = context.scene.camera.animation_data.action
         dumpText(context, 'QML Camera Animation', self.generateCameraAnimation(action))
         return {'FINISHED'}
 
