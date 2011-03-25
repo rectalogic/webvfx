@@ -4,6 +4,34 @@ import numbers
 import mathutils
 import json
 
+'''
+Open a text window in Blender and load this file, then Run Script.
+This will add a tool panel (QML Camera Patg) to the Tool Shelf
+in the 3D view (type T to show the shelf).
+
+Select an object whose face you want to align to the camera,
+hit TAB to switch to mesh edit mode, select the Face selector tool
+and select the face you want to align.
+
+Click the Align to Face, then Center on Face, then Fit View to Face
+buttons. Then Camera to View.
+This should be keyframed as the first or last keyframe - select
+the camera object and click Insert under Camera Keyframes.
+
+Now you reposition the timeline and add additional camera keyframes.
+Change the Timeline view to FCurve view to edit the animation curves.
+
+When a complete camera animation timeline has been constructed,
+click Generate Animation JSON. This will dump the JSON
+to the text view.
+
+Click Generate Camera QML to generate the camera fieldOfView
+and other parameters. This also dumps the QML for the current camera position.
+
+The Aspect Ratio buttons can be used to change the camera viewport
+aspect ratio.
+'''
+
 def convertCameraFOV(context, camera):
     '''Blender uses horizontal fov, convert to vertical for Qt3D'''
     render = context.scene.render
@@ -169,27 +197,27 @@ class FitViewToFace(bpy.types.Operator):
 class InsertCameraKeyframe(bpy.types.Operator):
     bl_idname = "anim.insert_camera_keyframe"
     bl_label = "Insert Camera Keyframe"
-    bl_description = "Insert a new keyframe, or update current keyframe for the selected camera"
-
-    @classmethod
-    def poll(cls, context):
-        return context.active_object and context.active_object.type == 'CAMERA'
+    bl_description = "Insert a new keyframe, or update current keyframe for the active camera"
 
     def execute(self, context):
-        return bpy.ops.anim.keyframe_insert_menu(type='LocRot')
+        # Without index, inserts all keys of given type.
+        # Without frame, uses current timeline frame.
+        camera = context.scene.camera
+        camera.keyframe_insert('location', group='LocRot')
+        camera.keyframe_insert('rotation_euler', group='LocRot')
+        return {'FINISHED'}
 
 
 class RemoveCameraKeyframe(bpy.types.Operator):
     bl_idname = "anim.remove_camera_keyframe"
     bl_label = "Remove Camera Keyframe"
-    bl_description = "Remove current keyframe for the selected camera"
-
-    @classmethod
-    def poll(cls, context):
-        return context.active_object and context.active_object.type == 'CAMERA'
+    bl_description = "Remove current keyframe for the active camera"
 
     def execute(self, context):
-        return bpy.ops.anim.keyframe_delete_v3d()
+        camera = context.scene.camera
+        camera.keyframe_delete('location', group='LocRot')
+        camera.keyframe_delete('rotation_euler', group='LocRot')
+        return {'FINISHED'}
 
 
 class GenerateCameraAnimationJson(bpy.types.Operator):
