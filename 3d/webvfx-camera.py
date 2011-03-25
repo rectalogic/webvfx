@@ -88,7 +88,7 @@ class GenerateCameraQml(bpy.types.Operator):
                 "    camera: Camera {\n"
                 "        nearPlane: %f\n"
                 "        farPlane: %f\n"
-                "        fieldOfView: (2 * Math.atan(%f / (parent.width / parent.height))) * 180 / Math.PI\n"
+                "        fieldOfView: (2 * Math.atan(%f / (width / height))) * 180 / Math.PI\n"
                 "\n"
                 "        upVector: Qt.vector3d%s\n"
                 "        center: Qt.vector3d%s\n"
@@ -262,7 +262,8 @@ class GenerateCameraAnimationJson(bpy.types.Operator):
                                                       list(nextk.co)]})
                 animation[name] = segments
 
-        return json.dumps(animation, sort_keys=True, indent=4)
+        return json.dumps(animation, sort_keys=True, indent=4,
+                          separators=(',',': '))
 
     def execute(self, context):
         action = context.scene.camera.animation_data.action
