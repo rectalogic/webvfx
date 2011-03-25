@@ -194,6 +194,25 @@ class FitViewToFace(bpy.types.Operator):
         return {'FINISHED'}
 
 
+class RotateView90(bpy.types.Operator):
+    '''Rotate view by 90 degrees'''
+    bl_idname = "view3d.rotate_view_90"
+    bl_label = "Rotate View 90"
+    bl_description = "Rotate view by 90 degrees"
+
+    @classmethod
+    def poll(cls, context):
+        return context.area.type == 'VIEW_3D'
+
+    def execute(self, context):
+        region_3d = context.space_data.region_3d
+        view_matrix = region_3d.view_matrix.copy()
+        rot90 = mathutils.Matrix.Rotation(math.radians(90), 3, 'Z')
+        region_3d.view_rotation = (view_matrix.to_3x3().invert() * rot90).invert().to_quat()
+
+        return {'FINISHED'}
+
+
 class InsertCameraKeyframe(bpy.types.Operator):
     bl_idname = "anim.insert_camera_keyframe"
     bl_label = "Insert Camera Keyframe"
@@ -277,6 +296,7 @@ class OBJECT_PT_camera_face_align(bpy.types.Panel):
         op_align.type = 'TOP'
         op_align.align_active = True
         col.operator("view3d.view_selected", text="2. Center on Face")
+        col.operator("view3d.rotate_view_90", text="2.5 Rotate View 90")
         col.operator("view3d.fit_view_to_face", text="3. Fit View to Face")
 
         col.label(text="Camera:")
