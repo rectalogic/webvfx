@@ -5,6 +5,7 @@
 #ifndef Q_WS_MAC
 #include <pthread.h>
 #endif
+#include <cstdlib>
 #include <QApplication>
 #include <QMetaType>
 #include <QMutex>
@@ -86,6 +87,12 @@ bool initialize()
         s_ownApp = true;
 #else
         {
+#ifdef Q_WS_X11
+            if (std::getenv("DISPLAY") == 0) {
+                log("DISPLAY environment variable not set");
+                return false;
+            }
+#endif
             QMutex uiThreadMutex;
             QWaitCondition uiThreadCondition;
             ThreadSync uiThreadSync(&uiThreadMutex, &uiThreadCondition);
