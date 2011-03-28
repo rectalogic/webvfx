@@ -1,6 +1,5 @@
 include(../common.pri)
 TEMPLATE = lib
-#VERSION = 
 
 HEADERS += service_locker.h
 HEADERS += service_manager.h
@@ -14,7 +13,7 @@ SOURCES += webvfx_producer.cpp
 SOURCES += webvfx_service.cpp
 SOURCES += webvfx_transition.cpp
 
-CONFIG += shared warn_on
+CONFIG += plugin shared warn_on
 QT -= gui
 
 unix {
