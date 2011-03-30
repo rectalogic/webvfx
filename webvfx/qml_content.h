@@ -77,9 +77,11 @@ Q_SIGNALS:
 protected:
     void draw(QPainter*)
     {
-        //XXX emitting results in recursively redrawing scene, which draws us again, which emits etc.
-        capturedPixmap = sourcePixmap(Qt::DeviceCoordinates);
-        emit pixmapChanged(capturedPixmap);
+        QPixmap pixmap = sourcePixmap(Qt::DeviceCoordinates);
+        if (capturedPixmap.cacheKey() != pixmap.cacheKey()) {
+            capturedPixmap = pixmap;
+            emit pixmapChanged(capturedPixmap);
+        }
     }
 
 private:
