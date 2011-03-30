@@ -30,6 +30,9 @@ and other parameters. This also dumps the QML for the current camera position.
 
 The Aspect Ratio buttons can be used to change the camera viewport
 aspect ratio.
+
+Enabling the Measure Panel addon (via User Preferences) is useful
+to determine the aspect ratio of a quad that will render text.
 '''
 
 def convertCameraFOV(context, camera):
@@ -101,21 +104,28 @@ class GenerateCameraQml(bpy.types.Operator):
         return {'FINISHED'}
 
 
-class SetRenderResolution(bpy.types.Operator):
-    '''Set render resolution.'''
-    bl_idname = "render.set_resolution"
-    bl_label = "Set Render Resolution"
-    bl_description = "Set render resolution, which sets camera aspect ratio."
+class SetAspectRatio(bpy.types.Operator):
+    '''Set camera aspect ratio.'''
+    bl_idname = "render.set_aspect_ratio"
+    bl_label = "Set Aspect Ratio"
+    bl_description = "Set aspect ratio."
 
-    x = bpy.props.IntProperty()
-    y = bpy.props.IntProperty()
+    ratio = bpy.props.EnumProperty(items=(("16:9", "16:9", "16:9"),
+                                          ("4:3", "4:3", "4:3")),
+                                   name="Aspect Ratio",
+                                   description="Aspect Ratio",
+                                   default="4:3")
 
     def execute(self, context):
         render = context.scene.render
-        render.resolution_x = self.x
         render.pixel_aspect_x = 1
-        render.resolution_y = self.y
         render.pixel_aspect_y = 1
+        if self.ratio == "16:9":
+            render.resolution_x = 768
+            render.resolution_y = 432
+        elif self.ratio == "4:3":
+            render.resolution_x = 576
+            render.resolution_y = 432
         return {'FINISHED'}
 
 
@@ -309,7 +319,8 @@ class OBJECT_PT_camera_face_align(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
 
-        col = layout.column()
+        col = layout.column(align=True)
+
         col.label(text="Face:")
         op_align = col.operator("view3d.viewnumpad", text="1. Align to Face")
         op_align.type = 'TOP'
@@ -324,12 +335,11 @@ class OBJECT_PT_camera_face_align(bpy.types.Panel):
 
         col.label(text="Aspect Ratio:")
         row = col.row()
-        op_4_3 = row.operator("render.set_resolution", text="4:3")
-        op_4_3.x = 576
-        op_4_3.y = 432
-        op_16_9 = row.operator("render.set_resolution", text="16:9")
-        op_16_9.x = 768
-        op_16_9.y = 432
+        op_4_3 = row.operator("render.set_aspect_ratio", text="4:3").ratio="4:3"
+        op_16_9 = row.operator("render.set_aspect_ratio", text="16:9").ratio="16:9"
+
+        col.label(text="Horizontal FOV:")
+        col.prop(context.scene.camera.data, "angle")
 
         col.label(text="Camera Keyframes:")
         row = col.row()
