@@ -113,6 +113,8 @@ ConstantValue.prototype.evaluate = function(x) {
 
 // animation is the animation data exported from Blender webvfx-camera.py tool
 function CameraAnimation(animation) {
+    if (!animation)
+        return;
     this.range = animation['range'];
 
     this.locationX = this.processAnimation(animation['locationX']);
@@ -200,19 +202,4 @@ CameraAnimation.prototype.verticalFOV = function(width, height) {
 
 function radians2degrees(radians) {
     return radians * 180 / Math.PI;
-}
-
-// QML doesn't allow global variables, so provide one here to store the instance
-var camera = null;
-
-function initCameraAnimation(animation) {
-    camera = new CameraAnimation(animation);
-}
-
-// Evaluate global CameraAnimation at time t and update the QML Camera instance
-function updateQmlCamera(qmlCamera, t) {
-    camera.evaluate(t);
-    qmlCamera.eye = Qt.vector3d(camera.eye[0], camera.eye[1], camera.eye[2]);
-    qmlCamera.center = Qt.vector3d(camera.lookAt[0], camera.lookAt[1], camera.lookAt[2]);
-    qmlCamera.upVector = Qt.vector3d(camera.upVector[0], camera.upVector[1], camera.upVector[2]);
 }
