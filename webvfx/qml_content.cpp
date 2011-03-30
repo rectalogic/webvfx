@@ -1,7 +1,4 @@
-#include <QDeclarativeContext>
-#include <QDeclarativeEngine>
-#include <QDeclarativeImageProvider>
-#include <QDeclarativeError>
+#include <QtDeclarative>
 #include <QEventLoop>
 #include <QGLFormat>
 #include <QGLFramebufferObject>
@@ -19,6 +16,8 @@
 
 namespace WebVfx
 {
+
+static bool s_QmlContentRegistered = false;
 
 class PixmapProvider : public QDeclarativeImageProvider
 {
@@ -60,6 +59,11 @@ QmlContent::QmlContent(QWidget* parent, const QSize& size, Parameters* parameter
     , multisampleFBO(0)
     , resolveFBO(0)
 {
+    if (!s_QmlContentRegistered) {
+        s_QmlContentRegistered = true;
+        qmlRegisterType<GraphicsCaptureEffect>("WebVfx", 1, 0, "Capture");
+    }
+
     // We render into FBOs, but need QGLWidget to create a GL context for us
     QGLFormat format(QGL::SampleBuffers|QGL::AlphaChannel|QGL::SingleBuffer);
     glWidget = new QGLWidget(format);

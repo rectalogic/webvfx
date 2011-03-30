@@ -6,6 +6,7 @@
 #define WEBVFX_QML_VIEW_H_
 
 #include <QDeclarativeView>
+#include <QGraphicsEffect>
 #include "webvfx/content.h"
 #include "webvfx/content_context.h"
 #include "webvfx/effects.h"
@@ -54,6 +55,35 @@ private:
     QGLWidget* glWidget;
     QGLFramebufferObject* multisampleFBO;
     QGLFramebufferObject* resolveFBO;
+};
+
+////////////////////
+
+// QGraphicsEffect that captures its source as a pixmap.
+// It does not render the source on-screen, just captures to a pixmap property.
+class GraphicsCaptureEffect : public QGraphicsEffect
+{
+    Q_OBJECT
+    Q_PROPERTY(QPixmap pixmap READ pixmap NOTIFY pixmapChanged)
+public:
+    GraphicsCaptureEffect(QObject* parent=0) : QGraphicsEffect(parent) {}
+    ~GraphicsCaptureEffect() {}
+
+    QPixmap pixmap() const { return capturedPixmap; }
+
+Q_SIGNALS:
+    void pixmapChanged(const QPixmap& pixmap);
+
+protected:
+    void draw(QPainter*)
+    {
+        //XXX emitting results in recursively redrawing scene, which draws us again, which emits etc.
+        capturedPixmap = sourcePixmap(Qt::DeviceCoordinates);
+        emit pixmapChanged(capturedPixmap);
+    }
+
+private:
+    QPixmap capturedPixmap;
 };
 
 }
