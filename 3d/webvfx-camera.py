@@ -262,11 +262,12 @@ class GenerateCameraAnimationJson(bpy.types.Operator):
             points[2][0] = points[3][0] - overlap * h2[0]
             points[2][1] = points[3][1] - overlap * h2[1]
 
-    def generateCameraAnimation(self, action):
+    def generateCameraAnimation(self, camera):
+        action = camera.animation_data.action
         fcurves = action.fcurves
         frame_range = list(action.frame_range)
 
-        animation = {'range': frame_range}
+        animation = {'horizontalFOV': camera.data.angle, 'range': frame_range}
         for f in fcurves:
             name = (self.CurveNames[f.data_path] +
                     self.CoordNames[f.array_index])
@@ -294,8 +295,8 @@ class GenerateCameraAnimationJson(bpy.types.Operator):
                           separators=(',',': '))
 
     def execute(self, context):
-        action = context.scene.camera.animation_data.action
-        dumpText(context, 'QML Camera Animation', self.generateCameraAnimation(action))
+        dumpText(context, 'QML Camera Animation',
+                 self.generateCameraAnimation(context.scene.camera))
         return {'FINISHED'}
 
 

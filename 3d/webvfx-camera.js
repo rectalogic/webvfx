@@ -125,6 +125,9 @@ function CameraAnimation(animation) {
     this.upVector = [0,1,0];
     this.lookAt = [0,0,-1];
     this.eye = [0,0,0];
+
+    // Horizontal field of view in radians
+    this.horizontalFOV = animation['horizontalFOV'];
 }
 
 CameraAnimation.prototype.processAnimation = function(animation) {
@@ -178,8 +181,8 @@ CameraAnimation.prototype.evaluate = function(t) {
     var m21 = sy*cs-sc;
     var m22 = cy*cx;
 
-    // Up vector can just be read out of the matrix (y axis)
-    // (m10, m11, m12)
+    // Direction is eye looking down Z (m20, m21, m22).
+    // LookAt is (eye - direction)
     this.lookAt[0] = this.eye[0] - m20;
     this.lookAt[1] = this.eye[1] - m21;
     this.lookAt[2] = this.eye[2] - m22;
@@ -188,6 +191,15 @@ CameraAnimation.prototype.evaluate = function(t) {
     this.upVector[0] = m10;
     this.upVector[1] = m11;
     this.upVector[2] = m12;
+}
+
+// Compute vertical field of view in radians, given viewport width/height
+CameraAnimation.prototype.verticalFOV = function(width, height) {
+    return 2 * Math.atan(Math.tan(this.horizontalFOV / 2) / (width / height));
+}
+
+function radians2degrees(radians) {
+    return radians * 180 / Math.PI;
 }
 
 // QML doesn't allow global variables, so provide one here to store the instance
