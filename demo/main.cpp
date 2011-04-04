@@ -7,15 +7,71 @@
 #include <sstream>
 #include <iomanip>
 #include <string>
-
+#include <getopt.h>
 #include <webvfx/webvfx.h>
 
+void usage(const char* name) {
+    std::cerr << "Usage: " << name << " [-h|--help] [-p|--parameter <name>=<value>]... [-n|--source-name <source-image-name>] -o|--output <output-directory> <html-or-qml-filename>" << std::endl;
+}
 
 int main(int argc, char* argv[]) {
-    if (argc < 2) {
-        std::cerr << "Usage: " << argv[0] << " <html-path>" << std::endl;
-        return -1;
+    if (argc <= 1) {
+        usage(argv[0]);
+        return 1;
     }
+
+    std::map<const QString, const QString> parameterMap;
+    QString sourceName;
+    std::string outputDirectory;
+
+    static struct option long_options[] = {
+        {"help", no_argument, 0, 'h'},
+        // Parameter name=value to expose to effect
+        {"parameter", required_argument, 0, 'p'},
+        // Name of source video image
+        {"source-name", required_argument, 0, 'n'},
+        // Output directory to write images to
+        {"output", required_argument, 0, 'o'},
+        {0, 0, 0, 0}
+    };
+    int option_index = 0;
+    int c;
+    while ((c = getopt_long(argc, argv, "hp:n:o:",
+                            long_options, &option_index)) != -1) {
+        switch (c) {
+        case 'h':
+            usage(argv[0]);
+            return 1;
+        case 'p': {
+            char* p = strchr(optarg, '=');
+            if (!p) {
+                usage(argv[0]);
+                return 1;
+            }
+            QString name(QString::fromUtf8(optarg, p - optarg));
+            QString value(QString::fromUtf8(p + 1));
+            parameterMap.insert(std::pair<const QString, const QString>(name, value));
+            break;
+        }
+        case 'n':
+            sourceName = optarg;
+            break;
+        case 'o':
+            outputDirectory = optarg;
+            outputDirectory.append("/");
+            break;
+        case '?':
+        default:
+            return 1;
+        }
+    }
+
+    if (outputDirectory.empty() || optind >= argc) {
+        usage(argv[0]);
+        return 1;
+    }
+
+    const char* effectFile = argv[optind];
 
     class Logger : public WebVfx::Logger {
     public:
@@ -27,9 +83,12 @@ int main(int argc, char* argv[]) {
 
     class Parameters : public WebVfx::Parameters {
     public:
-        QString getStringParameter(const QString&) {
-            return "WebVfx Cool Title";
+        Parameters(std::map<const QString, const QString> &map) : map(map) {}
+        QString getStringParameter(const QString& name) {
+            return map[name];
         }
+    private:
+        std::map<const QString, const QString>& map;
     };
 
     class AutoWebVfx {
@@ -40,66 +99,50 @@ int main(int argc, char* argv[]) {
     };
     AutoWebVfx vfx;
 
-    WebVfx::Effects* effects = WebVfx::createEffects(argv[1], 320, 240, new Parameters());
-    if (!effects)
-        return -1;
-    WebVfx::Image video = effects->getImage("sourceImage", 320, 240);
-    // Fill with red XXX need to take into account stride
-    unsigned char* pixels = video.pixels();
-    for (int i = 0; i < video.byteCount(); i+= WebVfx::Image::BytesPerPixel) {
-        pixels[i] = 0xFF;
-        pixels[i+1] = 0x00;
-        pixels[i+2] = 0x00;
+    const int width = 320;
+    const int height = 240;
+
+    WebVfx::Effects* effects = WebVfx::createEffects(effectFile, width, height, new Parameters(parameterMap));
+    if (!effects) {
+        std::cerr << "Failed to create Effects" << std::endl;
+        return 1;
     }
-    const WebVfx::Image image = effects->render(0.32, 320, 240);
-
-    effects->destroy(); effects = 0;
-
-    // Write to disk.
-    std::ofstream rawFile;
-    rawFile.open("/tmp/webvfx.raw", std::ios::out|std::ios::trunc|std::ios::binary);
-    if (rawFile.fail())
-        return -1;
-    rawFile.write(reinterpret_cast<const char*>(image.pixels()), image.byteCount());
-    rawFile.close();
-
-    /*XXX
-    if (!mixRender.loadURL(argv[argc - 1]))
-        return -1;
 
     const int MaxFrames = 20;
-    std::string key("video");
+
     for (int f = 0; f < MaxFrames; f++) {
-        unsigned char* data = mixRender.writeableDataForImageParameter(key, 320, 240);
-        if (!data)
-            return -1;
-        for (unsigned int i = 0; i < 320*240*4; i += 4) {
-            data[i] = 0xff * ((double)f / MaxFrames); //shade of red
-            data[i+3] = 0xff; //alpha
+
+        WebVfx::Image video = effects->getImage(sourceName, width, height);
+        unsigned char* pixels = video.pixels();
+        if (!pixels) {
+            std::cerr << "Failed to get video pixels" << std::endl;
+            return 1;
         }
-
-        const SkBitmap* skiaBitmap = mixRender.render((double)f / MaxFrames);
-        if (!skiaBitmap)
-            return -1;
-
-        // Encode pixel data to PNG.
-        std::vector<unsigned char> pngData;
-        SkAutoLockPixels bitmapLock(*skiaBitmap);
-        gfx::PNGCodec::Encode(reinterpret_cast<const unsigned char*>(skiaBitmap->getPixels()),
-                              gfx::PNGCodec::FORMAT_BGRA, skiaBitmap->width(), skiaBitmap->height(),
-                              static_cast<int>(skiaBitmap->rowBytes()), false, &pngData);
+        double time = (double)f / MaxFrames;
+        // Fill with shade of red XXX need to take into account stride
+        for (int i = 0; i < video.byteCount(); i+= WebVfx::Image::BytesPerPixel) {
+            pixels[i] = 0xFF * time;
+            pixels[i+1] = 0x00;
+            pixels[i+2] = 0x00;
+        }
+        const WebVfx::Image image = effects->render(time, width, height);
 
         // Write to disk.
-        std::ostringstream fileName;
-        fileName << "/tmp/render/render" << std::right << std::setfill('0') << std::setw(2) << f << ".png";
-        std::ofstream pngFile;
-        pngFile.open(fileName.str().c_str(), std::ios::out|std::ios::trunc|std::ios::binary);
-        if (pngFile.fail())
-            return -1;
-        pngFile.write(reinterpret_cast<const char *>(&pngData[0]), pngData.size());
-        pngFile.close();
+        std::stringstream oss;
+        oss << outputDirectory << "webvfx" << f << ".raw";
+        std::string rawFileName = oss.str();
+        std::ofstream rawFile;
+        rawFile.open(rawFileName.c_str(), std::ios::out|std::ios::trunc|std::ios::binary);
+        if (rawFile.fail()) {
+            std::cerr << "Failed to write file " << rawFileName << std::endl;
+            return 1;
+        }
+        rawFile.write(reinterpret_cast<const char*>(image.pixels()),
+                      image.byteCount());
+        rawFile.close();
     }
-    */
+
+    effects->destroy(); effects = 0;
 
     return 0;
 }
