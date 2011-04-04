@@ -25,6 +25,8 @@ SOURCES += web_content.cpp
 SOURCES += webvfx.cpp
 macx:SOURCES += webvfx_mac.mm
 
+RESOURCES += resources/resources.qrc
+
 macx:LIBS += -framework Foundation
 
 CONFIG += shared thread warn_on debug_and_release

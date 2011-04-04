@@ -61,8 +61,10 @@ QmlContent::QmlContent(QWidget* parent, const QSize& size, Parameters* parameter
 {
     if (!s_QmlContentRegistered) {
         s_QmlContentRegistered = true;
-        qmlRegisterType<GraphicsCaptureEffect>("WebVfx", 1, 0, "Capture");
+        qmlRegisterType<GraphicsCaptureEffect>("org.webvfx.WebVfx", 1, 0, "Capture");
     }
+    // Add root of our qrc:/ resource path so embedded QML components are available.
+    engine()->addImportPath(":/");
 
     // We render into FBOs, but need QGLWidget to create a GL context for us
     QGLFormat format(QGL::SampleBuffers|QGL::AlphaChannel|QGL::SingleBuffer);

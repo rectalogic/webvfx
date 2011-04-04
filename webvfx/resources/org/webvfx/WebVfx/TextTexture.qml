@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import Qt 4.7
-import WebVfx 1.0
 
 // Exposes rendered text as a texture image.
 // We render inside a transparent rectangle to ensure the width/height
@@ -15,7 +14,7 @@ Rectangle {
     property alias font: internalText.font
     property alias textureImage: capturedText.pixmap
 
-    // Transparent background
+    // Transparent background on Rectangle
     color: "#00000000"
     // Apply effect that captures all rendering to an image
     effect: Capture { id: capturedText }
