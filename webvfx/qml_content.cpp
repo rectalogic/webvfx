@@ -107,7 +107,8 @@ void QmlContent::qmlViewStatusChanged(QDeclarativeView::Status status)
 
     if (pageLoadFinished == LoadNotFinished)
         pageLoadFinished = (status == QDeclarativeView::Ready) ? LoadSucceeded : LoadFailed;
-    if (syncLoop && contextLoadFinished != LoadNotFinished)
+    if (syncLoop && (pageLoadFinished == LoadFailed ||
+                     contextLoadFinished != LoadNotFinished))
         syncLoop->exit(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
 }
 
@@ -115,7 +116,8 @@ void QmlContent::contentContextLoadFinished(bool result)
 {
     if (contextLoadFinished == LoadNotFinished)
         contextLoadFinished = result ? LoadSucceeded : LoadFailed;
-    if (syncLoop && pageLoadFinished != LoadNotFinished)
+    if (syncLoop && (contextLoadFinished == LoadFailed ||
+                     pageLoadFinished != LoadNotFinished))
         syncLoop->exit(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
 }
 

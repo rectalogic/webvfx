@@ -76,7 +76,8 @@ void WebContent::webPageLoadFinished(bool result)
 {
     if (pageLoadFinished == LoadNotFinished)
         pageLoadFinished = result ? LoadSucceeded : LoadFailed;
-    if (syncLoop && contextLoadFinished != LoadNotFinished)
+    if (syncLoop && (pageLoadFinished == LoadFailed ||
+                     contextLoadFinished != LoadNotFinished))
         syncLoop->exit(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
 }
 
@@ -84,7 +85,8 @@ void WebContent::contentContextLoadFinished(bool result)
 {
     if (contextLoadFinished == LoadNotFinished)
         contextLoadFinished = result ? LoadSucceeded : LoadFailed;
-    if (syncLoop && pageLoadFinished != LoadNotFinished)
+    if (syncLoop && (contextLoadFinished == LoadFailed ||
+                     pageLoadFinished != LoadNotFinished))
         syncLoop->exit(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
 }
 
