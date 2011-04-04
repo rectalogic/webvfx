@@ -91,7 +91,7 @@ const Image EffectsImpl::render(double time, int width, int height)
 void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters)
 {
     QString path(url.path());
-    // We can't parewnt QmlContent since we aren't a QWidget.
+    // We can't parent QmlContent since we aren't a QWidget.
     // So don't parent either content, and destroy them explicitly.
     if (path.endsWith(".html", Qt::CaseInsensitive))
         content = new WebContent(0, size, parameters);
