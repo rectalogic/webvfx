@@ -5,7 +5,7 @@ SUBDIRS += webvfx
 SUBDIRS += viewer
 SUBDIRS += demo
 
-unix:system(pkg-config --exists --print-errors mlt-framework) {
+unix:system(pkg-config --exists mlt-framework) {
     SUBDIRS += mlt
     mlt.depends = webvfx
 } else {

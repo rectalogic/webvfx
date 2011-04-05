@@ -94,7 +94,7 @@ Viewer::Viewer(QWidget *parent)
     sizeLabel = new QLabel(statusBar());
     statusBar()->addPermanentWidget(sizeLabel);
 
-    on_resizeButton_clicked();
+    handleResize();
 }
 
 void Viewer::on_actionOpenHtml_triggered(bool)
@@ -123,10 +123,16 @@ void Viewer::on_actionOpenQml_triggered(bool)
 
 void Viewer::on_resizeButton_clicked()
 {
+    handleResize();
+}
+
+void Viewer::handleResize()
+{
     int width = widthSpinBox->value();
     int height = heightSpinBox->value();
     scrollArea->widget()->resize(width, height);
-    sizeLabel->setText(QString::number(width) % QLatin1Literal("x") % QString::number(height));
+    sizeLabel->setText(QString::number(width) % QLatin1Literal("x") %
+                       QString::number(height));
 
     // Iterate over ImageColor widgets in table and change their sizes
     QSize size(width, height);
@@ -176,22 +182,29 @@ bool Viewer::loadHtml(const QString& fileName)
 {
     logTextEdit->clear();
 
+    QSize size = scrollArea->widget()->size();
+
     // Set QWebView as direct widget of QScrollArea,
     // otherwise it creates an intermediate QWidget which messes up resizing.
     QWebView* webView = new QWebView(scrollArea);
     scrollArea->setWidget(webView);
+    webView->resize(size);
 
-    WebVfx::WebContent* webContent = new WebVfx::WebContent(webView, webView->size(), new ViewerParameters(parametersTable));
+    WebVfx::WebContent* webContent =
+        new WebVfx::WebContent(webView, size,
+                               new ViewerParameters(parametersTable));
+
     // User can right-click to open WebInspector on the page
-    webContent->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+    webContent->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled,
+                                         true);
     webView->setPage(webContent);
     content = webContent;
 
     bool result = webContent->loadContent(fileName);
 
-    timeSlider->setValue(0);
+    setupImages(size);
 
-    setupImages(webView->size());
+    content->renderContent(timeSpinBox->value());
 
     return result;
 }
@@ -202,15 +215,17 @@ bool Viewer::loadQml(const QString& fileName)
 
     // Set QmlContent as direct widget of QScrollArea,
     // otherwise it creates an intermediate QWidget which messes up resizing.
-    WebVfx::QmlContent* qmlContent = new WebVfx::QmlContent(scrollArea, scrollArea->widget()->size(), new ViewerParameters(parametersTable));
+    WebVfx::QmlContent* qmlContent =
+        new WebVfx::QmlContent(scrollArea, scrollArea->widget()->size(),
+                               new ViewerParameters(parametersTable));
     scrollArea->setWidget(qmlContent);
     content = qmlContent;
 
     bool result = qmlContent->loadContent(fileName);
 
-    timeSlider->setValue(0);
-
     setupImages(qmlContent->size());
+
+    content->renderContent(timeSpinBox->value());
 
     return result;
 }

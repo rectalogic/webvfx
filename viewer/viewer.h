@@ -38,6 +38,7 @@ private slots:
 private:
     bool loadHtml(const QString& fileName);
     bool loadQml(const QString& fileName);
+    void handleResize();
     void setupImages(const QSize& size);
     double sliderTimeValue(int value);
     QLabel* sizeLabel;

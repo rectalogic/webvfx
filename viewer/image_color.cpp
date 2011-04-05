@@ -32,6 +32,8 @@ void ImageColor::setImageColor(const QColor& color)
 
 void ImageColor::setImageSize(const QSize& size)
 {
+    if (image.size() == size)
+        return;
     image = QImage(size, QImage::Format_RGB888);
     fillImage();
 
