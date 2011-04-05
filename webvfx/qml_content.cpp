@@ -237,12 +237,12 @@ bool QmlContent::createFBO(const QSize& size)
     glWidget->makeCurrent();
 
     QGLFramebufferObjectFormat fboFormat;
-    fboFormat.setTextureTarget(GL_TEXTURE_RECTANGLE_NV);
+    fboFormat.setTextureTarget(GL_TEXTURE_RECTANGLE_ARB);
     fboFormat.setAttachment(QGLFramebufferObject::CombinedDepthStencil);
     delete multisampleFBO;
     multisampleFBO = new QGLFramebufferObject(size, fboFormat);
     delete resolveFBO;
-    resolveFBO = new QGLFramebufferObject(size, GL_TEXTURE_RECTANGLE_NV);
+    resolveFBO = new QGLFramebufferObject(size, GL_TEXTURE_RECTANGLE_ARB);
 
     glWidget->doneCurrent();
     return true;
