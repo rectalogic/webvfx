@@ -32,8 +32,6 @@ static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_forma
     if (mlt_properties_get(b_props, "rescale.interp") == NULL || !std::strcmp(mlt_properties_get(b_props, "rescale.interp"), "none"))
         mlt_properties_set(b_props, "rescale.interp", mlt_properties_get(a_props, "rescale.interp"));
 
-    mlt_position position = mlt_transition_get_position(transition, aFrame);
-
     // Get the aFrame image, we will write our output to it
     *format = mlt_image_rgb24;
     if ((error = mlt_frame_get_image(aFrame, image, format, width, height, 1)) != 0)
@@ -54,7 +52,9 @@ static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_forma
         manager->copyImageForName(manager->getSourceImageName(), renderedImage);
         WebVfx::Image targetImage(bImage, bWidth, bHeight, bWidth * bHeight * WebVfx::Image::BytesPerPixel);
         manager->copyImageForName(manager->getTargetImageName(), targetImage);
-        manager->render(renderedImage, position);
+        manager->render(renderedImage,
+                        mlt_transition_get_position(transition, aFrame),
+                        mlt_transition_get_length(transition));
     }
 
     return error;

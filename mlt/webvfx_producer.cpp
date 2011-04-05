@@ -22,9 +22,6 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
     // Obtain the producer for this frame
     mlt_producer producer = (mlt_producer)mlt_properties_get_data(properties, kWebVfxProducerPropertyName, NULL);
 
-    // Compute position
-    mlt_position position = mlt_frame_get_position(frame);
-
     // Allocate the image
     *format = mlt_image_rgb24;
     int size = *width * *height * WebVfx::Image::BytesPerPixel;
@@ -43,7 +40,9 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
             return 1;
 
         WebVfx::Image outputImage(*buffer, *width, *height, size);
-        locker.getManager()->render(outputImage, position);
+        locker.getManager()->render(outputImage,
+                                    mlt_producer_position(producer),
+                                    mlt_producer_get_length(producer));
     }
 
     return error;

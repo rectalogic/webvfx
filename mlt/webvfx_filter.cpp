@@ -19,8 +19,6 @@ static int filterGetImage(mlt_frame frame, uint8_t **image, mlt_image_format *fo
     // Get the filter
     mlt_filter filter = (mlt_filter)mlt_frame_pop_service(frame);
 
-    mlt_position position = mlt_filter_get_position(filter, frame);
-
     // Get the source image, we will also write our output to it
     *format = mlt_image_rgb24;
     if ((error = mlt_frame_get_image(frame, image, format, width, height, 1)) != 0)
@@ -34,7 +32,9 @@ static int filterGetImage(mlt_frame frame, uint8_t **image, mlt_image_format *fo
         MLTWebVfx::ServiceManager* manager = locker.getManager();
         WebVfx::Image renderedImage(*image, *width, *height, *width * *height * WebVfx::Image::BytesPerPixel);
         manager->copyImageForName(manager->getSourceImageName(), renderedImage);
-        manager->render(renderedImage, position);
+        manager->render(renderedImage,
+                        mlt_filter_get_position(filter, frame),
+                        mlt_filter_get_length(filter));
     }
 
     return error;

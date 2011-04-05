@@ -185,15 +185,11 @@ void ServiceManager::copyImageForName(const QString& name, const WebVfx::Image& 
     }
 }
 
-int ServiceManager::render(WebVfx::Image& outputImage, mlt_position position)
+int ServiceManager::render(WebVfx::Image& outputImage, mlt_position position, mlt_position length)
 {
     int error = 0;
 
-    // Compute time
-    mlt_properties properties = MLT_SERVICE_PROPERTIES(service);
-    mlt_position in = mlt_properties_get_position(properties, "in");
-    mlt_position length = mlt_properties_get_position(properties, "out") - in + 1;
-    double time = (double)(position - in) / (double)length;
+    double time = length > 0 ? position / (double)length : 0;
 
     // Produce any extra images
     if (imageProducers) {

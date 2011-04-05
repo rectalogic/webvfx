@@ -29,7 +29,7 @@ public:
     const QString& getSourceImageName() { return sourceImageName; }
     const QString& getTargetImageName() { return targetImageName; }
     void copyImageForName(const QString& name, const WebVfx::Image& fromImage);
-    int render(WebVfx::Image& outputImage, mlt_position position);
+    int render(WebVfx::Image& outputImage, mlt_position position, mlt_position length);
 
     static const char* kFilePropertyName;
 
