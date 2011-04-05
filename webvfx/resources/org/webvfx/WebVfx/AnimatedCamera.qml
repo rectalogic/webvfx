@@ -17,18 +17,7 @@ Camera {
         return WebVfx.radians2degrees(WebVfx.CameraAnimation.prototype.global.verticalFOV(width, height));
     }
 
-    // Animation data JSON
-    property variant animationData
-    onAnimationDataChanged: {
-        // Stash a global instance, can't store a JS object in QML
-        WebVfx.CameraAnimation.prototype.global = new WebVfx.CameraAnimation(animationData)
-        // Update FOV
-        fieldOfView = computeFOV(width, height);
-    }
-
-    // Animation time (0..1)
-    property real animationTime: 0
-    onAnimationTimeChanged: {
+    function updateCamera() {
         var animation = WebVfx.CameraAnimation.prototype.global;
         animation.evaluate(animationTime);
         eye = Qt.vector3d(animation.eye[0],
@@ -41,6 +30,20 @@ Camera {
                                animation.upVector[1],
                                animation.upVector[2]);
     }
+
+    // Animation data JSON
+    property variant animationData
+    onAnimationDataChanged: {
+        // Stash a global instance, can't store a JS object in QML
+        WebVfx.CameraAnimation.prototype.global = new WebVfx.CameraAnimation(animationData)
+        // Update FOV
+        fieldOfView = computeFOV(width, height);
+        updateCamera();
+    }
+
+    // Animation time (0..1)
+    property real animationTime: 0
+    onAnimationTimeChanged: updateCamera()
 
     fieldOfView: computeFOV(width, height)
 

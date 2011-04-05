@@ -6,7 +6,7 @@ import Qt 4.7
 
 // Exposes rendered text as a texture image.
 // We render inside a transparent rectangle to ensure the width/height
-// is honoroed so when we texture we don't get distorted.
+// is honored so when we texture we don't get distorted.
 
 Rectangle {
     property alias text: internalText.text
