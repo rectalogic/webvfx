@@ -14,6 +14,7 @@ namespace WebVfx
     class Content;
 }
 
+class QDoubleSpinBox;
 class QLabel;
 class QWebView;
 
@@ -29,6 +30,7 @@ private slots:
     void on_actionOpenQml_triggered(bool);
     void on_resizeButton_clicked();
     void on_timeSlider_valueChanged(int);
+    void onTimeSpinBoxValueChanged(double);
     void on_addParameterButton_clicked();
     void on_deleteParameterButton_clicked();
     void onImageChanged(const QString& name, const WebVfx::Image& image);
@@ -39,7 +41,7 @@ private:
     void setupImages(const QSize& size);
     double sliderTimeValue(int value);
     QLabel* sizeLabel;
-    QLabel* timeLabel;
+    QDoubleSpinBox* timeSpinBox;
     WebVfx::Content* content;
 };
 

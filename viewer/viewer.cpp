@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <QDir>
+#include <QDoubleSpinBox>
 #include <QFileDialog>
 #include <QLabel>
 #include <QList>
@@ -80,9 +81,14 @@ Viewer::Viewer(QWidget *parent)
     WebVfx::setLogger(new ViewerLogger(logTextEdit));
 
     // Time display
-    timeLabel = new QLabel(statusBar());
-    timeLabel->setNum(sliderTimeValue(timeSlider->value()));
-    statusBar()->addPermanentWidget(timeLabel);
+    timeSpinBox = new QDoubleSpinBox(statusBar());
+    timeSpinBox->setDecimals(4);
+    timeSpinBox->setSingleStep(0.01);
+    timeSpinBox->setMaximum(1.0);
+    timeSpinBox->setValue(sliderTimeValue(timeSlider->value()));
+    statusBar()->addPermanentWidget(timeSpinBox);
+    connect(timeSpinBox, SIGNAL(valueChanged(double)),
+            SLOT(onTimeSpinBoxValueChanged(double)));
 
     // Size display
     sizeLabel = new QLabel(statusBar());
@@ -134,12 +140,18 @@ void Viewer::on_resizeButton_clicked()
 
 void Viewer::on_timeSlider_valueChanged(int value)
 {
-    double time = sliderTimeValue(value);
+    timeSpinBox->setValue(sliderTimeValue(value));
+}
+
+void Viewer::onTimeSpinBoxValueChanged(double time)
+{
     if (content) {
         // Just ignore the returned Image
         content->renderContent(time);
     }
-    timeLabel->setNum(time);
+    timeSlider->blockSignals(true);
+    timeSlider->setValue(time * timeSlider->maximum());
+    timeSlider->blockSignals(false);
 }
 
 void Viewer::on_addParameterButton_clicked()
