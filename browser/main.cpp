@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include <QApplication>
-#include "viewer.h"
+#include "browser.h"
 
 int main(int argc, char *argv[])
 {
@@ -11,10 +11,10 @@ int main(int argc, char *argv[])
 
     app.setOrganizationDomain("webvfx.org");
     app.setOrganizationName("WebVfx");
-    app.setApplicationName("WebVfx Viewer");
+    app.setApplicationName("QtBrowser");
 
-    Viewer viewer;
-    viewer.show();
+    Browser browser;
+    browser.show();
     return app.exec();
 }
 
