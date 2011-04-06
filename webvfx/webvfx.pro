@@ -29,14 +29,10 @@ RESOURCES += resources/resources.qrc
 
 macx:LIBS += -framework Foundation
 
-CONFIG += shared thread warn_on debug_and_release
+CONFIG += shared thread
 QT += webkit opengl declarative
 
-CONFIG(debug, debug|release) {
-    TARGET = webvfx_debug
-} else {
-    TARGET = webvfx
-}
+TARGET = webvfx
 
 target.path = $$PREFIX/lib
 INSTALLS += target

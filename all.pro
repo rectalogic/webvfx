@@ -1,5 +1,7 @@
+include(common.pri)
+
 TEMPLATE = subdirs
-CONFIG += ordered debug_and_release
+CONFIG += ordered
 
 SUBDIRS += webvfx
 SUBDIRS += viewer
@@ -9,7 +11,7 @@ unix:system(pkg-config --exists mlt-framework) {
     SUBDIRS += mlt
     mlt.depends = webvfx
 } else {
-    message("MLT framework not found, skipping MLT plugin")
+    message("MLT framework not found, skipping MLT plugin. Need to set PKG_CONFIG_PATH?")
 }
 
 viewer.depends = webvfx

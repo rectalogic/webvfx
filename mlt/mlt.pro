@@ -13,7 +13,7 @@ SOURCES += webvfx_producer.cpp
 SOURCES += webvfx_service.cpp
 SOURCES += webvfx_transition.cpp
 
-CONFIG += plugin shared warn_on
+CONFIG += plugin shared
 QT -= gui
 
 unix {
@@ -21,14 +21,8 @@ unix {
     PKGCONFIG += mlt-framework
 }
 
-CONFIG += debug_and_release
-CONFIG(debug, debug|release) {
-    TARGET = mltwebvfx_debug
-    LIBS += -L$$DESTDIR -lwebvfx_debug
-} else {
-    TARGET = mltwebvfx
-    LIBS += -L$$DESTDIR -lwebvfx
-}
+TARGET = mltwebvfx
+LIBS += -L$$DESTDIR -lwebvfx
 
 QMAKE_RPATHDIR += $$PREFIX/lib
 
