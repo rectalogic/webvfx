@@ -1,4 +1,4 @@
-include(../common.pri)
+include(../../common.pri)
 TEMPLATE = app
 
 SOURCES = main.cpp browser.cpp
