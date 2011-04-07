@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <QString>
+#include <cstdlib>
 #include <webvfx/webvfx.h>
 extern "C" {
     #include <mlt/framework/mlt_log.h>
@@ -31,6 +32,11 @@ class Logger : public WebVfx::Logger
 
 extern "C" EXPORT MLT_REPOSITORY
 {
+    char dataPath[PATH_MAX];
+    snprintf(dataPath, PATH_MAX, "%s/webvfx/", mlt_environment("MLT_DATA"));
+    mlt_properties_set_or_default(mlt_global_properties(), "WEBVFX_DATA",
+                                  std::getenv("WEBVFX_DATA"), dataPath);
+
     MLTWebVfx::registerServices(repository, producer_type);
     MLTWebVfx::registerServices(repository, filter_type);
     MLTWebVfx::registerServices(repository, transition_type);

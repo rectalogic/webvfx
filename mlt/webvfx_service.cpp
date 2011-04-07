@@ -28,7 +28,7 @@ static const char* serviceTypeToName(mlt_service_type service_type) {
 
 // Includes trailing slash
 static const std::string getDataDir() {
-    static const std::string dataDir(std::string(mlt_environment("MLT_DATA")).append("/webvfx/"));
+    static const std::string dataDir(std::string(mlt_environment("WEBVFX_DATA")).append("/"));
     return dataDir;
 }
 
