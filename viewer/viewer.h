@@ -28,6 +28,7 @@ public:
 private slots:
     void on_actionOpenHtml_triggered(bool);
     void on_actionOpenQml_triggered(bool);
+    void on_actionReload_triggered(bool);
     void on_resizeButton_clicked();
     void on_timeSlider_valueChanged(int);
     void onTimeSpinBoxValueChanged(double);

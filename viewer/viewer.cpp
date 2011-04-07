@@ -121,6 +121,15 @@ void Viewer::on_actionOpenQml_triggered(bool)
         setWindowFilePath(fileName);
 }
 
+void Viewer::on_actionReload_triggered(bool)
+{
+    QString fileName(windowFilePath());
+    if (fileName.endsWith(".qml", Qt::CaseInsensitive))
+        loadQml(fileName);
+    else if (fileName.endsWith(".html", Qt::CaseInsensitive))
+        loadHtml(fileName);
+}
+
 void Viewer::on_resizeButton_clicked()
 {
     handleResize();

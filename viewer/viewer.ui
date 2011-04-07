@@ -189,8 +189,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>261</width>
-             <height>360</height>
+             <width>102</width>
+             <height>102</height>
             </rect>
            </property>
            <attribute name="label">
@@ -334,6 +334,7 @@
     </property>
     <addaction name="actionOpenHtml"/>
     <addaction name="actionOpenQml"/>
+    <addaction name="actionReload"/>
     <addaction name="actionQuit"/>
    </widget>
    <addaction name="menuFile"/>
@@ -361,6 +362,14 @@
   <action name="actionOpenQml">
    <property name="text">
     <string>Open QML...</string>
+   </property>
+  </action>
+  <action name="actionReload">
+   <property name="text">
+    <string>Reload</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+R</string>
    </property>
   </action>
  </widget>
