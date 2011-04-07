@@ -66,17 +66,18 @@ void ContentContext::setImageTypeMap(const QVariantMap& variantMap)
     }
 }
 
-// QtWebkit Bridge converts QImages to QPixmaps anyway,
-// so better to do the conversion here since handing over a QImage
-// would cause it's shared data to be duplicated the next time we wrote to it's bits.
+// QtWebkit Bridge converts QImages to QPixmaps.
+// QML Qt3D QDeclarativeEffect::setTextureImage also does,
+// and it takes a QImage - so better to return QImage here
+// instead of QPixmap to avoid too many conversions.
+// One issue is the next time we write to the QImage, it's shared data
+// will be duplicated. But since it is being transferred to a QPixmap,
+// this shouldn't be an issue (i.e. we should be the only reference).
 // http://doc.qt.nokia.com/latest/qimage.html#bits
-QPixmap ContentContext::getImage(const QString& name)
+QImage ContentContext::getImage(const QString& name)
 {
     QImage* image = imageMap.value(name);
-    if (image)
-        return QPixmap::fromImage(*image);
-    else
-        return QPixmap();
+    return image ? *image : QImage();
 }
 
 QUrl ContentContext::getImageUrl(const QString& name)

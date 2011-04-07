@@ -6,13 +6,12 @@
 #define WEBVFX_CONTENT_CONTEXT_H_
 
 #include <QHash>
+#include <QImage>
 #include <QMap>
 #include <QObject>
-#include <QPixmap>
 #include <QUrl>
 #include "webvfx/effects.h"
 
-class QImage;
 class QSize;
 class QString;
 class QVariant;
@@ -61,13 +60,10 @@ public:
     // JS:
     //   var image = new Image();
     //   webvfx.getImage("video").assignToHTMLElement(image);
-    Q_INVOKABLE QPixmap getImage(const QString& name);
+    Q_INVOKABLE QImage getImage(const QString& name);
 
     // Return URL for use in QML to reference the named image
     Q_INVOKABLE QUrl getImageUrl(const QString& name);
-
-    //XXX expose error signal - JS in page can raise on window.onerror? or use it to signal error during rendering
-
 
     int getSourceImageType() { return Effects::SourceImageType; }
     int getTargetImageType() { return Effects::TargetImageType; }
