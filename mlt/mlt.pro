@@ -26,6 +26,13 @@ LIBS += -L$$DESTDIR -lwebvfx
 
 QMAKE_RPATHDIR += $$PREFIX/lib
 
-# Install in mlt plugins directory
-unix:target.path = $$system(pkg-config --variable=libdir mlt-framework)/mlt
-INSTALLS += target
+unix {
+    # Install in mlt plugins directory
+    target.path = $$system(pkg-config --variable=libdir mlt-framework)/mlt
+    INSTALLS += target
+
+    # Create directory to hold qml/html effects
+    data.path = $$system(pkg-config --variable=datadir mlt-framework)/mlt/webvfx
+    data.extra = mkdir -p $$data.path
+    INSTALLS += data
+}
