@@ -6,6 +6,7 @@
 #include <QImage>
 #include <QList>
 #include <QPainter>
+#include <QResizeEvent>
 #include <QSize>
 #include <QString>
 #include <QVariant>
@@ -66,8 +67,18 @@ QmlContent::QmlContent(QWidget* parent, const QSize& size, Parameters* parameter
     // Add root of our qrc:/ resource path so embedded QML components are available.
     engine()->addImportPath(":/");
 
+    // Turn off scrollbars
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    setInteractive(false);
+    setResizeMode(QDeclarativeView::SizeRootObjectToView);
+    setResizeAnchor(QDeclarativeView::AnchorViewCenter);
+    resize(size);
+
     // We render into FBOs, but need QGLWidget to create a GL context for us
     QGLFormat format(QGL::SampleBuffers|QGL::AlphaChannel|QGL::SingleBuffer);
+    format.setSamples(4);
     glWidget = new QGLWidget(format);
     setViewport(glWidget);
 
@@ -85,14 +96,6 @@ QmlContent::QmlContent(QWidget* parent, const QSize& size, Parameters* parameter
     connect(this, SIGNAL(statusChanged(QDeclarativeView::Status)), SLOT(qmlViewStatusChanged(QDeclarativeView::Status)));
     connect(engine(), SIGNAL(warnings(QList<QDeclarativeError>)), SLOT(logWarnings(QList<QDeclarativeError>)));
     connect(contentContext, SIGNAL(readyRender(bool)), SLOT(contentContextLoadFinished(bool)));
-
-    // Turn off scrollbars
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-    setInteractive(false);
-    setResizeMode(QDeclarativeView::SizeRootObjectToView);
-    setContentSize(size);
 }
 
 QmlContent::~QmlContent()
@@ -147,8 +150,6 @@ bool QmlContent::loadContent(const QUrl& url)
     // XXX QDeclarativeView::SizeRootObjectToView is broken, so resize after loading
     // http://bugreports.qt.nokia.com/browse/QTBUG-15863
     setContentSize(originalSize);
-    // Center the scene - this is normally done by the view in show()
-    centerOn(sceneRect().center());
 
     bool result = false;
     if (pageLoadFinished != LoadFailed
@@ -170,6 +171,19 @@ bool QmlContent::loadContent(const QUrl& url)
     logWarnings(errors());
 
     return result;
+}
+
+void QmlContent::setContentSize(const QSize& size) {
+    QSize oldSize(this->size());
+    if (oldSize != size) {
+        resize(size);
+        // The resize event is delayed until we are shown.
+        // Since we are never shown, send the event here.
+        // Superclass does some calculations in resizeEvent
+        // (sizing and centering the scene etc.)
+        QResizeEvent event(size, oldSize);
+        resizeEvent(&event);
+    }
 }
 
 Image QmlContent::renderContent(double time)
@@ -237,6 +251,7 @@ bool QmlContent::createFBO(const QSize& size)
     glWidget->makeCurrent();
 
     QGLFramebufferObjectFormat fboFormat;
+    fboFormat.setSamples(4);
     fboFormat.setTextureTarget(GL_TEXTURE_RECTANGLE_ARB);
     fboFormat.setAttachment(QGLFramebufferObject::CombinedDepthStencil);
     delete multisampleFBO;

@@ -33,10 +33,7 @@ public:
 
     // Load QML synchronously, return success
     bool loadContent(const QUrl& url);
-    void setContentSize(const QSize& size) {
-        if (this->size() != size)
-            resize(size);
-    }
+    void setContentSize(const QSize& size);
     const Effects::ImageTypeMap& getImageTypeMap() { return contentContext->getImageTypeMap(); };
     Image renderContent(double time);
     Image getImage(const QString& name, const QSize& size) { return contentContext->getImage(name, size); }
