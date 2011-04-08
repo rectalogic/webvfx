@@ -10,7 +10,7 @@ import json
 
 '''
 Open a text window in Blender and load this file, then Run Script.
-This will add a tool panel (QML Camera Patg) to the Tool Shelf
+This will add a tool panel (WebVfx Camera Animation) to the Tool Shelf
 in the 3D view (type T to show the shelf).
 
 Select an object whose face you want to align to the camera,
@@ -39,6 +39,18 @@ Enabling the Measure Panel addon (via User Preferences) is useful
 to determine the aspect ratio of a quad that will render text.
 '''
 
+bl_info = {
+    "name": "",
+    "description": "Set of tools to help create camera animation data for WebVfx.",
+    "author": "Andrew Wason",
+    "version": (1,0),
+    "blender": (2, 5, 6),
+    "api": 34076,
+    "location": "View3D > ToolShelf > WebVfx Camera Animation",
+    "warning": '', # used for warning icon and text in addons panel
+    "category": "Animation"
+}
+
 def convertCameraFOV(context, camera):
     '''Blender uses horizontal fov, convert to vertical for Qt3D'''
     render = context.scene.render
@@ -51,7 +63,7 @@ def getUpVector(matrix):
     # up vector can just be read out of the matrix (y axis)
     return (matrix[1][0], matrix[1][1], matrix[1][2])
 
-def dumpText(context, title, msg):
+def dumpText(operator, context, title, msg):
     text = bpy.data.texts.new(title)
     text.from_string(msg)
     # If an editor is open, switch it to our text
@@ -59,6 +71,7 @@ def dumpText(context, title, msg):
         if area.type == "TEXT_EDITOR":
             area.active_space.text = text
             break
+    operator.report({'INFO'}, "Output in %s" % text.name)
 
 def reportError(op, msg):
     op.report({'ERROR'}, msg)
@@ -104,7 +117,7 @@ class GenerateCameraQml(bpy.types.Operator):
                 "}\n" % (nearPlane, farPlane, fovFactor, up, look, eye))
 
     def execute(self, context):
-        dumpText(context, 'QML Camera', self.generateCameraQml(context))
+        dumpText(self, context, 'QML Camera', self.generateCameraQml(context))
         return {'FINISHED'}
 
 
@@ -309,14 +322,14 @@ class GenerateCameraAnimationJson(bpy.types.Operator):
                           separators=(',',': '))
 
     def execute(self, context):
-        dumpText(context, 'QML Camera Animation',
+        dumpText(self, context, 'QML Camera Animation',
                  self.generateCameraAnimation(context.scene.camera))
         return {'FINISHED'}
 
 
 class OBJECT_PT_camera_face_align(bpy.types.Panel):
     '''This functionality can be accessed via the "Tools" panel in 3D View ([T] key).'''
-    bl_label = "QML Camera Path"
+    bl_label = "WebVfx Camera Animation"
     bl_space_type = "VIEW_3D"
     bl_region_type = "TOOLS"
 
@@ -356,3 +369,13 @@ class OBJECT_PT_camera_face_align(bpy.types.Panel):
 #     for area in bpy.context.screen.areas:
 #         if area.type == "VIEW_3D":
 #             return area.active_space.region_3d
+
+
+def register():
+    pass
+
+def unregister():
+    pass
+
+if __name__ == "__main__":
+    register()
