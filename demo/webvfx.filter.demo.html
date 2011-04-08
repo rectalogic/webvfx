@@ -17,7 +17,7 @@ function init() {
     titleEl.innerHTML = title;
     webvfx.renderRequested.connect(render);
     webvfx.imageTypeMap = { "video" : webvfx.SourceImageType };
-    webvfx.loadFinished(true);
+    webvfx.readyRender(true);
 }
 window.addEventListener("load", init, false);
 </script>
