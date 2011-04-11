@@ -5,7 +5,7 @@
 import Qt 4.7
 import Qt3D 1.0
 
-// Qt3D Camera that supports animation data exported from Blender
+// QtQuick3D Camera that supports animation data exported from Blender
 
 import "qrc:/script/webvfx-camera.js" as WebVfx
 

@@ -55,7 +55,7 @@ to determine the aspect ratio of a quad that will render text.
 '''
 
 def convertCameraFOV(context, camera):
-    '''Blender uses horizontal fov, convert to vertical for Qt3D'''
+    '''Blender uses horizontal fov, convert to vertical for QtQuick3D'''
     render = context.scene.render
     viewportWidth = render.resolution_x * render.pixel_aspect_x
     viewportHeight = render.resolution_y * render.pixel_aspect_y
@@ -80,10 +80,10 @@ def reportError(op, msg):
     op.report({'ERROR'}, msg)
 
 class GenerateCameraQml(bpy.types.Operator):
-    '''Generate QML Qt3D camera declaration.'''
+    '''Generate QML QtQuick3D camera declaration.'''
     bl_idname = "view3d.generate_camera_qml"
     bl_label = "Dump QML Camera"
-    bl_description = "Generate QML Qt3D markup for the active camera"
+    bl_description = "Generate QML QtQuick3D markup for the active camera"
 
     def generateCameraQml(self, context):
         scene = context.scene
@@ -100,7 +100,7 @@ class GenerateCameraQml(bpy.types.Operator):
         look = (eye[0] - direction[0], eye[1] - direction[1], eye[2] - direction[2])
         up = getUpVector(matrix)
 
-        # Blender fov is horizontal, Qt3D is vertical.
+        # Blender fov is horizontal, QtQuick3D is vertical.
         # Precompute part factor to convert at runtime based on viewport size.
         fovFactor = math.tan(camera.data.angle / 2)
 
