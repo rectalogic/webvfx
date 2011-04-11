@@ -207,10 +207,7 @@ int ServiceManager::render(WebVfx::Image& outputImage, mlt_position position, ml
         }
     }
 
-    const WebVfx::Image renderedImage = effects->render(time, outputImage.width(), outputImage.height());
-    renderedImage.copyPixelsTo(outputImage);
-
-    return error;
+    return !effects->render(time, outputImage);
 }
 
 }

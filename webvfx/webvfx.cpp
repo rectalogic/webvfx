@@ -110,6 +110,7 @@ bool initialize()
 
     // Register metatypes for queued connections
     qRegisterMetaType<Parameters*>("Parameters*");
+    qRegisterMetaType<Image*>("Image*");
 
     s_initialized = true;
     return true;

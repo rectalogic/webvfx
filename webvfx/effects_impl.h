@@ -29,20 +29,20 @@ public:
     bool initialize(const QString& fileName, int width, int height, Parameters* parameters = 0);
     const ImageTypeMap& getImageTypeMap();
     Image getImage(const QString& name, int width, int height);
-    const Image render(double time, int width, int height);
+    bool render(double time, Image* renderImage);
     void destroy();
 
 private:
     ~EffectsImpl();
     Q_INVOKABLE void initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters);
-    Q_INVOKABLE void renderInvokable(double time, const QSize& size);
+    Q_INVOKABLE void renderInvokable(double time, Image* renderImage);
 
     // Test if we are currently on the UI thread
     bool onUIThread();
 
     Content* content;
-    Image renderImage;
     bool loadResult;
+    bool renderResult;
 };
 
 }

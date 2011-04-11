@@ -110,6 +110,9 @@ int main(int argc, char* argv[]) {
 
     const int MaxFrames = 20;
 
+    uchar data[width * height * 3];
+    WebVfx::Image renderImage(data, width, height, sizeof(data));
+
     for (int f = 0; f < MaxFrames; f++) {
 
         WebVfx::Image video = effects->getImage(sourceName, width, height);
@@ -125,7 +128,7 @@ int main(int argc, char* argv[]) {
             pixels[i+1] = 0x00;
             pixels[i+2] = 0x00;
         }
-        const WebVfx::Image image = effects->render(time, width, height);
+        effects->render(time, renderImage);
 
         // Write to disk.
         std::stringstream oss;
@@ -137,8 +140,8 @@ int main(int argc, char* argv[]) {
             std::cerr << "Failed to write file " << rawFileName << std::endl;
             return 1;
         }
-        rawFile.write(reinterpret_cast<const char*>(image.pixels()),
-                      image.byteCount());
+        rawFile.write(reinterpret_cast<const char*>(renderImage.pixels()),
+                      renderImage.byteCount());
         rawFile.close();
     }
 

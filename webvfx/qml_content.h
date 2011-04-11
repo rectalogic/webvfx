@@ -35,7 +35,7 @@ public:
     bool loadContent(const QUrl& url);
     void setContentSize(const QSize& size);
     const Effects::ImageTypeMap& getImageTypeMap() { return contentContext->getImageTypeMap(); };
-    Image renderContent(double time);
+    bool renderContent(double time, Image* renderImage);
     Image getImage(const QString& name, const QSize& size) { return contentContext->getImage(name, size); }
 
 private slots:
@@ -51,7 +51,6 @@ private:
     LoadStatus contextLoadFinished;
     ContentContext* contentContext;
     QEventLoop* syncLoop;
-    QImage* renderImage;
     QGLWidget* glWidget;
     QGLFramebufferObject* multisampleFBO;
     QGLFramebufferObject* resolveFBO;

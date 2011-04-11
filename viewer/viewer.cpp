@@ -161,8 +161,7 @@ void Viewer::on_timeSlider_valueChanged(int value)
 void Viewer::onTimeSpinBoxValueChanged(double time)
 {
     if (content) {
-        // Just ignore the returned Image
-        content->renderContent(time);
+        content->renderContent(time, 0);
     }
     timeSlider->blockSignals(true);
     timeSlider->setValue(time * timeSlider->maximum());
@@ -213,7 +212,7 @@ bool Viewer::loadHtml(const QString& fileName)
 
     setupImages(size);
 
-    content->renderContent(timeSpinBox->value());
+    content->renderContent(timeSpinBox->value(), 0);
 
     return result;
 }
@@ -234,7 +233,7 @@ bool Viewer::loadQml(const QString& fileName)
 
     setupImages(qmlContent->size());
 
-    content->renderContent(timeSpinBox->value());
+    content->renderContent(timeSpinBox->value(), 0);
 
     return result;
 }

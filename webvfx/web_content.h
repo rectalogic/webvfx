@@ -9,7 +9,6 @@
 #include <QWebPage>
 #include "webvfx/content.h"
 #include "webvfx/content_context.h"
-#include "webvfx/image.h"
 #include "webvfx/effects.h"
 
 class QEventLoop;
@@ -20,6 +19,7 @@ class QWebFrame;
 namespace WebVfx
 {
 
+class Image;
 class Parameters;
 
 class WebContent : public QWebPage, public Content
@@ -36,7 +36,7 @@ public:
             setViewportSize(size);
     }
     const Effects::ImageTypeMap& getImageTypeMap() { return contentContext->getImageTypeMap(); };
-    Image renderContent(double time);
+    bool renderContent(double time, Image* renderImage);
     Image getImage(const QString& name, const QSize& size) { return contentContext->getImage(name, size); }
 
 private slots:
@@ -56,7 +56,6 @@ private:
     LoadStatus contextLoadFinished;
     ContentContext* contentContext;
     QEventLoop* syncLoop;
-    QImage* renderImage;
 };
 
 }

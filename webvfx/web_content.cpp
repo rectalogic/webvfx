@@ -6,6 +6,7 @@
 #include <QStringBuilder>
 #include <QVariant>
 #include <QWebFrame>
+#include "webvfx/image.h"
 #include "webvfx/logger.h"
 #include "webvfx/web_content.h"
 
@@ -18,7 +19,6 @@ WebContent::WebContent(QObject* parent, const QSize& size, Parameters* parameter
     , contextLoadFinished(LoadNotFinished)
     , contentContext(new ContentContext(this, parameters))
     , syncLoop(0)
-    , renderImage(0)
 {
     connect(this, SIGNAL(loadFinished(bool)), SLOT(webPageLoadFinished(bool)));
     connect(contentContext, SIGNAL(readyRender(bool)), SLOT(contentContextLoadFinished(bool)));
@@ -39,7 +39,6 @@ WebContent::WebContent(QObject* parent, const QSize& size, Parameters* parameter
 
 WebContent::~WebContent()
 {
-    delete renderImage;
 }
 
 void WebContent::javaScriptAlert(QWebFrame *, const QString &msg)
@@ -120,30 +119,28 @@ bool WebContent::loadContent(const QUrl& url)
         return pageLoadFinished == LoadSucceeded && contextLoadFinished == LoadSucceeded;
 }
 
-Image WebContent::renderContent(double time)
+bool WebContent::renderContent(double time, Image* renderImage)
 {
     // Allow the page to render for this time
     contentContext->render(time);
 
-    // Create/recreate image with correct size
-    QSize size = viewportSize();
     if (!renderImage)
-        renderImage = new QImage(size, QImage::Format_RGB888);
-    else if (renderImage->size() != size) {
-        delete renderImage;
-        renderImage = new QImage(size, QImage::Format_RGB888);
-    }
+        return false;
+
+    // QImage referencing our Image bits
+    QImage image((uchar*)renderImage->pixels(), renderImage->width(),
+                 renderImage->height(), renderImage->bytesPerLine(),
+                 QImage::Format_RGB888);
 
     // Render frame into image
-    QPainter painter(renderImage);
+    QPainter painter(&image);
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setRenderHint(QPainter::TextAntialiasing, true);
     painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
     mainFrame()->render(&painter);
     painter.end();
 
-    // Return Image referencing our bits
-    return Image(renderImage->bits(), renderImage->width(), renderImage->height(), renderImage->byteCount());
+    return true;
 }
 
 }

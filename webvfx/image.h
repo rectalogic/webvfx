@@ -16,7 +16,11 @@ class Image
 public:
     static const int BytesPerPixel = 3;
 
-    Image() {}
+    Image()
+        : pixels_(0)
+        , width_(0)
+        , height_(0)
+        , byteCount_(0) {}
 
     // pixels must be valid for the lifetime of the Image
     // pixels are always 24 bit RGB
@@ -26,6 +30,7 @@ public:
         , height_(height)
         , byteCount_(byteCount) {}
 
+    bool isNull() { return !pixels_; }
     unsigned char* pixels() { return pixels_; }
     const unsigned char* pixels() const { return pixels_; }
     int width() const { return width_; }

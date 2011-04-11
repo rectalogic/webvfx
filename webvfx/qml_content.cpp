@@ -57,7 +57,6 @@ QmlContent::QmlContent(QWidget* parent, const QSize& size, Parameters* parameter
     , contextLoadFinished(LoadNotFinished)
     , contentContext(new ContentContext(this, parameters))
     , syncLoop(0)
-    , renderImage(0)
     , multisampleFBO(0)
     , resolveFBO(0)
 {
@@ -101,7 +100,6 @@ QmlContent::QmlContent(QWidget* parent, const QSize& size, Parameters* parameter
 
 QmlContent::~QmlContent()
 {
-    delete renderImage;
     delete multisampleFBO;
     delete resolveFBO;
 }
@@ -178,6 +176,7 @@ void QmlContent::setContentSize(const QSize& size) {
     QSize oldSize(this->size());
     if (oldSize != size) {
         resize(size);
+        createFBO(size);
         // The resize event is delayed until we are shown.
         // Since we are never shown, send the event here.
         // Superclass does some calculations in resizeEvent
@@ -187,21 +186,13 @@ void QmlContent::setContentSize(const QSize& size) {
     }
 }
 
-Image QmlContent::renderContent(double time)
+bool QmlContent::renderContent(double time, Image* renderImage)
 {
     // Allow the content to render for this time
     contentContext->render(time);
 
-    // Create/recreate image with correct size
-    QSize size(this->size());
     if (!renderImage)
-        renderImage = new QImage(size, QImage::Format_RGB888);
-    else if (renderImage->size() != size) {
-        delete renderImage;
-        renderImage = new QImage(size, QImage::Format_RGB888);
-        // Recreate FBOs on size change
-        createFBO(size);
-    }
+        return false;
 
     glWidget->makeCurrent();
 
@@ -217,8 +208,9 @@ Image QmlContent::renderContent(double time)
     // Rects are setup so the image is vertically flipped when blitted
     // so when we read the pixels back they are the right way up.
     // OpenGL does everything "upside down".
-    QRect srcRect(QPoint(0, 0), size);
-    QRect dstRect(0, size.height(), size.width(), -size.height());
+    QRect srcRect(0, 0, renderImage->width(), renderImage->height());
+    QRect dstRect(0, renderImage->height(),
+                  renderImage->width(), -renderImage->height());
     QGLFramebufferObject::blitFramebuffer(resolveFBO, srcRect,
                                           multisampleFBO, dstRect);
 
@@ -227,16 +219,15 @@ Image QmlContent::renderContent(double time)
     glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glPixelStorei(GL_PACK_ROW_LENGTH, renderImage->bytesPerLine() / 3);
-    glReadPixels(0, 0, size.width(), size.height(),
+    glReadPixels(0, 0, renderImage->width(), renderImage->height(),
                  QSysInfo::ByteOrder == QSysInfo::BigEndian ? GL_BGR : GL_RGB,
-                 GL_UNSIGNED_BYTE, renderImage->bits());
+                 GL_UNSIGNED_BYTE, renderImage->pixels());
     glPopClientAttrib();
 
     resolveFBO->release();
     glWidget->doneCurrent();
 
-    // Return Image referencing our bits
-    return Image(renderImage->bits(), renderImage->width(), renderImage->height(), renderImage->byteCount());
+    return true;
     //XXX also check errors() after each render()
 }
 

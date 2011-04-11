@@ -19,6 +19,7 @@ EffectsImpl::EffectsImpl()
     : QObject(0)
     , content(0)
     , loadResult(false)
+    , renderResult(false)
 {
 }
 
@@ -74,18 +75,18 @@ Image EffectsImpl::getImage(const QString& name, int width, int height)
     return content->getImage(name, QSize(width, height));
 }
 
-const Image EffectsImpl::render(double time, int width, int height)
+bool EffectsImpl::render(double time, Image* renderImage)
 {
-    QSize size(width, height);
-
     if (onUIThread()) {
-        renderInvokable(time, size);
+        renderInvokable(time, renderImage);
     }
     else {
-        QMetaObject::invokeMethod(this, "renderInvokable", Qt::BlockingQueuedConnection,
-                                  Q_ARG(double, time), Q_ARG(QSize, size));
+        QMetaObject::invokeMethod(this, "renderInvokable",
+                                  Qt::BlockingQueuedConnection,
+                                  Q_ARG(double, time),
+                                  Q_ARG(Image*, renderImage));
     }
-    return renderImage;
+    return renderResult;
 }
 
 void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters)
@@ -107,10 +108,10 @@ void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parame
     loadResult = content->loadContent(url);
 }
 
-void EffectsImpl::renderInvokable(double time, const QSize& size)
+void EffectsImpl::renderInvokable(double time, Image* renderImage)
 {
-    content->setContentSize(size);
-    renderImage = content->renderContent(time);
+    content->setContentSize(QSize(renderImage->width(), renderImage->height()));
+    renderResult = content->renderContent(time, renderImage);
 }
 
 }

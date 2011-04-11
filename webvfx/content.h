@@ -27,7 +27,7 @@ public:
     virtual void setContentSize(const QSize& size) = 0;
     virtual const Effects::ImageTypeMap& getImageTypeMap() = 0;
     virtual Image getImage(const QString& name, const QSize& size) = 0;
-    virtual Image renderContent(double time) = 0;
+    virtual bool renderContent(double time, Image* renderImage) = 0;
 };
 
 }
