@@ -112,23 +112,20 @@ int main(int argc, char* argv[]) {
 
     uchar data[width * height * 3];
     WebVfx::Image renderImage(data, width, height, sizeof(data));
+    WebVfx::Image videoImage(data, width, height, sizeof(data));
 
     for (int f = 0; f < MaxFrames; f++) {
 
-        WebVfx::Image video = effects->getImage(sourceName, width, height);
-        unsigned char* pixels = video.pixels();
-        if (!pixels) {
-            std::cerr << "Failed to get video pixels" << std::endl;
-            return 1;
-        }
+        effects->setImage(sourceName, &videoImage);
+        unsigned char* pixels = videoImage.pixels();
         double time = (double)f / MaxFrames;
         // Fill with shade of red XXX need to take into account stride
-        for (int i = 0; i < video.byteCount(); i+= WebVfx::Image::BytesPerPixel) {
+        for (int i = 0; i < videoImage.byteCount(); i+= WebVfx::Image::BytesPerPixel) {
             pixels[i] = 0xFF * time;
             pixels[i+1] = 0x00;
             pixels[i+2] = 0x00;
         }
-        effects->render(time, renderImage);
+        effects->render(time, &renderImage);
 
         // Write to disk.
         std::stringstream oss;

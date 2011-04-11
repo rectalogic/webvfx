@@ -48,11 +48,13 @@ static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_forma
             return 1;
 
         MLTWebVfx::ServiceManager* manager = locker.getManager();
-        WebVfx::Image renderedImage(*image, *width, *height, *width * *height * WebVfx::Image::BytesPerPixel);
-        manager->copyImageForName(manager->getSourceImageName(), renderedImage);
-        WebVfx::Image targetImage(bImage, bWidth, bHeight, bWidth * bHeight * WebVfx::Image::BytesPerPixel);
-        manager->copyImageForName(manager->getTargetImageName(), targetImage);
-        manager->render(renderedImage,
+        WebVfx::Image renderedImage(*image, *width, *height,
+                                    *width * *height * WebVfx::Image::BytesPerPixel);
+        manager->setImageForName(manager->getSourceImageName(), &renderedImage);
+        WebVfx::Image targetImage(bImage, bWidth, bHeight,
+                                  bWidth * bHeight * WebVfx::Image::BytesPerPixel);
+        manager->setImageForName(manager->getTargetImageName(), &targetImage);
+        manager->render(&renderedImage,
                         mlt_transition_get_position(transition, aFrame),
                         mlt_transition_get_length(transition));
     }

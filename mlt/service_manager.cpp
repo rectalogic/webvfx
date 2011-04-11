@@ -44,37 +44,45 @@ class ImageProducer
 public:
     ImageProducer(const QString& name, mlt_producer producer)
         : name(name)
+        , producerFrame(0)
         , producer(producer) {}
 
     ~ImageProducer() {
+        if (producerFrame)
+            mlt_frame_close(producerFrame);
         mlt_producer_close(producer);
     }
 
     const QString& getName() { return name; }
 
-    int produceImage(mlt_position position, WebVfx::Image& targetImage) {
+    WebVfx::Image produceImage(mlt_position position, int width, int height) {
         if (position > mlt_producer_get_out(producer))
-            return 0;
+            return WebVfx::Image();
+
+        // Close previous frame and request a new one.
+        // We don't close the current frame because the image data we return
+        // needs to remain valid until we are rendered.
+        if (producerFrame) {
+            mlt_frame_close(producerFrame);
+            producerFrame = 0;
+        }
+        mlt_service_get_frame(MLT_PRODUCER_SERVICE(producer), &producerFrame, 0);
+
         mlt_producer_seek(producer, position);
-        mlt_frame frame = NULL;
-        int error = mlt_service_get_frame(MLT_PRODUCER_SERVICE(producer), &frame, 0);
-        if (error)
-            return error;
-        mlt_frame_set_position(frame, position);
+        mlt_frame_set_position(producerFrame, position);
 
         mlt_image_format format = mlt_image_rgb24;
         uint8_t *image = NULL;
-        int width = targetImage.width();
-        int height = targetImage.height();
-        error = mlt_frame_get_image(frame, &image, &format, &width, &height, 0);
-        if (!error)
-            targetImage.copyPixelsFrom(WebVfx::Image(image, width, height, width * height * WebVfx::Image::BytesPerPixel));
-        mlt_frame_close(frame);
-        return error;
+        int error = mlt_frame_get_image(producerFrame, &image, &format,
+                                        &width, &height, 0);
+        if (error)
+            return WebVfx::Image();
+        return WebVfx::Image(image, width, height, width * height * 3);
     }
 
 private:
     QString name;
+    mlt_frame producerFrame;
     mlt_producer producer;
 };
 
@@ -177,15 +185,13 @@ bool ServiceManager::initialize(int width, int height)
     return true;
 }
 
-void ServiceManager::copyImageForName(const QString& name, const WebVfx::Image& fromImage)
+void ServiceManager::setImageForName(const QString& name, WebVfx::Image* image)
 {
-    if (!name.isEmpty()) {
-        WebVfx::Image toImage = effects->getImage(name, fromImage.width(), fromImage.height());
-        toImage.copyPixelsFrom(fromImage);
-    }
+    if (!name.isEmpty())
+        effects->setImage(name, image);
 }
 
-int ServiceManager::render(WebVfx::Image& outputImage, mlt_position position, mlt_position length)
+int ServiceManager::render(WebVfx::Image* outputImage, mlt_position position, mlt_position length)
 {
     int error = 0;
 
@@ -197,12 +203,15 @@ int ServiceManager::render(WebVfx::Image& outputImage, mlt_position position, ml
              it != imageProducers->end(); it++) {
             ImageProducer* imageProducer = *it;
             if (imageProducer) {
-                WebVfx::Image extraImage = effects->getImage(imageProducer->getName(), outputImage.width(), outputImage.height());
-                error = imageProducer->produceImage(position, extraImage);
-                if (error) {
+                WebVfx::Image extraImage =
+                    imageProducer->produceImage(position,
+                                                outputImage->width(),
+                                                outputImage->height());
+                if (extraImage.isNull()) {
                     mlt_log(service, MLT_LOG_ERROR, "WebVfx failed to produce image for name %s\n", imageProducer->getName().toLatin1().constData());
-                    return error;
+                    return 1;
                 }
+                effects->setImage(imageProducer->getName(), &extraImage);
             }
         }
     }

@@ -28,7 +28,7 @@ public:
     // EffectsImpl will take ownership of Parameters
     bool initialize(const QString& fileName, int width, int height, Parameters* parameters = 0);
     const ImageTypeMap& getImageTypeMap();
-    Image getImage(const QString& name, int width, int height);
+    void setImage(const QString& name, Image* image);
     bool render(double time, Image* renderImage);
     void destroy();
 

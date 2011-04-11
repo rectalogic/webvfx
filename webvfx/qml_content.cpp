@@ -33,7 +33,8 @@ class PixmapProvider : public QDeclarativeImageProvider
     {
         // URLs are of the form image://webvfx/<name>/<count>
         // where <count> is a unique ID to force refresh and is ignored.
-        QPixmap pixmap(QPixmap::fromImage(contentContext->getImage(id.section('/', 0, 0))));
+        QImage& image = contentContext->getImage(id.section('/', 0, 0));
+        QPixmap pixmap(QPixmap::fromImage(image));
 
         if (size)
             *size = pixmap.size();

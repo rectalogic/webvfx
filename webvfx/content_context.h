@@ -47,9 +47,9 @@ public:
     // emits renderRequested signal to the page contents.
     void render(double time);
 
-    // Get a Image of the specified size for writing image data to.
-    // The returned image is only valid until the next call to getImage.
-    Image getImage(const QString& name, const QSize& size);
+    // Set an image for the given name.
+    // image must remain valid until render() is called.
+    void setImage(const QString& name, Image* image);
 
     // Page contents can use these to retrieve parameters.
     // JS: var title = webvfx.getStringParameter("title");

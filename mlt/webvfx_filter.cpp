@@ -30,9 +30,10 @@ static int filterGetImage(mlt_frame frame, uint8_t **image, mlt_image_format *fo
             return 1;
 
         MLTWebVfx::ServiceManager* manager = locker.getManager();
-        WebVfx::Image renderedImage(*image, *width, *height, *width * *height * WebVfx::Image::BytesPerPixel);
-        manager->copyImageForName(manager->getSourceImageName(), renderedImage);
-        manager->render(renderedImage,
+        WebVfx::Image renderedImage(*image, *width, *height,
+                                    *width * *height * WebVfx::Image::BytesPerPixel);
+        manager->setImageForName(manager->getSourceImageName(), &renderedImage);
+        manager->render(&renderedImage,
                         mlt_filter_get_position(filter, frame),
                         mlt_filter_get_length(filter));
     }

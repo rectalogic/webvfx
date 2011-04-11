@@ -285,10 +285,9 @@ void Viewer::setupImages(const QSize& size)
     }
 }
 
-void Viewer::onImageChanged(const QString& name, const WebVfx::Image& image)
+void Viewer::onImageChanged(const QString& name, WebVfx::Image& image)
 {
     if (!content)
         return;
-    WebVfx::Image targetImage = content->getImage(name, QSize(image.width(), image.height()));
-    targetImage.copyPixelsFrom(image);
+    content->setImage(name, &image);
 }

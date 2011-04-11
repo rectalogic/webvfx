@@ -26,17 +26,22 @@ void ContentContext::render(double time)
 {
     renderCount++;
     emit renderRequested(time);
+
+    // Delete all QImage wrappers - data is not valid after render()
+    qDeleteAll(imageMap);
+    imageMap.clear();
 }
 
-Image ContentContext::getImage(const QString& name, const QSize& size)
+void ContentContext::setImage(const QString& name, Image* image)
 {
-    QImage* image = imageMap.value(name);
-    if (!image || image->size() != size) {
-        delete image;
-        image = new QImage(size, QImage::Format_RGB888);
-        imageMap.insert(name, image);
-    }
-    return Image(image->bits(), image->width(), image->height(), image->byteCount());
+    QImage* qimage = imageMap.value(name);
+    // Delete if we already had one
+    delete qimage;
+    // Create a QImage wrapper for the image data
+    qimage = new QImage((uchar*)image->pixels(),
+                        image->width(), image->height(),
+                        image->bytesPerLine(), QImage::Format_RGB888);
+    imageMap.insert(name, qimage);
 }
 
 double ContentContext::getNumberParameter(const QString& name)
@@ -76,8 +81,7 @@ void ContentContext::setImageTypeMap(const QVariantMap& variantMap)
 // http://doc.qt.nokia.com/latest/qimage.html#bits
 QImage ContentContext::getImage(const QString& name)
 {
-    QImage* image = imageMap.value(name);
-    return image ? *image : QImage();
+    return *imageMap.value(name);
 }
 
 QUrl ContentContext::getImageUrl(const QString& name)

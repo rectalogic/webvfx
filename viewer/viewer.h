@@ -34,7 +34,7 @@ private slots:
     void onTimeSpinBoxValueChanged(double);
     void on_addParameterButton_clicked();
     void on_deleteParameterButton_clicked();
-    void onImageChanged(const QString& name, const WebVfx::Image& image);
+    void onImageChanged(const QString& name, WebVfx::Image& image);
 
 private:
     bool loadHtml(const QString& fileName);

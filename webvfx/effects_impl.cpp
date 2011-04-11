@@ -68,11 +68,12 @@ const Effects::ImageTypeMap& EffectsImpl::getImageTypeMap()
     return content->getImageTypeMap();
 }
 
-Image EffectsImpl::getImage(const QString& name, int width, int height)
+void EffectsImpl::setImage(const QString& name, Image* image)
 {
-    // This may create a QImage and modify QHash - both of those classes are reentrant,
-    // so should be safe to do on calling thread as long as access to this EffectsImpl is synchronized.
-    return content->getImage(name, QSize(width, height));
+    // This may create a QImage and modify QHash - both of those classes
+    // are reentrant, so should be safe to do on calling thread as long
+    // as access to this EffectsImpl is synchronized.
+    content->setImage(name, image);
 }
 
 bool EffectsImpl::render(double time, Image* renderImage)

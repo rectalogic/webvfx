@@ -27,8 +27,8 @@ public:
 
     // Return a map mapping image names the page content uses to imge type.
     virtual const ImageTypeMap& getImageTypeMap() = 0;
-    // Return a Image of the given size that can be written to.
-    virtual Image getImage(const QString& name, int width, int height) = 0;
+    // Set an Image for the given name. Must be valid until render() is called.
+    virtual void setImage(const QString& name, Image* image) = 0;
     virtual bool render(double time, Image* renderImage) = 0;
     virtual void destroy() = 0;
 

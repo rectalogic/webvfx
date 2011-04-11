@@ -40,7 +40,7 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
             return 1;
 
         WebVfx::Image outputImage(*buffer, *width, *height, size);
-        locker.getManager()->render(outputImage,
+        locker.getManager()->render(&outputImage,
                                     mlt_producer_position(producer),
                                     mlt_producer_get_length(producer));
     }

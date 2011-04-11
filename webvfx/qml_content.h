@@ -36,7 +36,7 @@ public:
     void setContentSize(const QSize& size);
     const Effects::ImageTypeMap& getImageTypeMap() { return contentContext->getImageTypeMap(); };
     bool renderContent(double time, Image* renderImage);
-    Image getImage(const QString& name, const QSize& size) { return contentContext->getImage(name, size); }
+    void setImage(const QString& name, Image* image) { contentContext->setImage(name, image); }
 
 private slots:
     void qmlViewStatusChanged(QDeclarativeView::Status status);
