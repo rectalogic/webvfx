@@ -8,6 +8,21 @@ import numbers
 import mathutils
 import json
 
+
+bl_info = {
+    "name": "WebVfx Camera Animation",
+    "description": "Set of tools to help create camera animation data for WebVfx.",
+    "author": "Andrew Wason <rectalogic@rectalogic.com>",
+    "version": (1, 0),
+    "blender": (2, 5, 7),
+    "api": 36007,
+    "location": "View3D > ToolShelf > WebVfx Camera Animation",
+    "warning": '', # used for warning icon and text in addons panel
+    "wiki_url": '',
+    "tracker_url": '',
+    "category": "Animation"
+}
+
 '''
 Open a text window in Blender and load this file, then Run Script.
 This will add a tool panel (WebVfx Camera Animation) to the Tool Shelf
@@ -38,18 +53,6 @@ aspect ratio.
 Enabling the Measure Panel addon (via User Preferences) is useful
 to determine the aspect ratio of a quad that will render text.
 '''
-
-bl_info = {
-    "name": "",
-    "description": "Set of tools to help create camera animation data for WebVfx.",
-    "author": "Andrew Wason",
-    "version": (1,0),
-    "blender": (2, 5, 6),
-    "api": 34076,
-    "location": "View3D > ToolShelf > WebVfx Camera Animation",
-    "warning": '', # used for warning icon and text in addons panel
-    "category": "Animation"
-}
 
 def convertCameraFOV(context, camera):
     '''Blender uses horizontal fov, convert to vertical for Qt3D'''
@@ -171,7 +174,7 @@ class FitViewToFace(bpy.types.Operator):
             return
 
         # Get views up vector
-        up = mathutils.Vector(getUpVector(region_3d.view_matrix.copy().invert()))
+        up = mathutils.Vector(getUpVector(region_3d.view_matrix.copy().inverted()))
 
         # Get transformed face vertices
         vertices = []
@@ -228,7 +231,7 @@ class RotateView90(bpy.types.Operator):
         region_3d = context.space_data.region_3d
         view_matrix = region_3d.view_matrix.copy()
         rot90 = mathutils.Matrix.Rotation(math.radians(90), 3, 'Z')
-        region_3d.view_rotation = (view_matrix.to_3x3().invert() * rot90).invert().to_quat()
+        region_3d.view_rotation = (view_matrix.to_3x3().inverted() * rot90).inverted().to_quaternion()
 
         return {'FINISHED'}
 
@@ -372,9 +375,11 @@ class OBJECT_PT_camera_face_align(bpy.types.Panel):
 
 
 def register():
+    bpy.utils.register_module(__name__)
     pass
 
 def unregister():
+    bpy.utils.unregister_module(__name__)
     pass
 
 if __name__ == "__main__":
