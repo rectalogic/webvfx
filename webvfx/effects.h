@@ -29,7 +29,6 @@ public:
     virtual const ImageTypeMap& getImageTypeMap() = 0;
     // Return a Image of the given size that can be written to.
     virtual Image getImage(const QString& name, int width, int height) = 0;
-    //XXX need to return an error code?
     virtual bool render(double time, Image* renderImage) = 0;
     virtual void destroy() = 0;
 
