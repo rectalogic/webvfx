@@ -6,11 +6,11 @@
 #define VIEWER_H
 
 #include <QMainWindow>
+#include <webvfx/image.h>
 #include "ui_viewer.h"
 
 namespace WebVfx
 {
-    class Image;
     class Content;
 }
 
@@ -34,12 +34,13 @@ private slots:
     void onTimeSpinBoxValueChanged(double);
     void on_addParameterButton_clicked();
     void on_deleteParameterButton_clicked();
-    void onImageChanged(const QString& name, WebVfx::Image& image);
+    void onImageChanged(const QString&, WebVfx::Image);
 
 private:
     bool loadHtml(const QString& fileName);
     bool loadQml(const QString& fileName);
     void handleResize();
+    void setImagesOnContent();
     void setupImages(const QSize& size);
     double sliderTimeValue(int value);
     QLabel* sizeLabel;

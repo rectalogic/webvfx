@@ -99,7 +99,8 @@ Viewer::Viewer(QWidget *parent)
 
 void Viewer::on_actionOpenHtml_triggered(bool)
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open HTML"), QString(),
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open HTML"),
+                                                    QString(),
                                                     tr("HTML Files (*.html)"));
     if (fileName.isNull())
         return;
@@ -111,7 +112,8 @@ void Viewer::on_actionOpenHtml_triggered(bool)
 
 void Viewer::on_actionOpenQml_triggered(bool)
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open QML"), QString(),
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open QML"),
+                                                    QString(),
                                                     tr("QML Files (*.qml)"));
     if (fileName.isNull())
         return;
@@ -153,6 +155,20 @@ void Viewer::handleResize()
     }
 }
 
+void Viewer::setImagesOnContent()
+{
+    if (!content)
+        return;
+    int rowCount = imagesTable->rowCount();
+    for (int i = 0; i < rowCount; i++) {
+        ImageColor* imageColor = static_cast<ImageColor*>(imagesTable->cellWidget(i, 1));
+        if (imageColor) {
+            WebVfx::Image image(imageColor->getImage());
+            content->setImage(imageColor->objectName(), &image);
+        }
+    }
+}
+
 void Viewer::on_timeSlider_valueChanged(int value)
 {
     timeSpinBox->setValue(sliderTimeValue(value));
@@ -161,6 +177,7 @@ void Viewer::on_timeSlider_valueChanged(int value)
 void Viewer::onTimeSpinBoxValueChanged(double time)
 {
     if (content) {
+        setImagesOnContent();
         content->renderContent(time, 0);
     }
     timeSlider->blockSignals(true);
@@ -259,7 +276,8 @@ void Viewer::setupImages(const QSize& size)
         ImageColor* imageColor = new ImageColor();
         imageColor->setImageSize(size);
         imageColor->setObjectName(imageName);
-        connect(imageColor, SIGNAL(imageChanged(QString,WebVfx::Image)), SLOT(onImageChanged(QString,WebVfx::Image)));
+        connect(imageColor, SIGNAL(imageChanged(QString,WebVfx::Image)),
+                SLOT(onImageChanged(QString,WebVfx::Image)));
         // Set color here so signal fires
         imageColor->setImageColor(QColor::fromHsv(qrand() % 360, 200, 230));
         imagesTable->setCellWidget(row, 1, imageColor);
@@ -285,7 +303,7 @@ void Viewer::setupImages(const QSize& size)
     }
 }
 
-void Viewer::onImageChanged(const QString& name, WebVfx::Image& image)
+void Viewer::onImageChanged(const QString& name, WebVfx::Image image)
 {
     if (!content)
         return;
