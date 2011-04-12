@@ -193,8 +193,6 @@ void ServiceManager::setImageForName(const QString& name, WebVfx::Image* image)
 
 int ServiceManager::render(WebVfx::Image* outputImage, mlt_position position, mlt_position length)
 {
-    int error = 0;
-
     double time = length > 0 ? position / (double)length : 0;
 
     // Produce any extra images

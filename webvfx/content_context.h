@@ -84,7 +84,7 @@ signals:
 
 private:
     Parameters* parameters;
-    QHash<QString, QImage*> imageMap;
+    QHash<QString, QImage> imageMap;
     Effects::ImageTypeMap imageTypeMap;
     unsigned int renderCount;
 };
