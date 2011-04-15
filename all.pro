@@ -17,3 +17,9 @@ unix:system(pkg-config --exists mlt-framework) {
 
 viewer.depends = webvfx
 demo.depends = webvfx
+
+# Documentation
+doxydoc.target = doxydoc
+doxydoc.commands = echo PROJECT_NUMBER=`git describe --always --dirty` | cat - doc/Doxyfile | doxygen -
+doxydoc.depends = FORCE
+QMAKE_EXTRA_TARGETS += doxydoc
