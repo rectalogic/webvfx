@@ -17,7 +17,7 @@ public:
 
 private slots:
     void on_urlEdit_returnPressed();
-    void on_webView_urlChanged(QUrl&);
+    void on_webView_urlChanged(const QUrl&);
 };
 
 #endif

@@ -11,14 +11,12 @@ Browser::Browser(QWidget *parent)
     : QMainWindow(parent)
 {
     setupUi(this);
-    webView->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled,
-                                      true);
-    webView->settings()->setAttribute(QWebSettings::SiteSpecificQuirksEnabled,
-                                      false);
-    webView->settings()->setAttribute(QWebSettings::AcceleratedCompositingEnabled,
-                                      true);
+    QWebSettings *settings = webView->settings();
+    settings->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+    settings->setAttribute(QWebSettings::SiteSpecificQuirksEnabled, false);
+    settings->setAttribute(QWebSettings::AcceleratedCompositingEnabled, true);
 #if (QTWEBKIT_VERSION >= QTWEBKIT_VERSION_CHECK(2, 2, 0))
-    webView->settings()->setAttribute(QWebSettings::WebGLEnabled, true);
+    settings->setAttribute(QWebSettings::WebGLEnabled, true);
 #endif
 }
 
@@ -27,7 +25,7 @@ void Browser::on_urlEdit_returnPressed()
     webView->load(QUrl::fromUserInput(urlEdit->text()));
 }
 
-void Browser::on_webView_urlChanged(QUrl& url)
+void Browser::on_webView_urlChanged(const QUrl& url)
 {
     urlEdit->setText(url.toString());
 }
