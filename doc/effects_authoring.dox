@@ -1,0 +1,125 @@
+/*!
+@page effects_authoring Effects Authoring
+
+WebVfx supports both @ref qml_effects_authoring and
+@ref web_effects_authoring for developing video effects.
+Both have a lot in common.
+WebVfx loads the effect content (HTML or QML) and exposes a
+JavaScript context object named @c webvfx to the effect.
+
+If the effect will need to access frames of video,
+it must set the @c webvfx.imageTypeMap property to a map
+describing the names it will use for each video source.
+Each name should be mapped to one of the enumerations:
+
+@li @c webvfx.SourceImageType
+Indicates the image name is the source image of a transition
+(the image being transitioned from), or the primary image of a filter.
+@li @c webvfx.TargetImageType
+Indicates the image name is the target image of a transition
+(the image being transitioned to).
+@li @c webvfx.ExtraImageType
+Indicates the image name is an extra asset.
+There can be multiple image names with this type.
+
+For example:
+@code
+webvfx.imageTypeMap = { "sourceImage" : webvfx.SourceImageType,
+                        "targetImage" : webvfx.TargetImageType }
+@endcode
+
+The effect can request additional named parameters as part of initialization
+by calling @c webvfx.getStringParameter(name) or
+@c webvfx.getNumberParameter(name)
+
+The effect must connect the @c webvfx.renderRequested(time) signal.
+See @ref qml_effects_authoring or @ref web_effects_authoring for
+how to connect to this signal.
+
+When the effect has fully loaded (including any external resources
+being loaded asynchronously), it should call:
+@code
+webvfx.readyRender(true)
+@endcode
+If the load failed for any reason, pass @c false instead.
+
+Now WebVfx will start rendering frames of video. It will pull the current
+frame from each of the video sources specified in @c webvfx.imageTypeMap
+then invoke the @c webvfx.renderRequested(time) signal.
+The time is a normalized time from 0 to 1.0 indicating the position
+in the transition or effect. The effect should then request any images
+it specified in @c webvfx.imageTypeMap each time it handles
+@c renderRequested.  Images can be requested by calling
+@c webvfx.getImage(name) where @c name is the string image name specified
+in @c imageTypeMap. See @ref qml_effects_authoring or
+@ref web_effects_authoring for how to use the returned image object.
+
+The effect should configure itself using the @c time value and the
+images it retrieved before returning from the @c renderRequested slot.
+
+
+@section qml_effects_authoring QML Effects Authoring
+
+Effects can be authored using QtQuick
+<a href="http://doc.qt.nokia.com/latest/qtquick.html">QML</a>,
+a declarative UI language.
+
+The @c webvfx.renderRequested(time) signal can be handled using
+the QML
+<a href="http://doc.qt.nokia.com/latest/qml-connections.html">Connections</a>
+element with @c webvfx as the target.
+The @c time parameter is available to the code, e.g.:
+@code
+Connections {
+    target: webvfx
+    onRenderRequested: {
+        effect.textureImage = webvfx.getImage("sourceImage");
+        console.log("render: " + time);
+    }
+}
+@endcode
+
+Video frame images retrieved via @c webvfx.getImage(name) are QImage
+objects. These can be assigned directly to some QML properties,
+e.g. <a href="http://doc.qt.nokia.com/qt-quick3d-snapshot/qml-effect.html#textureImage-prop">Effect.textureImage</a>.
+Other QML properties require an image URL - this can be retrived via
+@c webvfx.getImageUrl(name). It is more efficient to use the image
+directly when possible, instead of the URL.
+
+QML is more interesting as a video effects technology when it
+is extended with
+<a href="http://doc.qt.nokia.com/qt-quick3d-snapshot/index.html">QtQuick3D</a>.
+
+Textured 3D scenes can be modeled in a tool like
+<a href="http://www.blender.org/">Blender</a>,
+then frames of video can be applied as textures to pieces of the model
+while the camera view is animated for the duration of the effect.
+
+XXX BlenderItem, AnimatedCamera, TextTexture
+XXX blender add-on
+XXX link to 3D section for all this?
+
+XXX refer to "content" as "effects" (filters, transitions, producers)
+
+@section web_effects_authoring Web (HTML) Effects Authoring
+
+Effects can be authored using
+<a href="http://doc.qt.nokia.com/latest/qtwebkit.html">QtWebKit</a>
+HTML.
+
+The @c webvfx.renderRequested(time) signal can be handled by connecting
+it to a JavaScript function that takes a @c time parameter, using
+@c webvfx.renderRequested.connect:
+@code
+function render(time) {
+   console.log("render: " + time);
+}
+webvfx.renderRequested.connect(render);
+@endcode
+
+XXX document image handling, reference http://doc.qt.nokia.com/latest/qtwebkit-bridge.html
+XXX too much leading space in all our code blocks
+XXX move this and all expository docs into doc/*.doc files
+
+Document how Web effects works XXX
+ */

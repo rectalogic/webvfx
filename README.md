@@ -12,3 +12,11 @@ WebVfx includes an MLT plugin that exposes producers, filters and transitions im
 ## Building
 
 In the webvfx directory run `qmake -r PREFIX=/usr/include` and then `make install`. `PREFIX` is optional and determines where WebVfx will be installed. If MLT is installed in a non-standard location, you may need to set the `PKG_CONFIG_PATH` variable to where its pkgconfig file lives, e.g. `PKG_CONFIG_PATH=/usr/local/lib/pkgconfig`.
+
+`make doxydoc` to generate the documentation using Doxygen.
+
+## License
+
+Copyright (c) 2011 Hewlett-Packard Development Company, L.P. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.

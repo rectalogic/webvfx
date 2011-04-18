@@ -1,3 +1,6 @@
+isEmpty(PREFIX) {
+    message("PREFIX not set, using default.")
+}
 include(common.pri)
 
 TEMPLATE = subdirs
