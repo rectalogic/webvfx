@@ -1,3 +1,6 @@
+// Copyright (c) 2011 Hewlett-Packard Development Company, L.P. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 /*!
 @page effects_authoring Effects Authoring
 
@@ -5,7 +8,7 @@ WebVfx supports both @ref qml_effects_authoring and
 @ref web_effects_authoring for developing video effects.
 Both have a lot in common.
 WebVfx loads the effect content (HTML or QML) and exposes a
-JavaScript context object named @c webvfx to the effect.
+JavaScript context object named @c webvfx to the effect implementation.
 
 If the effect will need to access frames of video,
 it must set the @c webvfx.imageTypeMap property to a map
@@ -99,7 +102,6 @@ XXX BlenderItem, AnimatedCamera, TextTexture
 XXX blender add-on
 XXX link to 3D section for all this?
 
-XXX refer to "content" as "effects" (filters, transitions, producers)
 
 @section web_effects_authoring Web (HTML) Effects Authoring
 
@@ -117,9 +119,21 @@ function render(time) {
 webvfx.renderRequested.connect(render);
 @endcode
 
-XXX document image handling, reference http://doc.qt.nokia.com/latest/qtwebkit-bridge.html
-XXX too much leading space in all our code blocks
-XXX move this and all expository docs into doc/*.doc files
-
-Document how Web effects works XXX
+@c webvfx.getImage(name) returns a JavaScript image proxy object
+for the current frame of video for the named image.
+This must be assigned to a DOM @c Image element so that it can be
+used in the HTML.
+The <a href="http://doc.qt.nokia.com/latest/qtwebkit-bridge.html">QtWebKit Bridge</a>
+provides a method @c assignToHTMLImageElement() to do this.
+You can assign to a new @c Image:
+@code
+var image = new Image()
+webvfx.getImage("sourceImage").assignToHTMLImageElement(image);
+@endcode
+or reference an existing one in the DOM
+@code
+<img id="image"/>
+[...]
+webvfx.getImage("sourceImage").assignToHTMLImageElement(document.getElementById("image"));
+@endcode
  */

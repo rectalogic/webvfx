@@ -5,31 +5,79 @@
 #ifndef WEBVFX_EFFECTS_H_
 #define WEBVFX_EFFECTS_H_
 
+#include <webvfx/image.h>
 #include <QMap>
 #include <QString>
-#include <webvfx/image.h>
-#include <webvfx/parameters.h>
 
-class QString;
 
 namespace WebVfx
 {
 
-// Instances of this class can be accessed from any thread,
-// but the class is not threadsafe - access should be serialized.
+/*!
+ * @brief An effects implementation that can consume video frame images and
+ *   render output.
+ *
+ * Instances of this class are created with WebVfx::createEffects()
+ * and can be accessed from any thread, but the class is not threadsafe
+ * so access should be synchronized.
+ */
 class Effects
 {
 public:
-    enum ImageType { SourceImageType=1, TargetImageType, ExtraImageType };
+    /*!
+     * @brief Describes the type of an image.
+     */
+    enum ImageType {
+        /*!
+         * The source (origin/from) image in a transition,
+         * or the image being processed in a filter.
+         */
+        SourceImageType=1,
+        /*!
+         * The target (destination/to) image in a transition.
+         */
+        TargetImageType,
+        /*!
+         * An extra image not directly participating in a
+         *   filter or transition.
+         */
+        ExtraImageType
+    };
 
     typedef QMap<QString, ImageType> ImageTypeMap;
     typedef QMapIterator<QString, ImageType> ImageTypeMapIterator;
 
-    // Return a map mapping image names the page content uses to imge type.
+    /*!
+     * @brief Describes the image names this effect will request.
+     *
+     * Images for these names will need to be set using setImage()
+     * each time before render() is called.
+     * @return a map mapping image names to their ImageType
+     */
     virtual const ImageTypeMap& getImageTypeMap() = 0;
-    // Set an Image for the given name. Must be valid until render() is called.
+
+    /*!
+     * @brief Set an Image for the given @c name.
+     *
+     * @param name Name of the image
+     * @param image Image data. The Image pixels must remain valid until
+     *   render() is called.
+     */
     virtual void setImage(const QString& name, Image* image) = 0;
+
+    /*!
+     * @brief Renders the effect for the given @c time.
+     *
+     * Prior to calling render() each time, all named images must
+     * be set via setImage().
+     * @param time Time to render image for, must be from 0 to 1.0.
+     * @param renderImage Image buffer to render into.
+     */
     virtual bool render(double time, Image* renderImage) = 0;
+
+    /*!
+     * @brief Destroy the effect
+     */
     virtual void destroy() = 0;
 
 protected:

@@ -7,8 +7,8 @@
 #include <QVariant>
 #include <QWebFrame>
 #include "webvfx/image.h"
-#include "webvfx/logger.h"
 #include "webvfx/web_content.h"
+#include "webvfx/webvfx.h"
 
 namespace WebVfx
 {

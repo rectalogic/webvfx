@@ -11,8 +11,8 @@
 #include <QString>
 #include <QVariant>
 #include "webvfx/image.h"
-#include "webvfx/logger.h"
 #include "webvfx/qml_content.h"
+#include "webvfx/webvfx.h"
 
 
 namespace WebVfx

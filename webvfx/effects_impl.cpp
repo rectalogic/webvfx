@@ -6,10 +6,10 @@
 #include "webvfx/content.h"
 #include "webvfx/effects_impl.h"
 #include "webvfx/image.h"
-#include "webvfx/logger.h"
 #include "webvfx/parameters.h"
 #include "webvfx/qml_content.h"
 #include "webvfx/web_content.h"
+#include "webvfx/webvfx.h"
 
 
 namespace WebVfx
