@@ -8,6 +8,7 @@ TEMPLATE = app
 SOURCES += main.cpp
 
 CONFIG += console
+mac:CONFIG -= app_bundle
 QT -= gui
 TARGET = webvfx_demo
 LIBS += -L$$DESTDIR -lwebvfx
