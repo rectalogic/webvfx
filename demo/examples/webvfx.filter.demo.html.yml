@@ -1,19 +1,21 @@
 schema_version: 0.1
-title: WebVfx Demo Filter
+title: WebVfx Canvas Demo Filter
 version: 0.0.1
 copyright: Copyright (C) 2010 Hewlett-Packard Development Company, L.P.
 license: BSD-new
 language: en
-#url:
 creator: Andrew Wason
-description: Simple WebVfx test
+description: WebVfx filter using JavaScript Canvas
 
 parameters:
-  - identifier: title
-    title: Title
-    type: string
-    description: Title rendered in html
+  - identifier: radius
+    title: Circle Radius
+    type: float
+    description: Radius of circle mask
     readonly: no
     required: no
     mutable: no
-    widget: text
+    widget: slider
+    default: 0.5
+    minimum: 0
+    maximum: 1

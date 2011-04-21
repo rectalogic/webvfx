@@ -1,44 +1,84 @@
 <html>
 <head>
+<style type="text/css">
+  body, html {
+    width: 100%, height: 100%;
+    margin: 0;
+  }
+  body {
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    -webkit-box-pack: center;
+    -webkit-box-align: center;
+  }
+  #title {
+    -webkit-transform-origin: 50% 50%;
+    -webkit-transform: rotate(0deg);
+    font-size: 120%;
+    text-shadow: 0 1px 0 white;
+    color: #777;
+    position: relative;
+  }
+  img {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+  }
+  #targetImg {
+    top: 100%;
+    left: 100%;
+  }
+</style>
 <script type="text/javascript">
-function render(time) {
-    console.log("rendering " + time);
-    webvfx.getImage('sourceImage').assignToHTMLImageElement(sourceImage);
-    webvfx.getImage('targetImage').assignToHTMLImageElement(targetImage);
-    webvfx.getImage('demoImage').assignToHTMLImageElement(demoImage);
-    context.drawImage(sourceImage, 0, 0, 160, 120)
-    context.drawImage(targetImage, 160, 120, 160, 120)
-    context.drawImage(demoImage, 0, 120, 160, 120)
-    timeEl.innerHTML = time;
+function Transition(sourceImage, targetImage, backgroundImage, titleElement) {
+    this.sourceImage = sourceImage;
+    this.targetImage = targetImage;
+    this.backgroundImage = backgroundImage;
+    this.titleElement = titleElement;
+
+    titleElement.innerText = webvfx.getStringParameter('title');
 }
 
-function init() {
-    var canvas = document.getElementById("canvas");
+Transition.prototype.render = function (time) {
+    webvfx.getImage('sourceImage').assignToHTMLImageElement(this.sourceImage);
+    webvfx.getImage('targetImage').assignToHTMLImageElement(this.targetImage);
+    webvfx.getImage('backgroundImage').assignToHTMLImageElement(this.backgroundImage);
 
-    // globals
-    context = canvas.getContext('2d');
-    sourceImage = new Image();
-    targetImage = new Image();
-    demoImage = new Image();
-    timeEl = document.getElementById("time");
+    this.sourceImage.style.top =
+        this.sourceImage.style.left = -(time * 100) + "%";
+    this.targetImage.style.top =
+        this.targetImage.style.left = (100 - (time * 100)) + "%";
+    this.titleElement.style.webkitTransform = "rotate(" + (time * 360) + "deg)";
+}
 
-    var title = webvfx.getStringParameter('title');
-    var titleEl = document.getElementById("title");
-    titleEl.innerHTML = title;
+function onLoad() {
+    onResize();
+    var transition = new Transition(document.getElementById("sourceImg"),
+                                    document.getElementById("targetImg"),
+                                    document.getElementById("backgroundImg"),
+                                    document.getElementById("title"));
 
-    webvfx.renderRequested.connect(render);
+
+    webvfx.renderRequested.connect(transition, Transition.prototype.render);
     webvfx.imageTypeMap = {
                               "sourceImage" : webvfx.SourceImageType,
                               "targetImage" : webvfx.TargetImageType,
-                              "demoImage" : webvfx.ExtraImageType
+                              "backgroundImage" : webvfx.ExtraImageType
                           };
     webvfx.readyRender(true)
 }
-window.addEventListener("load", init, false);
+function onResize() {
+    // Set base font-size to 10% of window height
+    document.body.style.fontSize = (window.innerHeight * 0.1) + "px";
+}
+window.addEventListener("load", onLoad, false);
+window.addEventListener("load", onResize, false);
 </script>
 </head>
 <body>
-    Canvas time <span id="time">unset</span> title <span id="title">unset</span><br/>
-    <canvas id="canvas" width="320" height="240" style="background-color: #DDDDDD;"></canvas>
+    <img id="backgroundImg"/>
+    <img id="sourceImg"/>
+    <img id="targetImg"/>
+    <div id="title">title</div>
 </body>
 </html>

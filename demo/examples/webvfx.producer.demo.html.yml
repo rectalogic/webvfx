@@ -1,12 +1,11 @@
 schema_version: 0.1
-title: WebVfx Demo Producer
+title: WebVfx CSS Demo Producer
 version: 0.0.1
 copyright: Copyright (C) 2010 Hewlett-Packard Development Company, L.P.
 license: BSD-new
 language: en
-#url:
 creator: Andrew Wason
-description: Simple WebVfx test
+description: WebVfx producer using CSS
 
 parameters:
   - identifier: title

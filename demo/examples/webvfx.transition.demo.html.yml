@@ -1,12 +1,11 @@
 schema_version: 0.1
-title: WebVfx Demo Transition
+title: WebVfx CSS Demo Transition
 version: 0.0.1
 copyright: Copyright (C) 2010 Hewlett-Packard Development Company, L.P.
 license: BSD-new
 language: en
-#url:
 creator: Andrew Wason
-description: Simple WebVfx test
+description: WebVfx transition using CSS
 
 parameters:
   - identifier: title
@@ -17,3 +16,7 @@ parameters:
     required: no
     mutable: no
     widget: text
+  - identifier: producer.backgroundImage.resource
+    title: File/URI
+    type: string
+    description: Media to use as transition background

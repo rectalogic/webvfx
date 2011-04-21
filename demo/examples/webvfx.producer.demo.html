@@ -1,24 +1,60 @@
 <html>
 <head>
-<script type="text/javascript">
-function render(time) {
-    console.log("rendering " + time);
-    timeEl.innerHTML = time;
+<style type="text/css">
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
 }
-
-function init() {
-    // globals
-    timeEl = document.getElementById("time");
-    var title = webvfx.getStringParameter('title');
-    var titleEl = document.getElementById("title");
-    titleEl.innerHTML = title;
-    webvfx.renderRequested.connect(render);
+body {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+}
+#top {
+    -webkit-box-flex: 1;
+    background: #666;
+}
+#text {
+    background: #666;
+    color: #999;
+    text-align: center;
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: bold;
+}
+#bottom {
+    -webkit-box-flex: 1;
+    background: #999;
+}
+</style>
+<script type="text/javascript">
+function Producer(textStyle) {
+    this.textStyle = textStyle;
+}
+Producer.prototype.render = function(time) {
+    // Use em units which are proportional to font-size,
+    // which is being set to proportional to page render size.
+    // Vary x offset from -0.2 to 0.2.
+    this.textStyle.textShadow = ((time * 0.4) - 0.2) + "em -0.2em 0.3em black";
+}
+function onLoad() {
+    handleFontSize();
+    var text = document.getElementById("text");
+    text.innerText = webvfx.getStringParameter("title");
+    var producer = new Producer(text.style);
+    webvfx.renderRequested.connect(producer, Producer.prototype.render);
     webvfx.readyRender(true);
 }
-window.addEventListener("load", init, false);
+function handleFontSize() {
+    // Set base font-size to 10% of window height
+    document.body.style.fontSize = (window.innerHeight * 0.1) + "px";
+}
+window.addEventListener("load", onLoad, false);
+window.addEventListener("resize", handleFontSize, false);
 </script>
 </head>
 <body>
-    Producer time <span id="time">unset</span> title <span id="title">unset</span><br/>
+    <div id="top"></div>
+    <div id="text"></div>
+    <div id="bottom"></div>
 </body>
 </html>
