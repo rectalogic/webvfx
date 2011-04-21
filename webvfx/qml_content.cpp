@@ -78,9 +78,7 @@ QmlContent::QmlContent(QWidget* parent, const QSize& size, Parameters* parameter
     resize(size);
 
     // We render into FBOs, but need QGLWidget to create a GL context for us
-    QGLFormat format(QGL::SampleBuffers|QGL::AlphaChannel|QGL::SingleBuffer);
-    format.setSamples(4);
-    glWidget = new QGLWidget(format);
+    glWidget = new QGLWidget();
     setViewport(glWidget);
 
     createFBO(size);
