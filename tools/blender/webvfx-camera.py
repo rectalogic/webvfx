@@ -182,16 +182,18 @@ class FitViewToFace(bpy.types.Operator):
             vertices.append(mesh.vertices[v].co * obj.matrix_world)
 
         # Check the first two edges in the face, pick the one that is
-        # parallel to the view up vector.
+        # parallel to the view up vector (angle is 0 or 180).
         # This will be the vertical vector we want to fit viewport height to.
         # Distance between the vertices of that edge is the face height.
         # Use half face height.
         e1 = vertices[1] - vertices[0]
         e2 = vertices[2] - vertices[1]
+        a1 = abs(up.angle(e1, 0))
+        a2 = abs(up.angle(e2, 0))
         epsilon = 0.0005
-        if up.angle(e1, 0) <= epsilon:
+        if a1 <= epsilon or (abs(a1 - math.pi) <= epsilon):
             height = e1.length / 2
-        elif up.angle(e2, 0) <= epsilon:
+        elif a2 <= epsilon or (abs(a2 - math.pi) <= epsilon):
             height = e2.length / 2
         else:
             reportError(self, "Could not find vertical edge in face")
