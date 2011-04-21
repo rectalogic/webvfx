@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<mlt>
+  <producer id="color:red">
+    <property name="mlt_type">producer</property>
+    <property name="mlt_service">color</property>
+    <property name="colour">red</property>
+    <property name="meta.attr.titles">1</property>
+    <property name="meta.attr.titles.markup">#timecode#</property>
+    <filter>
+      <property name="mlt_type">filter</property>
+      <property name="mlt_service">data_show</property>
+      <property name="dynamic">1</property>
+    </filter>
+  </producer>
+  <tractor global_feed="1">
+    <track producer="color:red"/>
+  </tractor>
+</mlt>
+

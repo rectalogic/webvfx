@@ -1,0 +1,2 @@
+-consumer sdl frame_rate_num=30 frame_rate_den=1 width=576 height=432 progressive=1 sample_aspect_num=1
+sample_aspect_den=1

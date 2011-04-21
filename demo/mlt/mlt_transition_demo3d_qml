@@ -1,0 +1,3 @@
+#!/bin/bash
+
+DISPLAY=${DISPLAY:-:0} WEBVFX_DATA=${WEBVFX_DATA:-../examples} melt "${VFX_SOURCE:-red.mlt}" out=399 -track -blank 99 "${VFX_TARGET:-blue.mlt}" out=399 -transition webvfx.transition.demo3d.qml in=100 out=399 $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}")) width=640 height=360

@@ -1,0 +1,8 @@
+schema_version: 0.1
+title: WebVfx QtQuick3D Demo
+version: 0.0.1
+copyright: Copyright (C) 2010 Hewlett-Packard Development Company, L.P.
+license: BSD-new
+language: en
+creator: Andrew Wason
+description: WebVfx transition using Blender 3D model
