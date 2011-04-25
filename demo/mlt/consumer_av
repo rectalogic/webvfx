@@ -1,1 +1,1 @@
--consumer avformat target=\"${VFX_OUTPUT:-melt.mov}\" f=mov vcodec=rawvideo pix_fmt=uyvy422 vtag=yuvs acodec=pcm_s16le rescale=lanczos frame_rate_num=30 frame_rate_den=1 width=640 height=360 progressive=1 sample_aspect_num=1 sample_aspect_den=1
+-consumer avformat target=\"${VFX_OUTPUT:-melt.mov}\" f=mov vcodec=rawvideo pix_fmt=uyvy422 vtag=yuvs acodec=pcm_s16le rescale=lanczos frame_rate_num=30 frame_rate_den=1 width=640 height=360 display_aspect_num=640 display_aspect_den=360 progressive=1 sample_aspect_num=1 sample_aspect_den=1

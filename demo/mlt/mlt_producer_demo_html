@@ -1,6 +1,7 @@
 #!/bin/bash
 
-DISPLAY=${DISPLAY:-:0} WEBVFX_DATA=${WEBVFX_DATA:-../examples} \
-    melt -producer webvfx.producer.demo.html out=499 \
+export DISPLAY=${DISPLAY:-:0}
+export WEBVFX_DATA=${WEBVFX_DATA:-$PWD/../examples}
+melt -producer webvfx.producer.demo.html length=199 \
         title="${VFX_TITLE:-WebVfx Producer Demo}" \
     $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}"))
