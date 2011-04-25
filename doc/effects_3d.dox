@@ -1,0 +1,25 @@
+// Copyright (c) 2011 Hewlett-Packard Development Company, L.P. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+/*!
+@page effects_3d Authoring 3D Effects
+
+QML is more interesting as a video effects technology when it
+is extended with
+<a href="http://doc.qt.nokia.com/qt-quick3d-snapshot/index.html">QtQuick3D</a>.
+
+Textured 3D scenes can be modeled in a tool like
+<a href="http://www.blender.org/">Blender</a>,
+then frames of video can be applied as textures to pieces of the model
+while the camera view is animated for the duration of the effect.
+
+XXX BlenderItem, AnimatedCamera, TextTexture
+XXX blender add-on
+
+See @ref demo/examples/webvfx.transition.demo3d.qml "demo/examples/webvfx.transition.demo3d.qml"
+for an example.
+
+
+@example demo/examples/webvfx.transition.demo3d.qml
+This is an example QML transition implemented using QtQuick3D.
+ */

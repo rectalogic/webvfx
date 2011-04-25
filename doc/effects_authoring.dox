@@ -89,19 +89,10 @@ Other QML properties require an image URL - this can be retrived via
 @c webvfx.getImageUrl(name). It is more efficient to use the image
 directly when possible, instead of the URL.
 
+See @ref demo/examples/webvfx.filter.demo.qml "demo/examples/webvfx.filter.demo.qml" for an example.
+
 QML is more interesting as a video effects technology when it
-is extended with
-<a href="http://doc.qt.nokia.com/qt-quick3d-snapshot/index.html">QtQuick3D</a>.
-
-Textured 3D scenes can be modeled in a tool like
-<a href="http://www.blender.org/">Blender</a>,
-then frames of video can be applied as textures to pieces of the model
-while the camera view is animated for the duration of the effect.
-
-XXX BlenderItem, AnimatedCamera, TextTexture
-XXX blender add-on
-XXX link to 3D section for all this?
-
+is extended with 3D support - see @ref effects_3d.
 
 @section web_effects_authoring Web (HTML) Effects Authoring
 
@@ -136,4 +127,23 @@ or reference an existing one in the DOM
 [...]
 webvfx.getImage("sourceImage").assignToHTMLImageElement(document.getElementById("image"));
 @endcode
+
+See example @ref demo/examples/webvfx.producer.demo.html "demo/exampleswebvfx.producer.demo.html",
+@ref demo/examples/webvfx.filter.demo.html "demo/examples/webvfx.filter.demo.html" and
+@ref demo/exampleswebvfx.transition.demo.html "demo/exampleswebvfx.transition.demo.html".
+
+
+@example demo/examples/webvfx.producer.demo.html
+This is an example HTML producer.
+
+@example demo/examples/webvfx.filter.demo.html
+This is an example HTML filter.
+
+@example demo/examples/webvfx.transition.demo.html
+This is an example HTML transition that uses all three
+image types and a string parameter.
+
+@example demo/examples/webvfx.filter.demo.qml
+This is an example QML filter.
+
  */

@@ -85,7 +85,7 @@ WARN_LOGFILE           =
 #---------------------------------------------------------------------------
 # configuration options related to the input files
 #---------------------------------------------------------------------------
-INPUT                  = doc webvfx mlt viewer
+INPUT                  = doc webvfx
 INPUT_ENCODING         = UTF-8
 FILE_PATTERNS          =
 RECURSIVE              = YES
@@ -93,7 +93,7 @@ EXCLUDE                =
 EXCLUDE_SYMLINKS       = YES
 EXCLUDE_PATTERNS       =
 EXCLUDE_SYMBOLS        =
-EXAMPLE_PATH           =
+EXAMPLE_PATH           = .
 EXAMPLE_PATTERNS       =
 EXAMPLE_RECURSIVE      = NO
 IMAGE_PATH             =

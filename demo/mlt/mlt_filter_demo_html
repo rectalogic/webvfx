@@ -1,3 +1,6 @@
 #!/bin/bash
 
-DISPLAY=${DISPLAY:-:0} WEBVFX_DATA=${WEBVFX_DATA:-../examples} melt "${VFX_SOURCE:-red.mlt}" out=299 -filter webvfx.filter.demo.html out=299 $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}"))
+DISPLAY=${DISPLAY:-:0} WEBVFX_DATA=${WEBVFX_DATA:-../examples} \
+    melt "${VFX_SOURCE:-red.mlt}" out=299 \
+    -filter webvfx.filter.demo.html out=299 \
+    $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}"))

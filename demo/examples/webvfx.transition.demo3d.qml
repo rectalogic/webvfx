@@ -3,8 +3,8 @@ import Qt3D 1.0
 import org.webvfx.WebVfx 1.0
 
 Viewport {
-    width: 768
-    height: 432
+    width: 640
+    height: 360
 
     BlenderItem3D {
         mesh: Mesh {
