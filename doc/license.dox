@@ -4,6 +4,6 @@
 /*!
 @page license License
 
-@include LICENSE
+@verbinclude LICENSE
 
  */

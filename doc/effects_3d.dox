@@ -2,19 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 /*!
-@page effects_3d Authoring 3D Effects
+@page effects_3d 3D Effects Authoring
 
 QML is more interesting as a video effects technology when it
 is extended with
 <a href="http://doc.qt.nokia.com/qt-quick3d-snapshot/index.html">QtQuick3D</a>.
 
 Textured 3D scenes can be modeled in a tool like
-<a href="http://www.blender.org/">Blender</a>,
-then frames of video can be applied as textures to pieces of the model
+<a href="http://www.blender.org/">Blender</a>.
+This can be exported as a Wavefront *.obj file which
+the QtQuick3D asset importer can load.
+Then frames of video can be applied as textures to named pieces of the model,
 while the camera view is animated for the duration of the effect.
 
-XXX BlenderItem, AnimatedCamera, TextTexture
-XXX blender add-on
+If your QML imports the @c org.webvfx.WebVfx namespace, this will
+make available some additional useful QML elements.
+@code
+import org.webvfx.WebVfx 1.0
+@endcode
+
+@li @c BlenderItem - this is an
+  @c <a href="http://doc.qt.nokia.com/qt-quick3d-snapshot/qml-item3d.html">Item3D</a>
+  that applies a coordinate system
+  transformation to convert from Blenders coordinate system to QtQuick3D.
+  If the mesh was exported from Blender, you should load it inside
+  a @c BlenderItem instead of an ordinary @c Item3D.
+@li @c AnimatedCamera - this is a @c <a href="http://doc.qt.nokia.com/qt-quick3d-snapshot/qml-camera.html">Camera</a>
+  that supports an additional @c animationData property.
+  This property should be set to the JSON camera path data exported
+  by the Blender addon in @c tools/blender/webvfx-camera.py
+@li @c TextTexture - this is a @c <a href="http://doc.qt.nokia.com/latest/qml-text.html">Text</a>
+  element that renders itself to an image which can then be used
+  as a 3D texture. The texture image is accessed using the @c textureImage
+  property.
 
 See @ref demo/examples/webvfx.transition.demo3d.qml "demo/examples/webvfx.transition.demo3d.qml"
 for an example.

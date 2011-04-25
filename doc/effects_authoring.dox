@@ -89,7 +89,8 @@ Other QML properties require an image URL - this can be retrived via
 @c webvfx.getImageUrl(name). It is more efficient to use the image
 directly when possible, instead of the URL.
 
-See @ref demo/examples/webvfx.filter.demo.qml "demo/examples/webvfx.filter.demo.qml" for an example.
+@sa See the QML demo
+@ref demo/examples/webvfx.filter.demo.qml "demo/examples/webvfx.filter.demo.qml"
 
 QML is more interesting as a video effects technology when it
 is extended with 3D support - see @ref effects_3d.
@@ -128,9 +129,27 @@ or reference an existing one in the DOM
 webvfx.getImage("sourceImage").assignToHTMLImageElement(document.getElementById("image"));
 @endcode
 
-See example @ref demo/examples/webvfx.producer.demo.html "demo/exampleswebvfx.producer.demo.html",
-@ref demo/examples/webvfx.filter.demo.html "demo/examples/webvfx.filter.demo.html" and
-@ref demo/exampleswebvfx.transition.demo.html "demo/exampleswebvfx.transition.demo.html".
+@sa See the HTML demos:
+@li @ref demo/examples/webvfx.producer.demo.html "demo/exampleswebvfx.producer.demo.html"
+@li @ref demo/examples/webvfx.filter.demo.html "demo/examples/webvfx.filter.demo.html"
+@li @ref demo/examples/webvfx.transition.demo.html "demo/examples/webvfx.transition.demo.html"
+
+
+@section effects_authoring_tools Tools
+
+A couple of simple tools are provided to help authoring effects.
+
+@c webvfx_browser (<tt>%WebVfx Browser.app</tt> on MacOS) is a trivial
+wrapper around QtWebKit. This makes it easy to visit any website
+and see if the version of QtWebKit you are using supports various
+HTML features.
+
+@c webvfx_viewer (<tt>%WebVfx Viewer.app</tt> on MacOS) allows you to
+load your HTML or QML effects and exposes the @c webvfx context object
+to them, and generates images that your effect can request using
+@c webvfx.getImage(name).
+It has a slider along the bottom that lets you control the rendering time
+(0..1.0) and a tab to let you set the rendering size.
 
 
 @example demo/examples/webvfx.producer.demo.html

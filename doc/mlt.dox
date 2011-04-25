@@ -75,6 +75,15 @@ VFX_SOURCE=/videos/source.mov VFX_TARGET=/videos/target.mov ./mlt_transition_dem
 The demos default to using the SDL consumer, this can be changed to the avformat
 consumer by setting @c VFX_CONSUMER=consumer_av.
 
+Each of the demos has been rendered as a video and can be previewed here:
+@li <a href="http://www.youtube.com/watch?v=qrO24oExXxc">demo/mlt/mlt_producer_demo_html</a>
+@li <a href="http://www.youtube.com/watch?v=ntajl-7U16w">demo/mlt/mlt_filter_demo_html</a>
+@li <a href="http://www.youtube.com/watch?v=2-JUeN7YOsE">demo/mlt/mlt_filter_demo_qml</a>
+@li <a href="http://www.youtube.com/watch?v=n1JazosWhGI">demo/mlt/mlt_transition_demo_html</a>
+@li <a href="http://www.youtube.com/watch?v=uBQdU5iFLLQ">demo/mlt/mlt_transition_demo3d_qml</a>
+
+
+
 @example demo/examples/webvfx.producer.demo.html.yml
 This is the YAML metadata for
 @ref demo/examples/webvfx.producer.demo.html "demo/examples/webvfx.producer.demo.html"
