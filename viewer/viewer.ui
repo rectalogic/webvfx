@@ -35,8 +35,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>158</width>
-             <height>118</height>
+             <width>172</width>
+             <height>360</height>
             </rect>
            </property>
            <attribute name="label">
@@ -65,7 +65,7 @@
                <number>1024</number>
               </property>
               <property name="value">
-               <number>320</number>
+               <number>640</number>
               </property>
              </widget>
             </item>
@@ -91,7 +91,7 @@
                <number>1024</number>
               </property>
               <property name="value">
-               <number>240</number>
+               <number>360</number>
               </property>
              </widget>
             </item>
@@ -189,8 +189,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>102</width>
-             <height>102</height>
+             <width>172</width>
+             <height>360</height>
             </rect>
            </property>
            <attribute name="label">
@@ -247,7 +247,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>261</width>
+             <width>172</width>
              <height>360</height>
             </rect>
            </property>
@@ -290,8 +290,8 @@
        <widget class="QWidget" name="scrollAreaWidgetContents">
         <property name="geometry">
          <rect>
-          <x>0</x>
-          <y>0</y>
+          <x>11</x>
+          <y>1</y>
           <width>600</width>
           <height>495</height>
          </rect>
