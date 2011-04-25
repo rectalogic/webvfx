@@ -6,3 +6,13 @@ license: BSD-new
 language: en
 creator: Andrew Wason
 description: WebVfx transition using Blender 3D model
+
+parameters:
+  - identifier: title
+    title: Title
+    type: string
+    description: Title textured onto quad
+    readonly: no
+    required: no
+    mutable: no
+    widget: text

@@ -25,6 +25,23 @@ Viewport {
                 id: targetImage
             }
         }
+        Item3D {
+            meshNode: "TextQuad"
+            effect: Effect {
+                // Texture the quad with the image rendered by the TextTexture
+                textureImage: textTexture.textureImage
+            }
+        }
+    }
+
+    TextTexture {
+        id: textTexture
+        text: webvfx.getStringParameter("title")
+        color: "white"
+        font.pixelSize: height / 2
+        // Adjust by quad aspect ratio
+        width: parent.width
+        height: width * 0.75
     }
 
     Connections {
