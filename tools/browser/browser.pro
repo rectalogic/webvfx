@@ -10,5 +10,8 @@ HEADERS = browser.h
 FORMS = browser.ui
 
 QT += webkit
-!mac:TARGET = qtbrowser
-mac:TARGET = QtBrowser
+!mac:TARGET = webvfx_browser
+mac:TARGET = "WebVfx Browser"
+
+target.path = $$PREFIX/bin
+INSTALLS += target
