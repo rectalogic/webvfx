@@ -2,9 +2,9 @@
 
 export DISPLAY=${DISPLAY:-:0}
 export WEBVFX_DATA=${WEBVFX_DATA:-$PWD/../examples}
-melt "${VFX_SOURCE:-red.mlt}" out=399 \
-    -track -blank 99 \
-    "${VFX_TARGET:-blue.mlt}" out=399 \
-    -transition webvfx.transition.demo3d.qml in=100 out=399 \
+"${VFX_MELT:-melt}" "${VFX_SOURCE:-red.mlt}" out=349 \
+    -track -blank 69 \
+    "${VFX_TARGET:-blue.mlt}" out=349 \
+    -transition webvfx.transition.demo3d.qml in=70 out=349 \
         title="${VFX_TITLE:-Hello 3D!}" \
     $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}"))

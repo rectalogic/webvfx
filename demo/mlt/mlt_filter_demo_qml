@@ -2,6 +2,6 @@
 
 export DISPLAY=${DISPLAY:-:0}
 export WEBVFX_DATA=${WEBVFX_DATA:-$PWD/../examples}
-melt "${VFX_SOURCE:-red.mlt}" out=299 \
+"${VFX_MELT:-melt}" "${VFX_SOURCE:-red.mlt}" out=299 \
     -filter webvfx.filter.demo.qml out=299 \
     $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}"))

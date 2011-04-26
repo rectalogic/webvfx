@@ -2,7 +2,7 @@
 
 export DISPLAY=${DISPLAY:-:0}
 export WEBVFX_DATA=${WEBVFX_DATA:-$PWD/../examples}
-melt "${VFX_SOURCE:-red.mlt}" out=149 \
+"${VFX_MELT:-melt}" "${VFX_SOURCE:-red.mlt}" out=149 \
     -track -blank 59 \
     "${VFX_TARGET:-blue.mlt}" out=149 \
     -transition webvfx.transition.demo.html in=60 out=149 \
