@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 isEmpty(PREFIX) {
-    message("PREFIX not set, using default.")
+    message("Install PREFIX not set, using default.")
 }
 include(common.pri)
 
@@ -18,8 +18,15 @@ SUBDIRS += tools/browser
 unix:system(pkg-config --exists mlt-framework) {
     SUBDIRS += mlt
     mlt.depends = webvfx
+    mac {
+        isEmpty(MLT_SOURCE) {
+            warning("Please set MLT_SOURCE to the MLT source code directory to build qmelt on MacOS")
+        } else {
+            SUBDIRS += mlt/qmelt
+        }
+    }
 } else {
-    message("MLT framework not found, skipping MLT plugin. Need to set PKG_CONFIG_PATH?")
+    warning("MLT framework not found, skipping MLT plugin. Need to set PKG_CONFIG_PATH environment variable?")
 }
 
 viewer.depends = webvfx
