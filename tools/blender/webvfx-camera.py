@@ -3,10 +3,12 @@
 # found in the LICENSE file.
 
 import bpy
+import bpy.props
 import math
 import numbers
 import mathutils
 import json
+from io_utils import ImportHelper
 
 
 bl_info = {
@@ -327,8 +329,58 @@ class GenerateCameraAnimationJson(bpy.types.Operator):
                           separators=(',',': '))
 
     def execute(self, context):
-        dumpText(self, context, 'QML Camera Animation',
+        dumpText(self, context, 'JSON Camera Animation',
                  self.generateCameraAnimation(context.scene.camera))
+        return {'FINISHED'}
+
+
+class ImportCameraAnimationJson(bpy.types.Operator, ImportHelper):
+    bl_idname = "anim.import_camera_animation_json"
+    bl_label = "Import Camera Animation JSON"
+    bl_description = "Import JSON data for active camera animation keyframes"
+
+    filename_ext = "*.json"
+    filter_glob = bpy.props.StringProperty(default="*.json", options={'HIDDEN'})
+
+    def importCameraAnimation(self, camera, filepath):
+        with open(filepath, "r") as file:
+            animation = json.load(file)
+
+        camera.animation_data_clear()
+        camera.animation_data_create()
+
+        action = bpy.data.actions.new("CameraAction")
+        groupName = "LocRot"
+        action.groups.new(groupName)
+
+        camera.data.angle = animation['horizontalFOV']
+        animRange = animation['range']
+
+        for curve in GenerateCameraAnimationJson.CurveNames:
+            for coord in range(3):
+                fcurve = action.fcurves.new(curve, coord, groupName)
+                curveData = animation[GenerateCameraAnimationJson.CurveNames[curve] +
+                                      GenerateCameraAnimationJson.CoordNames[coord]]
+                # Constant value
+                if isinstance(curveData, numbers.Real):
+                    fcurve.keyframe_points.insert(animRange[0], curveData)
+                # Array of segment control point data
+                else:
+                    for segment in curveData:
+                        points = segment['bezierPoints']
+                        keyframe = fcurve.keyframe_points.insert(points[0][0],
+                                                                 points[0][1])
+                        keyframe.handle_right = points[1]
+                        keyframe = fcurve.keyframe_points.insert(points[3][0],
+                                                                 points[3][1])
+                        keyframe.handle_left = points[2]
+
+        camera.animation_data.action = action
+
+    def execute(self, context):
+        # Display filechooser for *.json files
+        self.importCameraAnimation(context.scene.camera,
+                                   **self.as_keywords(ignore=("filter_glob",)))
         return {'FINISHED'}
 
 
@@ -368,6 +420,7 @@ class OBJECT_PT_camera_face_align(bpy.types.Panel):
         row.operator("anim.insert_camera_keyframe", text="Insert")
         row.operator("anim.remove_camera_keyframe", text="Remove")
         col.operator("anim.generate_camera_animation_json", text="Generate Animation JSON")
+        col.operator("anim.import_camera_animation_json", text="Import Animation JSON")
 
 # Utility for finding region_3d in console
 # def r3d():
