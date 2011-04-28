@@ -45,10 +45,16 @@ Camera {
     property real animationTime: 0
     onAnimationTimeChanged: updateCamera()
 
+    // If true, then reverse the sense of time
+    property bool reverseTime: false
+
     fieldOfView: computeFOV(width, height)
 
+    // Need to make this a property because Camera doesn't
+    // support arbitrary children.
+    // Also this allows the user to override us.
     property Connections connections : Connections {
         target: webvfx
-        onRenderRequested: camera.animationTime = time
+        onRenderRequested: camera.animationTime = reverseTime ? 1 - time : time
     }
 }

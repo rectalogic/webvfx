@@ -56,6 +56,8 @@ Enabling the Measure Panel addon (via User Preferences) is useful
 to determine the aspect ratio of a quad that will render text.
 '''
 
+KeyframeGroup = "LocRot"
+
 def convertCameraFOV(context, camera):
     '''Blender uses horizontal fov, convert to vertical for QtQuick3D'''
     render = context.scene.render
@@ -249,8 +251,8 @@ class InsertCameraKeyframe(bpy.types.Operator):
         # Without index, inserts all keys of given type.
         # Without frame, uses current timeline frame.
         camera = context.scene.camera
-        camera.keyframe_insert('location', group='LocRot')
-        camera.keyframe_insert('rotation_euler', group='LocRot')
+        camera.keyframe_insert('location', group=KeyframeGroup)
+        camera.keyframe_insert('rotation_euler', group=KeyframeGroup)
         return {'FINISHED'}
 
 
@@ -261,8 +263,8 @@ class RemoveCameraKeyframe(bpy.types.Operator):
 
     def execute(self, context):
         camera = context.scene.camera
-        camera.keyframe_delete('location', group='LocRot')
-        camera.keyframe_delete('rotation_euler', group='LocRot')
+        camera.keyframe_delete('location', group=KeyframeGroup)
+        camera.keyframe_delete('rotation_euler', group=KeyframeGroup)
         return {'FINISHED'}
 
 
@@ -350,15 +352,14 @@ class ImportCameraAnimationJson(bpy.types.Operator, ImportHelper):
         camera.animation_data_create()
 
         action = bpy.data.actions.new("CameraAction")
-        groupName = "LocRot"
-        action.groups.new(groupName)
+        action.groups.new(KeyframeGroup)
 
         camera.data.angle = animation['horizontalFOV']
         animRange = animation['range']
 
         for curve in GenerateCameraAnimationJson.CurveNames:
             for coord in range(3):
-                fcurve = action.fcurves.new(curve, coord, groupName)
+                fcurve = action.fcurves.new(curve, coord, KeyframeGroup)
                 curveData = animation[GenerateCameraAnimationJson.CurveNames[curve] +
                                       GenerateCameraAnimationJson.CoordNames[coord]]
                 # Constant value
