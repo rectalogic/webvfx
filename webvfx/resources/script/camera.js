@@ -196,7 +196,7 @@ CameraAnimation.prototype.evaluate = function(t) {
     this.upVector[2] = m12;
 }
 
-// Compute vertical field of view in radians, given viewport width/height
+// Compute vertical field of view in radians, given viewport dimensions
 CameraAnimation.prototype.verticalFOV = function(width, height) {
     return 2 * Math.atan(Math.tan(this.horizontalFOV / 2) / (width / height));
 }

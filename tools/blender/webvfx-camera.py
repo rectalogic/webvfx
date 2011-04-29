@@ -50,7 +50,11 @@ Click Generate Camera QML to generate the camera fieldOfView
 and other parameters. This also dumps the QML for the current camera position.
 
 The Aspect Ratio buttons can be used to change the camera viewport
-aspect ratio.
+aspect ratio. If using the same animation with both 4:3 and 16:9 faces,
+make both quads the same width (but different heights) and center them
+on the same location. The same animation will then work with both the
+4:3 and 16:9 quads - just change the camera aspect ratio for whichever
+quad you are viewing.
 
 Enabling the Measure Panel addon (via User Preferences) is useful
 to determine the aspect ratio of a quad that will render text.
