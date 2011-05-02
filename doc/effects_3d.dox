@@ -36,10 +36,6 @@ import org.webvfx.WebVfx 1.0
   as a 3D texture. The texture image is accessed using the @c textureImage
   property.
 
-See @ref demo/examples/webvfx.transition.demo3d.qml "demo/examples/webvfx.transition.demo3d.qml"
+See @ref examples/webvfx.transition.demo3d.qml "demo/examples/webvfx.transition.demo3d.qml"
 for an example.
-
-
-@example demo/examples/webvfx.transition.demo3d.qml
-This is an example QML transition implemented using QtQuick3D.
  */

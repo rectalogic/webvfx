@@ -4,15 +4,17 @@
 /*!
 @page effects_authoring Effects Authoring
 
-WebVfx supports both @ref qml_effects_authoring and
+%WebVfx supports both @ref qml_effects_authoring and
 @ref web_effects_authoring for developing video effects.
 Both have a lot in common.
-WebVfx loads the effect content (HTML or QML) and exposes a
+%WebVfx loads the effect content (HTML or QML) and exposes a
 JavaScript context object named @c webvfx to the effect implementation.
 
 If the effect will need to access frames of video,
 it must set the @c webvfx.imageTypeMap property to a map
 describing the names it will use for each video source.
+
+@anchor image_types
 Each name should be mapped to one of the enumerations:
 
 @li @c webvfx.SourceImageType
@@ -46,7 +48,7 @@ webvfx.readyRender(true)
 @endcode
 If the load failed for any reason, pass @c false instead.
 
-Now WebVfx will start rendering frames of video. It will pull the current
+Now %WebVfx will start rendering frames of video. It will pull the current
 frame from each of the video sources specified in @c webvfx.imageTypeMap
 then invoke the @c webvfx.renderRequested(time) signal.
 The time is a normalized time from 0 to 1.0 indicating the position
@@ -90,7 +92,7 @@ Other QML properties require an image URL - this can be retrived via
 directly when possible, instead of the URL.
 
 @sa See the QML demo
-@ref demo/examples/webvfx.filter.demo.qml "demo/examples/webvfx.filter.demo.qml"
+@ref examples/webvfx.filter.demo.qml "demo/examples/webvfx.filter.demo.qml"
 
 QML is more interesting as a video effects technology when it
 is extended with 3D support - see @ref effects_3d.
@@ -130,9 +132,9 @@ webvfx.getImage("sourceImage").assignToHTMLImageElement(document.getElementById(
 @endcode
 
 @sa See the HTML demos:
-@li @ref demo/examples/webvfx.producer.demo.html "demo/exampleswebvfx.producer.demo.html"
-@li @ref demo/examples/webvfx.filter.demo.html "demo/examples/webvfx.filter.demo.html"
-@li @ref demo/examples/webvfx.transition.demo.html "demo/examples/webvfx.transition.demo.html"
+@li @ref examples/webvfx.producer.demo.html "demo/examples/webvfx.producer.demo.html"
+@li @ref examples/webvfx.filter.demo.html "demo/examples/webvfx.filter.demo.html"
+@li @ref examples/webvfx.transition.demo.html "demo/examples/webvfx.transition.demo.html"
 
 
 @section effects_authoring_tools Tools
@@ -150,19 +152,4 @@ to them, and generates images that your effect can request using
 @c webvfx.getImage(name).
 It has a slider along the bottom that lets you control the rendering time
 (0..1.0) and a tab to let you set the rendering size.
-
-
-@example demo/examples/webvfx.producer.demo.html
-This is an example HTML producer.
-
-@example demo/examples/webvfx.filter.demo.html
-This is an example HTML filter.
-
-@example demo/examples/webvfx.transition.demo.html
-This is an example HTML transition that uses all three
-image types and a string parameter.
-
-@example demo/examples/webvfx.filter.demo.qml
-This is an example QML filter.
-
  */

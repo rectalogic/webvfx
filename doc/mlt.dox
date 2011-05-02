@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 /*!
-@page mlt MLT Services
+@page mlt MLT Plugins
 
-WebVfx implements producer, filter and transition services for the
+%WebVfx implements producer, filter and transition plugin services for the
 <a href="http://www.mltframework.org/">MLT Framework</a>.
 
-MLT services are implemented as WebVfx effects - see @ref effects_authoring.
+MLT services are implemented as %WebVfx effects - see @ref effects_authoring.
 The type of MLT service is determined by the filename.
-WebVfx MLT services must follow a specific naming convention:
+%WebVfx MLT services must follow a specific naming convention:
 <b>webvfx.</b>@em service_type<b>.</b>@em name<b>.</b>@em suffix
 @li @em service_type - one of @c filter, @c transition or @c producer
 @li @em name - unique name of the effect
@@ -51,7 +51,9 @@ producer.foobar.in=90
 producer.foobar.out=200
 @endcode
 
-The example demo/examples/webvfx.transition.demo.html transition uses an
+The example
+@ref examples/webvfx.transition.demo.html "demo/examples/webvfx.transition.demo.html"
+transition uses an
 extra image named @c "backgroundImage":
 @dontinclude webvfx.transition.demo.html
 @skip webvfx.imageTypeMap
@@ -73,34 +75,14 @@ the default source and target videos using @c VFX_SOURCE and @c VFX_TARGET.
 VFX_SOURCE=/videos/source.mov VFX_TARGET=/videos/target.mov ./mlt_transition_demo_html
 @endcode
 The demos default to using the SDL consumer, this can be changed to the avformat
-consumer by setting @c VFX_CONSUMER=consumer_av.
+consumer by setting @c VFX_CONSUMER=consumer_av and setting @c VFX_OUTPUT
+to the path of the output QuickTime movie file to be created.
 
-Each of the demos has been rendered as a video and can be previewed here:
-@li <a href="http://www.youtube.com/watch?v=nOotHqh1MKk">demo/mlt/mlt_producer_demo_html</a>
-@li <a href="http://www.youtube.com/watch?v=LSRNvwTYErI">demo/mlt/mlt_filter_demo_html</a>
-@li <a href="http://www.youtube.com/watch?v=YK7ZRcngBkE">demo/mlt/mlt_filter_demo_qml</a>
-@li <a href="http://www.youtube.com/watch?v=U67gm6Pplqg">demo/mlt/mlt_transition_demo_html</a>
-@li <a href="http://www.youtube.com/watch?v=yvuxJwVvDk8">demo/mlt/mlt_transition_demo3d_qml</a>
+On MacOS, you will need to build @c qmelt and set @c VFX_MELT=qmelt
+to run the demos.
 
-
-
-@example demo/examples/webvfx.producer.demo.html.yml
-This is the YAML metadata for
-@ref demo/examples/webvfx.producer.demo.html "demo/examples/webvfx.producer.demo.html"
-
-@example demo/examples/webvfx.filter.demo.html.yml
-This is the YAML metadata for
-@ref demo/examples/webvfx.filter.demo.html "demo/examples/webvfx.filter.demo.html"
-
-@example demo/examples/webvfx.transition.demo.html.yml
-This is the YAML metadata for
-@ref demo/examples/webvfx.transition.demo.html "demo/examples/webvfx.transition.demo.html"
-
-@example demo/examples/webvfx.filter.demo.qml.yml
-This is the YAML metadata for
-@ref demo/examples/webvfx.filter.demo.qml "demo/examples/webvfx.filter.demo.qml"
-
-@example demo/examples/webvfx.transition.demo3d.qml.yml
-This is the YAML metadata for
-@ref demo/examples/webvfx.transition.demo3d.qml "demo/examples/webvfx.transition.demo3d.qml"
+@htmlonly
+Each of the demos has been rendered as a video and can be previewed
+from the corresponding <a href="examples.html">example</a>.
+@endhtmlonly
  */
