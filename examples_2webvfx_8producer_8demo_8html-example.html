@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>WebVfx: Main Page</title>
+<title>WebVfx: examples/webvfx.producer.demo.html</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/search.js"></script>
@@ -28,7 +28,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
@@ -54,21 +54,72 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="header">
   <div class="headertitle">
-<h1>WebVfx Documentation</h1>  </div>
+<h1>examples/webvfx.producer.demo.html</h1>  </div>
 </div>
 <div class="contents">
-<div class="textblock"><p>WebVfx is a video effects framework that allows video effects (filters, transitions etc.) to be authored using web technologies (HTML, CSS, JavaScript, WebGl etc.) or with <a href="http://qt.nokia.com/qtquick/">QtQuick</a> QML (a declarative CSS and JavaScript like language). See <a class="el" href="effects_authoring.html">Effects Authoring</a> for documentation and samples.</p>
-<p>WebVfx includes plugins for the <a href="http://www.mltframework.org/">MLT</a> open source multimedia framework. See <a class="el" href="mlt.html">MLT Plugins</a> for information on how to use WebVfx with MLT.</p>
-<p>Sample effects included with the distribution, and videos rendered using them with MLT can be viewed here: </p>
-<ul>
-<li><a class="el" href="examples_2webvfx_8transition_8demo3d_8qml-example.html">demo/examples/webvfx.transition.demo3d.qml</a> </li>
-<li><a class="el" href="examples_2webvfx_8transition_8demo_8html-example.html">demo/examples/webvfx.transition.demo.html</a> </li>
-<li><a class="el" href="examples_2webvfx_8producer_8demo_8html-example.html">demo/examples/webvfx.filter.producer.html</a> </li>
-<li><a class="el" href="examples_2webvfx_8filter_8demo_8html-example.html">demo/examples/webvfx.filter.demo.html</a> </li>
-<li><a class="el" href="examples_2webvfx_8filter_8demo_8qml-example.html">demo/examples/webvfx.filter.demo.qml</a></li>
-</ul>
-<p>WebVfx is licensed using a BSD-style <a class="el" href="license.html">License</a>. </p>
-</div></div>
+<p>This is an example MLT producer implemented in HTML. It renders a user settable <em>title</em> parameter with an animated CSS shadow effect. The rendered video can be viewed here <a href="http://www.youtube.com/watch?v=nOotHqh1MKk">demo/mlt/mlt_producer_demo_html</a>.</p>
+<div class="fragment"><pre class="fragment">&lt;html&gt;
+&lt;head&gt;
+&lt;style type=<span class="stringliteral">&quot;text/css&quot;</span>&gt;
+html, body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+body {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+}
+<span class="preprocessor">#top {</span>
+<span class="preprocessor"></span>    -webkit-box-flex: 1;
+    background: #666;
+}
+<span class="preprocessor">#text {</span>
+<span class="preprocessor"></span>    background: #666;
+    color: #999;
+    text-align: center;
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: bold;
+}
+<span class="preprocessor">#bottom {</span>
+<span class="preprocessor"></span>    -webkit-box-flex: 1;
+    background: #999;
+}
+&lt;/style&gt;
+&lt;script type=<span class="stringliteral">&quot;text/javascript&quot;</span>&gt;
+function Producer(textStyle) {
+    this.textStyle = textStyle;
+}
+Producer.prototype.render = function(time) {
+    <span class="comment">// Use em units which are proportional to font-size,</span>
+    <span class="comment">// which is being set to proportional to page render size.</span>
+    <span class="comment">// Vary x offset from -0.2 to 0.2.</span>
+    this.textStyle.textShadow = ((time * 0.4) - 0.2) + <span class="stringliteral">&quot;em -0.2em 0.3em black&quot;</span>;
+}
+function onLoad() {
+    handleFontSize();
+    var text = document.getElementById(<span class="stringliteral">&quot;text&quot;</span>);
+    text.innerText = webvfx.getStringParameter(<span class="stringliteral">&quot;title&quot;</span>);
+    var producer = <span class="keyword">new</span> Producer(text.style);
+    webvfx.renderRequested.connect(producer, Producer.prototype.render);
+    webvfx.readyRender(<span class="keyword">true</span>);
+}
+function handleFontSize() {
+    <span class="comment">// Set base font-size to 10% of window height</span>
+    document.body.style.fontSize = (window.innerHeight * 0.1) + <span class="stringliteral">&quot;px&quot;</span>;
+}
+window.addEventListener(<span class="stringliteral">&quot;load&quot;</span>, onLoad, <span class="keyword">false</span>);
+window.addEventListener(<span class="stringliteral">&quot;resize&quot;</span>, handleFontSize, <span class="keyword">false</span>);
+&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div <span class="keywordtype">id</span>=<span class="stringliteral">&quot;top&quot;</span>&gt;&lt;/div&gt;
+    &lt;div <span class="keywordtype">id</span>=<span class="stringliteral">&quot;text&quot;</span>&gt;&lt;/div&gt;
+    &lt;div <span class="keywordtype">id</span>=<span class="stringliteral">&quot;bottom&quot;</span>&gt;&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre></div> </div>
+</div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"

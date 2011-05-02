@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>WebVfx: Main Page</title>
+<title>WebVfx: Member List</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/search.js"></script>
@@ -28,10 +28,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="examples.html"><span>Examples</span></a></li>
       <li id="searchli">
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -51,24 +51,28 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="annotated.html"><span>Class&#160;List</span></a></li>
+      <li><a href="classes.html"><span>Class&#160;Index</span></a></li>
+      <li><a href="hierarchy.html"><span>Class&#160;Hierarchy</span></a></li>
+      <li><a href="functions.html"><span>Class&#160;Members</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="namespace_web_vfx.html">WebVfx</a>      </li>
+      <li class="navelem"><a class="el" href="class_web_vfx_1_1_parameters.html">Parameters</a>      </li>
 </div>
 <div class="header">
   <div class="headertitle">
-<h1>WebVfx Documentation</h1>  </div>
+<h1>WebVfx::Parameters Member List</h1>  </div>
 </div>
 <div class="contents">
-<div class="textblock"><p>WebVfx is a video effects framework that allows video effects (filters, transitions etc.) to be authored using web technologies (HTML, CSS, JavaScript, WebGl etc.) or with <a href="http://qt.nokia.com/qtquick/">QtQuick</a> QML (a declarative CSS and JavaScript like language). See <a class="el" href="effects_authoring.html">Effects Authoring</a> for documentation and samples.</p>
-<p>WebVfx includes plugins for the <a href="http://www.mltframework.org/">MLT</a> open source multimedia framework. See <a class="el" href="mlt.html">MLT Plugins</a> for information on how to use WebVfx with MLT.</p>
-<p>Sample effects included with the distribution, and videos rendered using them with MLT can be viewed here: </p>
-<ul>
-<li><a class="el" href="examples_2webvfx_8transition_8demo3d_8qml-example.html">demo/examples/webvfx.transition.demo3d.qml</a> </li>
-<li><a class="el" href="examples_2webvfx_8transition_8demo_8html-example.html">demo/examples/webvfx.transition.demo.html</a> </li>
-<li><a class="el" href="examples_2webvfx_8producer_8demo_8html-example.html">demo/examples/webvfx.filter.producer.html</a> </li>
-<li><a class="el" href="examples_2webvfx_8filter_8demo_8html-example.html">demo/examples/webvfx.filter.demo.html</a> </li>
-<li><a class="el" href="examples_2webvfx_8filter_8demo_8qml-example.html">demo/examples/webvfx.filter.demo.qml</a></li>
-</ul>
-<p>WebVfx is licensed using a BSD-style <a class="el" href="license.html">License</a>. </p>
-</div></div>
+This is the complete list of members for <a class="el" href="class_web_vfx_1_1_parameters.html">WebVfx::Parameters</a>, including all inherited members.<table>
+  <tr class="memlist"><td><a class="el" href="class_web_vfx_1_1_parameters.html#ae647b959c5316093cb639f8a831635bb">getNumberParameter</a>(const QString &amp;name)</td><td><a class="el" href="class_web_vfx_1_1_parameters.html">WebVfx::Parameters</a></td><td><code> [virtual]</code></td></tr>
+  <tr class="memlist"><td><a class="el" href="class_web_vfx_1_1_parameters.html#aa2a6d446c66ee3f5bf6c2ae606e57759">getStringParameter</a>(const QString &amp;name)</td><td><a class="el" href="class_web_vfx_1_1_parameters.html">WebVfx::Parameters</a></td><td><code> [virtual]</code></td></tr>
+</table></div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>WebVfx: Main Page</title>
+<title>WebVfx: WebVfx::Logger Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/search.js"></script>
@@ -28,10 +28,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
-      <li><a href="annotated.html"><span>Classes</span></a></li>
+      <li class="current"><a href="annotated.html"><span>Classes</span></a></li>
       <li><a href="examples.html"><span>Examples</span></a></li>
       <li id="searchli">
         <div id="MSearchBox" class="MSearchBoxInactive">
@@ -51,24 +51,73 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
       </li>
     </ul>
   </div>
+  <div id="navrow2" class="tabs2">
+    <ul class="tablist">
+      <li><a href="annotated.html"><span>Class&#160;List</span></a></li>
+      <li><a href="classes.html"><span>Class&#160;Index</span></a></li>
+      <li><a href="hierarchy.html"><span>Class&#160;Hierarchy</span></a></li>
+      <li><a href="functions.html"><span>Class&#160;Members</span></a></li>
+    </ul>
+  </div>
+  <div id="nav-path" class="navpath">
+    <ul>
+      <li class="navelem"><a class="el" href="namespace_web_vfx.html">WebVfx</a>      </li>
+      <li class="navelem"><a class="el" href="class_web_vfx_1_1_logger.html">Logger</a>      </li>
 </div>
 <div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a>  </div>
   <div class="headertitle">
-<h1>WebVfx Documentation</h1>  </div>
+<h1>WebVfx::Logger Class Reference</h1>  </div>
 </div>
 <div class="contents">
-<div class="textblock"><p>WebVfx is a video effects framework that allows video effects (filters, transitions etc.) to be authored using web technologies (HTML, CSS, JavaScript, WebGl etc.) or with <a href="http://qt.nokia.com/qtquick/">QtQuick</a> QML (a declarative CSS and JavaScript like language). See <a class="el" href="effects_authoring.html">Effects Authoring</a> for documentation and samples.</p>
-<p>WebVfx includes plugins for the <a href="http://www.mltframework.org/">MLT</a> open source multimedia framework. See <a class="el" href="mlt.html">MLT Plugins</a> for information on how to use WebVfx with MLT.</p>
-<p>Sample effects included with the distribution, and videos rendered using them with MLT can be viewed here: </p>
-<ul>
-<li><a class="el" href="examples_2webvfx_8transition_8demo3d_8qml-example.html">demo/examples/webvfx.transition.demo3d.qml</a> </li>
-<li><a class="el" href="examples_2webvfx_8transition_8demo_8html-example.html">demo/examples/webvfx.transition.demo.html</a> </li>
-<li><a class="el" href="examples_2webvfx_8producer_8demo_8html-example.html">demo/examples/webvfx.filter.producer.html</a> </li>
-<li><a class="el" href="examples_2webvfx_8filter_8demo_8html-example.html">demo/examples/webvfx.filter.demo.html</a> </li>
-<li><a class="el" href="examples_2webvfx_8filter_8demo_8qml-example.html">demo/examples/webvfx.filter.demo.qml</a></li>
+<!-- doxytag: class="WebVfx::Logger" -->
+<p>Callback interface to expose logging.  
+<a href="#_details">More...</a></p>
+
+<p><code>#include &lt;logger.h&gt;</code></p>
+
+<p><a href="class_web_vfx_1_1_logger-members.html">List of all members.</a></p>
+<table class="memberdecls">
+<tr><td colspan="2"><h2><a name="pub-methods"></a>
+Public Member Functions</h2></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_web_vfx_1_1_logger.html#a2ee4e545f1aa30b884d1f27beb5a5d7d">log</a> (const QString &amp;msg)=0</td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Called whenever <a class="el" href="namespace_web_vfx.html" title="Public entry points into WebVfx.">WebVfx</a> needs to log a message.  <a href="#a2ee4e545f1aa30b884d1f27beb5a5d7d"></a><br/></td></tr>
+</table>
+<hr/><a name="_details"></a><h2>Detailed Description</h2>
+<div class="textblock"><p>Callback interface to expose logging. </p>
+<p>An instance of this class should be passed to <a class="el" href="namespace_web_vfx.html#a4372e56dffdc962f8adf55390a7acdb9" title="Set a Logger implementation.">WebVfx::setLogger()</a>. <a class="el" href="namespace_web_vfx.html" title="Public entry points into WebVfx.">WebVfx</a> will then log all messages using that instance. </p>
+</div><hr/><h2>Member Function Documentation</h2>
+<a class="anchor" id="a2ee4e545f1aa30b884d1f27beb5a5d7d"></a><!-- doxytag: member="WebVfx::Logger::log" ref="a2ee4e545f1aa30b884d1f27beb5a5d7d" args="(const QString &amp;msg)=0" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void WebVfx::Logger::log </td>
+          <td>(</td>
+          <td class="paramtype">const QString &amp;&#160;</td>
+          <td class="paramname"><em>msg</em></td><td>)</td>
+          <td><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Called whenever <a class="el" href="namespace_web_vfx.html" title="Public entry points into WebVfx.">WebVfx</a> needs to log a message. </p>
+<dl><dt><b>Parameters:</b></dt><dd>
+  <table class="params">
+    <tr><td class="paramname">msg</td><td>Message to be logged. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<hr/>The documentation for this class was generated from the following files:<ul>
+<li>webvfx/logger.h</li>
+<li>webvfx/logger.cpp</li>
 </ul>
-<p>WebVfx is licensed using a BSD-style <a class="el" href="license.html">License</a>. </p>
-</div></div>
+</div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"

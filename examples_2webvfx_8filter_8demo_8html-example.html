@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>WebVfx: Main Page</title>
+<title>WebVfx: examples/webvfx.filter.demo.html</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/search.js"></script>
@@ -28,7 +28,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
   <div id="navrow1" class="tabs">
     <ul class="tablist">
-      <li class="current"><a href="index.html"><span>Main&#160;Page</span></a></li>
+      <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="pages.html"><span>Related&#160;Pages</span></a></li>
       <li><a href="namespaces.html"><span>Namespaces</span></a></li>
       <li><a href="annotated.html"><span>Classes</span></a></li>
@@ -54,21 +54,59 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="header">
   <div class="headertitle">
-<h1>WebVfx Documentation</h1>  </div>
+<h1>examples/webvfx.filter.demo.html</h1>  </div>
 </div>
 <div class="contents">
-<div class="textblock"><p>WebVfx is a video effects framework that allows video effects (filters, transitions etc.) to be authored using web technologies (HTML, CSS, JavaScript, WebGl etc.) or with <a href="http://qt.nokia.com/qtquick/">QtQuick</a> QML (a declarative CSS and JavaScript like language). See <a class="el" href="effects_authoring.html">Effects Authoring</a> for documentation and samples.</p>
-<p>WebVfx includes plugins for the <a href="http://www.mltframework.org/">MLT</a> open source multimedia framework. See <a class="el" href="mlt.html">MLT Plugins</a> for information on how to use WebVfx with MLT.</p>
-<p>Sample effects included with the distribution, and videos rendered using them with MLT can be viewed here: </p>
-<ul>
-<li><a class="el" href="examples_2webvfx_8transition_8demo3d_8qml-example.html">demo/examples/webvfx.transition.demo3d.qml</a> </li>
-<li><a class="el" href="examples_2webvfx_8transition_8demo_8html-example.html">demo/examples/webvfx.transition.demo.html</a> </li>
-<li><a class="el" href="examples_2webvfx_8producer_8demo_8html-example.html">demo/examples/webvfx.filter.producer.html</a> </li>
-<li><a class="el" href="examples_2webvfx_8filter_8demo_8html-example.html">demo/examples/webvfx.filter.demo.html</a> </li>
-<li><a class="el" href="examples_2webvfx_8filter_8demo_8qml-example.html">demo/examples/webvfx.filter.demo.qml</a></li>
-</ul>
-<p>WebVfx is licensed using a BSD-style <a class="el" href="license.html">License</a>. </p>
-</div></div>
+<p>This is an example MLT filter implemented in HTML. It renders the video into an HTML canvas with a circle clip applied. The rendered video can be viewed here <a href="http://www.youtube.com/watch?v=LSRNvwTYErI">demo/mlt/mlt_filter_demo_html</a>.</p>
+<div class="fragment"><pre class="fragment">&lt;html&gt;
+&lt;head&gt;
+&lt;style type=<span class="stringliteral">&quot;text/css&quot;</span>&gt;
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+&lt;/style&gt;
+&lt;script type=<span class="stringliteral">&quot;text/javascript&quot;</span>&gt;
+function Filter() {
+    <span class="comment">// Create a canvas</span>
+    var canvas = document.createElement(<span class="stringliteral">&#39;canvas&#39;</span>);
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    document.body.appendChild(canvas);
+    this.context = canvas.getContext(<span class="stringliteral">&#39;2d&#39;</span>);
+
+    <span class="comment">// Clip video to a circle in the middle of the canvas</span>
+    var radius = webvfx.getNumberParameter(<span class="stringliteral">&quot;radius&quot;</span>);
+    <span class="keywordflow">if</span> (!radius)
+        radius = 0.5;
+    this.context.beginPath();
+    this.context.arc(canvas.width/2, canvas.height/2,
+                     canvas.height * radius, 0, Math.PI*2, <span class="keyword">true</span>)
+    this.context.clip();
+
+    this.image = <span class="keyword">new</span> Image();
+}
+
+Filter.prototype.render = function(time) {
+    webvfx.getImage(<span class="stringliteral">&quot;video&quot;</span>).assignToHTMLImageElement(this.image);
+    this.context.drawImage(this.image, 0, 0);
+}
+
+function init() {
+    var filter = <span class="keyword">new</span> Filter();
+    webvfx.renderRequested.connect(filter, Filter.prototype.render);
+    webvfx.imageTypeMap = { <span class="stringliteral">&quot;video&quot;</span> : webvfx.SourceImageType };
+    webvfx.readyRender(<span class="keyword">true</span>);
+}
+window.addEventListener(<span class="stringliteral">&quot;load&quot;</span>, init, <span class="keyword">false</span>);
+&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</pre></div> </div>
+</div>
 <!--- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
