@@ -74,16 +74,21 @@ Q_SIGNALS:
     void pixmapChanged(const QPixmap& pixmap);
 
 protected:
-    void draw(QPainter*)
-    {
-        QPixmap pixmap = sourcePixmap(Qt::DeviceCoordinates);
+    void sourceChanged(ChangeFlags) {
+        updateCapture();
+    }
+    void draw(QPainter*) {
+        updateCapture();
+    }
+private:
+    void updateCapture() {
+        QPixmap pixmap = sourcePixmap();
         if (capturedPixmap.cacheKey() != pixmap.cacheKey()) {
             capturedPixmap = pixmap;
             emit pixmapChanged(capturedPixmap);
         }
     }
 
-private:
     QPixmap capturedPixmap;
 };
 
