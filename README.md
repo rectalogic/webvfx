@@ -16,6 +16,11 @@ In the webvfx directory run `qmake -r PREFIX=/usr/local` and then `make install`
 The [MLT melt](http://mltframework.org/twiki/bin/view/MLT/MltMelt) command will not work with WebVfx on MacOS because the Qt event loop must run on the main thread. If you set `MLT_SOURCE` to the root of your MLT source code directory, then a `qmelt` executable will be installed which behaves the same as `melt` but works with WebVfx on MacOS. e.g. `qmake -r PREFIX=/usr/local MLT_SOURCE=~/Projects/mlt`.
 
 `make doxydoc` to generate the documentation using Doxygen.
+You can also `make uninstall`, `make clean` and `make distclean`.
+
+## Demos
+
+See the [documentation](http://rectalogic.github.com/webvfx/) for examples.
 
 ## License
 

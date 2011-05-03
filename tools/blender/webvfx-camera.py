@@ -343,7 +343,7 @@ class GenerateCameraAnimationJson(bpy.types.Operator):
 class ImportCameraAnimationJson(bpy.types.Operator, ImportHelper):
     bl_idname = "anim.import_camera_animation_json"
     bl_label = "Import Camera Animation JSON"
-    bl_description = "Import JSON data for active camera animation keyframes"
+    bl_description = "Import JSON camera animation data to active camera from *.json file"
 
     filename_ext = "*.json"
     filter_glob = bpy.props.StringProperty(default="*.json", options={'HIDDEN'})
