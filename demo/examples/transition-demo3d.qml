@@ -3,7 +3,10 @@ import Qt3D 1.0
 import org.webvfx.WebVfx 1.0
 
 
-Item {
+Rectangle {
+    // If Viewport has a parent, it relies on the parent to paint the background
+    color: "black"
+
     Component.onCompleted: {
         webvfx.imageTypeMap = {
             "sourceImage": webvfx.SourceImageType,
@@ -31,7 +34,6 @@ Item {
                 source: "logo-transition.obj"
             }
             cullFaces: "CullBackFaces"
-            effect: Effect {}
 
             Item3D {
                 meshNode: "SourceCube"
