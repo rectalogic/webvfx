@@ -20,7 +20,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo.png"></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">WebVfx&#160;<span id="projectnumber">0.1.3-1-g01626a4-dirty</span></div>
+   <div id="projectname">WebVfx&#160;<span id="projectnumber">0.1.5</span></div>
   </td>
  </tr>
  </tbody>
@@ -87,7 +87,7 @@ QML Effects Authoring</h2>
     }
 }
 </pre></div><p>Video frame images retrieved via <code>webvfx.getImage(name)</code> are QImage objects. These can be assigned directly to some QML properties, e.g. <a href="http://doc.qt.nokia.com/qt-quick3d-snapshot/qml-effect.html#textureImage-prop">Effect.textureImage</a>. Other QML properties require an image URL - this can be retrived via <code>webvfx.getImageUrl(name)</code>. It is more efficient to use the image directly when possible, instead of the URL.</p>
-<dl class="see"><dt><b>See also:</b></dt><dd>See the QML demo <a class="el" href="examples_2webvfx_8filter_8demo_8qml-example.html">demo/examples/webvfx.filter.demo.qml</a></dd></dl>
+<dl class="see"><dt><b>See also:</b></dt><dd>See the QML demo <a class="el" href="examples_2filter-demo_8qml-example.html">demo/examples/filter-demo.qml</a></dd></dl>
 <p>QML is more interesting as a video effects technology when it is extended with 3D support - see <a class="el" href="effects_3d.html">3D Effects Authoring</a>.</p>
 <h2><a class="anchor" id="web_effects_authoring"></a>
 Web (HTML) Effects Authoring</h2>
@@ -105,9 +105,9 @@ webvfx.getImage(&quot;sourceImage&quot;).assignToHTMLImageElement(image);
 [...]
 webvfx.getImage(<span class="stringliteral">&quot;sourceImage&quot;</span>).assignToHTMLImageElement(document.getElementById(<span class="stringliteral">&quot;image&quot;</span>));
 </pre></div><dl class="see"><dt><b>See also:</b></dt><dd>See the HTML demos: <ul>
-<li><a class="el" href="examples_2webvfx_8producer_8demo_8html-example.html">demo/examples/webvfx.producer.demo.html</a> </li>
-<li><a class="el" href="examples_2webvfx_8filter_8demo_8html-example.html">demo/examples/webvfx.filter.demo.html</a> </li>
-<li><a class="el" href="examples_2webvfx_8transition_8demo_8html-example.html">demo/examples/webvfx.transition.demo.html</a></li>
+<li><a class="el" href="examples_2producer-demo_8html-example.html">demo/examples/producer-demo.html</a> </li>
+<li><a class="el" href="examples_2filter-demo_8html-example.html">demo/examples/filter-demo.html</a> </li>
+<li><a class="el" href="examples_2transition-demo_8html-example.html">demo/examples/transition-demo.html</a></li>
 </ul>
 </dd></dl>
 <h2><a class="anchor" id="effects_authoring_tools"></a>
@@ -131,7 +131,7 @@ Tools</h2>
 </div>
 
 <hr class="footer"/>
-<address class="footer"><small>Generated on Mon May 2 2011 11:43:09 for WebVfx using <a href="http://www.doxygen.org">Doxygen 1.7.3</a></small></address>
+<address class="footer"><small>Generated on Mon May 9 2011 16:04:31 for WebVfx using <a href="http://www.doxygen.org">Doxygen 1.7.3</a></small></address>
 <address class="footer"><small>Copyright (c) 2011 Hewlett-Packard Development Company, L.P. All rights reserved. Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.</small></address>
 </body>
 </html>

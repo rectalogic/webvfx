@@ -20,7 +20,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo.png"></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">WebVfx&#160;<span id="projectnumber">0.1.3-1-g01626a4-dirty</span></div>
+   <div id="projectname">WebVfx&#160;<span id="projectnumber">0.1.5</span></div>
   </td>
  </tr>
  </tbody>
@@ -57,18 +57,16 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <h1>MLT Plugins </h1>  </div>
 </div>
 <div class="contents">
-<div class="textblock"><p>WebVfx implements producer, filter and transition plugin services for the <a href="http://www.mltframework.org/">MLT Framework</a>.</p>
-<p>MLT services are implemented as WebVfx effects - see <a class="el" href="effects_authoring.html">Effects Authoring</a>. The type of MLT service is determined by the filename. WebVfx MLT services must follow a specific naming convention: <b>webvfx.</b><em>service_type<b></em>.</b><em>name<b></em>.</b><em>suffix</em> </p>
+<div class="textblock"><p>WebVfx implements producer, filter and transition plugin services for the <a href="http://www.mltframework.org/">MLT Framework</a>. The MLT service IDs are:</p>
 <ul>
-<li><em>service_type</em> - one of <code>filter</code>, <code>transition</code> or <code>producer</code> </li>
-<li><em>name</em> - unique name of the effect </li>
-<li><em>suffix</em> - one of <code>html</code> or <code>qml</code> </li>
+<li><code>webvfx.producer</code> </li>
+<li><code>webvfx.filter</code> </li>
+<li><code>webvfx.transition</code> </li>
 </ul>
-<p>For example, a transition named demo implemented using HTML would be <code>webvfx.transition.demo.html</code>.</p>
-<p>Effects should be installed in the <code>$MLT_DATA/webvfx</code> directory. Alternatively they can be installed anywhere and the environment variable <code>WEBVFX_DATA</code> can be set to that directory.</p>
-<p>Effects can optionally be described by writing a YAML <a href="http://www.mltframework.org/twiki/bin/view/MLT/MetadataRequirements">service metadata</a> file. This should be named the same as the effects implementation file with a <code>.yml</code> suffix (e.g. <code>webvfx.transition.demo.html.yml</code>), and installed in the same location as the effects implementation file. The metadata file can be used to describe parameters the effect expects to retrieve via <code>webvfx.getStringParameter(name)</code> and <code>webvfx.getNumberParameter(name)</code>.</p>
-<p>See the examples for sample YAML metadata.</p>
-<h2><a class="anchor" id="mlt_extra"></a>
+<p>MLT services are implemented as WebVfx effects - see <a class="el" href="effects_authoring.html">Effects Authoring</a>. The pathname to the HTML or QML effects implementation can be provided as the service contructor argument, or specified using the <code>resource</code> property. e.g. </p>
+<div class="fragment"><pre class="fragment">melt -transition webvfx.transition:/path/to/transition.html
+</pre></div> <div class="fragment"><pre class="fragment">melt -transition webvfx.transition resource=/path/to/transition.html
+</pre></div><h2><a class="anchor" id="mlt_extra"></a>
 Extra Images</h2>
 <p>Effects that use extra images (i.e. that register <code>webvfx.ExtraImageType</code> image names) accept an additional set of attributes of the form: <b>producer.</b><em>name</em><b>.</b><em>producer_attribute</em>. </p>
 <ul>
@@ -78,7 +76,7 @@ producer.foobar.in=90
 producer.foobar.out=200
 </pre></div></li>
 </ul>
-<p>The example <a class="el" href="examples_2webvfx_8transition_8demo_8html-example.html">demo/examples/webvfx.transition.demo.html</a> transition uses an extra image named <code>"backgroundImage"</code>:  <div class="fragment"><pre class="fragment">    webvfx.imageTypeMap = {
+<p>The example <a class="el" href="examples_2transition-demo_8html-example.html">demo/examples/transition-demo.html</a> transition uses an extra image named <code>"backgroundImage"</code>:  <div class="fragment"><pre class="fragment">    webvfx.imageTypeMap = {
                               <span class="stringliteral">&quot;sourceImage&quot;</span> : webvfx.SourceImageType,
                               <span class="stringliteral">&quot;targetImage&quot;</span> : webvfx.TargetImageType,
                               <span class="stringliteral">&quot;backgroundImage&quot;</span> : webvfx.ExtraImageType
@@ -88,11 +86,10 @@ producer.foobar.out=200
 <div class="fragment"><pre class="fragment"><span class="preprocessor">#!/bin/bash</span>
 <span class="preprocessor"></span>
 export DISPLAY=${DISPLAY:-:0}
-export WEBVFX_DATA=${WEBVFX_DATA:-$PWD/../examples}
-<span class="stringliteral">&quot;${VFX_MELT:-melt}&quot;</span> <span class="stringliteral">&quot;${VFX_SOURCE:-red.mlt}&quot;</span> out=149 \
+<span class="stringliteral">&quot;${VFX_MELT:-melt}&quot;</span> -verbose <span class="stringliteral">&quot;${VFX_SOURCE:-red.mlt}&quot;</span> out=149 \
     -track -blank 59 \
     <span class="stringliteral">&quot;${VFX_TARGET:-blue.mlt}&quot;</span> out=149 \
-    -transition webvfx.transition.demo.html in=60 out=149 \
+    -transition webvfx.transition:../examples/transition-demo.html in=60 out=149 \
         producer.backgroundImage.resource=<span class="stringliteral">&quot;${VFX_BACKGROUND:-green.mlt}&quot;</span> \
         title=<span class="stringliteral">&quot;${VFX_TITLE:-Testing WebVfx Transition}&quot;</span> \
     $(eval echo $(&lt; <span class="stringliteral">&quot;${VFX_CONSUMER:-consumer_sdl}&quot;</span>))
@@ -121,7 +118,7 @@ from the corresponding <a href="examples.html">example</a>.
 </div>
 
 <hr class="footer"/>
-<address class="footer"><small>Generated on Mon May 2 2011 11:43:09 for WebVfx using <a href="http://www.doxygen.org">Doxygen 1.7.3</a></small></address>
+<address class="footer"><small>Generated on Mon May 9 2011 16:04:31 for WebVfx using <a href="http://www.doxygen.org">Doxygen 1.7.3</a></small></address>
 <address class="footer"><small>Copyright (c) 2011 Hewlett-Packard Development Company, L.P. All rights reserved. Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.</small></address>
 </body>
 </html>

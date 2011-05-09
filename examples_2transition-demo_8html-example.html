@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>WebVfx: examples/webvfx.producer.demo.html</title>
+<title>WebVfx: examples/transition-demo.html</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/search.js"></script>
@@ -20,7 +20,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo.png"></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">WebVfx&#160;<span id="projectnumber">0.1.3-1-g01626a4-dirty</span></div>
+   <div id="projectname">WebVfx&#160;<span id="projectnumber">0.1.5</span></div>
   </td>
  </tr>
  </tbody>
@@ -54,68 +54,92 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="header">
   <div class="headertitle">
-<h1>examples/webvfx.producer.demo.html</h1>  </div>
+<h1>examples/transition-demo.html</h1>  </div>
 </div>
 <div class="contents">
-<p>This is an example MLT producer implemented in HTML. It renders a user settable <em>title</em> parameter with an animated CSS shadow effect. The rendered video can be viewed here <a href="http://www.youtube.com/watch?v=nOotHqh1MKk">demo/mlt/mlt_producer_demo_html</a>.</p>
+<p>This is an example MLT transition implemented in HTML. It uses all three <a class="el" href="effects_authoring.html#image_types">image types</a> and a string <em>title</em> parameter. The rendered video can be viewed here <a href="http://www.youtube.com/watch?v=U67gm6Pplqg">demo/mlt/mlt_transition_demo_html</a></p>
 <div class="fragment"><pre class="fragment">&lt;html&gt;
 &lt;head&gt;
 &lt;style type=<span class="stringliteral">&quot;text/css&quot;</span>&gt;
-html, body {
+  body, html {
+    width: 100%, height: 100%;
     margin: 0;
+  }
+  body {
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    -webkit-box-pack: center;
+    -webkit-box-align: center;
+  }
+<span class="preprocessor">  #title {</span>
+<span class="preprocessor"></span>    -webkit-transform-origin: 50% 50%;
+    -webkit-transform: rotate(0deg);
+    font-size: 120%;
+    text-shadow: 0 1px 0 white;
+    color: #777;
+    position: relative;
+  }
+  img {
     width: 100%;
     height: 100%;
-}
-body {
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-}
-<span class="preprocessor">#top {</span>
-<span class="preprocessor"></span>    -webkit-box-flex: 1;
-    background: #666;
-}
-<span class="preprocessor">#text {</span>
-<span class="preprocessor"></span>    background: #666;
-    color: #999;
-    text-align: center;
-    font-family: Helvetica, Arial, sans-serif;
-    font-weight: bold;
-}
-<span class="preprocessor">#bottom {</span>
-<span class="preprocessor"></span>    -webkit-box-flex: 1;
-    background: #999;
-}
+    position: absolute;
+  }
+<span class="preprocessor">  #targetImg {</span>
+<span class="preprocessor"></span>    top: 100%;
+    left: 100%;
+  }
 &lt;/style&gt;
 &lt;script type=<span class="stringliteral">&quot;text/javascript&quot;</span>&gt;
-function Producer(textStyle) {
-    this.textStyle = textStyle;
+function Transition(sourceImage, targetImage, backgroundImage, titleElement) {
+    this.sourceImage = sourceImage;
+    this.targetImage = targetImage;
+    this.backgroundImage = backgroundImage;
+    this.titleElement = titleElement;
+
+    titleElement.innerText = webvfx.getStringParameter(<span class="stringliteral">&#39;title&#39;</span>);
 }
-Producer.prototype.render = function(time) {
-    <span class="comment">// Use em units which are proportional to font-size,</span>
-    <span class="comment">// which is being set to proportional to page render size.</span>
-    <span class="comment">// Vary x offset from -0.2 to 0.2.</span>
-    this.textStyle.textShadow = ((time * 0.4) - 0.2) + <span class="stringliteral">&quot;em -0.2em 0.3em black&quot;</span>;
+
+Transition.prototype.render = function (time) {
+    webvfx.getImage(<span class="stringliteral">&#39;sourceImage&#39;</span>).assignToHTMLImageElement(this.sourceImage);
+    webvfx.getImage(<span class="stringliteral">&#39;targetImage&#39;</span>).assignToHTMLImageElement(this.targetImage);
+    webvfx.getImage(<span class="stringliteral">&#39;backgroundImage&#39;</span>).assignToHTMLImageElement(this.backgroundImage);
+
+    this.sourceImage.style.top =
+        this.sourceImage.style.left = -(time * 100) + <span class="stringliteral">&quot;%&quot;</span>;
+    this.targetImage.style.top =
+        this.targetImage.style.left = (100 - (time * 100)) + <span class="stringliteral">&quot;%&quot;</span>;
+    this.titleElement.style.webkitTransform = <span class="stringliteral">&quot;rotate(&quot;</span> + (time * 360) + <span class="stringliteral">&quot;deg)&quot;</span>;
 }
+
 function onLoad() {
-    handleFontSize();
-    var text = document.getElementById(<span class="stringliteral">&quot;text&quot;</span>);
-    text.innerText = webvfx.getStringParameter(<span class="stringliteral">&quot;title&quot;</span>);
-    var producer = <span class="keyword">new</span> Producer(text.style);
-    webvfx.renderRequested.connect(producer, Producer.prototype.render);
-    webvfx.readyRender(<span class="keyword">true</span>);
+    onResize();
+    var transition = <span class="keyword">new</span> Transition(document.getElementById(<span class="stringliteral">&quot;sourceImg&quot;</span>),
+                                    document.getElementById(<span class="stringliteral">&quot;targetImg&quot;</span>),
+                                    document.getElementById(<span class="stringliteral">&quot;backgroundImg&quot;</span>),
+                                    document.getElementById(<span class="stringliteral">&quot;title&quot;</span>));
+
+
+    webvfx.renderRequested.connect(transition, Transition.prototype.render);
+    webvfx.imageTypeMap = {
+                              <span class="stringliteral">&quot;sourceImage&quot;</span> : webvfx.SourceImageType,
+                              <span class="stringliteral">&quot;targetImage&quot;</span> : webvfx.TargetImageType,
+                              <span class="stringliteral">&quot;backgroundImage&quot;</span> : webvfx.ExtraImageType
+                          };
+    webvfx.readyRender(<span class="keyword">true</span>)
 }
-function handleFontSize() {
+function onResize() {
     <span class="comment">// Set base font-size to 10% of window height</span>
     document.body.style.fontSize = (window.innerHeight * 0.1) + <span class="stringliteral">&quot;px&quot;</span>;
 }
 window.addEventListener(<span class="stringliteral">&quot;load&quot;</span>, onLoad, <span class="keyword">false</span>);
-window.addEventListener(<span class="stringliteral">&quot;resize&quot;</span>, handleFontSize, <span class="keyword">false</span>);
+window.addEventListener(<span class="stringliteral">&quot;load&quot;</span>, onResize, <span class="keyword">false</span>);
 &lt;/script&gt;
 &lt;/head&gt;
 &lt;body&gt;
-    &lt;div <span class="keywordtype">id</span>=<span class="stringliteral">&quot;top&quot;</span>&gt;&lt;/div&gt;
-    &lt;div <span class="keywordtype">id</span>=<span class="stringliteral">&quot;text&quot;</span>&gt;&lt;/div&gt;
-    &lt;div <span class="keywordtype">id</span>=<span class="stringliteral">&quot;bottom&quot;</span>&gt;&lt;/div&gt;
+    &lt;img <span class="keywordtype">id</span>=<span class="stringliteral">&quot;backgroundImg&quot;</span>/&gt;
+    &lt;img <span class="keywordtype">id</span>=<span class="stringliteral">&quot;sourceImg&quot;</span>/&gt;
+    &lt;img <span class="keywordtype">id</span>=<span class="stringliteral">&quot;targetImg&quot;</span>/&gt;
+    &lt;div <span class="keywordtype">id</span>=<span class="stringliteral">&quot;title&quot;</span>&gt;title&lt;/div&gt;
 &lt;/body&gt;
 &lt;/html&gt;
 </pre></div> </div>
@@ -135,7 +159,7 @@ window.addEventListener(<span class="stringliteral">&quot;resize&quot;</span>, h
 </div>
 
 <hr class="footer"/>
-<address class="footer"><small>Generated on Mon May 2 2011 11:43:09 for WebVfx using <a href="http://www.doxygen.org">Doxygen 1.7.3</a></small></address>
+<address class="footer"><small>Generated on Mon May 9 2011 16:04:31 for WebVfx using <a href="http://www.doxygen.org">Doxygen 1.7.3</a></small></address>
 <address class="footer"><small>Copyright (c) 2011 Hewlett-Packard Development Company, L.P. All rights reserved. Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.</small></address>
 </body>
 </html>
