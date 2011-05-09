@@ -6,7 +6,7 @@ import Qt 4.7
 
 // Exposes rendered text as a texture image.
 // We render inside a transparent rectangle to ensure the width/height
-// is honored so when we texture we don't get distorted.
+// is honored in the captured pixmap so when we texture we don't get distorted.
 
 Rectangle {
     property alias text: internalText.text
@@ -24,5 +24,8 @@ Rectangle {
         smooth: true
         width: parent.width
         height: parent.height
+        // If the text won't fit, scale ourself down so it does
+        scale: paintedWidth > width ? (width / paintedWidth) : 1
+        transformOrigin: Item.TopLeft
     }
 }

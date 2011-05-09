@@ -24,6 +24,7 @@ Item {
 
     Viewport {
         id: viewport
+        anchors.fill: parent
 
         BlenderItem3D {
             mesh: Mesh {
