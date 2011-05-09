@@ -31,8 +31,6 @@ public:
     void setImageForName(const QString& name, WebVfx::Image* image);
     int render(WebVfx::Image* outputImage, mlt_position position, mlt_position length);
 
-    static const char* kFilePropertyName;
-
 private:
     friend class ServiceLocker;
     ServiceManager(mlt_service service);

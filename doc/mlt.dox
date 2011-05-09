@@ -6,32 +6,22 @@
 
 %WebVfx implements producer, filter and transition plugin services for the
 <a href="http://www.mltframework.org/">MLT Framework</a>.
+The MLT service IDs are:
+
+@li @c webvfx.producer
+@li @c webvfx.filter
+@li @c webvfx.transition
 
 MLT services are implemented as %WebVfx effects - see @ref effects_authoring.
-The type of MLT service is determined by the filename.
-%WebVfx MLT services must follow a specific naming convention:
-<b>webvfx.</b>@em service_type<b>.</b>@em name<b>.</b>@em suffix
-@li @em service_type - one of @c filter, @c transition or @c producer
-@li @em name - unique name of the effect
-@li @em suffix - one of @c html or @c qml
-
-For example, a transition named demo implemented using HTML
-would be @c webvfx.transition.demo.html.
-
-Effects should be installed in the @c $MLT_DATA/webvfx directory.
-Alternatively they can be installed anywhere and the environment
-variable @c WEBVFX_DATA can be set to that directory.
-
-Effects can optionally be described by writing a YAML
-<a href="http://www.mltframework.org/twiki/bin/view/MLT/MetadataRequirements">service metadata</a>
-file. This should be named the same as the effects implementation file with a
-<tt>.yml</tt> suffix (e.g. @c webvfx.transition.demo.html.yml),
-and installed in the same location as the effects implementation file.
-The metadata file can be used to describe parameters the effect expects
-to retrieve via @c webvfx.getStringParameter(name)
-and @c webvfx.getNumberParameter(name).
-
-See the examples for sample YAML metadata.
+The pathname to the HTML or QML effects implementation can be provided
+as the service contructor argument, or specified using the @c resource
+property. e.g.
+@code
+melt -transition webvfx.transition:/path/to/transition.html
+@endcode
+@code
+melt -transition webvfx.transition resource=/path/to/transition.html
+@endcode
 
 @section mlt_extra Extra Images
 
@@ -52,10 +42,10 @@ producer.foobar.out=200
 @endcode
 
 The example
-@ref examples/webvfx.transition.demo.html "demo/examples/webvfx.transition.demo.html"
+@ref examples/transition-demo.html "demo/examples/transition-demo.html"
 transition uses an
 extra image named @c "backgroundImage":
-@dontinclude webvfx.transition.demo.html
+@dontinclude transition-demo.html
 @skip webvfx.imageTypeMap
 @until };
 

@@ -1,32 +1,32 @@
 /*!
-@example examples/webvfx.producer.demo.html
+@example examples/producer-demo.html
 This is an example MLT producer implemented in HTML.
 It renders a user settable @em title parameter
 with an animated CSS shadow effect.
 The rendered video can be viewed here
 <a href="http://www.youtube.com/watch?v=nOotHqh1MKk">demo/mlt/mlt_producer_demo_html</a>.
 
-@example examples/webvfx.filter.demo.html
+@example examples/filter-demo.html
 This is an example MLT filter implemented in HTML.
 It renders the video into an HTML canvas with a circle clip applied.
 The rendered video can be viewed here
 <a href="http://www.youtube.com/watch?v=LSRNvwTYErI">demo/mlt/mlt_filter_demo_html</a>.
 
-@example examples/webvfx.transition.demo.html
+@example examples/transition-demo.html
 This is an example MLT transition implemented in HTML.
 It uses all three @ref image_types "image types"
 and a string @em title parameter.
 The rendered video can be viewed here
 <a href="http://www.youtube.com/watch?v=U67gm6Pplqg">demo/mlt/mlt_transition_demo_html</a>
 
-@example examples/webvfx.filter.demo.qml
+@example examples/filter-demo.qml
 This is an example MLT filter implemented in QML.
 It rotates the video in one direction while rotating
 some changing text in the other direction.
 The rendered video can be viewed here
 <a href="http://www.youtube.com/watch?v=YK7ZRcngBkE">demo/mlt/mlt_filter_demo_qml</a>
 
-@example examples/webvfx.transition.demo3d.qml
+@example examples/transition-demo3d.qml
 This is an example MLT transition implemented in QML with QtQuick3D.
 It animates the camera along a path from the source video texture
 to the target video texture.
@@ -34,25 +34,4 @@ It also textures a string @em title parameter onto a surface in the model.
 The rendered video can be viewed here
 <a href="http://www.youtube.com/watch?v=yvuxJwVvDk8">demo/mlt/mlt_transition_demo3d_qml</a>
 
-
-
-@example examples/webvfx.producer.demo.html.yml
-This is the YAML metadata for
-@ref examples/webvfx.producer.demo.html "demo/examples/webvfx.producer.demo.html"
-
-@example examples/webvfx.filter.demo.html.yml
-This is the YAML metadata for
-@ref examples/webvfx.filter.demo.html "demo/examples/webvfx.filter.demo.html"
-
-@example examples/webvfx.transition.demo.html.yml
-This is the YAML metadata for
-@ref examples/webvfx.transition.demo.html "demo/examples/webvfx.transition.demo.html"
-
-@example examples/webvfx.filter.demo.qml.yml
-This is the YAML metadata for
-@ref examples/webvfx.filter.demo.qml "demo/examples/webvfx.filter.demo.qml"
-
-@example examples/webvfx.transition.demo3d.qml.yml
-This is the YAML metadata for
-@ref examples/webvfx.transition.demo3d.qml "demo/examples/webvfx.transition.demo3d.qml"
 */

@@ -92,7 +92,7 @@ Other QML properties require an image URL - this can be retrived via
 directly when possible, instead of the URL.
 
 @sa See the QML demo
-@ref examples/webvfx.filter.demo.qml "demo/examples/webvfx.filter.demo.qml"
+@ref examples/filter-demo.qml "demo/examples/filter-demo.qml"
 
 QML is more interesting as a video effects technology when it
 is extended with 3D support - see @ref effects_3d.
@@ -132,9 +132,9 @@ webvfx.getImage("sourceImage").assignToHTMLImageElement(document.getElementById(
 @endcode
 
 @sa See the HTML demos:
-@li @ref examples/webvfx.producer.demo.html "demo/examples/webvfx.producer.demo.html"
-@li @ref examples/webvfx.filter.demo.html "demo/examples/webvfx.filter.demo.html"
-@li @ref examples/webvfx.transition.demo.html "demo/examples/webvfx.transition.demo.html"
+@li @ref examples/producer-demo.html "demo/examples/producer-demo.html"
+@li @ref examples/filter-demo.html "demo/examples/filter-demo.html"
+@li @ref examples/transition-demo.html "demo/examples/transition-demo.html"
 
 
 @section effects_authoring_tools Tools

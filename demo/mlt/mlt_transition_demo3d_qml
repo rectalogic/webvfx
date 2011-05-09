@@ -1,10 +1,9 @@
 #!/bin/bash
 
 export DISPLAY=${DISPLAY:-:0}
-export WEBVFX_DATA=${WEBVFX_DATA:-$PWD/../examples}
-"${VFX_MELT:-melt}" "${VFX_SOURCE:-red.mlt}" out=349 \
+"${VFX_MELT:-melt}" -verbose "${VFX_SOURCE:-red.mlt}" out=349 \
     -track -blank 69 \
     "${VFX_TARGET:-blue.mlt}" out=349 \
-    -transition webvfx.transition.demo3d.qml in=70 out=349 \
+    -transition webvfx.transition:../examples/transition-demo3d.qml in=70 out=349 \
         title="${VFX_TITLE:-Hello 3D!}" \
     $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}"))

@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include <QString>
-#include <cstdlib>
 #include <webvfx/webvfx.h>
 extern "C" {
+    #include <mlt/framework/mlt_factory.h>
     #include <mlt/framework/mlt_log.h>
     #include <mlt/framework/mlt_repository.h>
 }
-#include "webvfx_service.h"
+#include "factory.h"
 
 
 namespace MLTWebVfx
@@ -24,6 +24,37 @@ class Logger : public WebVfx::Logger
 };
 }
 
+static void* createService(mlt_profile profile,
+                           mlt_service_type serviceType,
+                           const char*, const void* fileName)
+{
+    if (!WebVfx::initialize())
+        return 0;
+
+    mlt_service service = 0;
+    switch (serviceType) {
+        case producer_type:
+            service = MLTWebVfx::createProducer(profile);
+            break;
+        case filter_type:
+            service = MLTWebVfx::createFilter();
+            break;
+        case transition_type:
+            service = MLTWebVfx::createTransition();
+            break;
+        default:
+            return 0;
+            break;
+    }
+
+    if (fileName) {
+        mlt_properties_set(MLT_SERVICE_PROPERTIES(service),
+                           "resource", static_cast<const char*>(fileName));
+    }
+
+    return service;
+}
+
 #if defined(__GNUC__) && __GNUC__ >= 4
 #define EXPORT __attribute__((visibility ("default")))
 #else
@@ -32,14 +63,9 @@ class Logger : public WebVfx::Logger
 
 extern "C" EXPORT MLT_REPOSITORY
 {
-    char dataPath[PATH_MAX];
-    snprintf(dataPath, PATH_MAX, "%s/webvfx/", mlt_environment("MLT_DATA"));
-    mlt_properties_set_or_default(mlt_global_properties(), "WEBVFX_DATA",
-                                  std::getenv("WEBVFX_DATA"), dataPath);
-
-    MLTWebVfx::registerServices(repository, producer_type);
-    MLTWebVfx::registerServices(repository, filter_type);
-    MLTWebVfx::registerServices(repository, transition_type);
+    MLT_REGISTER(producer_type, "webvfx.producer", createService);
+    MLT_REGISTER(filter_type, "webvfx.filter", createService);
+    MLT_REGISTER(transition_type, "webvfx.transition", createService);
 
     // Register shutdown hook - even if we don't initialize WebVfx
     // we want our logger deleted.

@@ -2,19 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MLTWEBVFX_WEBVFX_SERVICE_H_
-#define MLTWEBVFX_WEBVFX_SERVICE_H_
+#ifndef MLTWEBVFX_FACTORY_H_
+#define MLTWEBVFX_FACTORY_H_
 
 extern "C" {
-    #include <mlt/framework/mlt_factory.h>
     #include <mlt/framework/mlt_service.h>
     #include <mlt/framework/mlt_profile.h>
 }
 
 namespace MLTWebVfx
 {
-
-void registerServices(mlt_repository repository, mlt_service_type serviceType);
 
 mlt_service createProducer(mlt_profile profile);
 mlt_service createFilter();

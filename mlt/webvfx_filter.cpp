@@ -8,9 +8,9 @@ extern "C" {
     #include <mlt/framework/mlt_log.h>
 }
 #include <webvfx/image.h>
+#include "factory.h"
 #include "service_locker.h"
 #include "service_manager.h"
-#include "webvfx_service.h"
 
 
 static int filterGetImage(mlt_frame frame, uint8_t **image, mlt_image_format *format, int *width, int *height, int /*writable*/) {

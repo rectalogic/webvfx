@@ -1,11 +1,10 @@
 #!/bin/bash
 
 export DISPLAY=${DISPLAY:-:0}
-export WEBVFX_DATA=${WEBVFX_DATA:-$PWD/../examples}
-"${VFX_MELT:-melt}" "${VFX_SOURCE:-red.mlt}" out=149 \
+"${VFX_MELT:-melt}" -verbose "${VFX_SOURCE:-red.mlt}" out=149 \
     -track -blank 59 \
     "${VFX_TARGET:-blue.mlt}" out=149 \
-    -transition webvfx.transition.demo.html in=60 out=149 \
+    -transition webvfx.transition:../examples/transition-demo.html in=60 out=149 \
         producer.backgroundImage.resource="${VFX_BACKGROUND:-green.mlt}" \
         title="${VFX_TITLE:-Testing WebVfx Transition}" \
     $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}"))

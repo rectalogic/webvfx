@@ -14,7 +14,6 @@ extern "C" {
 
 namespace MLTWebVfx
 {
-const char* ServiceManager::kFilePropertyName = "WebVfxFile";
 
 ////////////////////////
 
@@ -117,14 +116,16 @@ bool ServiceManager::initialize(int width, int height)
     mlt_properties properties = MLT_SERVICE_PROPERTIES(service);
 
     // Create and initialize Effects
-    const char* fileName = mlt_properties_get(properties, ServiceManager::kFilePropertyName);
+    const char* fileName = mlt_properties_get(properties, "resource");
     if (!fileName) {
-        mlt_log(service, MLT_LOG_ERROR, "No %s property found\n", ServiceManager::kFilePropertyName);
+        mlt_log(service, MLT_LOG_ERROR, "No 'resource' property found\n");
         return false;
     }
-    effects = WebVfx::createEffects(fileName, width, height, new ServiceParameters(service));
+    effects = WebVfx::createEffects(fileName, width, height,
+                                    new ServiceParameters(service));
     if (!effects) {
-        mlt_log(service, MLT_LOG_ERROR, "Failed to create WebVfx Effects\n");
+        mlt_log(service, MLT_LOG_ERROR,
+                "Failed to create WebVfx Effects for resource %s\n", fileName);
         return false;
     }
 

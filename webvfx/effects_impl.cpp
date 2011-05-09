@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QFileInfo>
 #include <QSize>
 #include <QStringBuilder>
 #include <QThread>
@@ -30,7 +31,7 @@ EffectsImpl::~EffectsImpl()
 
 bool EffectsImpl::initialize(const QString& fileName, int width, int height, Parameters* parameters)
 {
-    QUrl url(QUrl::fromLocalFile(fileName));
+    QUrl url(QUrl::fromLocalFile(QFileInfo(fileName).absoluteFilePath()));
 
     if (!url.isValid()) {
         log(QLatin1Literal("Invalid URL: ") % fileName);

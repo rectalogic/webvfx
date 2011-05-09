@@ -7,9 +7,9 @@ extern "C" {
     #include <mlt/framework/mlt_frame.h>
 }
 #include <webvfx/image.h>
+#include "factory.h"
 #include "service_locker.h"
 #include "service_manager.h"
-#include "webvfx_service.h"
 
 static const char* kWebVfxProducerPropertyName = "WebVfxProducer";
 

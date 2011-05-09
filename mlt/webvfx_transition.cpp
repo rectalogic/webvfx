@@ -9,9 +9,9 @@ extern "C" {
 }
 #include <cstring>
 #include <webvfx/image.h>
+#include "factory.h"
 #include "service_locker.h"
 #include "service_manager.h"
-#include "webvfx_service.h"
 
 
 static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_format *format, int *width, int *height, int /*writable*/) {
