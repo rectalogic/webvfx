@@ -135,7 +135,7 @@ WebVfx.Shader.prototype.render = function () {
     var gl = this.gl;
 
     // Should use gl.drawingBufferWidth/Height but they aren't implemented
-    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    gl.viewport(0, 0, gl.canvas.clientWidth, gl.canvas.clientHeight);
 
     gl.useProgram(this.program);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
