@@ -57,14 +57,13 @@ WebVfx.Shader.prototype.use = function () {
     this.gl.useProgram(this.program);
 }
 
-WebVfx.Shader.VERTEX_SHADER_SOURCE = '\
-    attribute vec2 vertex;\
-    attribute vec2 _texCoord;\
-    varying vec2 texCoord;\
-    void main() {\
-        texCoord = _texCoord;\
-        gl_Position = vec4(vertex * 2.0 - 1.0, 0.0, 1.0);\
-    }';
+WebVfx.Shader.VERTEX_SHADER_SOURCE = [
+    "attribute vec2 vertex;",
+    "varying vec2 texCoord;",
+    "void main() {",
+    "    texCoord = vertex;",
+    "    gl_Position = vec4(vertex * 2.0 - 1.0, 0.0, 1.0);",
+    "}"].join("\n");
 
 WebVfx.Shader.prototype.compileProgram = function (shaderSource) {
     var gl = this.gl;
@@ -128,16 +127,8 @@ WebVfx.Shader.prototype.buildQuad = function () {
                   new Float32Array([ 0, 0, 0, 1, 1, 0, 1, 1 ]),
                   gl.STATIC_DRAW);
 
-    this.texCoordBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoordBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER,
-                  new Float32Array([ 0, 0, 0, 1, 1, 0, 1, 1 ]),
-                  gl.STATIC_DRAW);
-
     this.vertexAttribute = gl.getAttribLocation(this.program, 'vertex');
     gl.enableVertexAttribArray(this.vertexAttribute);
-    this.texCoordAttribute = gl.getAttribLocation(this.program, '_texCoord');
-    gl.enableVertexAttribArray(this.texCoordAttribute);
 }
 
 WebVfx.Shader.prototype.render = function () {
@@ -149,8 +140,6 @@ WebVfx.Shader.prototype.render = function () {
     this.use();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     gl.vertexAttribPointer(this.vertexAttribute, 2, gl.FLOAT, false, 0, 0);
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.texCoordBuffer);
-    gl.vertexAttribPointer(this.texCoordAttribute, 2, gl.FLOAT, false, 0, 0);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 }
 
