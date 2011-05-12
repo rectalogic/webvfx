@@ -32,7 +32,7 @@ WebVfx.Shader.loadShader = function (shaderId) {
 
 // Update an existing uniforms value
 WebVfx.Shader.prototype.updateUniform = function (name, value) {
-    this.use();
+    this.gl.useProgram(this.program);
     this.uniforms[name].setValue(value);
 }
 
@@ -51,10 +51,6 @@ WebVfx.Shader.prototype.createUniforms = function (uniforms) {
             newUniforms[name] = new WebVfx.Uniform(this.gl, uniform);
     }
     return newUniforms;
-}
-
-WebVfx.Shader.prototype.use = function () {
-    this.gl.useProgram(this.program);
 }
 
 WebVfx.Shader.VERTEX_SHADER_SOURCE = [
@@ -137,7 +133,7 @@ WebVfx.Shader.prototype.render = function () {
     // Should use gl.drawingBufferWidth/Height but they aren't implemented
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
-    this.use();
+    gl.useProgram(this.program);
     gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
     gl.vertexAttribPointer(this.vertexAttribute, 2, gl.FLOAT, false, 0, 0);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
