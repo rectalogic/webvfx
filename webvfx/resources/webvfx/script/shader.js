@@ -9,13 +9,19 @@ var WebVfx = WebVfx || {};
 
 // canvas - canvas HTML element
 // shaderSource - fragment shader source code
-// uniforms - hash mapping uniform name to value (float, array of float,
-//  or Image/Canvas)
+// uniforms - optional hash mapping uniform name to initial value
 WebVfx.Shader = function (canvas, shaderSource, uniforms) {
     this.gl = canvas.getContext("experimental-webgl");
 
-    this.uniforms = this.createUniforms(uniforms);
     this.program = this.compileProgram(shaderSource);
+    this.uniforms = this.extractUniforms();
+    // Set default values if specified
+    if (uniforms) {
+        this.gl.useProgram(this.program);
+        for (var name in uniforms)
+            this.uniforms[name].setValue(uniforms[name]);
+    }
+
     this.buildQuad();
 }
 
@@ -32,25 +38,13 @@ WebVfx.Shader.loadShader = function (shaderId) {
 
 // Update an existing uniforms value
 WebVfx.Shader.prototype.updateUniform = function (name, value) {
-    this.gl.useProgram(this.program);
-    this.uniforms[name].setValue(value);
-}
-
-// Rebuild uniforms with instances of our Uniform classes
-WebVfx.Shader.prototype.createUniforms = function (uniforms) {
-    var textureCount = 0;
-    var newUniforms = {};
-    for (var name in uniforms) {
-        var uniform = uniforms[name];
-        if (uniform instanceof HTMLImageElement ||
-            uniform instanceof HTMLCanvasElement) {
-            newUniforms[name] = new WebVfx.Texture(this.gl, textureCount++,
-                                                   uniform);
-        }
-        else
-            newUniforms[name] = new WebVfx.Uniform(this.gl, uniform);
+    var uniform = this.uniforms[name];
+    if (!uniform) {
+        console.warn("Invalid uniform name " + name);
+        return;
     }
-    return newUniforms;
+    this.gl.useProgram(this.program);
+    uniform.setValue(value);
 }
 
 WebVfx.Shader.VERTEX_SHADER_SOURCE = [
@@ -78,16 +72,6 @@ WebVfx.Shader.prototype.compileProgram = function (shaderSource) {
     gl.deleteShader(vs);
     gl.deleteShader(fs);
 
-    // Set uniform locations
-    gl.useProgram(program);
-    for (var name in this.uniforms) {
-        var location = gl.getUniformLocation(program, name);
-        if (location)
-            this.uniforms[name].setLocation(location);
-        else
-            console.warn("unrecognized uniform name " + name);
-    }
-
     return program;
 }
 
@@ -97,9 +81,6 @@ WebVfx.Shader.prototype.buildFragmentShaderSource = function (shaderSource) {
                          "precision highp float;",
                          "#endif",
                          "varying vec2 texCoord;" ];
-    for (var name in this.uniforms) {
-        declarations.push(this.uniforms[name].getDeclaration(name));
-    }
     declarations.push(shaderSource);
     return declarations.join("\n");
 }
@@ -112,6 +93,29 @@ WebVfx.Shader.prototype.compileSource = function (type, shaderSource) {
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS))
         throw 'compile error: ' + gl.getShaderInfoLog(shader);
     return shader;
+}
+
+// Extract uniform declarations from program
+WebVfx.Shader.prototype.extractUniforms = function () {
+    var gl = this.gl;
+    var textureCount = 0;
+    var uniforms = {};
+
+    gl.useProgram(this.program);
+
+    var uniformCount = gl.getProgramParameter(this.program, gl.ACTIVE_UNIFORMS);
+    for (var u = 0; u < uniformCount; u++) {
+        var info = gl.getActiveUniform(this.program, u);
+        var location = gl.getUniformLocation(this.program, info.name);
+
+        if (info.type == gl.SAMPLER_2D) {
+            uniforms[info.name] = new WebVfx.Texture(gl, textureCount++,
+                                                     location);
+        }
+        else
+            uniforms[info.name] = new WebVfx.Uniform(gl, info.type, location);
+    }
+    return uniforms;
 }
 
 WebVfx.Shader.prototype.buildQuad = function () {
@@ -142,48 +146,51 @@ WebVfx.Shader.prototype.render = function () {
 
 ////////
 
-// value = initial value
-WebVfx.Uniform = function (gl, value) {
+// type - uniform type
+// location - uniform location
+WebVfx.Uniform = function (gl, type, location) {
     this.gl = gl;
-    this.value = value;
-    if (typeof(value) == "number") {
+
+    this.uniformLocation = location;
+
+    switch (type) {
+    case gl.FLOAT:
         this.uniformFunction = gl.uniform1f;
-        this.declaration = "uniform float ";
-    }
-    else if (value instanceof Array) {
+        break;
+    case gl.INT:
+    case gl.BOOL:
+        this.uniformFunction = gl.uniform1i;
+        break;
+    case gl.FLOAT_VEC2:
+        this.uniformFunction = gl.uniform2fv;
         this.wrapperConstructor = Float32Array;
-        switch (value.length) {
-        case 1:
-            this.uniformFunction = gl.uniform1fv;
-            this.declaration = "uniform vec1 ";
-            break;
-        case 2:
-            this.uniformFunction = gl.uniform2fv;
-            this.declaration = "uniform vec2 ";
-            break;
-        case 3:
-            this.uniformFunction = gl.uniform3fv;
-            this.declaration = "uniform vec3 ";
-            break;
-        case 4:
-            this.uniformFunction = gl.uniform4fv;
-            this.declaration = "uniform vec4 ";
-            break;
-        default:
-            throw 'invalid uniform value array length: ' + value;
-        }
+        break;
+    case gl.FLOAT_VEC3:
+        this.uniformFunction = gl.uniform3fv;
+        this.wrapperConstructor = Float32Array;
+        break;
+    case gl.FLOAT_VEC4:
+        this.uniformFunction = gl.uniform4fv;
+        this.wrapperConstructor = Float32Array;
+        break;
+    case gl.INT_VEC2:
+    case gl.BOOL_VEC2:
+        this.uniformFunction = gl.uniform2iv;
+        this.wrapperConstructor = Int32Array;
+        break;
+    case gl.INT_VEC3:
+    case gl.BOOL_VEC3:
+        this.uniformFunction = gl.uniform3iv;
+        this.wrapperConstructor = Int32Array;
+        break;
+    case gl.INT_VEC4:
+    case gl.BOOL_VEC4:
+        this.uniformFunction = gl.uniform4iv;
+        this.wrapperConstructor = Int32Array;
+        break;
+    default:
+        throw 'Unsupported uniform type ' + type;
     }
-    else
-        throw 'invalid uniform value: ' + value;
-}
-
-WebVfx.Uniform.prototype.setLocation = function(uniformLocation) {
-    this.uniformLocation = uniformLocation;
-    this.setValue(this.value);
-}
-
-WebVfx.Uniform.prototype.getDeclaration = function(name) {
-    return this.declaration + name + ";";
 }
 
 // Set uniform value, can be float or array of floats
@@ -197,8 +204,8 @@ WebVfx.Uniform.prototype.setValue = function(value) {
 ////////
 
 // unit - texture unit, 0-7
-// image - initial image
-WebVfx.Texture = function (gl, unit, image) {
+// location - uniform location
+WebVfx.Texture = function (gl, unit, location) {
     this.gl = gl;
     this.unit = unit;
     this.id = gl.createTexture();
@@ -210,17 +217,7 @@ WebVfx.Texture = function (gl, unit, image) {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
-    this.image = image;
-}
-
-WebVfx.Texture.prototype.setLocation = function(uniformLocation) {
-    var gl = this.gl;
-    gl.uniform1i(uniformLocation, this.unit);
-    this.setValue(this.image);
-}
-
-WebVfx.Texture.prototype.getDeclaration = function(name) {
-    return "uniform sampler2D " + name + ";";
+    gl.uniform1i(location, this.unit);
 }
 
 // Upload image into texture
