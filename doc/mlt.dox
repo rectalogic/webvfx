@@ -6,21 +6,18 @@
 
 %WebVfx implements producer, filter and transition plugin services for the
 <a href="http://www.mltframework.org/">MLT Framework</a>.
-The MLT service IDs are:
-
-@li @c webvfx.producer
-@li @c webvfx.filter
-@li @c webvfx.transition
+The MLT service ID is @c webvfx and the service argument
+or @c resource property is the path to the HTML or QML effect implementation.
 
 MLT services are implemented as %WebVfx effects - see @ref effects_authoring.
 The pathname to the HTML or QML effects implementation can be provided
 as the service contructor argument, or specified using the @c resource
 property. e.g.
 @code
-melt -transition webvfx.transition:/path/to/transition.html
+melt -transition webvfx:/path/to/transition.html
 @endcode
 @code
-melt -transition webvfx.transition resource=/path/to/transition.html
+melt -transition webvfx resource=/path/to/transition.html
 @endcode
 
 @section mlt_extra Extra Images

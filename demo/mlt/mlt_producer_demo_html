@@ -2,6 +2,6 @@
 
 export DISPLAY=${DISPLAY:-:0}
 "${VFX_MELT:-melt}" -verbose \
-    -producer webvfx.producer:../examples/producer-demo.html length=199 \
+    -producer webvfx:../examples/producer-demo.html length=199 \
         title="${VFX_TITLE:-WebVfx Producer Demo}" \
     $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}"))

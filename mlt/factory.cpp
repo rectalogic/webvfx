@@ -63,9 +63,9 @@ static void* createService(mlt_profile profile,
 
 extern "C" EXPORT MLT_REPOSITORY
 {
-    MLT_REGISTER(producer_type, "webvfx.producer", createService);
-    MLT_REGISTER(filter_type, "webvfx.filter", createService);
-    MLT_REGISTER(transition_type, "webvfx.transition", createService);
+    MLT_REGISTER(producer_type, "webvfx", createService);
+    MLT_REGISTER(filter_type, "webvfx", createService);
+    MLT_REGISTER(transition_type, "webvfx", createService);
 
     // Register shutdown hook - even if we don't initialize WebVfx
     // we want our logger deleted.
