@@ -17,8 +17,6 @@ body, html {
 
 <script type="text/javascript">
 function CrossZoom() {
-    this.sourceImage = new Image();
-    this.targetImage = new Image();
     this.shader = new WebVfx.Shader(document.getElementById("canvas"),
                                     WebVfx.Shader.loadShader("crossZoom"));
 
@@ -31,10 +29,10 @@ function CrossZoom() {
 
 CrossZoom.prototype.render = function (time) {
     var shader = this.shader;
-    //webvfx.getImage('sourceImage').assignToHTMLImageElement(this.sourceImage);
-    webvfx.getImage('targetImage').assignToHTMLImageElement(this.targetImage);
-    shader.updateUniform("sourceTex", this.sourceImage);
-    shader.updateUniform("targetTex", this.targetImage);
+    shader.updateUniform("sourceTex",
+                         webvfx.getImage('sourceImage').toImageData());
+    shader.updateUniform("targetTex",
+                         webvfx.getImage('targetImage').toImageData());
     shader.updateUniform("strength", this.easeStrength.easeInOut(time));
     shader.updateUniform("dissolve", this.easeDissolve.easeInOut(time));
     shader.updateUniform("center", [this.easeCenter.ease(time), 0.5]);
