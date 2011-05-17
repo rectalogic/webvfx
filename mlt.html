@@ -20,7 +20,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo.png"></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">WebVfx&#160;<span id="projectnumber">0.1.5</span></div>
+   <div id="projectname">WebVfx&#160;<span id="projectnumber">0.1.6-dirty</span></div>
   </td>
  </tr>
  </tbody>
@@ -57,15 +57,10 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <h1>MLT Plugins </h1>  </div>
 </div>
 <div class="contents">
-<div class="textblock"><p>WebVfx implements producer, filter and transition plugin services for the <a href="http://www.mltframework.org/">MLT Framework</a>. The MLT service IDs are:</p>
-<ul>
-<li><code>webvfx.producer</code> </li>
-<li><code>webvfx.filter</code> </li>
-<li><code>webvfx.transition</code> </li>
-</ul>
+<div class="textblock"><p>WebVfx implements producer, filter and transition plugin services for the <a href="http://www.mltframework.org/">MLT Framework</a>. The MLT service ID is <code>webvfx</code> and the service argument or <code>resource</code> property is the path to the HTML or QML effect implementation.</p>
 <p>MLT services are implemented as WebVfx effects - see <a class="el" href="effects_authoring.html">Effects Authoring</a>. The pathname to the HTML or QML effects implementation can be provided as the service contructor argument, or specified using the <code>resource</code> property. e.g. </p>
-<div class="fragment"><pre class="fragment">melt -transition webvfx.transition:/path/to/transition.html
-</pre></div> <div class="fragment"><pre class="fragment">melt -transition webvfx.transition resource=/path/to/transition.html
+<div class="fragment"><pre class="fragment">melt -transition webvfx:/path/to/transition.html
+</pre></div> <div class="fragment"><pre class="fragment">melt -transition webvfx resource=/path/to/transition.html
 </pre></div><h2><a class="anchor" id="mlt_extra"></a>
 Extra Images</h2>
 <p>Effects that use extra images (i.e. that register <code>webvfx.ExtraImageType</code> image names) accept an additional set of attributes of the form: <b>producer.</b><em>name</em><b>.</b><em>producer_attribute</em>. </p>
@@ -89,7 +84,7 @@ export DISPLAY=${DISPLAY:-:0}
 <span class="stringliteral">&quot;${VFX_MELT:-melt}&quot;</span> -verbose <span class="stringliteral">&quot;${VFX_SOURCE:-red.mlt}&quot;</span> out=149 \
     -track -blank 59 \
     <span class="stringliteral">&quot;${VFX_TARGET:-blue.mlt}&quot;</span> out=149 \
-    -transition webvfx.transition:../examples/transition-demo.html in=60 out=149 \
+    -transition webvfx:../examples/transition-demo.html in=60 out=149 \
         producer.backgroundImage.resource=<span class="stringliteral">&quot;${VFX_BACKGROUND:-green.mlt}&quot;</span> \
         title=<span class="stringliteral">&quot;${VFX_TITLE:-Testing WebVfx Transition}&quot;</span> \
     $(eval echo $(&lt; <span class="stringliteral">&quot;${VFX_CONSUMER:-consumer_sdl}&quot;</span>))
@@ -118,7 +113,7 @@ from the corresponding <a href="examples.html">example</a>.
 </div>
 
 <hr class="footer"/>
-<address class="footer"><small>Generated on Mon May 9 2011 16:04:31 for WebVfx using <a href="http://www.doxygen.org">Doxygen 1.7.3</a></small></address>
+<address class="footer"><small>Generated on Tue May 17 2011 13:46:07 for WebVfx using <a href="http://www.doxygen.org">Doxygen 1.7.3</a></small></address>
 <address class="footer"><small>Copyright (c) 2011 Hewlett-Packard Development Company, L.P. All rights reserved. Use of this source code is governed by a BSD-style license that can be found in the LICENSE file.</small></address>
 </body>
 </html>
