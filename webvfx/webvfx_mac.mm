@@ -1,4 +1,4 @@
-#include <QTGlobal>
+#include <QtGlobal>
 
 #ifdef Q_WS_MAC
 
