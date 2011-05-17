@@ -61,8 +61,7 @@ WebVfx.Shader.prototype.compileProgram = function (shaderSource) {
 
     var vs = this.compileSource(gl.VERTEX_SHADER,
                                 WebVfx.Shader.VERTEX_SHADER_SOURCE);
-    var fs = this.compileSource(gl.FRAGMENT_SHADER,
-                                this.buildFragmentShaderSource(shaderSource));
+    var fs = this.compileSource(gl.FRAGMENT_SHADER, shaderSource);
     gl.attachShader(program, vs);
     gl.attachShader(program, fs);
     gl.linkProgram(program);
@@ -73,16 +72,6 @@ WebVfx.Shader.prototype.compileProgram = function (shaderSource) {
     gl.deleteShader(fs);
 
     return program;
-}
-
-// Prepend declarations to shader source
-WebVfx.Shader.prototype.buildFragmentShaderSource = function (shaderSource) {
-    var declarations = [ "#ifdef GL_ES",
-                         "precision highp float;",
-                         "#endif",
-                         "varying vec2 texCoord;" ];
-    declarations.push(shaderSource);
-    return declarations.join("\n");
 }
 
 WebVfx.Shader.prototype.compileSource = function (type, shaderSource) {

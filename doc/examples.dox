@@ -19,6 +19,13 @@ and a string @em title parameter.
 The rendered video can be viewed here
 <a href="http://www.youtube.com/watch?v=U67gm6Pplqg">demo/mlt/mlt_transition_demo_html</a>
 
+@example examples/transition-shader-crosszoom.html
+This is an example MLT transition implemented in HTML.
+It uses the %WebVfx WebGL shader support framework to implement
+a 2D transition using GLSL.
+The rendered video can be viewed here
+<a href="http://www.youtube.com/watch?v=hjU2RFA-t2o">demo/mlt/mlt_transition_shader-crosszoom_html</a>
+
 @example examples/filter-demo.qml
 This is an example MLT filter implemented in QML.
 It rotates the video in one direction while rotating

@@ -137,6 +137,40 @@ webvfx.getImage("sourceImage").assignToHTMLImageElement(document.getElementById(
 @li @ref examples/transition-demo.html "demo/examples/transition-demo.html"
 
 
+@subsection web_effects_shader_authoring WebGL GLSL Shader Effects Authoring
+
+%WebVfx includes a simple framework for implementing 2D GLSL fragment shader
+effects. This requires QtWebKit to be compiled with WebGL enabled, and
+a patch that adds a new
+<a href="https://bugs.webkit.org/show_bug.cgi?id=60897">toImageData</a>
+feature.
+
+The HTML effect should reference the @c shader.js JavaScript resource:
+@code
+<script type="text/javascript" src="qrc:/webvfx/script/shader.js"></script>
+@endcode
+The GLSL code can be placed in a @c script element:
+@code
+<script type="x-shader/x-fragment">...</script>
+@endcode
+
+The GLSL must declare a varying @c texCoord which carries the texture
+coordinates from the vertex shader.
+@code
+varying vec2 texCoord;
+@endcode
+It should also declare any uniforms it uses.
+Uniform values can be set on each render cycle using @c updateUniform(name,value).
+If the uniform is a sampler2D texture, it should use the @c ImageData
+returned from the %WebVfx image object:
+@code
+webvfx.getImage("sourceImage").toImageData()
+@endcode
+
+See the sample CrossZoom shader for a complete example:
+@li @ref examples/transition-shader-crosszoom.html "demo/examples/transition-shader-crosszoom.html"
+
+
 @section effects_authoring_tools Tools
 
 A couple of simple tools are provided to help authoring effects.

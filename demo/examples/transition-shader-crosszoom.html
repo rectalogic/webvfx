@@ -66,6 +66,8 @@ window.addEventListener("resize", resize, false);
 
 <!-- Based on https://github.com/evanw/webgl-filter/blob/master/src/filter/zoomblur.js -->
 <script id="crossZoom" type="x-shader/x-fragment">
+precision mediump float;
+varying vec2 texCoord;
 uniform sampler2D sourceTex;
 uniform sampler2D targetTex;
 uniform float dissolve;

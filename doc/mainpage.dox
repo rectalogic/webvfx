@@ -20,6 +20,7 @@ Sample effects included with the distribution, and videos
 rendered using them with MLT can be viewed here:
 @li @ref examples/transition-demo3d.qml "demo/examples/transition-demo3d.qml"
 @li @ref examples/transition-demo.html "demo/examples/transition-demo.html"
+@li @ref examples/transition-shader-crosszoom.html "demo/examples/transition-shader-crosszoom.html"
 @li @ref examples/producer-demo.html "demo/examples/producer-demo.html"
 @li @ref examples/filter-demo.html "demo/examples/filter-demo.html"
 @li @ref examples/filter-demo.qml "demo/examples/filter-demo.qml"
