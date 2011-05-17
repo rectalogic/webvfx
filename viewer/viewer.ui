@@ -35,8 +35,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>172</width>
-             <height>360</height>
+             <width>158</width>
+             <height>118</height>
             </rect>
            </property>
            <attribute name="label">
@@ -189,8 +189,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>172</width>
-             <height>360</height>
+             <width>102</width>
+             <height>102</height>
             </rect>
            </property>
            <attribute name="label">
@@ -247,7 +247,7 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>172</width>
+             <width>261</width>
              <height>360</height>
             </rect>
            </property>
@@ -261,7 +261,7 @@
                <bool>false</bool>
               </property>
               <property name="lineWrapMode">
-               <enum>QPlainTextEdit::NoWrap</enum>
+               <enum>QPlainTextEdit::WidgetWidth</enum>
               </property>
               <property name="readOnly">
                <bool>true</bool>
@@ -290,8 +290,8 @@
        <widget class="QWidget" name="scrollAreaWidgetContents">
         <property name="geometry">
          <rect>
-          <x>11</x>
-          <y>1</y>
+          <x>0</x>
+          <y>0</y>
           <width>600</width>
           <height>495</height>
          </rect>
