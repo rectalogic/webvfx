@@ -1,32 +1,57 @@
 <html>
 <head>
-<script type="text/javascript" src="shader.js"></script>
+<style type="text/css">
+body, html {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+#canvas {
+    width: 100%;
+    height: 100%;
+}
+</style>
+
+<script type="text/javascript" src="qrc:/webvfx/script/shader.js"></script>
 
 <script type="text/javascript">
 function PageCurl() {
-    this.sourceImage = new Image();
-    this.targetImage = new Image();
     this.shader = new WebVfx.Shader(document.getElementById("canvas"),
                                     WebVfx.Shader.loadShader("pageCurl"));
-    var cz = this;
-    this.sourceImage.onload = function() { cz.shader.updateUniform("sourceTex", cz.sourceImage); cz.shader.render(); }
-    this.targetImage.onload = function() { cz.shader.updateUniform("targetTex", cz.targetImage); cz.shader.render(); }
-    this.sourceImage.src = "http://evanw.github.com/webgl-filter/samples/Flowers.jpg";
-    this.targetImage.src = "http://evanw.github.com/webgl-filter/samples/Wolf.jpg";
 }
 
-PageCurl.prototype.updateTime = function (time) {
-    this.shader.updateUniform("time", time);
-    this.shader.render();
+PageCurl.prototype.render = function (time) {
+    var shader = this.shader;
+    shader.updateUniform("time", time);
+    shader.updateUniform("sourceTex",
+                         webvfx.getImage('sourceImage').toImageData());
+    shader.updateUniform("targetTex",
+                         webvfx.getImage('targetImage').toImageData());
+    shader.render();
 }
 
-
-var pageCurl;
 function init() {
-    pageCurl = new PageCurl();
+    try {
+        resize();
+        var pageCurl = new PageCurl();
+        webvfx.renderRequested.connect(pageCurl, PageCurl.prototype.render);
+        webvfx.imageTypeMap = { "sourceImage" : webvfx.SourceImageType,
+                                "targetImage" : webvfx.TargetImageType };
+        webvfx.readyRender(true);
+    } catch (e) {
+        console.warn(e);
+        webvfx.readyRender(false);
+    }
+}
+
+function resize() {
+    var canvas = document.getElementById("canvas");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 }
 
 window.addEventListener("load", init, false);
+window.addEventListener("resize", resize, false);
 </script>
 
 
@@ -217,8 +242,6 @@ void main(void) {
 
 </head>
 <body>
-    <canvas id="canvas" width="640" height="480"></canvas>
-    <br/>
-    <input type="range" min="0" max="100" value="0" onchange="pageCurl.updateTime(this.value / 100);"/>
+    <canvas id="canvas"></canvas>
 </body>
 </html>
