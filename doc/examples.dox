@@ -24,7 +24,14 @@ This is an example MLT transition implemented in HTML.
 It uses the %WebVfx WebGL shader support framework to implement
 a 2D transition using GLSL.
 The rendered video can be viewed here
-<a href="http://www.youtube.com/watch?v=hjU2RFA-t2o">demo/mlt/mlt_transition_shader-crosszoom_html</a>
+<a href="http://www.youtube.com/watch?v=hjU2RFA-t2o">demo/mlt/mlt_transition_shader_crosszoom_html</a>
+
+@example examples/transition-shader-pagecurl.html
+This is an example MLT transition implemented in HTML.
+It uses the %WebVfx WebGL shader support framework to implement
+a 2D page curl transition using GLSL.
+The rendered video can be viewed here
+<a href="http://www.youtube.com/watch?v=wT1qA9Utvbk">demo/mlt/mlt_transition_shader_pagecurl_html</a>
 
 @example examples/filter-demo.qml
 This is an example MLT filter implemented in QML.

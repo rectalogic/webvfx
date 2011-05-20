@@ -160,15 +160,17 @@ coordinates from the vertex shader.
 varying vec2 texCoord;
 @endcode
 It should also declare any uniforms it uses.
-Uniform values can be set on each render cycle using @c updateUniform(name,value).
+Uniform values can be set on each render cycle from JavaScript
+using @c updateUniform(name,value).
 If the uniform is a sampler2D texture, it should use the @c ImageData
 returned from the %WebVfx image object:
 @code
-webvfx.getImage("sourceImage").toImageData()
+shader.updateUniform("sourceTex", webvfx.getImage("sourceImage").toImageData());
 @endcode
 
-See the sample CrossZoom shader for a complete example:
+See the sample CrossZoom and PageCurl shaders for complete examples:
 @li @ref examples/transition-shader-crosszoom.html "demo/examples/transition-shader-crosszoom.html"
+@li @ref examples/transition-shader-pagecurl.html "demo/examples/transition-shader-pagecurl.html"
 
 
 @section effects_authoring_tools Tools

@@ -13,16 +13,18 @@ body, html {
 </style>
 
 <script type="text/javascript" src="qrc:/webvfx/script/shader.js"></script>
+<script type="text/javascript" src="qrc:/webvfx/script/easing.js"></script>
 
 <script type="text/javascript">
 function PageCurl() {
     this.shader = new WebVfx.Shader(document.getElementById("canvas"),
                                     WebVfx.Shader.loadShader("pageCurl"));
+    this.easeCurl = new WebVfx.Easing.Sinusoidal(0, 1, 1);
 }
 
 PageCurl.prototype.render = function (time) {
     var shader = this.shader;
-    shader.updateUniform("time", time);
+    shader.updateUniform("time", this.easeCurl.easeOut(time));
     shader.updateUniform("sourceTex",
                          webvfx.getImage('sourceImage').toImageData());
     shader.updateUniform("targetTex",
@@ -58,7 +60,7 @@ window.addEventListener("resize", resize, false);
 <!--
 PageCurl fragment shader is based on code from http://labs.calyptus.eu/pagecurl/
 Copyright (c) 2010 Calyptus Life AB <http://calyptus.eu>
-And is licensed under The MIT License:
+Licensed under The MIT License:
 http://www.opensource.org/licenses/mit-license.php
 -->
 <script id="pageCurl" type="x-shader/x-fragment">
@@ -221,11 +223,9 @@ void main(void) {
 
     vec4 otherColor;
     if (yc < 0.0) {
-
         float shado = 1.0 - (sqrt(pow(point.x - 0.5, 2.0) + pow(point.y - 0.5, 2.0)) / 0.71);
         shado *= pow(-yc / cylinderRadius, 3.0);
         shado *= 0.5;
-
         otherColor = vec4(0.0, 0.0, 0.0, shado);
     } else {
         otherColor = texture2D(sourceTex, texCoord);

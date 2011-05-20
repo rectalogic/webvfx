@@ -12,7 +12,8 @@ var WebVfx = WebVfx || {};
 // uniforms - optional hash mapping uniform name to initial value
 WebVfx.Shader = function (canvas, shaderSource, uniforms) {
     this.gl = canvas.getContext("experimental-webgl");
-
+    if (!this.gl)
+        throw "This browswer does not have WebGL enabled.";
     this.program = this.compileProgram(shaderSource);
     this.uniforms = this.extractUniforms();
     // Set default values if specified
