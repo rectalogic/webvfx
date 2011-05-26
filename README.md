@@ -4,10 +4,10 @@ WebVfx is a video effects library that allows effects to be implemented using [W
 
 ## Prerequisites
 
-You will need [Qt](http://qt.nokia.com/downloads/) installed (4.7.2 or later recommended). Qt includes QtWebKit and QML. For more interesting effects (e.g. using WebGL, CSS 3D etc.) you may want to [build](http://trac.webkit.org/wiki/QtWebKit#BuildInstructions) a more current QtWebKit.
+You will need [Qt](http://qt.nokia.com/downloads/) installed (4.7.3 or later recommended). Qt includes QtWebKit and QML. For more interesting effects (e.g. using WebGL, CSS 3D etc.) you may want to [build](http://trac.webkit.org/wiki/QtWebKit#BuildInstructions) a more current QtWebKit.
 You may also want to build [QtQuick3D](http://doc.qt.nokia.com/qt-quick3d-snapshot/index.html) - 3D extensions to QML. WebVfx includes support for QtQuick3D.
 
-WebVfx includes an MLT service that exposes producers, filters and transitions implemented in WebVfx. Install [MLT Framework](http://www.mltframework.org/) 0.7.0 or greater to build the plugin.
+WebVfx includes an MLT service that exposes producers, filters and transitions implemented in WebVfx. Install [MLT Framework](http://www.mltframework.org/) 0.7.2 or greater to build the plugin.
 
 ## Building
 

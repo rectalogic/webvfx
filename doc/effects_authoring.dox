@@ -140,10 +140,8 @@ webvfx.getImage("sourceImage").assignToHTMLImageElement(document.getElementById(
 @subsection web_effects_shader_authoring WebGL GLSL Shader Effects Authoring
 
 %WebVfx includes a simple framework for implementing 2D GLSL fragment shader
-effects. This requires QtWebKit to be compiled with WebGL enabled, and
-a patch that adds a new
-<a href="https://bugs.webkit.org/show_bug.cgi?id=60897">toImageData</a>
-feature.
+effects. This requires QtWebKit to be compiled with WebGL enabled.
+A recent build should be used so the @c toImageData feature is available.
 
 The HTML effect should reference the @c shader.js JavaScript resource:
 @code
