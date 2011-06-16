@@ -2,22 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+var WebVfx = WebVfx || {};
+
 // range is an array of [beginX,endX] x coordinates that the endpoints
 // of this segment cover.
 // points is an array of four Bezier [x,y] control points,
 // [[ax,ay],[bx,by],[cx,cy],[dx,dy]]
 // See http://www.flong.com/texts/code/shapers_bez/
-function BezierSegment(range, points) {
+WebVfx.BezierSegment = function (range, points) {
     this.range = range;
     this.xCoefficients = this.polynomialCoefficients(points, 0);
     this.yCoefficients = this.polynomialCoefficients(points, 1);
 }
 
-BezierSegment.prototype.TOLERANCE = 0.000001;
-BezierSegment.prototype.ITERATIONS = 5;
+WebVfx.BezierSegment.prototype.TOLERANCE = 0.000001;
+WebVfx.BezierSegment.prototype.ITERATIONS = 5;
 
 // Return y value for given x.
-BezierSegment.prototype.evaluate = function(x) {
+WebVfx.BezierSegment.prototype.evaluate = function(x) {
     // Solve for t given x (using Newton-Raphson),
     // then solve for y given t.
     // For first guess, linearly interpolate to get t.
@@ -39,7 +41,7 @@ BezierSegment.prototype.evaluate = function(x) {
 // points in p (array of 4 [x,y] control points),
 // for coordinate i (0 for x, 1 for y).
 // See http://www.cs.binghamton.edu/~reckert/460/bezier.htm
-BezierSegment.prototype.polynomialCoefficients = function(p, i) {
+WebVfx.BezierSegment.prototype.polynomialCoefficients = function(p, i) {
     return [p[3][i] - 3 * p[2][i] + 3 * p[1][i] - p[0][i],
             3 * p[2][i] - 6 * p[1][i] + 3 * p[0][i],
             3 * p[1][i] - 3 * p[0][i],
@@ -48,17 +50,17 @@ BezierSegment.prototype.polynomialCoefficients = function(p, i) {
 
 // Evaluate cubic polynomial at time t.
 // c are the polynomial coefficients [a,b,c,d]
-BezierSegment.prototype.evaluatePolynomial = function(t, c) {
+WebVfx.BezierSegment.prototype.evaluatePolynomial = function(t, c) {
     // Use Horners rule for polynomial evaluation
     return ((c[0] * t + c[1]) * t + c[2]) * t + c[3];
 }
 
 // Return slope given t for coefficients c
-BezierSegment.prototype.slope = function(t, c) {
+WebVfx.BezierSegment.prototype.slope = function(t, c) {
     return 1.0 / (3.0 * c[0] * t * t + 2.0 * c[1] * t + c[2]);
 }
 
-BezierSegment.prototype.clamp = function(v) {
+WebVfx.BezierSegment.prototype.clamp = function(v) {
     if (v < 0.0)
         return 0.0;
     else if (v > 1.0)
@@ -68,13 +70,13 @@ BezierSegment.prototype.clamp = function(v) {
 
 
 // segments is an ordered array of non overlapping BezierSegments
-function BezierCurve(segments) {
+WebVfx.BezierCurve = function (segments) {
     this.segments = segments;
     this.currentSegment = null;
 }
 
 // Binary search to find segment that contains x
-BezierCurve.prototype.findSegment = function(x) {
+WebVfx.BezierCurve.prototype.findSegment = function(x) {
     var startIndex = 0;
     var stopIndex = this.segments.length - 1;
     var middleIndex = Math.floor((stopIndex + startIndex) / 2);
@@ -93,7 +95,7 @@ BezierCurve.prototype.findSegment = function(x) {
     return this.segments[middleIndex];
 }
 
-BezierCurve.prototype.evaluate = function(x) {
+WebVfx.BezierCurve.prototype.evaluate = function(x) {
     // Find current segment if we are out of range
     if (this.currentSegment == null || x < this.currentSegment.range[0] ||
         x > this.currentSegment.range[1])
@@ -103,17 +105,17 @@ BezierCurve.prototype.evaluate = function(x) {
 }
 
 
-function ConstantValue(value) {
+WebVfx.ConstantValue = function (value) {
     this.value = value;
 }
 
-ConstantValue.prototype.evaluate = function(x) {
+WebVfx.ConstantValue.prototype.evaluate = function(x) {
     return this.value;
 }
 
 
-// animation is the animation data exported from Blender webvfx-camera.py tool
-function CameraAnimation(animation) {
+// animation is the animation data exported from Blender webvfx-camera.py add-on
+WebVfx.CameraAnimation = function (animation) {
     if (!animation)
         return;
     this.range = animation['range'];
@@ -133,23 +135,23 @@ function CameraAnimation(animation) {
     this.horizontalFOV = animation['horizontalFOV'];
 }
 
-CameraAnimation.prototype.processAnimation = function(animation) {
+WebVfx.CameraAnimation.prototype.processAnimation = function(animation) {
     if (typeof(animation) == 'number')
-        return new ConstantValue(animation);
+        return new WebVfx.ConstantValue(animation);
     else {
         var segments = [];
         for (var i = 0; i < animation.length; i++) {
-            segments[i] = new BezierSegment(animation[i]['range'],
-                                            animation[i]['bezierPoints']);
+            segments[i] = new WebVfx.BezierSegment(animation[i]['range'],
+                                                   animation[i]['bezierPoints']);
         }
-        return new BezierCurve(segments);
+        return new WebVfx.BezierCurve(segments);
     }
     return null;
 }
 
 // t is 0..1
 // After evaluating, upVector, lookAt and eye will be updated.
-CameraAnimation.prototype.evaluate = function(t) {
+WebVfx.CameraAnimation.prototype.evaluate = function(t) {
     // Find x corresponding to t
     var x = this.range[0] + t * (this.range[1] - this.range[0] + 1);
 
@@ -197,10 +199,10 @@ CameraAnimation.prototype.evaluate = function(t) {
 }
 
 // Compute vertical field of view in radians, given viewport dimensions
-CameraAnimation.prototype.verticalFOV = function(width, height) {
+WebVfx.CameraAnimation.prototype.verticalFOV = function(width, height) {
     return 2 * Math.atan(Math.tan(this.horizontalFOV / 2) / (width / height));
 }
 
-function radians2degrees(radians) {
+WebVfx.radians2degrees = function (radians) {
     return radians * 180 / Math.PI;
 }
