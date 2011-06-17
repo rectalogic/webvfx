@@ -15,7 +15,7 @@ Camera {
         var animation = getAnimation();
         if (!animation)
             return 0;
-        return ca.WebVfx.radians2degrees(animation.verticalFOV(width, height));
+        return animation.radians2degrees(animation.verticalFOV(width / height));
     }
 
     function updateCamera() {

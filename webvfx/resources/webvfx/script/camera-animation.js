@@ -68,6 +68,7 @@ WebVfx.BezierSegment.prototype.clamp = function(v) {
     return v;
 }
 
+///////////
 
 // segments is an ordered array of non overlapping BezierSegments
 WebVfx.BezierCurve = function (segments) {
@@ -104,6 +105,7 @@ WebVfx.BezierCurve.prototype.evaluate = function(x) {
     return this.currentSegment.evaluate(x);
 }
 
+///////////
 
 WebVfx.ConstantValue = function (value) {
     this.value = value;
@@ -113,6 +115,7 @@ WebVfx.ConstantValue.prototype.evaluate = function(x) {
     return this.value;
 }
 
+///////////
 
 // animation is the animation data exported from Blender webvfx-camera.py add-on
 WebVfx.CameraAnimation = function (animation) {
@@ -120,19 +123,27 @@ WebVfx.CameraAnimation = function (animation) {
         return;
     this.range = animation['range'];
 
-    this.locationX = this.processAnimation(animation['locationX']);
-    this.locationY = this.processAnimation(animation['locationY']);
-    this.locationZ = this.processAnimation(animation['locationZ']);
-    this.rotationX = this.processAnimation(animation['rotationX']);
-    this.rotationY = this.processAnimation(animation['rotationY']);
-    this.rotationZ = this.processAnimation(animation['rotationZ']);
+    this.locationXAnimation = this.processAnimation(animation['locationX']);
+    this.locationYAnimation = this.processAnimation(animation['locationY']);
+    this.locationZAnimation = this.processAnimation(animation['locationZ']);
+    this.rotationXAnimation = this.processAnimation(animation['rotationX']);
+    this.rotationYAnimation = this.processAnimation(animation['rotationY']);
+    this.rotationZAnimation = this.processAnimation(animation['rotationZ']);
 
-    this.upVector = [0,1,0];
-    this.lookAt = [0,0,-1];
-    this.eye = [0,0,0];
+    this.upVector = new Array(3);
+    this.lookAt = new Array(3);
+    this.eye = new Array(3);
+
+    // Rest of matrix elements will be computed in evaluate()
+    this.m41 = 0;
+    this.m42 = 0;
+    this.m43 = 0;
+    this.m44 = 1;
 
     // Horizontal field of view in radians
     this.horizontalFOV = animation['horizontalFOV'];
+
+    this.evaluate(0);
 }
 
 WebVfx.CameraAnimation.prototype.processAnimation = function(animation) {
@@ -150,59 +161,112 @@ WebVfx.CameraAnimation.prototype.processAnimation = function(animation) {
 }
 
 // t is 0..1
-// After evaluating, upVector, lookAt and eye will be updated.
+// After evaluating, upVector, lookAt and eye and matrix elements
+// will be updated.
 WebVfx.CameraAnimation.prototype.evaluate = function(t) {
+    if (this.time == t)
+        return;
+    this.time = t;
+
     // Find x corresponding to t
     var x = this.range[0] + t * (this.range[1] - this.range[0] + 1);
 
-    this.eye[0] = this.locationX.evaluate(x);
-    this.eye[1] = this.locationY.evaluate(x);
-    this.eye[2] = this.locationZ.evaluate(x);
+    this.rotationX = this.rotationXAnimation.evaluate(x);
+    this.rotationY = this.rotationYAnimation.evaluate(x);
+    this.rotationZ = this.rotationZAnimation.evaluate(x);
 
-    var rotX = this.rotationX.evaluate(x);
-    var rotY = this.rotationY.evaluate(x);
-    var rotZ = this.rotationZ.evaluate(x);
+    this.locationX = this.locationXAnimation.evaluate(x);
+    this.locationY = this.locationYAnimation.evaluate(x);
+    this.locationZ = this.locationZAnimation.evaluate(x);
 
-    // Blender Euler order is XYZ, so angles are applied in ZYX order.
+    // Blender Euler order is ZYX order.
     // Using the ZYX matrix from, but transposed (so passive transformation
     // instead of active)
     // http://en.wikipedia.org/wiki/Euler_angles#Matrix_orientation
-    var cx = Math.cos(rotX);
-    var cy = Math.cos(rotY);
-    var cz = Math.cos(rotZ);
-    var sx = Math.sin(rotX);
-    var sy = Math.sin(rotY);
-    var sz = Math.sin(rotZ);
+    var cx = Math.cos(this.rotationX);
+    var cy = Math.cos(this.rotationY);
+    var cz = Math.cos(this.rotationZ);
+    var sx = Math.sin(this.rotationX);
+    var sy = Math.sin(this.rotationY);
+    var sz = Math.sin(this.rotationZ);
 
     var cc = cx*cz;
     var cs = cx*sz;
     var sc = sx*cz;
     var ss = sx*sz;
 
-    var m10 = sy*sc-cs;
-    var m11 = sy*ss+cc;
-    var m12 = cy*sx;
-    var m20 = sy*cc+ss;
-    var m21 = sy*cs-sc;
-    var m22 = cy*cx;
+    this.m11 = cy*cz;
+    this.m21 = cy*sz;
+    this.m31 = -sy;
 
-    // Direction is eye looking down Z (m20, m21, m22).
+    this.m12 = sy*sc-cs;
+    this.m22 = sy*ss+cc;
+    this.m32 = cy*sx;
+
+    this.m13 = sy*cc+ss;
+    this.m23 = sy*cs-sc;
+    this.m33 = cy*cx;
+
+    this.m14 = this.locationX;
+    this.m24 = this.locationY;
+    this.m34 = this.locationZ;
+
+    // Eye is at translation position
+    this.eye[0] = this.m14;
+    this.eye[1] = this.m24;
+    this.eye[2] = this.m34;
+
+    // Direction is eye looking down Z (m13, m23, m33).
     // LookAt is (eye - direction)
-    this.lookAt[0] = this.eye[0] - m20;
-    this.lookAt[1] = this.eye[1] - m21;
-    this.lookAt[2] = this.eye[2] - m22;
+    this.lookAt[0] = this.eye[0] - this.m13;
+    this.lookAt[1] = this.eye[1] - this.m23;
+    this.lookAt[2] = this.eye[2] - this.m33;
+
     // Up vector can just be read out of the matrix (y axis)
-    // (m10, m11, m12)
-    this.upVector[0] = m10;
-    this.upVector[1] = m11;
-    this.upVector[2] = m12;
+    // (m12, m22, m32)
+    this.upVector[0] = this.m12;
+    this.upVector[1] = this.m22;
+    this.upVector[2] = this.m32;
 }
 
-// Compute vertical field of view in radians, given viewport dimensions
-WebVfx.CameraAnimation.prototype.verticalFOV = function(width, height) {
-    return 2 * Math.atan(Math.tan(this.horizontalFOV / 2) / (width / height));
+// Compute vertical field of view in radians,
+// given viewport aspect (width/height)
+WebVfx.CameraAnimation.prototype.verticalFOV = function(aspect) {
+    return 2 * Math.atan(Math.tan(this.horizontalFOV / 2) / aspect);
 }
 
-WebVfx.radians2degrees = function (radians) {
+WebVfx.CameraAnimation.prototype.radians2degrees = function (radians) {
     return radians * 180 / Math.PI;
+}
+
+///////////
+
+// If using https://github.com/mrdoob/three.js then create camera subclass
+if (THREE && THREE.Camera) {
+    WebVfx.AnimatedCamera = function (aspect, nearPlane, farPlane, animationData) {
+        var ca = new WebVfx.CameraAnimation(animationData);
+        this.cameraAnimation = ca;
+        var fov = ca.radians2degrees(ca.verticalFOV(aspect));
+        THREE.Camera.call(this, fov, aspect, nearPlane, farPlane);
+        this.useTarget = false;
+    };
+
+    WebVfx.AnimatedCamera.prototype = new THREE.Camera();
+    WebVfx.AnimatedCamera.prototype.constructor = WebVfx.AnimatedCamera;
+
+    WebVfx.AnimatedCamera.prototype.setAnimationTime = function (time) {
+        this.cameraAnimation.evaluate(time);
+    };
+
+    // Override
+    WebVfx.AnimatedCamera.prototype.updateMatrix = function () {
+        var ca = this.cameraAnimation;
+        this.matrix.set(
+            ca.m11, ca.m12, ca.m13, ca.m14,
+            ca.m21, ca.m22, ca.m23, ca.m24,
+            ca.m31, ca.m32, ca.m33, ca.m34,
+            ca.m41, ca.m42, ca.m43, ca.m44
+        );
+        this.matrixWorldNeedsUpdate = true;
+    };
 }
