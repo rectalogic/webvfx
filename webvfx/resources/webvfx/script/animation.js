@@ -118,17 +118,17 @@ WebVfx.ConstantValue.prototype.evaluate = function(x) {
 ///////////
 
 // animation is the animation data exported from Blender webvfx-camera.py add-on
-WebVfx.CameraAnimation = function (animation) {
-    if (!animation)
+WebVfx.Animation = function (animationData) {
+    if (!animationData)
         return;
-    this.range = animation['range'];
+    this.range = animationData['range'];
 
-    this.locationXAnimation = this.processAnimation(animation['locationX']);
-    this.locationYAnimation = this.processAnimation(animation['locationY']);
-    this.locationZAnimation = this.processAnimation(animation['locationZ']);
-    this.rotationXAnimation = this.processAnimation(animation['rotationX']);
-    this.rotationYAnimation = this.processAnimation(animation['rotationY']);
-    this.rotationZAnimation = this.processAnimation(animation['rotationZ']);
+    this.locationXAnimation = this.processAnimation(animationData['locationX']);
+    this.locationYAnimation = this.processAnimation(animationData['locationY']);
+    this.locationZAnimation = this.processAnimation(animationData['locationZ']);
+    this.rotationXAnimation = this.processAnimation(animationData['rotationX']);
+    this.rotationYAnimation = this.processAnimation(animationData['rotationY']);
+    this.rotationZAnimation = this.processAnimation(animationData['rotationZ']);
 
     this.upVector = new Array(3);
     this.lookAt = new Array(3);
@@ -141,12 +141,12 @@ WebVfx.CameraAnimation = function (animation) {
     this.m44 = 1;
 
     // Horizontal field of view in radians
-    this.horizontalFOV = animation['horizontalFOV'];
+    this.horizontalFOV = animationData['horizontalFOV'];
 
     this.evaluate(0);
 }
 
-WebVfx.CameraAnimation.prototype.processAnimation = function(animation) {
+WebVfx.Animation.prototype.processAnimation = function(animation) {
     if (typeof(animation) == 'number')
         return new WebVfx.ConstantValue(animation);
     else {
@@ -163,7 +163,7 @@ WebVfx.CameraAnimation.prototype.processAnimation = function(animation) {
 // t is 0..1
 // After evaluating, upVector, lookAt and eye and matrix elements
 // will be updated.
-WebVfx.CameraAnimation.prototype.evaluate = function(t) {
+WebVfx.Animation.prototype.evaluate = function(t) {
     if (this.time == t)
         return;
     this.time = t;
@@ -231,10 +231,10 @@ WebVfx.CameraAnimation.prototype.evaluate = function(t) {
 
 // Compute vertical field of view in radians,
 // given viewport aspect (width/height)
-WebVfx.CameraAnimation.prototype.verticalFOV = function(aspect) {
+WebVfx.Animation.prototype.verticalFOV = function(aspect) {
     return 2 * Math.atan(Math.tan(this.horizontalFOV / 2) / aspect);
 }
 
-WebVfx.CameraAnimation.prototype.radians2degrees = function (radians) {
+WebVfx.Animation.prototype.radians2degrees = function (radians) {
     return radians * 180 / Math.PI;
 }

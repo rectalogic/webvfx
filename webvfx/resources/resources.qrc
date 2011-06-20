@@ -6,7 +6,7 @@
      <file>org/webvfx/WebVfx/AnimatedCamera.qml</file>
      <file>org/webvfx/WebVfx/BlenderItem3D.qml</file>
      <file>org/webvfx/WebVfx/TextTexture.qml</file>
-     <file>webvfx/script/camera-animation.js</file>
+     <file>webvfx/script/animation.js</file>
      <file>webvfx/script/shader.js</file>
      <file>webvfx/script/easing.js</file>
  </qresource>
