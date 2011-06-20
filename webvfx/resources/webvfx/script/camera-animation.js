@@ -238,35 +238,3 @@ WebVfx.CameraAnimation.prototype.verticalFOV = function(aspect) {
 WebVfx.CameraAnimation.prototype.radians2degrees = function (radians) {
     return radians * 180 / Math.PI;
 }
-
-///////////
-
-// If using https://github.com/mrdoob/three.js then create camera subclass
-if (THREE && THREE.Camera) {
-    WebVfx.AnimatedCamera = function (aspect, nearPlane, farPlane, animationData) {
-        var ca = new WebVfx.CameraAnimation(animationData);
-        this.cameraAnimation = ca;
-        var fov = ca.radians2degrees(ca.verticalFOV(aspect));
-        THREE.Camera.call(this, fov, aspect, nearPlane, farPlane);
-        this.useTarget = false;
-    };
-
-    WebVfx.AnimatedCamera.prototype = new THREE.Camera();
-    WebVfx.AnimatedCamera.prototype.constructor = WebVfx.AnimatedCamera;
-
-    WebVfx.AnimatedCamera.prototype.setAnimationTime = function (time) {
-        this.cameraAnimation.evaluate(time);
-    };
-
-    // Override
-    WebVfx.AnimatedCamera.prototype.updateMatrix = function () {
-        var ca = this.cameraAnimation;
-        this.matrix.set(
-            ca.m11, ca.m12, ca.m13, ca.m14,
-            ca.m21, ca.m22, ca.m23, ca.m24,
-            ca.m31, ca.m32, ca.m33, ca.m34,
-            ca.m41, ca.m42, ca.m43, ca.m44
-        );
-        this.matrixWorldNeedsUpdate = true;
-    };
-}
