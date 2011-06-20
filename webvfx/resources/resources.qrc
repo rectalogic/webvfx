@@ -7,8 +7,10 @@
      <file>org/webvfx/WebVfx/BlenderItem3D.qml</file>
      <file>org/webvfx/WebVfx/TextTexture.qml</file>
      <file>webvfx/script/animation.js</file>
-     <file>webvfx/script/shader.js</file>
      <file>webvfx/script/easing.js</file>
+     <file>webvfx/script/shader.js</file>
+     <file>webvfx/script/tracker.js</file>
+     <file>webvfx/script/world.js</file>
  </qresource>
 
  </RCC>
