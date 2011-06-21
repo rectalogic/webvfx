@@ -10,7 +10,7 @@ import mathutils
 
 bl_info = {
     "name": "WebVfx Camera Animation",
-    "description": "Set of tools to help create camera animation data for WebVfx.",
+    "description": "Set of tools to help create camera animation for WebVfx.",
     "author": "Andrew Wason <rectalogic@rectalogic.com>",
     "version": (1, 0),
     "blender": (2, 5, 7),
@@ -23,27 +23,25 @@ bl_info = {
 }
 
 '''
-Open a text window in Blender and load this file, then Run Script.
-This will add a tool panel (WebVfx Camera Animation) to the Tool Shelf
+Adds a tool panel (WebVfx Camera Animation) to the Tool Shelf
 in the 3D view (type T to show the shelf).
 
 Select an object whose face you want to align to the camera,
 hit TAB to switch to mesh edit mode, select the Face selector tool
 and select the face you want to align.
 
-Click the Align to Face, then Center on Face, then Fit View to Face
-buttons. Then Camera to View.
+Click Align, then Center, then (optionally) Rotate 90, then Fit.
+Then Camera to View to move the camera to the current view.
 This should be keyframed as the first or last keyframe - select
-the camera object and click Insert under Camera Keyframes.
+the camera object and click Insert under Keyframes.
 
 Now you reposition the timeline and add additional camera keyframes.
 Change the Timeline view to FCurve view to edit the animation curves.
 
 When a complete camera animation timeline has been constructed,
-click Generate Animation JSON. This will dump the JSON
-to the text view.
+use the export addon to export WebVfx JSON.
 
-Click Generate Camera QML to generate the camera fieldOfView
+Click Dump Camera QML to generate the camera fieldOfView
 and other parameters. This also dumps the QML for the current camera position.
 
 The Aspect Ratio buttons can be used to change the camera viewport
@@ -78,7 +76,7 @@ def reportError(op, msg):
     op.report({'ERROR'}, msg)
 
 class GenerateCameraQml(bpy.types.Operator):
-    '''Generate QtQuick3D QML camera declaration.'''
+    '''Generate QtQuick3D QML camera declaration into a text block.'''
     bl_idname = "view3d.generate_camera_qml"
     bl_label = "Dump QML Camera"
     bl_description = "Generate QtQuick3D QML markup for the active camera"
@@ -279,19 +277,23 @@ class OBJECT_PT_camera_face_align(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
 
-        col = layout.column(align=True)
+        box = layout.box()
+        box.label(text="View to Selected Face")
+        box.label(text="Select a quad face.\nThen align, center, rotate and fit the viewport to it.\nThen move the camera to the view.")
+        col = box.column(align=True)
 
-        col.label(text="Face:")
-        op_align = col.operator("view3d.viewnumpad", text="1. Align to Face")
+        op_align = col.operator("view3d.viewnumpad", text="1. Align")
         op_align.type = 'TOP'
         op_align.align_active = True
-        col.operator("view3d.view_selected", text="2. Center on Face")
-        col.operator("view3d.rotate_view_90", text="2.5 Rotate View 90")
-        col.operator("view3d.fit_view_to_face", text="3. Fit View to Face")
+        col.operator("view3d.view_selected", text="2. Center")
+        col.operator("view3d.rotate_view_90", text="2.5 Rotate 90")
+        col.operator("view3d.fit_view_to_face", text="3. Fit Viewport")
 
-        col.label(text="Camera:")
+        box = layout.box()
+        box.label(text="Camera")
+        col = box.column(align=True)
+
         col.operator("view3d.camera_to_view", text="Camera to View")
-        col.operator("view3d.generate_camera_qml", text="Generate Camera QML")
 
         col.label(text="Aspect Ratio:")
         row = col.row()
@@ -301,10 +303,12 @@ class OBJECT_PT_camera_face_align(bpy.types.Panel):
         col.label(text="Horizontal FOV:")
         col.prop(context.scene.camera.data, "angle")
 
-        col.label(text="Camera Keyframes:")
+        col.label(text="Keyframes:")
         row = col.row()
         row.operator("anim.insert_camera_keyframe", text="Insert")
         row.operator("anim.remove_camera_keyframe", text="Remove")
+
+        layout.operator("view3d.generate_camera_qml", text="Dump Camera QML")
 
 # Utility for finding region_3d in console
 # def r3d():
