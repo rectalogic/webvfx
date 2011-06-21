@@ -5,10 +5,7 @@
 import bpy
 import bpy.props
 import math
-import numbers
 import mathutils
-import json
-from io_utils import ImportHelper
 
 
 bl_info = {
@@ -62,13 +59,6 @@ to determine the aspect ratio of a quad that will render text.
 
 KeyframeGroup = "LocRot"
 
-def convertCameraFOV(context, camera):
-    '''Blender uses horizontal fov, convert to vertical for QtQuick3D'''
-    render = context.scene.render
-    viewportWidth = render.resolution_x * render.pixel_aspect_x
-    viewportHeight = render.resolution_y * render.pixel_aspect_y
-    return (2 * math.atan(math.tan(camera.data.angle / 2) /
-                          (viewportWidth / viewportHeight)))
 
 def getUpVector(matrix):
     # up vector can just be read out of the matrix (y axis)
@@ -88,10 +78,10 @@ def reportError(op, msg):
     op.report({'ERROR'}, msg)
 
 class GenerateCameraQml(bpy.types.Operator):
-    '''Generate QML QtQuick3D camera declaration.'''
+    '''Generate QtQuick3D QML camera declaration.'''
     bl_idname = "view3d.generate_camera_qml"
     bl_label = "Dump QML Camera"
-    bl_description = "Generate QML QtQuick3D markup for the active camera"
+    bl_description = "Generate QtQuick3D QML markup for the active camera"
 
     def generateCameraQml(self, context):
         scene = context.scene
@@ -168,6 +158,14 @@ class FitViewToFace(bpy.types.Operator):
     def poll(cls, context):
         return context.area.type == 'VIEW_3D' and context.active_object and context.active_object.type == 'MESH'
 
+    def convertCameraFOV(self, context, camera):
+        '''Blender uses horizontal fov, convert to vertical for QtQuick3D'''
+        render = context.scene.render
+        viewportWidth = render.resolution_x * render.pixel_aspect_x
+        viewportHeight = render.resolution_y * render.pixel_aspect_y
+        return (2 * math.atan(math.tan(camera.data.angle / 2) /
+                              (viewportWidth / viewportHeight)))
+
     def fitViewToFace(self, context):
         obj = context.active_object
         mesh = obj.data
@@ -208,7 +206,7 @@ class FitViewToFace(bpy.types.Operator):
             return
 
         # Angle from eye, halve for triangle.
-        fov = convertCameraFOV(context, context.scene.camera) / 2
+        fov = self.convertCameraFOV(context, context.scene.camera) / 2
 
         # Use law of sines to get view_distance
         # http://en.wikipedia.org/wiki/Law_of_sines
@@ -272,123 +270,6 @@ class RemoveCameraKeyframe(bpy.types.Operator):
         return {'FINISHED'}
 
 
-class GenerateCameraAnimationJson(bpy.types.Operator):
-    bl_idname = "anim.generate_camera_animation_json"
-    bl_label = "Generate Camera Animation JSON"
-    bl_description = "Generate JSON data for active camera animation keyframes"
-
-    CoordNames = ['X', 'Y', 'Z']
-    CurveNames = { 'location': 'location', 'rotation_euler': 'rotation'}
-
-    # Adjust control points so the total length of the "handles"
-    # is not more than the horizontal distance between the keyframe points.
-    def correctControlPoints(self, points):
-        # Handle deltas
-        h1 = [points[0][0] - points[1][0], points[0][1] - points[1][1]]
-        h2 = [points[3][0] - points[2][0], points[3][1] - points[2][1]]
-
-        length = points[3][0] - points[0][0]
-        len1 = math.fabs(h1[0])
-        len2 = math.fabs(h2[0])
-
-        if (len1 + len2) == 0:
-            return
-
-        # The handles cross, force apart by proportion of overlap
-        if (len1 + len2) > length:
-            overlap = length / (len1 + len2)
-            points[1][0] = points[0][0] - overlap * h1[0]
-            points[1][1] = points[0][1] - overlap * h1[1]
-            points[2][0] = points[3][0] - overlap * h2[0]
-            points[2][1] = points[3][1] - overlap * h2[1]
-
-    def generateCameraAnimation(self, camera):
-        action = camera.animation_data.action
-        fcurves = action.fcurves
-        frame_range = list(action.frame_range)
-
-        animation = {'horizontalFOV': camera.data.angle, 'range': frame_range}
-        for f in fcurves:
-            name = (self.CurveNames[f.data_path] +
-                    self.CoordNames[f.array_index])
-            # Single keyframe - use constant value
-            if len(f.keyframe_points) == 1:
-                animation[name] = f.keyframe_points[0].co[1]
-            # Otherwise get the 4 control points - this keyframes point
-            # and it's right handle, then the next keyframes left handle
-            # and the next keyframes point
-            else:
-                segments = []
-                for i in range(len(f.keyframe_points) - 1):
-                    k = f.keyframe_points[i]
-                    nextk = f.keyframe_points[i+1]
-                    points = [list(k.co),
-                              list(k.handle_right),
-                              list(nextk.handle_left),
-                              list(nextk.co)]
-                    self.correctControlPoints(points)
-                    segments.append({'range': [k.co[0], nextk.co[0]],
-                                     'bezierPoints': points})
-                animation[name] = segments
-
-        return json.dumps(animation, sort_keys=True, indent=4,
-                          separators=(',',': '))
-
-    def execute(self, context):
-        dumpText(self, context, 'JSON Camera Animation',
-                 self.generateCameraAnimation(context.scene.camera))
-        return {'FINISHED'}
-
-
-class ImportCameraAnimationJson(bpy.types.Operator, ImportHelper):
-    bl_idname = "anim.import_camera_animation_json"
-    bl_label = "Import Camera Animation JSON"
-    bl_description = "Import JSON camera animation data to active camera from *.json file"
-
-    filename_ext = "*.json"
-    filter_glob = bpy.props.StringProperty(default="*.json", options={'HIDDEN'})
-
-    def importCameraAnimation(self, camera, filepath):
-        with open(filepath, "r") as file:
-            animation = json.load(file)
-
-        camera.animation_data_clear()
-        camera.animation_data_create()
-
-        action = bpy.data.actions.new("CameraAction")
-        action.groups.new(KeyframeGroup)
-
-        camera.data.angle = animation['horizontalFOV']
-        animRange = animation['range']
-
-        for curve in GenerateCameraAnimationJson.CurveNames:
-            for coord in range(3):
-                fcurve = action.fcurves.new(curve, coord, KeyframeGroup)
-                curveData = animation[GenerateCameraAnimationJson.CurveNames[curve] +
-                                      GenerateCameraAnimationJson.CoordNames[coord]]
-                # Constant value
-                if isinstance(curveData, numbers.Real):
-                    fcurve.keyframe_points.insert(animRange[0], curveData)
-                # Array of segment control point data
-                else:
-                    for segment in curveData:
-                        points = segment['bezierPoints']
-                        keyframe = fcurve.keyframe_points.insert(points[0][0],
-                                                                 points[0][1])
-                        keyframe.handle_right = points[1]
-                        keyframe = fcurve.keyframe_points.insert(points[3][0],
-                                                                 points[3][1])
-                        keyframe.handle_left = points[2]
-
-        camera.animation_data.action = action
-
-    def execute(self, context):
-        # Display filechooser for *.json files
-        self.importCameraAnimation(context.scene.camera,
-                                   **self.as_keywords(ignore=("filter_glob",)))
-        return {'FINISHED'}
-
-
 class OBJECT_PT_camera_face_align(bpy.types.Panel):
     '''This functionality can be accessed via the "Tools" panel in 3D View ([T] key).'''
     bl_label = "WebVfx Camera Animation"
@@ -424,8 +305,6 @@ class OBJECT_PT_camera_face_align(bpy.types.Panel):
         row = col.row()
         row.operator("anim.insert_camera_keyframe", text="Insert")
         row.operator("anim.remove_camera_keyframe", text="Remove")
-        col.operator("anim.generate_camera_animation_json", text="Generate Animation JSON")
-        col.operator("anim.import_camera_animation_json", text="Import Animation JSON")
 
 # Utility for finding region_3d in console
 # def r3d():
