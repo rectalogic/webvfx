@@ -7,6 +7,7 @@
 
 #include "webvfx/effects.h"
 
+class QPainter;
 class QSize;
 class QString;
 class QUrl;
@@ -28,6 +29,7 @@ public:
     virtual const Effects::ImageTypeMap& getImageTypeMap() = 0;
     virtual void setImage(const QString& name, Image* image) = 0;
     virtual bool renderContent(double time, Image* renderImage) = 0;
+    virtual void paintContent(QPainter* painter) = 0;
 };
 
 }

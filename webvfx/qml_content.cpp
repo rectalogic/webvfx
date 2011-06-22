@@ -1,7 +1,5 @@
 #include <QtDeclarative>
 #include <QEventLoop>
-#include <QGLFormat>
-#include <QGLFramebufferObject>
 #include <QGLWidget>
 #include <QImage>
 #include <QList>
@@ -58,8 +56,6 @@ QmlContent::QmlContent(QWidget* parent, const QSize& size, Parameters* parameter
     , contextLoadFinished(LoadNotFinished)
     , contentContext(new ContentContext(this, parameters))
     , syncLoop(0)
-    , multisampleFBO(0)
-    , resolveFBO(0)
 {
     if (!s_QmlContentRegistered) {
         s_QmlContentRegistered = true;
@@ -77,11 +73,10 @@ QmlContent::QmlContent(QWidget* parent, const QSize& size, Parameters* parameter
     setResizeAnchor(QDeclarativeView::AnchorViewCenter);
     resize(size);
 
-    // We render into FBOs, but need QGLWidget to create a GL context for us
-    glWidget = new QGLWidget();
+    QGLWidget* glWidget = new QGLWidget();
     setViewport(glWidget);
 
-    createFBO(size);
+    renderer.init(glWidget, false, size);
 
     // OpenGL needs this
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
@@ -95,12 +90,6 @@ QmlContent::QmlContent(QWidget* parent, const QSize& size, Parameters* parameter
     connect(this, SIGNAL(statusChanged(QDeclarativeView::Status)), SLOT(qmlViewStatusChanged(QDeclarativeView::Status)));
     connect(engine(), SIGNAL(warnings(QList<QDeclarativeError>)), SLOT(logWarnings(QList<QDeclarativeError>)));
     connect(contentContext, SIGNAL(readyRender(bool)), SLOT(contentContextLoadFinished(bool)));
-}
-
-QmlContent::~QmlContent()
-{
-    delete multisampleFBO;
-    delete resolveFBO;
 }
 
 void QmlContent::qmlViewStatusChanged(QDeclarativeView::Status status)
@@ -175,7 +164,7 @@ void QmlContent::setContentSize(const QSize& size) {
     QSize oldSize(this->size());
     if (oldSize != size) {
         resize(size);
-        createFBO(size);
+        renderer.resize(size);
         // The resize event is delayed until we are shown.
         // Since we are never shown, send the event here.
         // Superclass does some calculations in resizeEvent
@@ -190,68 +179,13 @@ bool QmlContent::renderContent(double time, Image* renderImage)
     // Allow the content to render for this time
     contentContext->render(time);
 
-    if (!renderImage)
-        return false;
-
-    glWidget->makeCurrent();
-
-    // Render frame into multisample FBO
-    QPainter painter(multisampleFBO);
-    painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.setRenderHint(QPainter::TextAntialiasing, true);
-    painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
-    render(&painter);
-    painter.end();
-
-    // Blit from multisample to resolve FBO.
-    // Rects are setup so the image is vertically flipped when blitted
-    // so when we read the pixels back they are the right way up.
-    // OpenGL does everything "upside down".
-    QRect srcRect(0, 0, renderImage->width(), renderImage->height());
-    QRect dstRect(0, renderImage->height(),
-                  renderImage->width(), -renderImage->height());
-    QGLFramebufferObject::blitFramebuffer(resolveFBO, srcRect,
-                                          multisampleFBO, dstRect);
-
-    // Read back the pixels from the resolve FBO, in the format our QImage needs
-    resolveFBO->bind();
-    glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
-    glPixelStorei(GL_PACK_ALIGNMENT, 1);
-    glPixelStorei(GL_PACK_ROW_LENGTH, renderImage->bytesPerLine() / 3);
-    glReadPixels(0, 0, renderImage->width(), renderImage->height(),
-                 QSysInfo::ByteOrder == QSysInfo::BigEndian ? GL_BGR : GL_RGB,
-                 GL_UNSIGNED_BYTE, renderImage->pixels());
-    glPopClientAttrib();
-
-    resolveFBO->release();
-    glWidget->doneCurrent();
-
-    return true;
+    return renderer.render(this, renderImage);
     //XXX also check errors() after each render()
 }
 
-bool QmlContent::createFBO(const QSize& size)
+void QmlContent::paintContent(QPainter* painter)
 {
-    if (!QGLFramebufferObject::hasOpenGLFramebufferObjects()
-        || !QGLFramebufferObject::hasOpenGLFramebufferBlit()) {
-        log("QmlContent: FBOs not fully supported, rendering will fail");
-        return false;
-    }
-
-    // Create a multisample FBO and an FBO to resolve into
-    glWidget->makeCurrent();
-
-    QGLFramebufferObjectFormat fboFormat;
-    fboFormat.setSamples(4);
-    fboFormat.setTextureTarget(GL_TEXTURE_RECTANGLE_ARB);
-    fboFormat.setAttachment(QGLFramebufferObject::CombinedDepthStencil);
-    delete multisampleFBO;
-    multisampleFBO = new QGLFramebufferObject(size, fboFormat);
-    delete resolveFBO;
-    resolveFBO = new QGLFramebufferObject(size, GL_TEXTURE_RECTANGLE_ARB);
-
-    glWidget->doneCurrent();
-    return true;
+    render(painter);
 }
 
 }

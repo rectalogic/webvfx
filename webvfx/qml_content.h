@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBVFX_QML_VIEW_H_
-#define WEBVFX_QML_VIEW_H_
+#ifndef WEBVFX_QML_CONTENT_H_
+#define WEBVFX_QML_CONTENT_H_
 
 #include <QDeclarativeView>
 #include <QGraphicsEffect>
@@ -11,10 +11,9 @@
 #include "webvfx/content_context.h"
 #include "webvfx/effects.h"
 #include "webvfx/image.h"
+#include "webvfx/renderer.h"
 
 class QEventLoop;
-class QGLFramebufferObject;
-class QGLWidget;
 class QSize;
 class QUrl;
 
@@ -29,13 +28,13 @@ class QmlContent : public QDeclarativeView, public Content
     Q_OBJECT
 public:
     QmlContent(QWidget* parent, const QSize& size, Parameters* parameters);
-    ~QmlContent();
 
     // Load QML synchronously, return success
     bool loadContent(const QUrl& url);
     void setContentSize(const QSize& size);
     const Effects::ImageTypeMap& getImageTypeMap() { return contentContext->getImageTypeMap(); };
     bool renderContent(double time, Image* renderImage);
+    void paintContent(QPainter* painter);
     void setImage(const QString& name, Image* image) { contentContext->setImage(name, image); }
 
 private slots:
@@ -44,16 +43,12 @@ private slots:
     void logWarnings(const QList<QDeclarativeError>& warnings);
 
 private:
-    bool createFBO(const QSize& size);
-
     enum LoadStatus { LoadNotFinished, LoadFailed, LoadSucceeded };
     LoadStatus pageLoadFinished;
     LoadStatus contextLoadFinished;
     ContentContext* contentContext;
     QEventLoop* syncLoop;
-    QGLWidget* glWidget;
-    QGLFramebufferObject* multisampleFBO;
-    QGLFramebufferObject* resolveFBO;
+    Renderer renderer;
 };
 
 ////////////////////

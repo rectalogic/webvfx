@@ -37,6 +37,7 @@ public:
     }
     const Effects::ImageTypeMap& getImageTypeMap() { return contentContext->getImageTypeMap(); };
     bool renderContent(double time, Image* renderImage);
+    void paintContent(QPainter* painter);
     void setImage(const QString& name, Image* image) { contentContext->setImage(name, image); }
 
 private slots:
