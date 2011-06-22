@@ -177,9 +177,9 @@ WebVfx.createTexturedMaterial = function (texture, transparent) {
 ///////////
 
 WebVfx.AnimatedCamera = function (aspect, nearPlane, farPlane, animationData) {
-    var ca = new WebVfx.Animation(animationData);
-    this.cameraAnimation = ca;
-    var fov = ca.radians2degrees(ca.verticalFOV(aspect));
+    var anim = new WebVfx.Animation(animationData);
+    this.animation = anim;
+    var fov = anim.radians2degrees(ca.verticalFOV(aspect));
     THREE.Camera.call(this, fov, aspect, nearPlane, farPlane);
     this.useTarget = false;
 };
@@ -188,17 +188,17 @@ WebVfx.AnimatedCamera.prototype = new THREE.Camera();
 WebVfx.AnimatedCamera.prototype.constructor = WebVfx.AnimatedCamera;
 
 WebVfx.AnimatedCamera.prototype.setAnimationTime = function (time) {
-    this.cameraAnimation.evaluate(time);
+    this.animation.evaluate(time);
 };
 
 // Override
 WebVfx.AnimatedCamera.prototype.updateMatrix = function () {
-    var ca = this.cameraAnimation;
+    var anim = this.animation;
     this.matrix.set(
-        ca.m11, ca.m12, ca.m13, ca.m14,
-        ca.m21, ca.m22, ca.m23, ca.m24,
-        ca.m31, ca.m32, ca.m33, ca.m34,
-        ca.m41, ca.m42, ca.m43, ca.m44
+        anim.m11, anim.m12, anim.m13, anim.m14,
+        anim.m21, anim.m22, anim.m23, anim.m24,
+        anim.m31, anim.m32, anim.m33, anim.m34,
+        anim.m41, anim.m42, anim.m43, anim.m44
     );
     this.matrixWorldNeedsUpdate = true;
 };
