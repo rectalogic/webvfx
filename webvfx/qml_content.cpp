@@ -50,8 +50,8 @@ private:
 
 ////////////////////
 
-QmlContent::QmlContent(QWidget* parent, const QSize& size, Parameters* parameters)
-    : QDeclarativeView(parent)
+QmlContent::QmlContent(const QSize& size, Parameters* parameters)
+    : QDeclarativeView(0)
     , pageLoadFinished(LoadNotFinished)
     , contextLoadFinished(LoadNotFinished)
     , contentContext(new ContentContext(this, parameters))

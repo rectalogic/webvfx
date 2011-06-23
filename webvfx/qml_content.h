@@ -27,7 +27,7 @@ class QmlContent : public QDeclarativeView, public Content
 {
     Q_OBJECT
 public:
-    QmlContent(QWidget* parent, const QSize& size, Parameters* parameters);
+    QmlContent(const QSize& size, Parameters* parameters);
 
     // Load QML synchronously, return success
     bool loadContent(const QUrl& url);
@@ -36,6 +36,11 @@ public:
     bool renderContent(double time, Image* renderImage);
     void paintContent(QPainter* painter);
     void setImage(const QString& name, Image* image) { contentContext->setImage(name, image); }
+
+    QWidget* createView(QWidget* parent) {
+        setParent(parent);
+        return this;
+    }
 
 private slots:
     void qmlViewStatusChanged(QDeclarativeView::Status status);

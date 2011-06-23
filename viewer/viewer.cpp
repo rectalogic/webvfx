@@ -188,30 +188,24 @@ double Viewer::sliderTimeValue(int value)
 
 bool Viewer::loadContent(const QString& fileName)
 {
-    QWidget* view;
+    if (fileName.endsWith(".qml", Qt::CaseInsensitive)) {
+        content = new WebVfx::QmlContent(scrollArea->widget()->size(),
+                                         new ViewerParameters(parametersTable));
+    }
+    else if (fileName.endsWith(".html", Qt::CaseInsensitive)){
+        content = new WebVfx::WebContent(scrollArea->widget()->size(),
+                                         new ViewerParameters(parametersTable));
+        // User can right-click to open WebInspector on the page
+        ((WebVfx::WebContent*)content)->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+    }
+
+    QWidget* view = content->createView(scrollArea);
 
     // Set content as direct widget of QScrollArea,
     // otherwise it creates an intermediate QWidget which messes up resizing.
-    if (fileName.endsWith(".qml", Qt::CaseInsensitive)) {
-        WebVfx::QmlContent* qmlContent =
-            new WebVfx::QmlContent(scrollArea, scrollArea->widget()->size(),
-                                   new ViewerParameters(parametersTable));
-        view = qmlContent;
-        content = qmlContent;
-    }
-    else if (fileName.endsWith(".html", Qt::CaseInsensitive)){
-        WebVfx::WebContent* webContent =
-            new WebVfx::WebContent(scrollArea, scrollArea->widget()->size(),
-                                   new ViewerParameters(parametersTable));
-        // User can right-click to open WebInspector on the page
-        webContent->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
-        view = webContent;
-        content = webContent;
-    }
+    scrollArea->setWidget(view);
 
     logTextEdit->clear();
-
-    scrollArea->setWidget(view);
 
     bool result = content->loadContent(fileName);
 

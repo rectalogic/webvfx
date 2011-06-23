@@ -11,6 +11,7 @@ class QPainter;
 class QSize;
 class QString;
 class QUrl;
+class QWidget;
 
 namespace WebVfx
 {
@@ -30,6 +31,8 @@ public:
     virtual void setImage(const QString& name, Image* image) = 0;
     virtual bool renderContent(double time, Image* renderImage) = 0;
     virtual void paintContent(QPainter* painter) = 0;
+
+    virtual QWidget* createView(QWidget* parent) = 0;
 };
 
 }

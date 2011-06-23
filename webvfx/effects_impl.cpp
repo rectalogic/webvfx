@@ -97,9 +97,9 @@ void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parame
     // We can't parent QmlContent since we aren't a QWidget.
     // So don't parent either content, and destroy them explicitly.
     if (path.endsWith(".html", Qt::CaseInsensitive))
-        content = new WebContent(0, size, parameters);
+        content = new WebContent(size, parameters);
     else if (path.endsWith(".qml", Qt::CaseInsensitive))
-        content = new QmlContent(0, size, parameters);
+        content = new QmlContent(size, parameters);
     else {
         log(QLatin1Literal("WebVfx Filename must end with '.html' or '.qml': ") % path);
         loadResult = false;
