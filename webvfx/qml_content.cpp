@@ -76,7 +76,8 @@ QmlContent::QmlContent(QWidget* parent, const QSize& size, Parameters* parameter
     QGLWidget* glWidget = new QGLWidget();
     setViewport(glWidget);
 
-    renderer.init(glWidget, false, size);
+    renderer.init(glWidget, size);
+    renderer.setRenderType(Renderer::RenderGLAntialias);
 
     // OpenGL needs this
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
@@ -178,7 +179,6 @@ bool QmlContent::renderContent(double time, Image* renderImage)
 {
     // Allow the content to render for this time
     contentContext->render(time);
-
     return renderer.render(this, renderImage);
     //XXX also check errors() after each render()
 }

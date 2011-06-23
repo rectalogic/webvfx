@@ -13,7 +13,7 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QUrl>
-#include <QWebView>
+#include <QWebSettings>
 #include <QtGlobal>
 #include <webvfx/effects.h>
 #include <webvfx/image.h>
@@ -97,27 +97,14 @@ Viewer::Viewer(QWidget *parent)
     handleResize();
 }
 
-void Viewer::on_actionOpenHtml_triggered(bool)
+void Viewer::on_actionOpen_triggered(bool)
 {
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open HTML"),
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open"),
                                                     QString(),
-                                                    tr("HTML Files (*.html)"));
+                                                    tr("WebVfx Files (*.html *.qml)"));
     if (fileName.isNull())
         return;
-    if (!loadHtml(fileName))
-        statusBar()->showMessage(tr("Load failed"), 2000);
-    else
-        setWindowFilePath(fileName);
-}
-
-void Viewer::on_actionOpenQml_triggered(bool)
-{
-    QString fileName = QFileDialog::getOpenFileName(this, tr("Open QML"),
-                                                    QString(),
-                                                    tr("QML Files (*.qml)"));
-    if (fileName.isNull())
-        return;
-    if (!loadQml(fileName))
+    if (!loadContent(fileName))
         statusBar()->showMessage(tr("Load failed"), 2000);
     else
         setWindowFilePath(fileName);
@@ -125,11 +112,7 @@ void Viewer::on_actionOpenQml_triggered(bool)
 
 void Viewer::on_actionReload_triggered(bool)
 {
-    QString fileName(windowFilePath());
-    if (fileName.endsWith(".qml", Qt::CaseInsensitive))
-        loadQml(fileName);
-    else if (fileName.endsWith(".html", Qt::CaseInsensitive))
-        loadHtml(fileName);
+    loadContent(windowFilePath());
 }
 
 void Viewer::on_resizeButton_clicked()
@@ -203,52 +186,36 @@ double Viewer::sliderTimeValue(int value)
     return value / (double)timeSlider->maximum();
 }
 
-bool Viewer::loadHtml(const QString& fileName)
+bool Viewer::loadContent(const QString& fileName)
 {
+    QWidget* view;
+
+    // Set content as direct widget of QScrollArea,
+    // otherwise it creates an intermediate QWidget which messes up resizing.
+    if (fileName.endsWith(".qml", Qt::CaseInsensitive)) {
+        WebVfx::QmlContent* qmlContent =
+            new WebVfx::QmlContent(scrollArea, scrollArea->widget()->size(),
+                                   new ViewerParameters(parametersTable));
+        view = qmlContent;
+        content = qmlContent;
+    }
+    else if (fileName.endsWith(".html", Qt::CaseInsensitive)){
+        WebVfx::WebContent* webContent =
+            new WebVfx::WebContent(scrollArea, scrollArea->widget()->size(),
+                                   new ViewerParameters(parametersTable));
+        // User can right-click to open WebInspector on the page
+        webContent->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+        view = webContent;
+        content = webContent;
+    }
+
     logTextEdit->clear();
 
-    QSize size = scrollArea->widget()->size();
+    scrollArea->setWidget(view);
 
-    // Set QWebView as direct widget of QScrollArea,
-    // otherwise it creates an intermediate QWidget which messes up resizing.
-    QWebView* webView = new QWebView(scrollArea);
-    scrollArea->setWidget(webView);
-    webView->resize(size);
+    bool result = content->loadContent(fileName);
 
-    WebVfx::WebContent* webContent =
-        new WebVfx::WebContent(webView, size,
-                               new ViewerParameters(parametersTable));
-
-    // User can right-click to open WebInspector on the page
-    webContent->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled,
-                                         true);
-    webView->setPage(webContent);
-    content = webContent;
-
-    bool result = webContent->loadContent(fileName);
-
-    setupImages(size);
-
-    content->renderContent(timeSpinBox->value(), 0);
-
-    return result;
-}
-
-bool Viewer::loadQml(const QString& fileName)
-{
-    logTextEdit->clear();
-
-    // Set QmlContent as direct widget of QScrollArea,
-    // otherwise it creates an intermediate QWidget which messes up resizing.
-    WebVfx::QmlContent* qmlContent =
-        new WebVfx::QmlContent(scrollArea, scrollArea->widget()->size(),
-                               new ViewerParameters(parametersTable));
-    scrollArea->setWidget(qmlContent);
-    content = qmlContent;
-
-    bool result = qmlContent->loadContent(fileName);
-
-    setupImages(qmlContent->size());
+    setupImages(view->size());
 
     content->renderContent(timeSpinBox->value(), 0);
 

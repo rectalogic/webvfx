@@ -16,7 +16,6 @@ namespace WebVfx
 
 class QDoubleSpinBox;
 class QLabel;
-class QWebView;
 
 class Viewer : public QMainWindow, private Ui::Viewer
 {
@@ -26,8 +25,7 @@ public:
     Viewer(QWidget *parent = 0);
 
 private slots:
-    void on_actionOpenHtml_triggered(bool);
-    void on_actionOpenQml_triggered(bool);
+    void on_actionOpen_triggered(bool);
     void on_actionReload_triggered(bool);
     void on_resizeButton_clicked();
     void on_timeSlider_valueChanged(int);
@@ -37,8 +35,7 @@ private slots:
     void onImageChanged(const QString&, WebVfx::Image);
 
 private:
-    bool loadHtml(const QString& fileName);
-    bool loadQml(const QString& fileName);
+    bool loadContent(const QString& fileName);
     void handleResize();
     void setImagesOnContent();
     void setupImages(const QSize& size);

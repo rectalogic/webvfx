@@ -2,7 +2,6 @@
 #include <QGLFramebufferObject>
 #include <QGLWidget>
 #include <QPainter>
-#include <QSize>
 #include "webvfx/image.h"
 #include "webvfx/content.h"
 #include "webvfx/renderer.h"
@@ -12,28 +11,45 @@
 namespace WebVfx
 {
 
-Renderer::Renderer()
-{
-}
-
 Renderer::~Renderer()
 {
-    delete multisampleFBO;
-    delete resolveFBO;
-    if (ownWidget)
-        delete glWidget;
+    deleteFBOs();
 }
 
-bool Renderer::init(QGLWidget* glWidget, bool ownWidget, const QSize& size)
+// Renderer does not take ownership of glWidget
+void Renderer::init(QGLWidget* glWidget, const QSize& size)
 {
     this->glWidget = glWidget;
-    this->ownWidget = ownWidget;
-    return resize(size);
+    resize(size);
 }
 
-bool Renderer::resize(const QSize& size) {
+void Renderer::setRenderType(RenderType type)
+{
+    if (renderType == RenderGLAntialias && type != RenderGLAntialias)
+        deleteFBOs();
+    renderType = type;
+}
+
+void Renderer::resize(const QSize& size) {
+    if (size == this->size)
+        return;
+    this->size = size;
+    deleteFBOs();
+}
+
+void Renderer::deleteFBOs()
+{
+    delete multisampleFBO; multisampleFBO = 0;
+    delete resolveFBO; resolveFBO = 0;
+}
+
+bool Renderer::createFBOs()
+{
     if (!glWidget)
         return false;
+
+    if (multisampleFBO && resolveFBO)
+        return true;
 
     if (!QGLFramebufferObject::hasOpenGLFramebufferObjects()
         || !QGLFramebufferObject::hasOpenGLFramebufferBlit()) {
@@ -48,9 +64,7 @@ bool Renderer::resize(const QSize& size) {
     fboFormat.setSamples(4);
     fboFormat.setTextureTarget(GL_TEXTURE_RECTANGLE_ARB);
     fboFormat.setAttachment(QGLFramebufferObject::CombinedDepthStencil);
-    delete multisampleFBO;
     multisampleFBO = new QGLFramebufferObject(size, fboFormat);
-    delete resolveFBO;
     resolveFBO = new QGLFramebufferObject(size, GL_TEXTURE_RECTANGLE_ARB);
 
     glWidget->doneCurrent();
@@ -61,6 +75,47 @@ bool Renderer::render(Content* content, Image* renderImage)
 {
     if (!renderImage)
         return false;
+
+    switch (renderType) {
+    case RenderGL:
+    default:
+        return renderGL(content, renderImage);
+    case RenderGLAntialias:
+        return renderGLAntialias(content, renderImage);
+    case RenderNoGL:
+        return renderNoGL(content, renderImage);
+    }
+}
+
+bool Renderer::renderGL(Content* content, Image* renderImage)
+{
+    glWidget->makeCurrent();
+
+    // Render frame into QGLWidget
+    QPainter painter(glWidget);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setRenderHint(QPainter::TextAntialiasing, true);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+    content->paintContent(&painter);
+    painter.end();
+
+    // Read back the pixels
+    //XXX not sure this works, and if it does image may be upside down
+    glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
+    glPixelStorei(GL_PACK_ALIGNMENT, 1);
+    glPixelStorei(GL_PACK_ROW_LENGTH, renderImage->bytesPerLine() / 3);
+    glReadPixels(0, 0, renderImage->width(), renderImage->height(),
+                 GL_RGB, GL_UNSIGNED_BYTE, renderImage->pixels());
+    glPopClientAttrib();
+
+    glWidget->doneCurrent();
+
+    return true;
+}
+
+bool Renderer::renderGLAntialias(Content* content, Image* renderImage)
+{
+    createFBOs();
 
     glWidget->makeCurrent();
 
@@ -95,6 +150,23 @@ bool Renderer::render(Content* content, Image* renderImage)
     glWidget->doneCurrent();
 
     return true;
+}
+
+bool Renderer::renderNoGL(Content* content, Image* renderImage)
+{
+     // QImage referencing our Image bits
+     QImage image((uchar*)renderImage->pixels(), renderImage->width(),
+                  renderImage->height(), renderImage->bytesPerLine(),
+                  QImage::Format_RGB888);
+
+     // Paint into image
+     QPainter painter(&image);
+     painter.setRenderHint(QPainter::Antialiasing, true);
+     painter.setRenderHint(QPainter::TextAntialiasing, true);
+     painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+     content->paintContent(&painter);
+     painter.end();
+     return true;
 }
 
 }

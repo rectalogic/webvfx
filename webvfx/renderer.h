@@ -5,9 +5,10 @@
 #ifndef WEBVFX_RENDERER_H_
 #define WEBVFX_RENDERER_H_
 
+#include <QSize>
+
 class QGLFramebufferObject;
 class QGLWidget;
-class QSize;
 
 namespace WebVfx
 {
@@ -18,19 +19,32 @@ class Image;
 class Renderer
 {
 public:
-    //XXX make antialiasing optional
-    Renderer();
+    enum RenderType { RenderGL, RenderGLAntialias, RenderNoGL };
+
+    Renderer()
+        : glWidget(0)
+        , renderType(RenderGL)
+        , multisampleFBO(0)
+        , resolveFBO(0) {}
     ~Renderer();
 
-    bool init(QGLWidget* glWidget, bool ownWidget, const QSize& size);
+    void init(QGLWidget* glWidget, const QSize& size);
+    void setRenderType(RenderType type);
     bool render(Content* content, Image* renderImage);
-    bool resize(const QSize& size);
+    void resize(const QSize& size);
 
 private:
+    void deleteFBOs();
+    bool createFBOs();
+    bool renderGL(Content* content, Image* renderImage);
+    bool renderGLAntialias(Content* content, Image* renderImage);
+    bool renderNoGL(Content* content, Image* renderImage);
+
     QGLWidget* glWidget;
-    bool ownWidget;
+    RenderType renderType;
     QGLFramebufferObject* multisampleFBO;
     QGLFramebufferObject* resolveFBO;
+    QSize size;
 };
 
 }
