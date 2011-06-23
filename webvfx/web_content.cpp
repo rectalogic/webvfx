@@ -6,6 +6,7 @@
 #include <QStringBuilder>
 #include <QVariant>
 #include <QWebFrame>
+#include <QWebPage>
 #include <QWebView>
 #include "webvfx/image.h"
 #include "webvfx/web_content.h"
@@ -14,61 +15,64 @@
 namespace WebVfx
 {
 
-WebContent::WebContent(const QSize& size, Parameters* parameters)
-    : QWebPage(0)
-    , pageLoadFinished(LoadNotFinished)
-    , contextLoadFinished(LoadNotFinished)
-    , contentContext(new ContentContext(this, parameters))
-    , syncLoop(0)
-{
-    connect(this, SIGNAL(loadFinished(bool)), SLOT(webPageLoadFinished(bool)));
-    connect(contentContext, SIGNAL(readyRender(bool)), SLOT(contentContextLoadFinished(bool)));
-    connect(mainFrame(), SIGNAL(javaScriptWindowObjectCleared()), SLOT(injectContentContext()));
-
-    setContentSize(size);
+WebPage::WebPage(QObject* parent) : QWebPage(parent) {
+    mainFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
+    mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOff);
 
     settings()->setAttribute(QWebSettings::SiteSpecificQuirksEnabled, false);
     settings()->setAttribute(QWebSettings::AcceleratedCompositingEnabled, true);
 #if (QTWEBKIT_VERSION >= QTWEBKIT_VERSION_CHECK(2, 2, 0))
     settings()->setAttribute(QWebSettings::WebGLEnabled, true);
 #endif
-
-    // Turn off scrollbars
-    mainFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
-    mainFrame()->setScrollBarPolicy(Qt::Vertical, Qt::ScrollBarAlwaysOff);
-
-    renderer.init(0, size);
-    renderer.setRenderType(Renderer::RenderNoGL);
 }
 
-void WebContent::javaScriptAlert(QWebFrame *, const QString &msg)
-{
+bool WebPage::shouldInterruptJavaScript() {
+    return false;
+}
+
+void WebPage::javaScriptAlert(QWebFrame *, const QString &msg) {
     log(QLatin1Literal("JavaScript alert: ") % msg);
 }
 
-void WebContent::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID)
-{
+void WebPage::javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID) {
     QString msg(message);
     if (!sourceID.isEmpty())
         msg % QLatin1Literal(" (") % sourceID.section('/', -1) % QLatin1Literal(":") % QString::number(lineNumber) % QLatin1Literal(")");
     log(msg);
 }
 
-bool WebContent::acceptNavigationRequest(QWebFrame*, const QNetworkRequest&, NavigationType)
-{
+bool WebPage::acceptNavigationRequest(QWebFrame*, const QNetworkRequest&, NavigationType) {
     //XXX we want to prevent JS from navigating the page - does this prevent our initial load?
     //return false;
     return true;
 }
 
-void WebContent::injectContentContext()
+////////////////////
+
+WebContent::WebContent(const QSize& size, Parameters* parameters)
+    : QObject(0)
+    , webPage(new WebPage(this))
+    , pageLoadFinished(LoadNotFinished)
+    , contextLoadFinished(LoadNotFinished)
+    , contentContext(new ContentContext(this, parameters))
+    , syncLoop(0)
 {
-    mainFrame()->addToJavaScriptWindowObject("webvfx", contentContext);
+    connect(webPage, SIGNAL(loadFinished(bool)),
+            SLOT(webPageLoadFinished(bool)));
+    connect(contentContext, SIGNAL(readyRender(bool)),
+            SLOT(contentContextLoadFinished(bool)));
+    connect(webPage->mainFrame(), SIGNAL(javaScriptWindowObjectCleared()),
+            SLOT(injectContentContext()));
+
+    setContentSize(size);
+
+    renderer.init(0, size);
+    renderer.setRenderType(Renderer::RenderNoGL);
 }
 
-bool WebContent::shouldInterruptJavaScript()
+void WebContent::injectContentContext()
 {
-    return false;
+    webPage->mainFrame()->addToJavaScriptWindowObject("webvfx", contentContext);
 }
 
 void WebContent::webPageLoadFinished(bool result)
@@ -99,7 +103,7 @@ bool WebContent::loadContent(const QUrl& url)
     pageLoadFinished = LoadNotFinished;
     contextLoadFinished = LoadNotFinished;
 
-    mainFrame()->load(url);
+    webPage->mainFrame()->load(url);
 
     if (pageLoadFinished != LoadFailed
         && (pageLoadFinished == LoadNotFinished
@@ -118,6 +122,10 @@ bool WebContent::loadContent(const QUrl& url)
     else
         return pageLoadFinished == LoadSucceeded && contextLoadFinished == LoadSucceeded;
 }
+void WebContent::setContentSize(const QSize& size) {
+    if (webPage->viewportSize() != size)
+        webPage->setViewportSize(size);
+}
 
 bool WebContent::renderContent(double time, Image* renderImage)
 {
@@ -128,15 +136,20 @@ bool WebContent::renderContent(double time, Image* renderImage)
 
 void WebContent::paintContent(QPainter* painter)
 {
-    mainFrame()->render(painter);
+    webPage->mainFrame()->render(painter);
 }
 
 QWidget* WebContent::createView(QWidget* parent)
 {
     QWebView* webView = new QWebView(parent);
     setParent(parent);
-    webView->setPage(this);
+    webView->setPage(webPage);
     return webView;
+}
+
+QWebSettings* WebContent::settings()
+{
+    return webPage->settings();
 }
 
 }

@@ -22,8 +22,9 @@ namespace WebVfx
 
 class Image;
 class Parameters;
+class WebPage;
 
-class WebContent : public QWebPage, public Content
+class WebContent : public QObject, public Content
 {
     Q_OBJECT
 public:
@@ -31,10 +32,7 @@ public:
 
     // Load URL synchronously, return success
     bool loadContent(const QUrl& url);
-    void setContentSize(const QSize& size) {
-        if (viewportSize() != size)
-            setViewportSize(size);
-    }
+    void setContentSize(const QSize& size);
     const Effects::ImageTypeMap& getImageTypeMap() { return contentContext->getImageTypeMap(); };
     bool renderContent(double time, Image* renderImage);
     void paintContent(QPainter* painter);
@@ -42,24 +40,42 @@ public:
 
     QWidget* createView(QWidget* parent);
 
+    // For debugging with Viewer
+    QWebSettings* settings();
+
 private slots:
     void injectContentContext();
-    bool shouldInterruptJavaScript();
     void webPageLoadFinished(bool result);
     void contentContextLoadFinished(bool result);
 
-protected:
-    void javaScriptAlert(QWebFrame* originatingFrame, const QString& msg);
-    void javaScriptConsoleMessage(const QString& message, int lineNumber, const QString& sourceID);
-    bool acceptNavigationRequest(QWebFrame* frame, const QNetworkRequest& request, NavigationType type);
-
 private:
+    WebPage* webPage;
     enum LoadStatus { LoadNotFinished, LoadFailed, LoadSucceeded };
     LoadStatus pageLoadFinished;
     LoadStatus contextLoadFinished;
     ContentContext* contentContext;
     QEventLoop* syncLoop;
     Renderer renderer;
+};
+
+////////////////////
+
+class QWebFrame;
+class QNetworkRequest;
+
+class WebPage : public QWebPage
+{
+    Q_OBJECT
+public:
+    WebPage(QObject* parent);
+
+private slots:
+    bool shouldInterruptJavaScript();
+
+protected:
+    void javaScriptAlert(QWebFrame *, const QString &msg);
+    void javaScriptConsoleMessage(const QString &message, int lineNumber, const QString &sourceID);
+    bool acceptNavigationRequest(QWebFrame*, const QNetworkRequest&, NavigationType);
 };
 
 }
