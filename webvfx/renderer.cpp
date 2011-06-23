@@ -100,7 +100,6 @@ bool Renderer::renderGL(Content* content, Image* renderImage)
     painter.end();
 
     // Read back the pixels
-    //XXX not sure this works, and if it does image may be upside down
     glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glPixelStorei(GL_PACK_ROW_LENGTH, renderImage->bytesPerLine() / 3);
