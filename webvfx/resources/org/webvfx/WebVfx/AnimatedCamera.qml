@@ -7,7 +7,7 @@ import Qt3D 1.0
 
 // QtQuick3D Camera that supports animation data exported from Blender
 
-import "qrc:/webvfx/script/animation.js" as anim
+import "qrc:/webvfx/script/animation.js" as Anim
 
 Camera {
 
@@ -33,7 +33,7 @@ Camera {
     }
 
     function getAnimation() {
-        return anim.WebVfx.Animation.prototype.global;
+        return Anim.WebVfx.Animation.prototype.global;
     }
 
     // We can't bind to a JS native property, so this is a pseudo-property
@@ -45,7 +45,7 @@ Camera {
     onAnimationDataChanged: {
         // QML doesn't allow globals, and storing a JS object as a variant
         // property doesn't work - so stash it on the prototype.
-        anim.WebVfx.Animation.prototype.global = new anim.WebVfx.Animation(animationData);
+        Anim.WebVfx.Animation.prototype.global = new Anim.WebVfx.Animation(animationData);
         // Tweak property so data binding fires
         animationConstructed += 1;
         updateCamera();

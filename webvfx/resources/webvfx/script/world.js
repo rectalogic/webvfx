@@ -179,7 +179,7 @@ WebVfx.createTexturedMaterial = function (texture, transparent) {
 WebVfx.AnimatedCamera = function (aspect, nearPlane, farPlane, animationData) {
     var anim = new WebVfx.Animation(animationData);
     this.animation = anim;
-    var fov = anim.radians2degrees(ca.verticalFOV(aspect));
+    var fov = anim.radians2degrees(anim.verticalFOV(aspect));
     THREE.Camera.call(this, fov, aspect, nearPlane, farPlane);
     this.useTarget = false;
 };
