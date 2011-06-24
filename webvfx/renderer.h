@@ -19,32 +19,50 @@ class Image;
 class Renderer
 {
 public:
-    enum RenderType { RenderGL, RenderGLAntialias, RenderNoGL };
+    Renderer() {}
+    virtual ~Renderer() = 0;
+    virtual bool render(Content* content, Image* renderImage) = 0;
+};
 
-    Renderer()
-        : glWidget(0)
-        , renderType(RenderGL)
-        , multisampleFBO(0)
-        , resolveFBO(0) {}
-    ~Renderer();
+class GLRenderer : public Renderer
+{
+public:
+    // Renderer does not take ownership of QGLWidget
+    GLRenderer(QGLWidget* glWidget)
+        : glWidget(glWidget) {}
 
-    void init(QGLWidget* glWidget, const QSize& size);
-    void setRenderType(RenderType type);
     bool render(Content* content, Image* renderImage);
-    void resize(const QSize& size);
 
 private:
-    void deleteFBOs();
-    bool createFBOs();
-    bool renderGL(Content* content, Image* renderImage);
-    bool renderGLAntialias(Content* content, Image* renderImage);
-    bool renderNoGL(Content* content, Image* renderImage);
+    QGLWidget* glWidget;
+};
+
+class GLAntialiasRenderer : public Renderer
+{
+public:
+    // Renderer does not take ownership of QGLWidget
+    GLAntialiasRenderer(QGLWidget* glWidget)
+        : glWidget(glWidget)
+        , multisampleFBO(0)
+        , resolveFBO(0) {}
+    ~GLAntialiasRenderer();
+
+    bool render(Content* content, Image* renderImage);
+
+private:
+    bool createFBOs(const QSize& size);
 
     QGLWidget* glWidget;
-    RenderType renderType;
     QGLFramebufferObject* multisampleFBO;
     QGLFramebufferObject* resolveFBO;
-    QSize size;
+};
+
+class ImageRenderer : public Renderer
+{
+public:
+    ImageRenderer() {}
+
+    bool render(Content* content, Image* renderImage);
 };
 
 }

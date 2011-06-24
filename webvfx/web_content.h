@@ -10,7 +10,6 @@
 #include "webvfx/content.h"
 #include "webvfx/content_context.h"
 #include "webvfx/effects.h"
-#include "webvfx/renderer.h"
 
 class QEventLoop;
 class QImage;
@@ -22,6 +21,7 @@ namespace WebVfx
 
 class Image;
 class Parameters;
+class Renderer;
 class WebPage;
 
 class WebContent : public QObject, public Content
@@ -29,6 +29,7 @@ class WebContent : public QObject, public Content
     Q_OBJECT
 public:
     WebContent(const QSize& size, Parameters* parameters);
+    ~WebContent();
 
     // Load URL synchronously, return success
     bool loadContent(const QUrl& url);
@@ -55,7 +56,7 @@ private:
     LoadStatus contextLoadFinished;
     ContentContext* contentContext;
     QEventLoop* syncLoop;
-    Renderer renderer;
+    Renderer* renderer;
 };
 
 ////////////////////

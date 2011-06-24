@@ -9,6 +9,7 @@
 #include <QWebPage>
 #include <QWebView>
 #include "webvfx/image.h"
+#include "webvfx/renderer.h"
 #include "webvfx/web_content.h"
 #include "webvfx/webvfx.h"
 
@@ -56,6 +57,7 @@ WebContent::WebContent(const QSize& size, Parameters* parameters)
     , contextLoadFinished(LoadNotFinished)
     , contentContext(new ContentContext(this, parameters))
     , syncLoop(0)
+    , renderer(new ImageRenderer())
 {
     connect(webPage, SIGNAL(loadFinished(bool)),
             SLOT(webPageLoadFinished(bool)));
@@ -65,9 +67,11 @@ WebContent::WebContent(const QSize& size, Parameters* parameters)
             SLOT(injectContentContext()));
 
     setContentSize(size);
+}
 
-    renderer.init(0, size);
-    renderer.setRenderType(Renderer::RenderNoGL);
+WebContent::~WebContent()
+{
+    delete renderer;
 }
 
 void WebContent::injectContentContext()
@@ -131,7 +135,7 @@ bool WebContent::renderContent(double time, Image* renderImage)
 {
     // Allow the page to render for this time
     contentContext->render(time);
-    return renderer.render(this, renderImage);
+    return renderer->render(this, renderImage);
 }
 
 void WebContent::paintContent(QPainter* painter)

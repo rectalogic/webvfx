@@ -13,81 +13,9 @@ namespace WebVfx
 
 Renderer::~Renderer()
 {
-    deleteFBOs();
 }
 
-// Renderer does not take ownership of glWidget
-void Renderer::init(QGLWidget* glWidget, const QSize& size)
-{
-    this->glWidget = glWidget;
-    resize(size);
-}
-
-void Renderer::setRenderType(RenderType type)
-{
-    if (renderType == RenderGLAntialias && type != RenderGLAntialias)
-        deleteFBOs();
-    renderType = type;
-}
-
-void Renderer::resize(const QSize& size) {
-    if (size == this->size)
-        return;
-    this->size = size;
-    deleteFBOs();
-}
-
-void Renderer::deleteFBOs()
-{
-    delete multisampleFBO; multisampleFBO = 0;
-    delete resolveFBO; resolveFBO = 0;
-}
-
-bool Renderer::createFBOs()
-{
-    if (!glWidget)
-        return false;
-
-    if (multisampleFBO && resolveFBO)
-        return true;
-
-    if (!QGLFramebufferObject::hasOpenGLFramebufferObjects()
-        || !QGLFramebufferObject::hasOpenGLFramebufferBlit()) {
-        log("Renderer: FBOs not fully supported, antialiasing will not work");
-        return false;
-    }
-
-    // Create a multisample FBO and an FBO to resolve into
-    glWidget->makeCurrent();
-
-    QGLFramebufferObjectFormat fboFormat;
-    fboFormat.setSamples(4);
-    fboFormat.setTextureTarget(GL_TEXTURE_RECTANGLE_ARB);
-    fboFormat.setAttachment(QGLFramebufferObject::CombinedDepthStencil);
-    multisampleFBO = new QGLFramebufferObject(size, fboFormat);
-    resolveFBO = new QGLFramebufferObject(size, GL_TEXTURE_RECTANGLE_ARB);
-
-    glWidget->doneCurrent();
-    return true;
-}
-
-bool Renderer::render(Content* content, Image* renderImage)
-{
-    if (!renderImage)
-        return false;
-
-    switch (renderType) {
-    case RenderGL:
-    default:
-        return renderGL(content, renderImage);
-    case RenderGLAntialias:
-        return renderGLAntialias(content, renderImage);
-    case RenderNoGL:
-        return renderNoGL(content, renderImage);
-    }
-}
-
-bool Renderer::renderGL(Content* content, Image* renderImage)
+bool GLRenderer::render(Content* content, Image* renderImage)
 {
     glWidget->makeCurrent();
 
@@ -112,9 +40,45 @@ bool Renderer::renderGL(Content* content, Image* renderImage)
     return true;
 }
 
-bool Renderer::renderGLAntialias(Content* content, Image* renderImage)
+GLAntialiasRenderer::~GLAntialiasRenderer()
 {
-    createFBOs();
+    delete multisampleFBO;
+    delete resolveFBO;
+}
+
+bool GLAntialiasRenderer::createFBOs(const QSize& size)
+{
+    if (!glWidget)
+        return false;
+
+    if (multisampleFBO && resolveFBO && resolveFBO->size() == size)
+        return true;
+
+    if (!QGLFramebufferObject::hasOpenGLFramebufferObjects()
+        || !QGLFramebufferObject::hasOpenGLFramebufferBlit()) {
+        log("Renderer: FBOs not fully supported, antialiasing will not work");
+        return false;
+    }
+
+    // Create a multisample FBO and an FBO to resolve into
+    glWidget->makeCurrent();
+
+    QGLFramebufferObjectFormat fboFormat;
+    fboFormat.setSamples(4);
+    fboFormat.setTextureTarget(GL_TEXTURE_RECTANGLE_ARB);
+    fboFormat.setAttachment(QGLFramebufferObject::CombinedDepthStencil);
+    delete multisampleFBO;
+    multisampleFBO = new QGLFramebufferObject(size, fboFormat);
+    delete resolveFBO;
+    resolveFBO = new QGLFramebufferObject(size, GL_TEXTURE_RECTANGLE_ARB);
+
+    glWidget->doneCurrent();
+    return true;
+}
+
+bool GLAntialiasRenderer::render(Content* content, Image* renderImage)
+{
+    createFBOs(QSize(renderImage->width(), renderImage->height()));
 
     glWidget->makeCurrent();
 
@@ -151,7 +115,7 @@ bool Renderer::renderGLAntialias(Content* content, Image* renderImage)
     return true;
 }
 
-bool Renderer::renderNoGL(Content* content, Image* renderImage)
+bool ImageRenderer::render(Content* content, Image* renderImage)
 {
      // QImage referencing our Image bits
      QImage image((uchar*)renderImage->pixels(), renderImage->width(),

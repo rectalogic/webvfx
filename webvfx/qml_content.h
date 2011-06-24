@@ -11,7 +11,6 @@
 #include "webvfx/content_context.h"
 #include "webvfx/effects.h"
 #include "webvfx/image.h"
-#include "webvfx/renderer.h"
 
 class QEventLoop;
 class QSize;
@@ -22,12 +21,14 @@ namespace WebVfx
 
 class Image;
 class Parameters;
+class Renderer;
 
 class QmlContent : public QDeclarativeView, public Content
 {
     Q_OBJECT
 public:
     QmlContent(const QSize& size, Parameters* parameters);
+    ~QmlContent();
 
     // Load QML synchronously, return success
     bool loadContent(const QUrl& url);
@@ -53,7 +54,7 @@ private:
     LoadStatus contextLoadFinished;
     ContentContext* contentContext;
     QEventLoop* syncLoop;
-    Renderer renderer;
+    Renderer* renderer;
 };
 
 ////////////////////

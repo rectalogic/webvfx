@@ -10,6 +10,7 @@
 #include <QVariant>
 #include "webvfx/image.h"
 #include "webvfx/qml_content.h"
+#include "webvfx/renderer.h"
 #include "webvfx/webvfx.h"
 
 
@@ -56,6 +57,7 @@ QmlContent::QmlContent(const QSize& size, Parameters* parameters)
     , contextLoadFinished(LoadNotFinished)
     , contentContext(new ContentContext(this, parameters))
     , syncLoop(0)
+    , renderer(0)
 {
     if (!s_QmlContentRegistered) {
         s_QmlContentRegistered = true;
@@ -76,8 +78,7 @@ QmlContent::QmlContent(const QSize& size, Parameters* parameters)
     QGLWidget* glWidget = new QGLWidget();
     setViewport(glWidget);
 
-    renderer.init(glWidget, size);
-    renderer.setRenderType(Renderer::RenderGLAntialias);
+    renderer = new GLAntialiasRenderer(glWidget);
 
     // OpenGL needs this
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
@@ -91,6 +92,11 @@ QmlContent::QmlContent(const QSize& size, Parameters* parameters)
     connect(this, SIGNAL(statusChanged(QDeclarativeView::Status)), SLOT(qmlViewStatusChanged(QDeclarativeView::Status)));
     connect(engine(), SIGNAL(warnings(QList<QDeclarativeError>)), SLOT(logWarnings(QList<QDeclarativeError>)));
     connect(contentContext, SIGNAL(readyRender(bool)), SLOT(contentContextLoadFinished(bool)));
+}
+
+QmlContent::~QmlContent()
+{
+    delete renderer;
 }
 
 void QmlContent::qmlViewStatusChanged(QDeclarativeView::Status status)
@@ -165,7 +171,6 @@ void QmlContent::setContentSize(const QSize& size) {
     QSize oldSize(this->size());
     if (oldSize != size) {
         resize(size);
-        renderer.resize(size);
         // The resize event is delayed until we are shown.
         // Since we are never shown, send the event here.
         // Superclass does some calculations in resizeEvent
@@ -179,7 +184,7 @@ bool QmlContent::renderContent(double time, Image* renderImage)
 {
     // Allow the content to render for this time
     contentContext->render(time);
-    return renderer.render(this, renderImage);
+    return renderer->render(this, renderImage);
     //XXX also check errors() after each render()
 }
 
