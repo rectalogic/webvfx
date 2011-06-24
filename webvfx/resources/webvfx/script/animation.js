@@ -179,10 +179,9 @@ WebVfx.Animation.prototype.evaluate = function(t) {
     this.locationY = this.locationYAnimation.evaluate(x);
     this.locationZ = this.locationZAnimation.evaluate(x);
 
-    // Blender Euler order is ZYX order.
-    // Using the ZYX matrix from, but transposed (so passive transformation
-    // instead of active)
-    // http://en.wikipedia.org/wiki/Euler_angles#Matrix_orientation
+    // Blender Euler order is XYZ order. But all Blender eulers
+    // seem to be reversed (e.g. XYZ is ZYX, YXZ ix ZXY etc.),
+    // so we use ZYX order here.
     var cx = Math.cos(this.rotationX);
     var cy = Math.cos(this.rotationY);
     var cz = Math.cos(this.rotationZ);
