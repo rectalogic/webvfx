@@ -7,8 +7,8 @@ bl_info = {
     "description": "Import/export object animation data in JSON for use with WebVfx",
     "author": "Andrew Wason <rectalogic@rectalogic.com>",
     "version": (1, 0),
-    "blender": (2, 5, 7),
-    "api": 36007,
+    "blender": (2, 5, 8),
+    "api": 37699,
     "location": "File > Import-Export",
     "warning": '', # used for warning icon and text in addons panel
     "wiki_url": '',
@@ -26,7 +26,7 @@ if "bpy" in locals():
 
 import bpy
 from bpy.props import StringProperty
-from io_utils import ImportHelper, ExportHelper
+from bpy_extras.io_utils import ImportHelper, ExportHelper
 
 
 KeyframeGroup = "LocRot"

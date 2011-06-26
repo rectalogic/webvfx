@@ -13,8 +13,8 @@ bl_info = {
     "description": "Set of tools to help create camera animation for WebVfx.",
     "author": "Andrew Wason <rectalogic@rectalogic.com>",
     "version": (1, 0),
-    "blender": (2, 5, 7),
-    "api": 36007,
+    "blender": (2, 5, 8),
+    "api": 37699,
     "location": "View3D > ToolShelf > WebVfx Camera Animation",
     "warning": '', # used for warning icon and text in addons panel
     "wiki_url": '',
@@ -58,6 +58,19 @@ to determine the aspect ratio of a quad that will render text.
 KeyframeGroup = "LocRot"
 
 
+class Eye:
+    def __init__(self, matrix):
+        # up vector can just be read out of the matrix (y axis)
+        self.upVector = getUpVector(matrix)
+        # eye position can just be read out of the matrix
+        w = matrix[3][3]
+        eye = (matrix[3][0] / w, matrix[3][1] / w, matrix[3][2] / w)
+        self.eyeVector = eye
+        # get the direction vector (camera looking down z)
+        direction = (matrix[2][0], matrix[2][1], matrix[2][2])
+        # lookat is just the eye position - the direction
+        self.lookAtVector = (eye[0] - direction[0], eye[1] - direction[1], eye[2] - direction[2])
+
 def getUpVector(matrix):
     # up vector can just be read out of the matrix (y axis)
     return (matrix[1][0], matrix[1][1], matrix[1][2])
@@ -68,7 +81,7 @@ def dumpText(operator, context, title, msg):
     # If an editor is open, switch it to our text
     for area in context.screen.areas:
         if area.type == "TEXT_EDITOR":
-            area.active_space.text = text
+            area.spaces.active.text = text
             break
     operator.report({'INFO'}, "Output in %s" % text.name)
 
@@ -87,14 +100,7 @@ class GenerateCameraQml(bpy.types.Operator):
         camera = scene.camera
         matrix = camera.matrix_world
 
-        # eye position can just be read out of the matrix
-        w = matrix[3][3]
-        eye = (matrix[3][0] / w, matrix[3][1] / w, matrix[3][2] / w)
-        # get the dir vector (camera looking down z)
-        direction = (matrix[2][0], matrix[2][1], matrix[2][2])
-        # look is just the eye position - the direction
-        look = (eye[0] - direction[0], eye[1] - direction[1], eye[2] - direction[2])
-        up = getUpVector(matrix)
+        eye = Eye(matrix)
 
         # Blender fov is horizontal, QtQuick3D is vertical.
         # Precompute part factor to convert at runtime based on viewport size.
@@ -113,7 +119,7 @@ class GenerateCameraQml(bpy.types.Operator):
                 "        center: Qt.vector3d%s\n"
                 "        eye: Qt.vector3d%s\n"
                 "    }\n"
-                "}\n" % (nearPlane, farPlane, fovFactor, up, look, eye))
+                "}\n" % (nearPlane, farPlane, fovFactor, eye.upVector, eye.lookAtVector, eye.eyeVector))
 
     def execute(self, context):
         dumpText(self, context, 'QML Camera', self.generateCameraQml(context))
@@ -235,10 +241,9 @@ class RotateView90(bpy.types.Operator):
 
     def execute(self, context):
         region_3d = context.space_data.region_3d
-        view_matrix = region_3d.view_matrix.copy()
-        rot90 = mathutils.Matrix.Rotation(math.radians(90), 3, 'Z')
-        region_3d.view_rotation = (view_matrix.to_3x3().inverted() * rot90).inverted().to_quaternion()
-
+        view_matrix = region_3d.view_matrix.inverted()
+        rot90 = mathutils.Euler(0, 0, math.pi / 2)
+        region_3d.view_rotation = view_matrix.to_3x3().rotate(rot90).to_quaternion()
         return {'FINISHED'}
 
 
@@ -314,7 +319,7 @@ class OBJECT_PT_camera_face_align(bpy.types.Panel):
 # def r3d():
 #     for area in bpy.context.screen.areas:
 #         if area.type == "VIEW_3D":
-#             return area.active_space.region_3d
+#             return area.spaces.active.region_3d
 
 
 def register():
