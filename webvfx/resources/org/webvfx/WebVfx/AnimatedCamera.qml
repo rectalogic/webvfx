@@ -20,16 +20,43 @@ Camera {
 
     function updateCamera() {
         var animation = getAnimation();
-        animation.evaluate(animationTime);
-        eye = Qt.vector3d(animation.eye[0],
-                          animation.eye[1],
-                          animation.eye[2]);
-        center = Qt.vector3d(animation.lookAt[0],
-                             animation.lookAt[1],
-                             animation.lookAt[2]);
-        upVector = Qt.vector3d(animation.upVector[0],
-                               animation.upVector[1],
-                               animation.upVector[2]);
+        animation.evaluateTime(animationTime);
+
+        // Blender Euler order is XYZ order. But all Blender eulers
+        // seem to be reversed (e.g. XYZ is ZYX, YXZ ix ZXY etc.),
+        // so we use ZYX order here.
+        var cx = Math.cos(animation.rotationX);
+        var cy = Math.cos(animation.rotationY);
+        var cz = Math.cos(animation.rotationZ);
+        var sx = Math.sin(animation.rotationX);
+        var sy = Math.sin(animation.rotationY);
+        var sz = Math.sin(animation.rotationZ);
+
+        var cc = cx*cz;
+        var cs = cx*sz;
+        var sc = sx*cz;
+        var ss = sx*sz;
+
+        var m12 = sy*sc-cs;
+        var m22 = sy*ss+cc;
+        var m32 = cy*sx;
+
+        var m13 = sy*cc+ss;
+        var m23 = sy*cs-sc;
+        var m33 = cy*cx;
+
+        // Eye is at translation position
+        eye = Qt.vector3d(animation.locationX,
+                          animation.locationY,
+                          animation.locationZ);
+
+        // Direction is eye looking down Z (m13, m23, m33).
+        // LookAt is (eye - direction)
+        center = Qt.vector3d(eye.x - m13, eye.y - m23, eye.z - m33)
+
+        // Up vector can just be read out of the matrix (y axis)
+        // (m12, m22, m32)
+        upVector = Qt.vector3d(m12, m22, m32);
     }
 
     function getAnimation() {

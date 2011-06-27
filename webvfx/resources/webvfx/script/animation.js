@@ -130,20 +130,10 @@ WebVfx.Animation = function (animationData) {
     this.rotationYAnimation = this.processAnimation(animationData['rotationY']);
     this.rotationZAnimation = this.processAnimation(animationData['rotationZ']);
 
-    this.upVector = new Array(3);
-    this.lookAt = new Array(3);
-    this.eye = new Array(3);
-
-    // Rest of matrix elements will be computed in evaluate()
-    this.m41 = 0;
-    this.m42 = 0;
-    this.m43 = 0;
-    this.m44 = 1;
-
     // Horizontal field of view in radians
     this.horizontalFOV = animationData['horizontalFOV'];
 
-    this.evaluate(0);
+    this.evaluateTime(0);
 }
 
 WebVfx.Animation.prototype.processAnimation = function(animation) {
@@ -160,16 +150,14 @@ WebVfx.Animation.prototype.processAnimation = function(animation) {
     return null;
 }
 
-// t is 0..1
-// After evaluating, upVector, lookAt and eye and matrix elements
-// will be updated.
-WebVfx.Animation.prototype.evaluate = function(t) {
-    if (this.time == t)
+// Evaluate for x which must be in the animations range
+// After evaluating, location[XYZ] and rotation[XYZ] will be updated.
+// Rotation are Blender Euler angles of order XYZ - but Blender XYZ
+// is really ZYX order.
+WebVfx.Animation.prototype.evaluate = function(x) {
+    if (this.currentX == x)
         return;
-    this.time = t;
-
-    // Find x corresponding to t
-    var x = this.range[0] + t * (this.range[1] - this.range[0] + 1);
+    this.currentX = x;
 
     this.rotationX = this.rotationXAnimation.evaluate(x);
     this.rotationY = this.rotationYAnimation.evaluate(x);
@@ -178,54 +166,12 @@ WebVfx.Animation.prototype.evaluate = function(t) {
     this.locationX = this.locationXAnimation.evaluate(x);
     this.locationY = this.locationYAnimation.evaluate(x);
     this.locationZ = this.locationZAnimation.evaluate(x);
+}
 
-    // Blender Euler order is XYZ order. But all Blender eulers
-    // seem to be reversed (e.g. XYZ is ZYX, YXZ ix ZXY etc.),
-    // so we use ZYX order here.
-    var cx = Math.cos(this.rotationX);
-    var cy = Math.cos(this.rotationY);
-    var cz = Math.cos(this.rotationZ);
-    var sx = Math.sin(this.rotationX);
-    var sy = Math.sin(this.rotationY);
-    var sz = Math.sin(this.rotationZ);
-
-    var cc = cx*cz;
-    var cs = cx*sz;
-    var sc = sx*cz;
-    var ss = sx*sz;
-
-    this.m11 = cy*cz;
-    this.m21 = cy*sz;
-    this.m31 = -sy;
-
-    this.m12 = sy*sc-cs;
-    this.m22 = sy*ss+cc;
-    this.m32 = cy*sx;
-
-    this.m13 = sy*cc+ss;
-    this.m23 = sy*cs-sc;
-    this.m33 = cy*cx;
-
-    this.m14 = this.locationX;
-    this.m24 = this.locationY;
-    this.m34 = this.locationZ;
-
-    // Eye is at translation position
-    this.eye[0] = this.m14;
-    this.eye[1] = this.m24;
-    this.eye[2] = this.m34;
-
-    // Direction is eye looking down Z (m13, m23, m33).
-    // LookAt is (eye - direction)
-    this.lookAt[0] = this.eye[0] - this.m13;
-    this.lookAt[1] = this.eye[1] - this.m23;
-    this.lookAt[2] = this.eye[2] - this.m33;
-
-    // Up vector can just be read out of the matrix (y axis)
-    // (m12, m22, m32)
-    this.upVector[0] = this.m12;
-    this.upVector[1] = this.m22;
-    this.upVector[2] = this.m32;
+// time is normalized 0..1
+WebVfx.Animation.prototype.evaluateTime = function(time) {
+    // Find x corresponding to time
+    this.evaluate(this.range[0] + time * (this.range[1] - this.range[0] + 1));
 }
 
 // Compute vertical field of view in radians,

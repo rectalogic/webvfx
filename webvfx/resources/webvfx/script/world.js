@@ -182,24 +182,21 @@ WebVfx.AnimatedCamera = function (aspect, nearPlane, farPlane, animationData) {
     var fov = anim.radians2degrees(anim.verticalFOV(aspect));
     THREE.Camera.call(this, fov, aspect, nearPlane, farPlane);
     this.useTarget = false;
+    // Blender XYZ order is really ZYX
+    this.eulerOrder = 'ZYX';
 };
 
 WebVfx.AnimatedCamera.prototype = new THREE.Camera();
 WebVfx.AnimatedCamera.prototype.constructor = WebVfx.AnimatedCamera;
 
 WebVfx.AnimatedCamera.prototype.setAnimationTime = function (time) {
-    this.animation.evaluate(time);
-};
-
-// Override
-WebVfx.AnimatedCamera.prototype.updateMatrix = function () {
     var anim = this.animation;
-    this.matrix.set(
-        anim.m11, anim.m12, anim.m13, anim.m14,
-        anim.m21, anim.m22, anim.m23, anim.m24,
-        anim.m31, anim.m32, anim.m33, anim.m34,
-        anim.m41, anim.m42, anim.m43, anim.m44
-    );
-    this.matrixWorldNeedsUpdate = true;
+    anim.evaluateTime(time);
+    this.position.x = anim.locationX;
+    this.position.y = anim.locationY;
+    this.position.z = anim.locationZ;
+    this.rotation.x = anim.rotationX;
+    this.rotation.y = anim.rotationY;
+    this.rotation.z = anim.rotationZ;
 };
 
