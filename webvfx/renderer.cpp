@@ -17,6 +17,9 @@ Renderer::~Renderer()
 
 bool GLRenderer::render(Content* content, Image* renderImage)
 {
+    if (!renderImage)
+        return false;
+
     glWidget->makeCurrent();
 
     // Render frame into QGLWidget
@@ -78,6 +81,9 @@ bool GLAntialiasRenderer::createFBOs(const QSize& size)
 
 bool GLAntialiasRenderer::render(Content* content, Image* renderImage)
 {
+    if (!renderImage)
+        return false;
+
     createFBOs(QSize(renderImage->width(), renderImage->height()));
 
     glWidget->makeCurrent();
@@ -117,6 +123,9 @@ bool GLAntialiasRenderer::render(Content* content, Image* renderImage)
 
 bool ImageRenderer::render(Content* content, Image* renderImage)
 {
+    if (!renderImage)
+        return false;
+
      // QImage referencing our Image bits
      QImage image((uchar*)renderImage->pixels(), renderImage->width(),
                   renderImage->height(), renderImage->bytesPerLine(),
