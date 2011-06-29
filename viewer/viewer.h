@@ -22,7 +22,8 @@ class Viewer : public QMainWindow, private Ui::Viewer
     Q_OBJECT
 
 public:
-    Viewer(QWidget *parent = 0);
+    Viewer();
+    void loadFile(const QString& fileName);
 
 private slots:
     void on_actionOpen_triggered(bool);
@@ -35,7 +36,7 @@ private slots:
     void onImageChanged(const QString&, WebVfx::Image);
 
 private:
-    bool loadContent(const QString& fileName);
+    bool createContent(const QString& fileName);
     void handleResize();
     void setImagesOnContent();
     void setupImages(const QSize& size);

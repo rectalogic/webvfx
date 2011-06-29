@@ -15,6 +15,11 @@ int main(int argc, char *argv[])
 
     Viewer viewer;
     viewer.show();
+
+    QStringList args(QApplication::arguments());
+    if (args.size() > 1)
+        viewer.loadFile(args.at(1));
+
     return app.exec();
 }
 

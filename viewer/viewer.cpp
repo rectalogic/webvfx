@@ -73,8 +73,8 @@ private:
 
 /////////////////
 
-Viewer::Viewer(QWidget *parent)
-    : QMainWindow(parent)
+Viewer::Viewer()
+    : QMainWindow(0)
 {
     setupUi(this);
 
@@ -102,22 +102,27 @@ void Viewer::on_actionOpen_triggered(bool)
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open"),
                                                     QString(),
                                                     tr("WebVfx Files (*.html *.qml)"));
-    if (fileName.isNull())
-        return;
-    if (!loadContent(fileName))
-        statusBar()->showMessage(tr("Load failed"), 2000);
-    else
-        setWindowFilePath(fileName);
+    loadFile(fileName);
 }
 
 void Viewer::on_actionReload_triggered(bool)
 {
-    loadContent(windowFilePath());
+    createContent(windowFilePath());
 }
 
 void Viewer::on_resizeButton_clicked()
 {
     handleResize();
+}
+
+void Viewer::loadFile(const QString& fileName)
+{
+    if (fileName.isNull())
+        return;
+    if (!createContent(fileName))
+        statusBar()->showMessage(tr("Load failed"), 2000);
+    else
+        setWindowFilePath(fileName);
 }
 
 void Viewer::handleResize()
@@ -186,17 +191,19 @@ double Viewer::sliderTimeValue(int value)
     return value / (double)timeSlider->maximum();
 }
 
-bool Viewer::loadContent(const QString& fileName)
+bool Viewer::createContent(const QString& fileName)
 {
     if (fileName.endsWith(".qml", Qt::CaseInsensitive)) {
         content = new WebVfx::QmlContent(scrollArea->widget()->size(),
                                          new ViewerParameters(parametersTable));
     }
     else if (fileName.endsWith(".html", Qt::CaseInsensitive)){
-        content = new WebVfx::WebContent(scrollArea->widget()->size(),
-                                         new ViewerParameters(parametersTable));
+        WebVfx::WebContent* webContent =
+            new WebVfx::WebContent(scrollArea->widget()->size(),
+                                   new ViewerParameters(parametersTable));
         // User can right-click to open WebInspector on the page
-        ((WebVfx::WebContent*)content)->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+        webContent->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
+        content = webContent;
     }
 
     QWidget* view = content->createView(scrollArea);
