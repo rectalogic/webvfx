@@ -20,7 +20,7 @@ class Renderer
 {
 public:
     Renderer() {}
-    virtual ~Renderer() = 0;
+    virtual ~Renderer() {}
     virtual bool render(Content* content, Image* renderImage) = 0;
 };
 

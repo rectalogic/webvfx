@@ -11,10 +11,6 @@
 namespace WebVfx
 {
 
-Renderer::~Renderer()
-{
-}
-
 bool GLRenderer::render(Content* content, Image* renderImage)
 {
     if (!renderImage)

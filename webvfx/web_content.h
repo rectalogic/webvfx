@@ -24,7 +24,7 @@ class Parameters;
 class Renderer;
 class WebPage;
 
-class WebContent : public QObject, public Content
+class WebContent : public QObject, public virtual Content
 {
     Q_OBJECT
 public:

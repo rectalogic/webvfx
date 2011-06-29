@@ -23,7 +23,7 @@ class Image;
 class Parameters;
 class Renderer;
 
-class QmlContent : public QDeclarativeView, public Content
+class QmlContent : public QDeclarativeView, public virtual Content
 {
     Q_OBJECT
 public:
