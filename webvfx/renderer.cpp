@@ -122,19 +122,19 @@ bool ImageRenderer::render(Content* content, Image* renderImage)
     if (!renderImage)
         return false;
 
-     // QImage referencing our Image bits
-     QImage image((uchar*)renderImage->pixels(), renderImage->width(),
-                  renderImage->height(), renderImage->bytesPerLine(),
-                  QImage::Format_RGB888);
+    // QImage referencing our Image bits
+    QImage image((uchar*)renderImage->pixels(), renderImage->width(),
+                 renderImage->height(), renderImage->bytesPerLine(),
+                 QImage::Format_RGB888);
 
-     // Paint into image
-     QPainter painter(&image);
-     painter.setRenderHint(QPainter::Antialiasing, true);
-     painter.setRenderHint(QPainter::TextAntialiasing, true);
-     painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
-     content->paintContent(&painter);
-     painter.end();
-     return true;
+    // Paint into image
+    QPainter painter(&image);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setRenderHint(QPainter::TextAntialiasing, true);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+    content->paintContent(&painter);
+    painter.end();
+    return true;
 }
 
 }
