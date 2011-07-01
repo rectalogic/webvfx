@@ -35,8 +35,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>158</width>
-             <height>118</height>
+             <width>261</width>
+             <height>360</height>
             </rect>
            </property>
            <attribute name="label">
@@ -109,8 +109,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>102</width>
-             <height>135</height>
+             <width>261</width>
+             <height>360</height>
             </rect>
            </property>
            <attribute name="label">
@@ -189,8 +189,8 @@
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>102</width>
-             <height>102</height>
+             <width>261</width>
+             <height>360</height>
             </rect>
            </property>
            <attribute name="label">
@@ -334,6 +334,7 @@
     </property>
     <addaction name="actionOpen"/>
     <addaction name="actionReload"/>
+    <addaction name="actionRenderImage"/>
     <addaction name="actionQuit"/>
    </widget>
    <addaction name="menuFile"/>
@@ -367,6 +368,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+R</string>
+   </property>
+  </action>
+  <action name="actionRenderImage">
+   <property name="text">
+    <string>Render Image...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+I</string>
    </property>
   </action>
  </widget>

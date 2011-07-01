@@ -22,6 +22,7 @@
 #include <webvfx/qml_content.h>
 #include <webvfx/web_content.h>
 #include "image_color.h"
+#include "render_dialog.h"
 #include "viewer.h"
 
 
@@ -94,6 +95,9 @@ Viewer::Viewer()
     sizeLabel = new QLabel(statusBar());
     statusBar()->addPermanentWidget(sizeLabel);
 
+    actionReload->setEnabled(false);
+    actionRenderImage->setEnabled(false);
+
     handleResize();
 }
 
@@ -108,6 +112,17 @@ void Viewer::on_actionOpen_triggered(bool)
 void Viewer::on_actionReload_triggered(bool)
 {
     createContent(windowFilePath());
+}
+
+void Viewer::on_actionRenderImage_triggered(bool)
+{
+    QImage image(scrollArea->widget()->size(), QImage::Format_RGB888);
+    WebVfx::Image renderImage(image.bits(), image.width(), image.height(),
+                              image.byteCount());
+    content->renderContent(timeSpinBox->value(), &renderImage);
+    RenderDialog* dialog = new RenderDialog(this);
+    dialog->setImage(image);
+    dialog->show();
 }
 
 void Viewer::on_resizeButton_clicked()
@@ -214,13 +229,17 @@ bool Viewer::createContent(const QString& fileName)
 
     logTextEdit->clear();
 
-    bool result = content->loadContent(fileName);
+    if (content->loadContent(fileName)) {
+        setupImages(view->size());
 
-    setupImages(view->size());
+        content->renderContent(timeSpinBox->value(), 0);
 
-    content->renderContent(timeSpinBox->value(), 0);
+        actionReload->setEnabled(true);
+        actionRenderImage->setEnabled(true);
 
-    return result;
+        return true;
+    }
+    return false;
 }
 
 void Viewer::setupImages(const QSize& size)

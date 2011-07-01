@@ -5,9 +5,15 @@
 include(../common.pri)
 TEMPLATE = app
 
-SOURCES = main.cpp image_color.cpp viewer.cpp
-HEADERS = image_color.h viewer.h
-FORMS = viewer.ui
+SOURCES += main.cpp
+SOURCES += image_color.cpp
+SOURCES += render_dialog.cpp
+SOURCES += viewer.cpp
+HEADERS += image_color.h
+HEADERS += render_dialog.h
+HEADERS += viewer.h
+FORMS += render_dialog.ui
+FORMS += viewer.ui
 
 QT += webkit declarative
 !mac:TARGET = webvfx_viewer
