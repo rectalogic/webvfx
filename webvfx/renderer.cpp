@@ -50,9 +50,9 @@ bool GLRenderer::render(Content* content, Image* renderImage)
     // Painting to anything else does not work properly.
     // https://bugs.webkit.org/show_bug.cgi?id=63946
     QPainter painter(glWidget);
-    painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.setRenderHint(QPainter::TextAntialiasing, true);
-    painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+    painter.setRenderHints(QPainter::Antialiasing |
+                           QPainter::TextAntialiasing |
+                           QPainter::SmoothPixmapTransform, true);
     content->paintContent(&painter);
     painter.end();
 
@@ -120,9 +120,9 @@ bool GLAntialiasRenderer::render(Content* content, Image* renderImage)
 
     // Render frame into multisample FBO
     QPainter painter(multisampleFBO);
-    painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.setRenderHint(QPainter::TextAntialiasing, true);
-    painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+    painter.setRenderHints(QPainter::Antialiasing |
+                           QPainter::TextAntialiasing |
+                           QPainter::SmoothPixmapTransform, true);
     content->paintContent(&painter);
     painter.end();
 
@@ -163,9 +163,9 @@ bool ImageRenderer::render(Content* content, Image* renderImage)
 
     // Paint into image
     QPainter painter(&image);
-    painter.setRenderHint(QPainter::Antialiasing, true);
-    painter.setRenderHint(QPainter::TextAntialiasing, true);
-    painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+    painter.setRenderHints(QPainter::Antialiasing |
+                           QPainter::TextAntialiasing |
+                           QPainter::SmoothPixmapTransform, true);
     content->paintContent(&painter);
     painter.end();
     return true;
