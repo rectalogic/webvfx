@@ -28,29 +28,29 @@ class GLRenderer : public Renderer
 {
 public:
     // Renderer does not take ownership of QGLWidget
-    GLRenderer(QGLWidget* glWidget)
-        : glWidget(glWidget) {}
+    GLRenderer(QGLWidget* glWidget);
+    ~GLRenderer();
 
     bool render(Content* content, Image* renderImage);
 
 private:
+    void createFBO(const QSize& size);
+
     QGLWidget* glWidget;
+    QGLFramebufferObject* fbo;
 };
 
 class GLAntialiasRenderer : public Renderer
 {
 public:
     // Renderer does not take ownership of QGLWidget
-    GLAntialiasRenderer(QGLWidget* glWidget)
-        : glWidget(glWidget)
-        , multisampleFBO(0)
-        , resolveFBO(0) {}
+    GLAntialiasRenderer(QGLWidget* glWidget);
     ~GLAntialiasRenderer();
 
     bool render(Content* content, Image* renderImage);
 
 private:
-    bool createFBOs(const QSize& size);
+    void createFBOs(const QSize& size);
 
     QGLWidget* glWidget;
     QGLFramebufferObject* multisampleFBO;

@@ -11,14 +11,44 @@
 namespace WebVfx
 {
 
+GLRenderer::GLRenderer(QGLWidget* glWidget)
+    : glWidget(glWidget)
+    , fbo(0)
+{
+    glWidget->makeCurrent();
+    if (!QGLFramebufferObject::hasOpenGLFramebufferObjects()
+        || !QGLFramebufferObject::hasOpenGLFramebufferBlit()) {
+        log("Renderer: FBOs not fully supported, GL rendering will not work");
+    }
+    glWidget->doneCurrent();
+}
+
+GLRenderer::~GLRenderer()
+{
+    delete fbo;
+}
+
+void GLRenderer::createFBO(const QSize& size)
+{
+    if (fbo && fbo->size() == size)
+        return;
+
+    delete fbo;
+    fbo = new QGLFramebufferObject(size, GL_TEXTURE_RECTANGLE_ARB);
+}
+
 bool GLRenderer::render(Content* content, Image* renderImage)
 {
     if (!renderImage)
         return false;
 
     glWidget->makeCurrent();
+    QSize size(renderImage->width(), renderImage->height());
+    createFBO(size);
 
-    // Render frame into QGLWidget
+    // Render frame into QGLWidget.
+    // Painting to anything else does not work properly.
+    // https://bugs.webkit.org/show_bug.cgi?id=63946
     QPainter painter(glWidget);
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setRenderHint(QPainter::TextAntialiasing, true);
@@ -26,17 +56,37 @@ bool GLRenderer::render(Content* content, Image* renderImage)
     content->paintContent(&painter);
     painter.end();
 
-    // Read back the pixels
+    // Blit from QGLWidget to FBO, flipping image vertically
+    QRect srcRect(0, 0, renderImage->width(), renderImage->height());
+    QRect dstRect(0, renderImage->height(),
+                  renderImage->width(), -renderImage->height());
+    QGLFramebufferObject::blitFramebuffer(fbo, srcRect, 0, dstRect);
+
+    // Read back the pixels from the FBO
+    fbo->bind();
     glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
     glPixelStorei(GL_PACK_ROW_LENGTH, renderImage->bytesPerLine() / 3);
     glReadPixels(0, 0, renderImage->width(), renderImage->height(),
                  GL_RGB, GL_UNSIGNED_BYTE, renderImage->pixels());
     glPopClientAttrib();
-
+    fbo->release();
     glWidget->doneCurrent();
 
     return true;
+}
+
+GLAntialiasRenderer::GLAntialiasRenderer(QGLWidget* glWidget)
+    : glWidget(glWidget)
+    , multisampleFBO(0)
+    , resolveFBO(0)
+{
+    glWidget->makeCurrent();
+    if (!QGLFramebufferObject::hasOpenGLFramebufferObjects()
+        || !QGLFramebufferObject::hasOpenGLFramebufferBlit()) {
+        log("Renderer: FBOs not fully supported, antialiasing will not work");
+    }
+    glWidget->doneCurrent();
 }
 
 GLAntialiasRenderer::~GLAntialiasRenderer()
@@ -45,34 +95,19 @@ GLAntialiasRenderer::~GLAntialiasRenderer()
     delete resolveFBO;
 }
 
-bool GLAntialiasRenderer::createFBOs(const QSize& size)
+void GLAntialiasRenderer::createFBOs(const QSize& size)
 {
-    if (!glWidget)
-        return false;
-
     if (multisampleFBO && resolveFBO && resolveFBO->size() == size)
-        return true;
-
-    if (!QGLFramebufferObject::hasOpenGLFramebufferObjects()
-        || !QGLFramebufferObject::hasOpenGLFramebufferBlit()) {
-        log("Renderer: FBOs not fully supported, antialiasing will not work");
-        return false;
-    }
+        return;
 
     // Create a multisample FBO and an FBO to resolve into
-    glWidget->makeCurrent();
-
     QGLFramebufferObjectFormat fboFormat;
     fboFormat.setSamples(4);
-    fboFormat.setTextureTarget(GL_TEXTURE_RECTANGLE_ARB);
     fboFormat.setAttachment(QGLFramebufferObject::CombinedDepthStencil);
     delete multisampleFBO;
     multisampleFBO = new QGLFramebufferObject(size, fboFormat);
     delete resolveFBO;
     resolveFBO = new QGLFramebufferObject(size, GL_TEXTURE_RECTANGLE_ARB);
-
-    glWidget->doneCurrent();
-    return true;
 }
 
 bool GLAntialiasRenderer::render(Content* content, Image* renderImage)
@@ -80,9 +115,8 @@ bool GLAntialiasRenderer::render(Content* content, Image* renderImage)
     if (!renderImage)
         return false;
 
-    createFBOs(QSize(renderImage->width(), renderImage->height()));
-
     glWidget->makeCurrent();
+    createFBOs(QSize(renderImage->width(), renderImage->height()));
 
     // Render frame into multisample FBO
     QPainter painter(multisampleFBO);

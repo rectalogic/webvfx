@@ -1,5 +1,7 @@
 #include <QEventLoop>
-#include <QImage>
+#include <QGLWidget>
+#include <QGraphicsScene>
+#include <QGraphicsWebView>
 #include <QMap>
 #include <QPainter>
 #include <QSize>
@@ -51,14 +53,41 @@ bool WebPage::acceptNavigationRequest(QWebFrame*, const QNetworkRequest&, Naviga
 ////////////////////
 
 WebContent::WebContent(const QSize& size, Parameters* parameters)
-    : QObject(0)
+    : QGraphicsView((QWidget*)0)
+    , webView(new QGraphicsWebView)
     , webPage(new WebPage(this))
     , pageLoadFinished(LoadNotFinished)
     , contextLoadFinished(LoadNotFinished)
     , contentContext(new ContentContext(this, parameters))
     , syncLoop(0)
-    , renderer(new ImageRenderer())
+    , renderer(0)
 {
+    // Turn off scrollbars
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setInteractive(false);
+    setFrameStyle(0);
+
+    webView->setPage(webPage);
+    setScene(new QGraphicsScene(this));
+    // Scene owns webView
+    scene()->addItem(webView);
+
+    // Must use a QGraphicsWebView with a parent QAbstractScrollArea
+    // with a QGLWidget viewport, then WebGL will find this QGLWidget
+    // and share it for rendering.
+    // See WebKit:
+    //   GraphicsContext3DQt.cpp GraphicsContext3DInternal::getViewportGLWidget
+    // The QGLWidget also makes WebKit use the GL TextureMapper.
+    // See WebKit:
+    //   PageClientQt.cpp PageClientQGraphicsWidget::setRootGraphicsLayer
+    QGLWidget* glWidget = new QGLWidget;
+    setViewport(glWidget);
+    // OpenGL needs this
+    setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+
+    renderer = new GLRenderer(glWidget);
+
     connect(webPage, SIGNAL(loadFinished(bool)),
             SLOT(webPageLoadFinished(bool)));
     connect(contentContext, SIGNAL(readyRender(bool)),
@@ -127,8 +156,11 @@ bool WebContent::loadContent(const QUrl& url)
         return pageLoadFinished == LoadSucceeded && contextLoadFinished == LoadSucceeded;
 }
 void WebContent::setContentSize(const QSize& size) {
-    if (webPage->viewportSize() != size)
-        webPage->setViewportSize(size);
+    if (size != this->size()) {
+        webView->resize(size);
+        resize(size);
+        viewport()->resize(size);
+    }
 }
 
 bool WebContent::renderContent(double time, Image* renderImage)
@@ -145,10 +177,8 @@ void WebContent::paintContent(QPainter* painter)
 
 QWidget* WebContent::createView(QWidget* parent)
 {
-    QWebView* webView = new QWebView(parent);
     setParent(parent);
-    webView->setPage(webPage);
-    return webView;
+    return this;
 }
 
 QWebSettings* WebContent::settings()

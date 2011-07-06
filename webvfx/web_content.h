@@ -6,12 +6,15 @@
 #define WEBVFX_WEB_CONTENT_H_
 
 #include <QMap>
+
+#include <QGraphicsView>
 #include <QWebPage>
 #include "webvfx/content.h"
 #include "webvfx/content_context.h"
 #include "webvfx/effects.h"
 
 class QEventLoop;
+class QGraphicsWebView;
 class QImage;
 class QSize;
 class QWebFrame;
@@ -24,7 +27,7 @@ class Parameters;
 class Renderer;
 class WebPage;
 
-class WebContent : public QObject, public virtual Content
+class WebContent : public QGraphicsView, public virtual Content
 {
     Q_OBJECT
 public:
@@ -50,6 +53,7 @@ private slots:
     void contentContextLoadFinished(bool result);
 
 private:
+    QGraphicsWebView* webView;
     WebPage* webPage;
     enum LoadStatus { LoadNotFinished, LoadFailed, LoadSucceeded };
     LoadStatus pageLoadFinished;
