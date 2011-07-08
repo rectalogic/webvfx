@@ -26,9 +26,14 @@ WebVfx.ThreeWorld = function (width, height, nearPlane, farPlane, animationData,
 
     this.widescreen = aspect > (4 / 3);
 
-    this.renderer = new THREE.WebGLRenderer({ antialias: true });
-    this.renderer.setSize(width, height);
-    document.body.appendChild(this.renderer.domElement);
+    // Create and size canvas ourself, more efficient to size it up front
+    var canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    this.renderer = new THREE.WebGLRenderer({ canvas: canvas,
+                                              antialias: true });
+    this.renderer.setViewport(0, 0, width, height);
+    document.body.appendChild(canvas);
 
     // Treat page load as trackable
     if (document.readyState != "complete") {
