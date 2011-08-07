@@ -14,7 +14,7 @@ bl_info = {
     "author": "Andrew Wason <rectalogic@rectalogic.com>",
     "version": (1, 0),
     "blender": (2, 5, 8),
-    "api": 37699,
+    "api": 38205,
     "location": "View3D > ToolShelf > WebVfx Camera Animation",
     "warning": '', # used for warning icon and text in addons panel
     "wiki_url": '',
@@ -241,9 +241,10 @@ class RotateView90(bpy.types.Operator):
 
     def execute(self, context):
         region_3d = context.space_data.region_3d
-        view_matrix = region_3d.view_matrix.inverted()
-        rot90 = mathutils.Euler(0, 0, math.pi / 2)
-        region_3d.view_rotation = view_matrix.to_3x3().rotate(rot90).to_quaternion()
+        view_matrix = region_3d.view_matrix.inverted().to_3x3()
+        rot90 = mathutils.Euler((0, 0, math.pi / 2))
+        view_matrix.rotate(rot90)
+        region_3d.view_rotation = view_matrix.to_quaternion()
         return {'FINISHED'}
 
 

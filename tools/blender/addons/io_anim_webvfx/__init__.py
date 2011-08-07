@@ -8,7 +8,7 @@ bl_info = {
     "author": "Andrew Wason <rectalogic@rectalogic.com>",
     "version": (1, 0),
     "blender": (2, 5, 8),
-    "api": 37699,
+    "api": 38205,
     "location": "File > Import-Export",
     "warning": '', # used for warning icon and text in addons panel
     "wiki_url": '',
