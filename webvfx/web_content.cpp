@@ -11,7 +11,7 @@
 #include <QWebPage>
 #include <QWebView>
 #include "webvfx/image.h"
-#include "webvfx/renderer.h"
+#include "webvfx/render_strategy.h"
 #include "webvfx/web_content.h"
 #include "webvfx/webvfx.h"
 
@@ -60,7 +60,7 @@ WebContent::WebContent(const QSize& size, Parameters* parameters)
     , contextLoadFinished(LoadNotFinished)
     , contentContext(new ContentContext(this, parameters))
     , syncLoop(0)
-    , renderer(0)
+    , renderStrategy(0)
 {
     // Turn off scrollbars
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -86,7 +86,7 @@ WebContent::WebContent(const QSize& size, Parameters* parameters)
     // OpenGL needs this
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
-    renderer = new GLRenderer(glWidget);
+    renderStrategy = new GLWidgetRenderStrategy(glWidget);
 
     connect(webPage, SIGNAL(loadFinished(bool)),
             SLOT(webPageLoadFinished(bool)));
@@ -100,7 +100,7 @@ WebContent::WebContent(const QSize& size, Parameters* parameters)
 
 WebContent::~WebContent()
 {
-    delete renderer;
+    delete renderStrategy;
 }
 
 void WebContent::injectContentContext()
@@ -167,7 +167,7 @@ bool WebContent::renderContent(double time, Image* renderImage)
 {
     // Allow the page to render for this time
     contentContext->render(time);
-    return renderer->render(this, renderImage);
+    return renderStrategy->render(this, renderImage);
 }
 
 void WebContent::paintContent(QPainter* painter)

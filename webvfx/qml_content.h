@@ -21,7 +21,7 @@ namespace WebVfx
 
 class Image;
 class Parameters;
-class Renderer;
+class RenderStrategy;
 
 class QmlContent : public QDeclarativeView, public virtual Content
 {
@@ -54,7 +54,7 @@ private:
     LoadStatus contextLoadFinished;
     ContentContext* contentContext;
     QEventLoop* syncLoop;
-    Renderer* renderer;
+    RenderStrategy* renderStrategy;
 };
 
 ////////////////////

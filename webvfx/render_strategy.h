@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBVFX_RENDERER_H_
-#define WEBVFX_RENDERER_H_
+#ifndef WEBVFX_RENDER_STRATEGY_H_
+#define WEBVFX_RENDER_STRATEGY_H_
 
 #include <QSize>
 
@@ -16,20 +16,20 @@ namespace WebVfx
 class Content;
 class Image;
 
-class Renderer
+class RenderStrategy
 {
 public:
-    Renderer() {}
-    virtual ~Renderer() {}
+    RenderStrategy() {}
+    virtual ~RenderStrategy() {}
     virtual bool render(Content* content, Image* renderImage) = 0;
 };
 
-class GLRenderer : public Renderer
+class GLWidgetRenderStrategy : public RenderStrategy
 {
 public:
     // Renderer does not take ownership of QGLWidget
-    GLRenderer(QGLWidget* glWidget);
-    ~GLRenderer();
+    GLWidgetRenderStrategy(QGLWidget* glWidget);
+    ~GLWidgetRenderStrategy();
 
     bool render(Content* content, Image* renderImage);
 
@@ -40,12 +40,12 @@ private:
     QGLFramebufferObject* fbo;
 };
 
-class GLAntialiasRenderer : public Renderer
+class FBORenderStrategy : public RenderStrategy
 {
 public:
     // Renderer does not take ownership of QGLWidget
-    GLAntialiasRenderer(QGLWidget* glWidget);
-    ~GLAntialiasRenderer();
+    FBORenderStrategy(QGLWidget* glWidget);
+    ~FBORenderStrategy();
 
     bool render(Content* content, Image* renderImage);
 
@@ -57,10 +57,10 @@ private:
     QGLFramebufferObject* resolveFBO;
 };
 
-class ImageRenderer : public Renderer
+class ImageRenderStrategy : public RenderStrategy
 {
 public:
-    ImageRenderer() {}
+    ImageRenderStrategy() {}
 
     bool render(Content* content, Image* renderImage);
 };

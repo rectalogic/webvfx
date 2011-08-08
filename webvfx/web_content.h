@@ -24,7 +24,7 @@ namespace WebVfx
 
 class Image;
 class Parameters;
-class Renderer;
+class RenderStrategy;
 class WebPage;
 
 class WebContent : public QGraphicsView, public virtual Content
@@ -60,7 +60,7 @@ private:
     LoadStatus contextLoadFinished;
     ContentContext* contentContext;
     QEventLoop* syncLoop;
-    Renderer* renderer;
+    RenderStrategy* renderStrategy;
 };
 
 ////////////////////

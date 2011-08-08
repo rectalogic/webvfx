@@ -14,7 +14,7 @@ HEADERS += image.h
 HEADERS += logger.h
 HEADERS += parameters.h
 HEADERS += qml_content.h
-HEADERS += renderer.h
+HEADERS += render_strategy.h
 HEADERS += web_content.h
 HEADERS += webvfx.h
 
@@ -26,7 +26,7 @@ SOURCES += image.cpp
 SOURCES += logger.cpp
 SOURCES += parameters.cpp
 SOURCES += qml_content.cpp
-SOURCES += renderer.cpp
+SOURCES += render_strategy.cpp
 SOURCES += web_content.cpp
 SOURCES += webvfx.cpp
 macx:SOURCES += webvfx_mac.mm

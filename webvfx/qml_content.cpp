@@ -10,7 +10,7 @@
 #include <QVariant>
 #include "webvfx/image.h"
 #include "webvfx/qml_content.h"
-#include "webvfx/renderer.h"
+#include "webvfx/render_strategy.h"
 #include "webvfx/webvfx.h"
 
 
@@ -57,7 +57,7 @@ QmlContent::QmlContent(const QSize& size, Parameters* parameters)
     , contextLoadFinished(LoadNotFinished)
     , contentContext(new ContentContext(this, parameters))
     , syncLoop(0)
-    , renderer(0)
+    , renderStrategy(0)
 {
     if (!s_QmlContentRegistered) {
         s_QmlContentRegistered = true;
@@ -78,7 +78,7 @@ QmlContent::QmlContent(const QSize& size, Parameters* parameters)
     QGLWidget* glWidget = new QGLWidget();
     setViewport(glWidget);
 
-    renderer = new GLAntialiasRenderer(glWidget);
+    renderStrategy = new FBORenderStrategy(glWidget);
 
     // OpenGL needs this
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
@@ -96,7 +96,7 @@ QmlContent::QmlContent(const QSize& size, Parameters* parameters)
 
 QmlContent::~QmlContent()
 {
-    delete renderer;
+    delete renderStrategy;
 }
 
 void QmlContent::qmlViewStatusChanged(QDeclarativeView::Status status)
@@ -184,7 +184,7 @@ bool QmlContent::renderContent(double time, Image* renderImage)
 {
     // Allow the content to render for this time
     contentContext->render(time);
-    return renderer->render(this, renderImage);
+    return renderStrategy->render(this, renderImage);
     //XXX also check errors() after each render()
 }
 

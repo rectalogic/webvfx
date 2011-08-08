@@ -4,31 +4,31 @@
 #include <QPainter>
 #include "webvfx/image.h"
 #include "webvfx/content.h"
-#include "webvfx/renderer.h"
+#include "webvfx/render_strategy.h"
 #include "webvfx/webvfx.h"
 
 
 namespace WebVfx
 {
 
-GLRenderer::GLRenderer(QGLWidget* glWidget)
+GLWidgetRenderStrategy::GLWidgetRenderStrategy(QGLWidget* glWidget)
     : glWidget(glWidget)
     , fbo(0)
 {
     glWidget->makeCurrent();
     if (!QGLFramebufferObject::hasOpenGLFramebufferObjects()
         || !QGLFramebufferObject::hasOpenGLFramebufferBlit()) {
-        log("Renderer: FBOs not fully supported, GL rendering will not work");
+        log("GLWidgetRenderStrategy: FBOs not fully supported, GL rendering will not work");
     }
     glWidget->doneCurrent();
 }
 
-GLRenderer::~GLRenderer()
+GLWidgetRenderStrategy::~GLWidgetRenderStrategy()
 {
     delete fbo;
 }
 
-void GLRenderer::createFBO(const QSize& size)
+void GLWidgetRenderStrategy::createFBO(const QSize& size)
 {
     if (fbo && fbo->size() == size)
         return;
@@ -37,7 +37,7 @@ void GLRenderer::createFBO(const QSize& size)
     fbo = new QGLFramebufferObject(size, GL_TEXTURE_RECTANGLE_ARB);
 }
 
-bool GLRenderer::render(Content* content, Image* renderImage)
+bool GLWidgetRenderStrategy::render(Content* content, Image* renderImage)
 {
     if (!renderImage)
         return false;
@@ -76,7 +76,7 @@ bool GLRenderer::render(Content* content, Image* renderImage)
     return true;
 }
 
-GLAntialiasRenderer::GLAntialiasRenderer(QGLWidget* glWidget)
+FBORenderStrategy::FBORenderStrategy(QGLWidget* glWidget)
     : glWidget(glWidget)
     , multisampleFBO(0)
     , resolveFBO(0)
@@ -84,18 +84,18 @@ GLAntialiasRenderer::GLAntialiasRenderer(QGLWidget* glWidget)
     glWidget->makeCurrent();
     if (!QGLFramebufferObject::hasOpenGLFramebufferObjects()
         || !QGLFramebufferObject::hasOpenGLFramebufferBlit()) {
-        log("Renderer: FBOs not fully supported, antialiasing will not work");
+        log("FBORenderStrategy: FBOs not fully supported, antialiasing will not work");
     }
     glWidget->doneCurrent();
 }
 
-GLAntialiasRenderer::~GLAntialiasRenderer()
+FBORenderStrategy::~FBORenderStrategy()
 {
     delete multisampleFBO;
     delete resolveFBO;
 }
 
-void GLAntialiasRenderer::createFBOs(const QSize& size)
+void FBORenderStrategy::createFBOs(const QSize& size)
 {
     if (multisampleFBO && resolveFBO && resolveFBO->size() == size)
         return;
@@ -110,7 +110,7 @@ void GLAntialiasRenderer::createFBOs(const QSize& size)
     resolveFBO = new QGLFramebufferObject(size, GL_TEXTURE_RECTANGLE_ARB);
 }
 
-bool GLAntialiasRenderer::render(Content* content, Image* renderImage)
+bool FBORenderStrategy::render(Content* content, Image* renderImage)
 {
     if (!renderImage)
         return false;
@@ -151,7 +151,7 @@ bool GLAntialiasRenderer::render(Content* content, Image* renderImage)
     return true;
 }
 
-bool ImageRenderer::render(Content* content, Image* renderImage)
+bool ImageRenderStrategy::render(Content* content, Image* renderImage)
 {
     if (!renderImage)
         return false;
