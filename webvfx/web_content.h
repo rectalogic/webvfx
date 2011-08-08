@@ -7,7 +7,9 @@
 
 #include <QMap>
 
+#ifdef WEBVFX_GRAPHICSVIEW
 #include <QGraphicsView>
+#endif
 #include <QWebPage>
 #include "webvfx/content.h"
 #include "webvfx/content_context.h"
@@ -27,7 +29,13 @@ class Parameters;
 class RenderStrategy;
 class WebPage;
 
-class WebContent : public QGraphicsView, public virtual Content
+class WebContent
+#ifdef WEBVFX_GRAPHICSVIEW
+    : public QGraphicsView
+#else
+    : public QObject
+#endif
+    , public virtual Content
 {
     Q_OBJECT
 public:
@@ -53,7 +61,9 @@ private slots:
     void contentContextLoadFinished(bool result);
 
 private:
+#ifdef WEBVFX_GRAPHICSVIEW
     QGraphicsWebView* webView;
+#endif
     WebPage* webPage;
     enum LoadStatus { LoadNotFinished, LoadFailed, LoadSucceeded };
     LoadStatus pageLoadFinished;

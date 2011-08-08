@@ -47,8 +47,8 @@ bool GLWidgetRenderStrategy::render(Content* content, Image* renderImage)
     createFBO(size);
 
     // Render frame into QGLWidget.
-    // Painting to anything else does not work properly.
-    // https://bugs.webkit.org/show_bug.cgi?id=63946
+    // This isn't really valid for a hidden QGLWidget due to the OpenGL
+    // "pixel ownership test". But it works with some graphics drivers.
     QPainter painter(glWidget);
     painter.setRenderHints(QPainter::Antialiasing |
                            QPainter::TextAntialiasing |

@@ -1,7 +1,9 @@
 #include <QEventLoop>
+#ifdef WEBVFX_GRAPHICSVIEW
 #include <QGLWidget>
 #include <QGraphicsScene>
 #include <QGraphicsWebView>
+#endif
 #include <QMap>
 #include <QPainter>
 #include <QSize>
@@ -53,8 +55,12 @@ bool WebPage::acceptNavigationRequest(QWebFrame*, const QNetworkRequest&, Naviga
 ////////////////////
 
 WebContent::WebContent(const QSize& size, Parameters* parameters)
+#ifdef WEBVFX_GRAPHICSVIEW
     : QGraphicsView((QWidget*)0)
     , webView(new QGraphicsWebView)
+#else
+    : QObject(0)
+#endif
     , webPage(new WebPage(this))
     , pageLoadFinished(LoadNotFinished)
     , contextLoadFinished(LoadNotFinished)
@@ -62,6 +68,10 @@ WebContent::WebContent(const QSize& size, Parameters* parameters)
     , syncLoop(0)
     , renderStrategy(0)
 {
+// Enabling WEBVFX_GRAPHICSVIEW is the most efficient rendering path, especially
+// for WebGL. But due to bug https://bugs.webkit.org/show_bug.cgi?id=63946
+// we must use GLWidgetRenderStrategy which will not work with all OpenGL drivers.
+#ifdef WEBVFX_GRAPHICSVIEW
     // Turn off scrollbars
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -87,6 +97,9 @@ WebContent::WebContent(const QSize& size, Parameters* parameters)
     setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
     renderStrategy = new GLWidgetRenderStrategy(glWidget);
+#else
+    renderStrategy = new ImageRenderStrategy();
+#endif
 
     connect(webPage, SIGNAL(loadFinished(bool)),
             SLOT(webPageLoadFinished(bool)));
@@ -156,11 +169,16 @@ bool WebContent::loadContent(const QUrl& url)
         return pageLoadFinished == LoadSucceeded && contextLoadFinished == LoadSucceeded;
 }
 void WebContent::setContentSize(const QSize& size) {
+#ifdef WEBVFX_GRAPHICSVIEW
     if (size != this->size()) {
         webView->resize(size);
         resize(size);
         viewport()->resize(size);
     }
+#else
+    if (webPage->viewportSize() != size)
+        webPage->setViewportSize(size);
+#endif
 }
 
 bool WebContent::renderContent(double time, Image* renderImage)
@@ -177,8 +195,15 @@ void WebContent::paintContent(QPainter* painter)
 
 QWidget* WebContent::createView(QWidget* parent)
 {
+#ifdef WEBVFX_GRAPHICSVIEW
     setParent(parent);
     return this;
+#else
+    QWebView* webView = new QWebView(parent);
+    setParent(parent);
+    webView->setPage(webPage);
+    return webView;
+#endif
 }
 
 QWebSettings* WebContent::settings()

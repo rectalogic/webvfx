@@ -76,6 +76,9 @@ private:
 
 Viewer::Viewer()
     : QMainWindow(0)
+    , sizeLabel(0)
+    , timeSpinBox(0)
+    , content(0)
 {
     setupUi(this);
 
@@ -145,6 +148,8 @@ void Viewer::handleResize()
     int width = widthSpinBox->value();
     int height = heightSpinBox->value();
     scrollArea->widget()->resize(width, height);
+    if (content)
+        content->setContentSize(QSize(width, height));
     sizeLabel->setText(QString::number(width) % QLatin1Literal("x") %
                        QString::number(height));
 
@@ -222,6 +227,7 @@ bool Viewer::createContent(const QString& fileName)
     }
 
     QWidget* view = content->createView(scrollArea);
+    view->resize(scrollArea->widget()->size());
 
     // Set content as direct widget of QScrollArea,
     // otherwise it creates an intermediate QWidget which messes up resizing.
