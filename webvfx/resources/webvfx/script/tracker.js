@@ -30,9 +30,13 @@ WebVfx.Tracker.prototype = {
 // http://code.google.com/p/chromium/issues/detail?id=32879
 // And measuring text will return the wrong size:
 // http://stackoverflow.com/questions/3311005/jquery-working-out-wrong-height-due-to-font-face
+// Based on Google WebFont Loader:
+// https://github.com/typekit/webfontloader/blob/master/src/core/fontwatchrunner.js
+// This currently has issues with QtWebKit:
+// https://bugs.webkit.org/show_bug.cgi?id=55036
 
 // _trackedFont_ is the font name used with @font-face
-// _fallbackFont_ is a builtin font with a different size than _trackedFont_
+// _fallbackFont_ is a builtin font with different metrics than _trackedFont_
 //  (e.g. "monospace")
 // _callback_ will be called before _tracker_ is decremented - so it
 //  can add additional tracking if needed
@@ -52,7 +56,7 @@ WebVfx.FontTracker = function (trackedFont, fallbackFont, tracker, callback) {
                 callback();
                 tracker.decrement();
             }
-        }, 100);
+        }, 25);
     }
     else
         callback();
@@ -63,7 +67,7 @@ WebVfx.FontTracker.prototype = {
         var styleString = "position:absolute; visibility:hidden; font-size:300px; width:auto; height:auto; line-height:normal; margin:0; padding:0; font-variant:normal; font-family:";
         var span = document.createElement("span");
         span.style.cssText = styleString + fontFamily;
-        span.textContent = "BESs";
+        span.textContent = "BESIsi";
         document.body.appendChild(span);
         return span;
     },
