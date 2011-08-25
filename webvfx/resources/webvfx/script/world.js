@@ -78,58 +78,24 @@ WebVfx.ThreeWorld.prototype = {
 
 ///////////
 
-// Return true if dimension is not a power of two
-WebVfx.isNPOT = function (value) {
-    return (value & (value - 1)) != 0;
-};
-
-///////////
-
-WebVfx.ImageTexture = function (url, tracker) {
-    var self = this;
+WebVfx.loadImageTexture = function (url, tracker) {
     var image = new Image();
     tracker.increment();
+    var texture = new THREE.Texture(image);
     image.onload = function () {
-        // If image is NPOT, configure texture it so WebGL supports it
-        if (WebVfx.isNPOT(image.width) || WebVfx.isNPOT(image.height)) {
-            self.wrapS = THREE.ClampToEdgeWrapping;
-            self.wrapT = THREE.ClampToEdgeWrapping;
-            self.magFilter = THREE.LinearFilter;
-            self.minFilter = THREE.LinearFilter;
-        }
-        self.needsUpdate = true;
+        texture.needsUpdate = true;
         tracker.decrement();
     };
     image.src = url;
-    THREE.Texture.call(this, image);
-};
-
-WebVfx.ImageTexture.prototype = new THREE.Texture();
-WebVfx.ImageTexture.prototype.constructor = WebVfx.ImageTexture;
-
-///////////
-
-WebVfx.VideoTexture = function (name) {
-    // Configure texture for NPOT
-    THREE.Texture.call(this, null, new THREE.UVMapping(),
-                       THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping,
-                       THREE.LinearFilter, THREE.LinearFilter);
-    this.name = name;
-};
-WebVfx.VideoTexture.prototype = new THREE.Texture();
-WebVfx.VideoTexture.prototype.constructor = WebVfx.VideoTexture;
-
-WebVfx.VideoTexture.prototype.update = function () {
-    this.image = webvfx.getImage(this.name).toImageData();
-    this.needsUpdate = true;
+    return texture;
 };
 
 ///////////
 
 // If _fontStyle_ uses a font loaded with @font-face, then you must
-// use a WebVfx.FontTracker and create the TextTexture after the font
+// use a WebVfx.FontTracker and create the text Texture after the font
 // has loaded.
-WebVfx.TextTexture = function (text, fontStyle, color, targetWidth, targetHeight) {
+WebVfx.createTextTexture = function (text, fontStyle, color, targetWidth, targetHeight) {
     // Canvas context provides measureText(), but this only exposes width.
     // So apply same font style to span and measure it.
     // FYI span text looks much better than canvas text because span uses
@@ -159,25 +125,33 @@ WebVfx.TextTexture = function (text, fontStyle, color, targetWidth, targetHeight
     context.textBaseline = "top";
     context.fillText(text, 0, 0);
 
-    // Configure texture for NPOT
-    if (WebVfx.isNPOT(targetWidth) || WebVfx.isNPOT(targetHeight)) {
-        THREE.Texture.call(this, canvas, new THREE.UVMapping(),
-                           THREE.ClampToEdgeWrapping, THREE.ClampToEdgeWrapping,
-                           THREE.LinearFilter, THREE.LinearFilter);
-    }
-    else
-        THREE.Texture.call(this, canvas);
-    this.needsUpdate = true;
+    var texture = new THREE.Texture(canvas);
+    texture.needsUpdate = true;
+    return texture;
 }
-
-WebVfx.TextTexture.prototype = new THREE.Texture();
-WebVfx.TextTexture.prototype.constructor = WebVfx.TextTexture;
 
 ///////////
 
-WebVfx.createTexturedMaterial = function (texture, transparent) {
-    return new THREE.MeshBasicMaterial({ map: texture, transparent: transparent });
+WebVfx.updateVideoTexture = function (texture, name) {
+    texture.image = webvfx.getImage(name).toImageData();
+    texture.needsUpdate = true;
 };
+
+///////////
+
+WebVfx.createTexturedMaterial = function (texture, transparent, lightMap) {
+    return new THREE.MeshBasicMaterial({ map: texture,
+                                         transparent: transparent,
+                                         lightMap: lightMap });
+};
+
+WebVfx.addVideoQuadUvs = function (mesh, u1, v1, u2, v2, u3, v3, u4, v4) {
+    var uvs = [new THREE.UV(u1, v1),
+               new THREE.UV(u2, v2),
+               new THREE.UV(u3, v3),
+               new THREE.UV(u4, v4)];
+    mesh.geometry.faceVertexUvs.push([uvs]);
+}
 
 ///////////
 
