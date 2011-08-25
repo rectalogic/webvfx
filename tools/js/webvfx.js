@@ -15,7 +15,10 @@ var webvfx = {
         if (!this.imageData) {
             var canvas = document.createElement("canvas");
             canvas.width = canvas.height = 320;
-            this.imageData = canvas.getContext('2d').createImageData(320, 320);
+            var context = canvas.getContext('2d');
+            context.fillStyle = 'rgb(255,0,0)';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+            this.imageData = context.getImageData(0, 0, canvas.width, canvas.height);
         }
         var imageData = this.imageData;
         return {
