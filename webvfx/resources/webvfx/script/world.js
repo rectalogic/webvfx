@@ -92,10 +92,21 @@ WebVfx.loadImageTexture = function (url, tracker) {
 
 ///////////
 
-// If _fontStyle_ uses a font loaded with @font-face, then you must
-// use a WebVfx.FontTracker and create the text Texture after the font
-// has loaded.
-WebVfx.createTextTexture = function (text, fontStyle, color, targetWidth, targetHeight) {
+// _options_ includes:
+// fontStyle - e.g. "30px Helvetica". If it uses a font loaded with @font-face,
+//   then you must use a WebVfx.FontTracker and create the text Texture after
+//   the font has loaded.
+// textColor - Text color css spec.
+// backgroundColor - Background color css spec.
+// textAlign - "left", "right" or "center".
+// textBaseline - "top", "middle" or "bottom"
+WebVfx.createTextTexture = function (text, targetWidth, targetHeight, options) {
+    var fontStyle = options.fontStyle;
+    var textColor = options.textColor;
+    var backgroundColor = options.backgroundColor;
+    var textAlign = options.textAlign;
+    var textBaseline = options.textBaseline;
+
     // Canvas context provides measureText(), but this only exposes width.
     // So apply same font style to span and measure it.
     // FYI span text looks much better than canvas text because span uses
@@ -116,14 +127,50 @@ WebVfx.createTextTexture = function (text, fontStyle, color, targetWidth, target
     canvas.height = targetHeight;
 
     var context = canvas.getContext("2d");
+    if (backgroundColor) {
+        context.fillStyle = backgroundColor;
+        context.fillRect(0, 0, targetWidth, targetHeight);
+    }
     // Scale text to fit if too large
-    if (scale < 1)
+    var positionScale = 1;
+    if (scale < 1) {
         context.scale(scale, scale);
+        positionScale = 1 / scale;
+    }
     context.font = fontStyle;
-    context.fillStyle = color;
-    context.textAlign = "left";
-    context.textBaseline = "top";
-    context.fillText(text, 0, 0);
+    context.fillStyle = textColor;
+
+    var x = 0, y = 0;
+
+    switch (textAlign) {
+    case "right":
+        x = targetWidth;
+        break;
+    case "center":
+        x = targetWidth / 2;
+        break;
+    case "left":
+    default:
+        textAlign = "left";
+        break;
+    }
+    context.textAlign = textAlign;
+
+    switch (textBaseline) {
+    case "middle":
+        y = targetHeight / 2;
+        break;
+    case "bottom":
+        y = targetHeight;
+        break;
+    case "top":
+    default:
+        textBaseline = "top";
+        break;
+    }
+    context.textBaseline = textBaseline;
+
+    context.fillText(text, x * positionScale, y * positionScale);
 
     var texture = new THREE.Texture(canvas);
     texture.needsUpdate = true;
