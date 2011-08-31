@@ -186,11 +186,100 @@ WebVfx.updateVideoTexture = function (texture, name) {
 
 ///////////
 
-WebVfx.createTexturedMaterial = function (texture, transparent, lightMap) {
-    return new THREE.MeshBasicMaterial({ map: texture,
-                                         transparent: transparent,
-                                         lightMap: lightMap });
+// Texture mesh by multiplying two textures.
+// Texture regions outside of UV space can be colored.
+// Parameters:
+//  texture1 - THREE.Texture - uses main UV
+//  texture2 - (optional) THREE.Texture - uses secondary UV
+//  borderColor - (optional) THREE.Color - color of regions outside UV space
+//  borderOpacity - float opacity of regions outside UV space (default 1.0)
+WebVfx.MeshMultitextureMaterial = function (parameters) {
+    var vertexShader = this.shaderLibrary['vertexShader'];
+    var fragmentShader = this.shaderLibrary['fragmentShader'];
+    var vertexPrefix = [];
+    var fragmentPrefix = [];
+
+    var uniforms = {
+        texture1: { type: "t", value: 0, texture: parameters.texture1 }
+    };
+    if (parameters.texture2) {
+        uniforms.texture2 = { type: "t", value: 1, texture: parameters.texture2 };
+        vertexPrefix.push("#define USE_TEXTURE2");
+        fragmentPrefix.push("#define USE_TEXTURE2");
+    }
+    if (parameters.borderColor) {
+        uniforms.borderColor = { type: "c", value: parameters.borderColor };
+        uniforms.borderOpacity = { type: "f", value: parameters.borderOpacity || 1.0 };
+        fragmentPrefix.push("#define USE_BORDERCOLOR");
+    }
+
+    if (vertexPrefix.length > 0)
+        vertexShader = vertexPrefix.join("\n") + vertexShader;
+    if (fragmentPrefix.length > 0)
+        fragmentShader = fragmentPrefix.join("\n") + fragmentShader;
+
+    THREE.MeshShaderMaterial.call(this, {
+        uniforms: uniforms,
+        fragmentShader: fragmentShader,
+        vertexShader: vertexShader
+    });
 };
+
+WebVfx.MeshMultitextureMaterial.prototype = new THREE.MeshShaderMaterial();
+WebVfx.MeshMultitextureMaterial.prototype.constructor = WebVfx.MeshMultitextureMaterial;
+
+WebVfx.MeshMultitextureMaterial.prototype.shaderLibrary = {
+    vertexShader: [
+        "",
+        "varying vec2 vUv;",
+        "#ifdef USE_TEXTURE2",
+        "varying vec2 vUv2;",
+        "#endif",
+        "void main() {",
+        "    vUv = uv;",
+        "#ifdef USE_TEXTURE2",
+        "    vUv2 = uv2;",
+        "#endif",
+        "    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
+        "}"
+    ].join("\n"),
+    fragmentShader: [
+        "",
+        "varying vec2 vUv;",
+        "uniform sampler2D texture1;",
+        "#ifdef USE_TEXTURE2",
+        "varying vec2 vUv2;",
+        "uniform sampler2D texture2;",
+        "#endif",
+        "#ifdef USE_BORDERCOLOR",
+        "uniform vec3 borderColor;",
+        "uniform float borderOpacity;",
+        "#endif",
+        "void main() {",
+        "    vec4 texture1Color;",
+        "#ifdef USE_BORDERCOLOR",
+        "    vec4 border = vec4(borderColor, borderOpacity);",
+        "    if (vUv.s < 0.0 || vUv.s > 1.0 || vUv.t < 0.0 || vUv.t > 1.0)",
+        "        texture1Color = border;",
+        "    else",
+        "#endif",
+        "        texture1Color = texture2D(texture1, vUv);",
+        "    gl_FragColor = texture1Color;",
+        "#ifdef USE_TEXTURE2",
+        "    vec4 texture2Color;",
+        "#ifdef USE_BORDERCOLOR",
+        "    if (vUv2.s < 0.0 || vUv2.s > 1.0 || vUv2.t < 0.0 || vUv2.t > 1.0)",
+        "        texture2Color = border;",
+        "    else",
+        "#endif",
+        "        texture2Color = texture2D(texture2, vUv2);",
+        "    gl_FragColor = gl_FragColor * texture2Color;",
+        "#endif",
+        "}"
+    ].join("\n")
+};
+
+///////////
 
 WebVfx.addVideoQuadUvs = function (mesh, u1, v1, u2, v2, u3, v3, u4, v4) {
     var uvs = [new THREE.UV(u1, v1),
