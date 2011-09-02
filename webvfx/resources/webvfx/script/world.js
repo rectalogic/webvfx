@@ -281,12 +281,13 @@ WebVfx.MeshMultitextureMaterial.prototype.shaderLibrary = {
 
 ///////////
 
-WebVfx.addVideoQuadUvs = function (mesh, u1, v1, u2, v2, u3, v3, u4, v4) {
+// Append UV coords for a single quad
+WebVfx.setQuadUvs = function (mesh, layer, u1, v1, u2, v2, u3, v3, u4, v4) {
     var uvs = [new THREE.UV(u1, v1),
                new THREE.UV(u2, v2),
                new THREE.UV(u3, v3),
                new THREE.UV(u4, v4)];
-    mesh.geometry.faceVertexUvs.push([uvs]);
+    mesh.geometry.faceVertexUvs[layer] = [uvs];
 }
 
 ///////////
