@@ -32,6 +32,9 @@ WebVfx.ThreeWorld = function (width, height, nearPlane, farPlane, animationData,
     canvas.height = height;
     this.renderer = new THREE.WebGLRenderer({ canvas: canvas,
                                               antialias: true });
+    // Need to enable this for our shader
+    if (!this.renderer.context.getExtension("OES_standard_derivatives"))
+        console.log("OES_standard_derivatives not supported");
     this.renderer.setViewport(0, 0, width, height);
     document.body.appendChild(canvas);
 
@@ -191,7 +194,8 @@ WebVfx.updateVideoTexture = function (texture, name) {
 // Parameters:
 //  texture1 - THREE.Texture - uses main UV
 //  texture2 - (optional) THREE.Texture - uses secondary UV
-//  borderColor - (optional) THREE.Color - color of regions outside UV space
+//  borderColor - (optional) THREE.Color - color of regions outside UV space.
+//   Setting this also triggers antialiasing of the edges.
 //  borderOpacity - float opacity of regions outside UV space (default 1.0)
 WebVfx.MeshMultitextureMaterial = function (parameters) {
     var vertexShader = this.shaderLibrary['vertexShader'];
@@ -247,33 +251,67 @@ WebVfx.MeshMultitextureMaterial.prototype.shaderLibrary = {
         "",
         "varying vec2 vUv;",
         "uniform sampler2D texture1;",
+
         "#ifdef USE_TEXTURE2",
         "varying vec2 vUv2;",
         "uniform sampler2D texture2;",
         "#endif",
+
         "#ifdef USE_BORDERCOLOR",
+        "#extension GL_OES_standard_derivatives : enable",
         "uniform vec3 borderColor;",
         "uniform float borderOpacity;",
+
+        "vec4 antialias(vec2 uv, vec2 fw, sampler2D texture, vec4 color) {",
+        "    vec2 marginTL = -fw;",
+        "    vec2 marginBR = 1.0 + fw;",
+        //   // Completely outside the texture margins, use color
+        "    if (uv.s <= marginTL.s || uv.s >= marginBR.s",
+        "        || uv.t <= marginTL.t || uv.t >= marginBR.t)",
+        "        return color;",
+        //   // Completely inside the texture, use texture
+        "    else if (uv.s >= 0.0 && uv.s <= 1.0 && uv.t >= 0.0 && uv.t <= 1.0)",
+        "        return texture2D(texture, uv);",
+        //   // Inside a margin - mix color and texture to antialias
+        "    else {",
+        //       // Amount of mix - 0.0 is all color, 1.0 is all texture
+        "        float p = 0.0;",
+        "        int c = 0;",
+        "        if (uv.s < 0.0) {",
+        "            p += smoothstep(marginTL.s, 0.0, uv.s);",
+        "            c++;",
+        "        }",
+        "        else if (uv.s > 1.0) {",
+        "            p += 1.0 - smoothstep(1.0, marginBR.s, uv.s);",
+        "            c++;",
+        "        }",
+        "        if (uv.t < 0.0) {",
+        "            p += smoothstep(marginTL.t, 0.0, uv.t);",
+        "            c++;",
+        "        }",
+        "        else if (uv.t > 1.0) {",
+        "            p += 1.0 - smoothstep(1.0, marginBR.t, uv.t);",
+        "            c++;",
+        "        }",
+        "        return mix(color, texture2D(texture, uv), p / float(c));",
+        "    }",
+        "}",
         "#endif",
+
         "void main() {",
-        "    vec4 texture1Color;",
         "#ifdef USE_BORDERCOLOR",
         "    vec4 border = vec4(borderColor, borderOpacity);",
-        "    if (vUv.s < 0.0 || vUv.s > 1.0 || vUv.t < 0.0 || vUv.t > 1.0)",
-        "        texture1Color = border;",
-        "    else",
+        "    gl_FragColor = antialias(vUv, fwidth(vUv), texture1, border);",
+        "#else",
+        "    gl_FragColor = texture2D(texture1, vUv);",
         "#endif",
-        "        texture1Color = texture2D(texture1, vUv);",
-        "    gl_FragColor = texture1Color;",
+
         "#ifdef USE_TEXTURE2",
-        "    vec4 texture2Color;",
         "#ifdef USE_BORDERCOLOR",
-        "    if (vUv2.s < 0.0 || vUv2.s > 1.0 || vUv2.t < 0.0 || vUv2.t > 1.0)",
-        "        texture2Color = border;",
-        "    else",
+        "    gl_FragColor = gl_FragColor * antialias(vUv2, fwidth(vUv2), texture2, border);",
+        "#else",
+        "    gl_FragColor = gl_FragColor * texture2D(texture2, vUv2);",
         "#endif",
-        "        texture2Color = texture2D(texture2, vUv2);",
-        "    gl_FragColor = gl_FragColor * texture2Color;",
         "#endif",
         "}"
     ].join("\n")
@@ -281,7 +319,7 @@ WebVfx.MeshMultitextureMaterial.prototype.shaderLibrary = {
 
 ///////////
 
-// Append UV coords for a single quad
+// Set UV coords for given layer, for a single quad
 WebVfx.setQuadUvs = function (mesh, layer, u1, v1, u2, v2, u3, v3, u4, v4) {
     var uvs = [new THREE.UV(u1, v1),
                new THREE.UV(u2, v2),
