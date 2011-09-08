@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 #include <iostream>
-#include <fstream>
-#include <sstream>
-#include <iomanip>
 #include <string>
 #include <getopt.h>
 #include <webvfx/webvfx.h>
+#include <QFileInfo>
+#include <QImage>
+#include <QStringList>
 
 void usage(const char* name) {
-    std::cerr << "Usage: " << name << " [-h|--help] [-p|--parameter <name>=<value>]... [-n|--source-name <source-image-name>] -o|--output <output-directory> <html-or-qml-filename>" << std::endl;
+    std::cerr << "Usage: " << name << " -s|--size <width>x<height> [-p|--parameter <name>=<value>]... [-i|--image <name>=<image-filename>] [-t|--times <time0>,<time1>,...] -o|--output <output-filename> [-h|--help] <html-or-qml-filename>" << std::endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -21,27 +21,43 @@ int main(int argc, char* argv[]) {
     }
 
     std::map<const QString, const QString> parameterMap;
-    QString sourceName;
-    std::string outputDirectory;
+    std::map<const QString, const QImage> imageMap;
+    QFileInfo outputFile;
+    int width = 0, height = 0;
+    QStringList renderTimes;
 
     static struct option long_options[] = {
         {"help", no_argument, 0, 'h'},
+        // Render size
+        {"size", required_argument, 0, 's'},
         // Parameter name=value to expose to effect
         {"parameter", required_argument, 0, 'p'},
-        // Name of source video image
-        {"source-name", required_argument, 0, 'n'},
-        // Output directory to write images to
+        // Name and filename of an input image
+        {"image", required_argument, 0, 'i'},
+        // Times to render at
+        {"times", required_argument, 0, 't'},
+        // Output filename to write images to
         {"output", required_argument, 0, 'o'},
         {0, 0, 0, 0}
     };
     int option_index = 0;
     int c;
-    while ((c = getopt_long(argc, argv, "hp:n:o:",
+    while ((c = getopt_long(argc, argv, "hs:p:i:t:o:",
                             long_options, &option_index)) != -1) {
         switch (c) {
         case 'h':
             usage(argv[0]);
             return 1;
+        case 's': {
+            char* p = strchr(optarg, 'x');
+            if (!p) {
+                usage(argv[0]);
+                return 1;
+            }
+            width = QString::fromUtf8(optarg, p - optarg).toInt();
+            height = QString::fromUtf8(p + 1).toInt();
+            break;
+        }
         case 'p': {
             char* p = strchr(optarg, '=');
             if (!p) {
@@ -53,12 +69,23 @@ int main(int argc, char* argv[]) {
             parameterMap.insert(std::pair<const QString, const QString>(name, value));
             break;
         }
-        case 'n':
-            sourceName = optarg;
+        case 'i': {
+            char* p = strchr(optarg, '=');
+            if (!p) {
+                usage(argv[0]);
+                return 1;
+            }
+            QString name(QString::fromUtf8(optarg, p - optarg));
+            QImage image(QString::fromUtf8(p + 1));
+            image = image.convertToFormat(QImage::Format_RGB888);
+            imageMap.insert(std::pair<const QString, const QImage>(name, image));
+            break;
+        }
+        case 't':
+            renderTimes = QString::fromUtf8(optarg).split(",");
             break;
         case 'o':
-            outputDirectory = optarg;
-            outputDirectory.append("/");
+            outputFile = QFileInfo(QString::fromUtf8(optarg));
             break;
         case '?':
         default:
@@ -66,10 +93,12 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    if (outputDirectory.empty() || optind >= argc) {
+    if (outputFile.filePath().isEmpty() || optind >= argc || width == 0 || height == 0) {
         usage(argv[0]);
         return 1;
     }
+    if (renderTimes.empty())
+        renderTimes.append("0");
 
     const char* effectFile = argv[optind];
 
@@ -87,6 +116,9 @@ int main(int argc, char* argv[]) {
         QString getStringParameter(const QString& name) {
             return map[name];
         }
+        double getNumberParameter(const QString& name) {
+            return map[name].toDouble();
+        }
     private:
         std::map<const QString, const QString>& map;
     };
@@ -99,47 +131,42 @@ int main(int argc, char* argv[]) {
     };
     AutoWebVfx vfx;
 
-    const int width = 320;
-    const int height = 240;
-
     WebVfx::Effects* effects = WebVfx::createEffects(effectFile, width, height, new Parameters(parameterMap));
     if (!effects) {
         std::cerr << "Failed to create Effects" << std::endl;
         return 1;
     }
 
-    const int MaxFrames = 20;
-
     uchar data[width * height * 3];
     WebVfx::Image renderImage(data, width, height, sizeof(data));
-    WebVfx::Image videoImage(data, width, height, sizeof(data));
 
-    for (int f = 0; f < MaxFrames; f++) {
+    QString outputPathTemplate(outputFile.path() + "/" + outputFile.baseName()
+                               + "-%1." + outputFile.completeSuffix());
 
-        effects->setImage(sourceName, &videoImage);
-        unsigned char* pixels = videoImage.pixels();
-        double time = (double)f / MaxFrames;
-        // Fill with shade of red XXX need to take into account stride
-        for (int i = 0; i < videoImage.byteCount(); i+= WebVfx::Image::BytesPerPixel) {
-            pixels[i] = 0xFF * time;
-            pixels[i+1] = 0x00;
-            pixels[i+2] = 0x00;
+    for (int i = 0; i < renderTimes.size(); ++i) {
+        // Set input images
+        std::map<const QString, const QImage>::iterator it;
+        for (it = imageMap.begin(); it != imageMap.end(); it++) {
+            QImage image((*it).second);
+            // Use constBits to avoid a deep copy
+            WebVfx::Image inputImage(const_cast<unsigned char*>(image.constBits()),
+                                     image.width(), image.height(),
+                                     image.byteCount());
+            effects->setImage((*it).first, &inputImage);
         }
-        effects->render(time, &renderImage);
 
-        // Write to disk.
-        std::stringstream oss;
-        oss << outputDirectory << "webvfx" << f << ".raw";
-        std::string rawFileName = oss.str();
-        std::ofstream rawFile;
-        rawFile.open(rawFileName.c_str(), std::ios::out|std::ios::trunc|std::ios::binary);
-        if (rawFile.fail()) {
-            std::cerr << "Failed to write file " << rawFileName << std::endl;
+        // Render
+        double time = renderTimes.at(i).toDouble();
+        if (!effects->render(time, &renderImage)) {
+            std::cerr << "Failed to render time " << time << std::endl;
             return 1;
         }
-        rawFile.write(reinterpret_cast<const char*>(renderImage.pixels()),
-                      renderImage.byteCount());
-        rawFile.close();
+
+        // Save image to disk
+        QImage outputImage((const uchar*)renderImage.pixels(),
+                           renderImage.width(), renderImage.height(),
+                           renderImage.bytesPerLine(), QImage::Format_RGB888);
+        outputImage.save(outputPathTemplate.arg(renderTimes.at(i)));
     }
 
     effects->destroy(); effects = 0;
