@@ -41,10 +41,6 @@ WebVfx.Tracker.prototype = {
 // _callback_ will be called before _tracker_ is decremented - so it
 //  can add additional tracking if needed
 WebVfx.FontTracker = function (trackedFont, fallbackFont, tracker, callback) {
-    // Quote both names in case they have spaces
-    fallbackFont = this.quote(fallbackFont);
-    trackedFont = this.quote(trackedFont);
-
     var trackedSpan = this.createSpan(trackedFont + "," + fallbackFont);
     var fallbackSpan = this.createSpan(fallbackFont);
     if (!this.isFontLoaded(trackedSpan, fallbackSpan)) {
@@ -70,11 +66,6 @@ WebVfx.FontTracker.prototype = {
         span.textContent = "BESIsi";
         document.body.appendChild(span);
         return span;
-    },
-    quote: function (name) {
-        if (name[0] != '"' && name[0] != "'")
-            return "'" + name + "'";
-        return name;
     },
     isFontLoaded: function (trackedSpan, fallbackSpan) {
         if (trackedSpan.offsetWidth != fallbackSpan.offsetWidth ||
