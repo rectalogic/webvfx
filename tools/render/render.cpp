@@ -11,7 +11,7 @@
 #include <QStringList>
 
 void usage(const char* name) {
-    std::cerr << "Usage: " << name << " -s|--size <width>x<height> [-p|--parameter <name>=<value>]... [-i|--image <name>=<image-filename>] [-t|--times <time0>,<time1>,...] -o|--output <output-filename> [-h|--help] <html-or-qml-filename>" << std::endl;
+    std::cerr << "Usage: " << name << " -s|--size <width>x<height> [-p|--parameter <name>=<value>]... [-i|--image <name>=<image-filename>] [-t|--times <time0>,<time1>,...] [-c|--comment <comment>] -o|--output <output-filename> [-h|--help] <html-or-qml-filename>" << std::endl;
 }
 
 int main(int argc, char* argv[]) {
@@ -25,6 +25,7 @@ int main(int argc, char* argv[]) {
     QFileInfo outputFile;
     int width = 0, height = 0;
     QStringList renderTimes;
+    QString comment;
 
     static struct option long_options[] = {
         {"help", no_argument, 0, 'h'},
@@ -36,13 +37,15 @@ int main(int argc, char* argv[]) {
         {"image", required_argument, 0, 'i'},
         // Times to render at
         {"times", required_argument, 0, 't'},
+        // Comment
+        {"comment", required_argument, 0, 'c'},
         // Output filename to write images to
         {"output", required_argument, 0, 'o'},
         {0, 0, 0, 0}
     };
     int option_index = 0;
     int c;
-    while ((c = getopt_long(argc, argv, "hs:p:i:t:o:",
+    while ((c = getopt_long(argc, argv, "hs:p:i:t:c:o:",
                             long_options, &option_index)) != -1) {
         switch (c) {
         case 'h':
@@ -83,6 +86,9 @@ int main(int argc, char* argv[]) {
         }
         case 't':
             renderTimes = QString::fromUtf8(optarg).split(",");
+            break;
+        case 'c':
+            comment = QString::fromUtf8(optarg);
             break;
         case 'o':
             outputFile = QFileInfo(QString::fromUtf8(optarg));
@@ -166,6 +172,8 @@ int main(int argc, char* argv[]) {
         QImage outputImage((const uchar*)renderImage.pixels(),
                            renderImage.width(), renderImage.height(),
                            renderImage.bytesPerLine(), QImage::Format_RGB888);
+        if (!comment.isEmpty())
+            outputImage.setText("Comment", comment);
         outputImage.save(outputPathTemplate.arg(renderTimes.at(i)));
     }
 
