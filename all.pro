@@ -12,7 +12,7 @@ CONFIG += ordered
 
 SUBDIRS += webvfx
 SUBDIRS += viewer
-SUBDIRS += demo
+SUBDIRS += tools/render
 SUBDIRS += tools/browser
 
 unix:system(pkg-config --exists mlt-framework) {
@@ -30,7 +30,7 @@ unix:system(pkg-config --exists mlt-framework) {
 }
 
 viewer.depends = webvfx
-demo.depends = webvfx
+render.depends = webvfx
 
 # Documentation
 doxydoc.target = doxydoc

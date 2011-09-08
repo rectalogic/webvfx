@@ -2,14 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-include(../common.pri)
+include(../../common.pri)
 TEMPLATE = app
 
-SOURCES += main.cpp
+SOURCES += render.cpp
 
 CONFIG += console
 mac:CONFIG -= app_bundle
-TARGET = webvfx_demo
+TARGET = webvfx_render
 LIBS += -L$$DESTDIR -lwebvfx
 
 QMAKE_RPATHDIR += $$PREFIX/lib
+
+target.path = $$PREFIX/bin
+INSTALLS += target
