@@ -146,8 +146,8 @@ int main(int argc, char* argv[]) {
     uchar data[width * height * 3];
     WebVfx::Image renderImage(data, width, height, sizeof(data));
 
-    QString outputPathTemplate(outputFile.path() + "/" + outputFile.baseName()
-                               + "-%1." + outputFile.completeSuffix());
+    QString outputPathTemplate(outputFile.path() + "/" + outputFile.completeBaseName()
+                               + "-%1." + outputFile.suffix());
 
     for (int i = 0; i < renderTimes.size(); ++i) {
         // Set input images
