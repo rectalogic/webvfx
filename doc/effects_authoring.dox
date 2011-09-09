@@ -145,7 +145,7 @@ A recent build should be used so the @c toImageData feature is available.
 
 The HTML effect should reference the @c shader.js JavaScript resource:
 @code
-<script type="text/javascript" src="qrc:/webvfx/script/shader.js"></script>
+<script type="text/javascript" src="qrc:/webvfx/scripts/shader.js"></script>
 @endcode
 The GLSL code can be placed in a @c script element:
 @code
