@@ -49,12 +49,12 @@ WebVfx.FontTracker = function (trackedFont, fallbackFont, tracker, callback) {
         var intervalID = setInterval(function () {
             if (self.isFontLoaded(trackedSpan, fallbackSpan)) {
                 clearInterval(intervalID);
-                callback();
+                if (callback) callback();
                 tracker.decrement();
             }
         }, 25);
     }
-    else
+    else if (callback)
         callback();
 }
 
