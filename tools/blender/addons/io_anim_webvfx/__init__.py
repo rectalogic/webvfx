@@ -25,7 +25,7 @@ if "bpy" in locals():
         imp.reload(export_webvfx)
 
 import bpy
-from bpy.props import StringProperty
+from bpy.props import BoolProperty, StringProperty
 from bpy_extras.io_utils import ImportHelper, ExportHelper
 
 
@@ -60,6 +60,8 @@ class ExportWebVfx(bpy.types.Operator, ExportHelper):
     filename_ext = '.js'
     filter_glob = StringProperty(default="*.js", options={'HIDDEN'})
 
+    option_compact = BoolProperty(name="Compact", description="Compact JSON", default=True)
+
     @classmethod
     def poll(cls, context):
         return context.object and context.object.animation_data
@@ -68,6 +70,9 @@ class ExportWebVfx(bpy.types.Operator, ExportHelper):
         from . import export_webvfx
         return export_webvfx.save(self, context, **self.as_keywords(ignore=("check_existing", "filter_glob")))
 
+    def draw(self, context):
+        layout = self.layout
+        layout.prop(self.properties, "option_compact")
 
 def menu_func_import(self, context):
     self.layout.operator(ImportWebVfx.bl_idname, text="WebVfx Animation JSON (.js)")
