@@ -129,8 +129,8 @@ class GenerateCameraQml(bpy.types.Operator):
 class SetAspectRatio(bpy.types.Operator):
     '''Set camera aspect ratio.'''
     bl_idname = "render.set_aspect_ratio"
-    bl_label = "Set Aspect Ratio"
-    bl_description = "Set aspect ratio."
+    bl_label = "Set Camera Aspect Ratio"
+    bl_description = "Set camera aspect ratio."
 
     ratio = bpy.props.EnumProperty(items=(("16:9", "16:9", "16:9"),
                                           ("4:3", "4:3", "4:3")),
@@ -283,33 +283,25 @@ class OBJECT_PT_camera_face_align(bpy.types.Panel):
     def draw(self, context):
         layout = self.layout
 
-        box = layout.box()
-        box.label(text="View to Selected Face")
-        box.label(text="Select a quad face.\nThen align, center, rotate and fit the viewport to it.\nThen move the camera to the view.")
-        col = box.column(align=True)
+        layout.label(text="View:")
 
-        op_align = col.operator("view3d.viewnumpad", text="1. Align")
+        col = layout.column(align=True)
+        op_align = col.operator("view3d.viewnumpad", text="1. Align View to Face")
         op_align.type = 'TOP'
         op_align.align_active = True
-        col.operator("view3d.view_selected", text="2. Center")
-        col.operator("view3d.rotate_view_90", text="2.5 Rotate 90")
-        col.operator("view3d.fit_view_to_face", text="3. Fit Viewport")
+        col.operator("view3d.view_selected", text="2. Center Face in View")
+        col.operator("view3d.rotate_view_90", text="2.5 Rotate View 90")
+        col.operator("view3d.fit_view_to_face", text="3. Fit Face to Camera Viewport")
 
-        box = layout.box()
-        box.label(text="Camera")
-        col = box.column(align=True)
+        layout.label(text="Camera:")
+        col = layout.column(align=True)
 
         col.operator("view3d.camera_to_view", text="Camera to View")
-
-        col.label(text="Aspect Ratio:")
         row = col.row()
         op_4_3 = row.operator("render.set_aspect_ratio", text="4:3").ratio="4:3"
         op_16_9 = row.operator("render.set_aspect_ratio", text="16:9").ratio="16:9"
-
-        col.label(text="Horizontal FOV:")
         col.prop(context.scene.camera.data, "angle")
 
-        col.label(text="Keyframes:")
         row = col.row()
         row.operator("anim.insert_camera_keyframe", text="Insert")
         row.operator("anim.remove_camera_keyframe", text="Remove")
