@@ -83,14 +83,23 @@ WebVfx.ThreeWorld.prototype = {
 
 WebVfx.loadImageTexture = function (url, tracker) {
     var image = new Image();
-    tracker.increment();
     var texture = new THREE.Texture(image);
-    image.onload = function () {
-        texture.needsUpdate = true;
-        tracker.decrement();
-    };
+    WebVfx.trackTextureImage(texture, tracker);
     image.src = url;
     return texture;
+};
+
+WebVfx.trackTextureImage = function (texture, tracker) {
+    var image = texture.image;
+    if (!(image instanceof Image) || image.complete) {
+        texture.needsUpdate = true;
+        return;
+    }
+    tracker.increment();
+    image.addEventListener("load", function () {
+        texture.needsUpdate = true;
+        tracker.decrement();
+    });
 };
 
 ///////////
