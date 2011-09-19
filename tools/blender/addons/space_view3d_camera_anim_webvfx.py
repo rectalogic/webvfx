@@ -176,7 +176,7 @@ class FitViewToFace(bpy.types.Operator):
         face = mesh.faces[obj.data.faces.active]
 
         region_3d = context.space_data.region_3d
-        center = face.center * obj.matrix_world
+        center = obj.matrix_world * face.center
 
         # Make sure view location is very close to face center
         if (center - region_3d.view_location).length > 3e-07:
