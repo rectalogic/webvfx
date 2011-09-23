@@ -19,18 +19,9 @@ static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_forma
 
     mlt_frame bFrame = mlt_frame_pop_frame(aFrame);
     mlt_transition transition = (mlt_transition)mlt_frame_pop_service(aFrame);
-    mlt_properties a_props = MLT_FRAME_PROPERTIES(aFrame);
-    mlt_properties b_props = MLT_FRAME_PROPERTIES(bFrame);
 
-    // Set consumer_aspect_ratio for a and b frame
-    if (mlt_properties_get_double(a_props, "aspect_ratio") == 0.0)
-        mlt_properties_set_double(a_props, "aspect_ratio", mlt_properties_get_double(a_props, "consumer_aspect_ratio"));
-    if (mlt_properties_get_double(b_props, "aspect_ratio") == 0.0)
-        mlt_properties_set_double(b_props, "aspect_ratio", mlt_properties_get_double(a_props, "consumer_aspect_ratio"));
-    mlt_properties_set_double(b_props, "consumer_aspect_ratio", mlt_properties_get_double(a_props, "consumer_aspect_ratio"));
-
-    if (mlt_properties_get(b_props, "rescale.interp") == NULL || !std::strcmp(mlt_properties_get(b_props, "rescale.interp"), "none"))
-        mlt_properties_set(b_props, "rescale.interp", mlt_properties_get(a_props, "rescale.interp"));
+    mlt_position position = mlt_transition_get_position(transition, aFrame);
+    mlt_position length = mlt_transition_get_length(transition);
 
     // Get the aFrame image, we will write our output to it
     *format = mlt_image_rgb24;
@@ -54,9 +45,7 @@ static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_forma
         WebVfx::Image targetImage(bImage, bWidth, bHeight,
                                   bWidth * bHeight * WebVfx::Image::BytesPerPixel);
         manager->setImageForName(manager->getTargetImageName(), &targetImage);
-        manager->render(&renderedImage,
-                        mlt_transition_get_position(transition, aFrame),
-                        mlt_transition_get_length(transition));
+        manager->render(&renderedImage, position, length);
     }
 
     return error;
