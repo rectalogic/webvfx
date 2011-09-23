@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <QLibrary>
 #include <QString>
 #include <webvfx/webvfx.h>
 extern "C" {
@@ -63,6 +64,12 @@ static void* createService(mlt_profile profile,
 
 extern "C" EXPORT MLT_REPOSITORY
 {
+    // Prevent ourself from being unloaded (dlclose) when MLT shuts down.
+    // Some pieces of QtWebKit (e.g. WebWorkers) live past event loop exit
+    // and cause a crash if we are unloaded from memory.
+    QLibrary lib("libmltwebvfx");
+    lib.load();
+
     MLT_REGISTER(producer_type, "webvfx", createService);
     MLT_REGISTER(filter_type, "webvfx", createService);
     MLT_REGISTER(transition_type, "webvfx", createService);

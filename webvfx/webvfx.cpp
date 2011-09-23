@@ -52,6 +52,7 @@ void* uiEventLoop(void* data)
 
     // Enter event loop
     app.exec();
+    QCoreApplication::processEvents();
     return 0;
 }
 #endif
@@ -165,8 +166,8 @@ void shutdown()
 #endif
         s_ownApp = false;
     }
-    //XXX if we don't own, should we post an event and wait for it to ensure any references to our stuff are off the event loop before our lib is unloaded?
-
+    else
+        QCoreApplication::processEvents();
 }
 
 void log(const QString& msg)
