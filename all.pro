@@ -18,12 +18,10 @@ SUBDIRS += tools/browser
 unix:system(pkg-config --exists mlt-framework) {
     SUBDIRS += mlt
     mlt.depends = webvfx
-    mac {
-        isEmpty(MLT_SOURCE) {
-            warning("Please set MLT_SOURCE to the MLT source code directory to build qmelt on MacOS")
-        } else {
-            SUBDIRS += mlt/qmelt
-        }
+    isEmpty(MLT_SOURCE) {
+        warning("MLT_SOURCE not set, skipping qmelt. Set MLT_SOURCE to the MLT source code directory to build qmelt.")
+    } else {
+        SUBDIRS += mlt/qmelt
     }
 } else {
     warning("MLT framework not found, skipping MLT plugin. Need to set PKG_CONFIG_PATH environment variable?")
