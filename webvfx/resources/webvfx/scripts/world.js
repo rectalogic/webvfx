@@ -337,6 +337,51 @@ WebVfx.setQuadUvs = function (mesh, layer, u1, v1, u2, v2, u3, v3, u4, v4) {
     mesh.geometry.faceVertexUvs[layer] = [uvs];
 }
 
+// Map (scale/translate) UVs from _fromLayer_ to _toLayer_
+// min/max specifies new UV coordinate space range.
+WebVfx.mapUvs = function (mesh, fromLayer, toLayer, minU, minV, maxU, maxV) {
+    var uvs = mesh.geometry.faceVertexUvs[fromLayer];
+    var length = uvs.length;
+
+    // Find UV space we are mapping from
+    var fromMinU = Number.MAX_VALUE;
+    var fromMaxU = Number.MIN_VALUE;
+    var fromMinV = Number.MAX_VALUE;
+    var fromMaxV = Number.MIN_VALUE;
+    for (var i = 0; i < length; i++) {
+        var faceUv = uvs[i];
+        var faceUvLength = faceUv.length;
+        for (var j = 0; j < faceUvLength; j++) {
+            var uv = faceUv[j];
+            fromMinU = Math.min(uv.u, fromMinU);
+            fromMaxU = Math.max(uv.u, fromMaxU);
+            fromMinV = Math.min(uv.v, fromMinV);
+            fromMaxV = Math.max(uv.v, fromMaxV);
+        }
+    }
+
+    var fromDistU = fromMaxU - fromMinU;
+    var fromDistV = fromMaxV - fromMinV;
+    var toDistU = maxU - minU;
+    var toDistV = maxV - minV;
+
+    var mappedUvs = new Array(length);
+    for (var i = 0; i < length; i++) {
+        var faceUv = uvs[i];
+        var faceUvLength = faceUv.length;
+        var mappedFaceUv = new Array(faceUvLength);
+        mappedUvs[i] = mappedFaceUv;
+        for (var j = 0; j < faceUvLength; j++) {
+            var uv = faceUv[j];
+            var u = minU + (((uv.u - fromMinU) / fromDistU) * toDistU);
+            var v = minV + (((uv.v - fromMinV) / fromDistV) * toDistV);
+            mappedFaceUv[j] = new THREE.UV(u, v);
+        }
+    }
+
+    mesh.geometry.faceVertexUvs[toLayer] = mappedUvs;
+}
+
 ///////////
 
 WebVfx.AnimatedCamera = function (aspect, nearPlane, farPlane, animationData) {
