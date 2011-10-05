@@ -212,9 +212,9 @@ WebVfx.MeshMultitextureMaterial = function (parameters) {
     var vertexPrefix = [];
     var fragmentPrefix = [];
 
-    var uniforms = {
-        texture1: { type: "t", value: 0, texture: parameters.texture1 }
-    };
+    var uniforms = THREE.UniformsUtils.merge([THREE.UniformsLib["shadowmap"]]);
+    uniforms.texture1 = { type: "t", value: 0, texture: parameters.texture1 };
+
     if (parameters.texture2) {
         uniforms.texture2 = { type: "t", value: 1, texture: parameters.texture2 };
         vertexPrefix.push("#define USE_TEXTURE2");
@@ -248,12 +248,15 @@ WebVfx.MeshMultitextureMaterial.prototype.shaderLibrary = {
         "#ifdef USE_TEXTURE2",
         "varying vec2 vUv2;",
         "#endif",
+        THREE.ShaderChunk["shadowmap_pars_vertex"],
         "void main() {",
         "    vUv = uv;",
         "#ifdef USE_TEXTURE2",
         "    vUv2 = uv2;",
         "#endif",
-        "    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);",
+        "    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);",
+        "    gl_Position = projectionMatrix * mvPosition;",
+             THREE.ShaderChunk["shadowmap_vertex"],
         "}"
     ].join("\n"),
     fragmentShader: [
@@ -270,7 +273,11 @@ WebVfx.MeshMultitextureMaterial.prototype.shaderLibrary = {
         "#extension GL_OES_standard_derivatives : enable",
         "uniform vec3 borderColor;",
         "uniform float borderOpacity;",
+        "#endif",
 
+        THREE.ShaderChunk["shadowmap_pars_fragment"],
+
+        "#ifdef USE_BORDERCOLOR",
         "vec4 antialias(vec2 uv, vec2 fw, sampler2D texture, vec4 color) {",
         "    vec2 marginTL = -fw;",
         "    vec2 marginBR = 1.0 + fw;",
@@ -322,6 +329,8 @@ WebVfx.MeshMultitextureMaterial.prototype.shaderLibrary = {
         "    gl_FragColor = gl_FragColor * texture2D(texture2, vUv2);",
         "#endif",
         "#endif",
+
+            THREE.ShaderChunk["shadowmap_fragment"],
         "}"
     ].join("\n")
 };
