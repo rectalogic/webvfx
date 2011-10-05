@@ -55,9 +55,6 @@ public:
     const QString& getName() { return name; }
 
     WebVfx::Image produceImage(mlt_position position, int width, int height) {
-        if (position > mlt_producer_get_out(producer))
-            return WebVfx::Image();
-
         // Close previous frame and request a new one.
         // We don't close the current frame because the image data we return
         // needs to remain valid until we are rendered.
@@ -65,10 +62,8 @@ public:
             mlt_frame_close(producerFrame);
             producerFrame = 0;
         }
-        mlt_service_get_frame(MLT_PRODUCER_SERVICE(producer), &producerFrame, 0);
-
         mlt_producer_seek(producer, position);
-        mlt_frame_set_position(producerFrame, position);
+        mlt_service_get_frame(MLT_PRODUCER_SERVICE(producer), &producerFrame, 0);
 
         mlt_image_format format = mlt_image_rgb24;
         uint8_t *image = NULL;
