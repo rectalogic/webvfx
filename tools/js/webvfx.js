@@ -10,30 +10,43 @@ var webvfx = {
     TargetImageType: 1,
     SourceImageType: 2,
     ExtraImageType: 3,
+
+    imageMap: {}, // User can set this to map image names to Images
+    parameterMap: {}, // User can set this to map param names to strings/numbers
+
     readyRender: function (v) {},
     getImage: function (name) {
-        if (!this.imageData) {
-            var canvas = document.createElement("canvas");
-            canvas.width = canvas.height = 320;
-            var context = canvas.getContext('2d');
-            context.fillStyle = 'rgb(255,0,0)';
-            context.fillRect(0, 0, canvas.width, canvas.height);
-            this.imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-        }
-        var imageData = this.imageData;
+        var imageMap = this.imageMap;
         return {
             toImageData: function () {
-                return imageData;
+                var image = imageMap[name];
+                var canvas = document.createElement("canvas");
+                if (image) {
+                    canvas.width = image.width;
+                    canvas.height = image.height;
+                }
+                else
+                    canvas.width = canvas.height = 320;
+                var context = canvas.getContext('2d');
+                if (image)
+                    context.drawImage(image, 0, 0);
+                else {
+                    context.fillStyle = 'rgb(255,0,0)';
+                    context.fillRect(0, 0, canvas.width, canvas.height);
+                }
+                return context.getImageData(0, 0, canvas.width, canvas.height);
             },
             assignToHTMLImageElement: function (image) {
+                if (imageMap[name])
+                    image.src = imageMap[name].src;
             }
         };
     },
     getStringParameter: function (name) {
-        return "webvfx";
+        return this.parameterMap[name];
     },
     getNumberParameter: function (name) {
-        return 0;
+        return parseFloat(this.parameterMap[name]);
     },
     renderRequested: {
         connect: function (f) {
