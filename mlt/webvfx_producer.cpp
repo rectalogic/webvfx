@@ -12,6 +12,7 @@ extern "C" {
 #include "service_manager.h"
 
 static const char* kWebVfxProducerPropertyName = "WebVfxProducer";
+static const char* kWebVfxPositionPropertyName = "webvfx.position";
 
 static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format *format, int *width, int *height, int /*writable*/) {
     int error = 0;
@@ -41,7 +42,7 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
 
         WebVfx::Image outputImage(*buffer, *width, *height, size);
         locker.getManager()->render(&outputImage,
-                                    mlt_frame_get_position(frame),
+                                    mlt_properties_get_position(properties, kWebVfxPositionPropertyName),
                                     mlt_producer_get_length(producer));
     }
 
@@ -63,7 +64,9 @@ static int getFrame(mlt_producer producer, mlt_frame_ptr frame, int /*index*/) {
         mlt_properties_set_data(properties, kWebVfxProducerPropertyName, producer, 0, NULL, NULL);
 
         // Update timecode on the frame we're creating
-        mlt_frame_set_position(*frame, mlt_producer_position(producer));
+        mlt_position position = mlt_producer_position(producer);
+        mlt_frame_set_position(*frame, position);
+        mlt_properties_set_position(properties, kWebVfxPositionPropertyName, position);
 
         // Set producer-specific frame properties
         mlt_properties_set_int(properties, "progressive", 1);
