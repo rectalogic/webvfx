@@ -61,7 +61,7 @@ WebVfx.ThreeWorld.prototype = {
             var mesh = new THREE.Mesh(geometry, material);
             if (callback)
                 callback(mesh);
-            self.scene.addObject(mesh);
+            self.scene.add(mesh);
             self.tracker.decrement();
         } });
     },
@@ -206,7 +206,7 @@ WebVfx.updateVideoTexture = function (texture, name) {
 //  borderColor - (optional) THREE.Color - color of regions outside UV space.
 //   Setting this also triggers antialiasing of the edges.
 //  borderOpacity - float opacity of regions outside UV space (default 1.0)
-WebVfx.MeshMultitextureMaterial = function (parameters) {
+WebVfx.MultitextureShaderMaterial = function (parameters) {
     var vertexShader = this.shaderLibrary['vertexShader'];
     var fragmentShader = this.shaderLibrary['fragmentShader'];
     var vertexPrefix = [];
@@ -231,17 +231,17 @@ WebVfx.MeshMultitextureMaterial = function (parameters) {
     if (fragmentPrefix.length > 0)
         fragmentShader = fragmentPrefix.join("\n") + fragmentShader;
 
-    THREE.MeshShaderMaterial.call(this, {
+    THREE.ShaderMaterial.call(this, {
         uniforms: uniforms,
         fragmentShader: fragmentShader,
         vertexShader: vertexShader
     });
 };
 
-WebVfx.MeshMultitextureMaterial.prototype = new THREE.MeshShaderMaterial();
-WebVfx.MeshMultitextureMaterial.prototype.constructor = WebVfx.MeshMultitextureMaterial;
+WebVfx.MultitextureShaderMaterial.prototype = new THREE.ShaderMaterial();
+WebVfx.MultitextureShaderMaterial.prototype.constructor = WebVfx.MultitextureShaderMaterial;
 
-WebVfx.MeshMultitextureMaterial.prototype.shaderLibrary = {
+WebVfx.MultitextureShaderMaterial.prototype.shaderLibrary = {
     vertexShader: [
         "",
         "varying vec2 vUv;",
@@ -397,13 +397,13 @@ WebVfx.AnimatedCamera = function (aspect, nearPlane, farPlane, animationData) {
     var anim = new WebVfx.Animation(animationData);
     this.animation = anim;
     var fov = anim.radians2degrees(anim.verticalFOV(aspect));
-    THREE.Camera.call(this, fov, aspect, nearPlane, farPlane);
+    THREE.PerspectiveCamera.call(this, fov, aspect, nearPlane, farPlane);
     this.useTarget = false;
     // Blender XYZ order is really ZYX
     this.eulerOrder = 'ZYX';
 };
 
-WebVfx.AnimatedCamera.prototype = new THREE.Camera();
+WebVfx.AnimatedCamera.prototype = new THREE.PerspectiveCamera();
 WebVfx.AnimatedCamera.prototype.constructor = WebVfx.AnimatedCamera;
 
 WebVfx.AnimatedCamera.prototype.setAnimationTime = function (time) {
