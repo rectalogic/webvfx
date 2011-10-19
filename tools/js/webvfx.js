@@ -49,11 +49,16 @@ var webvfx = {
         return parseFloat(this.parameterMap[name]);
     },
     renderRequested: {
-        connect: function (f) {
-            this.render = f;
+        connect: function (a, b) {
+            if (a instanceof Function)
+                this.render = a;
+            else {
+                this.self = a;
+                this.render = b;
+            }
         }
     },
     render: function (t) {
-        this.renderRequested.render(t);
+        this.renderRequested.render.call(this.renderRequested.self, t);
     },
 };
