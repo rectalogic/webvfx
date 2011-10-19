@@ -210,9 +210,15 @@ WebVfx.Texture = function (gl, unit, location) {
     gl.uniform1i(location, this.unit);
 }
 
-// Upload image into texture
+// Upload image into texture.
+// The image can have textureOptions which map texParameteri enums to values.
 WebVfx.Texture.prototype.setValue = function(image) {
     var gl = this.gl;
+    gl.activeTexture(gl.TEXTURE0 + this.unit);
+    if (image.textureOptions) {
+        for (var opt in image.textureOptions)
+            gl.texParameteri(gl.TEXTURE_2D, opt, image.textureOptions[opt]);
+    }
     gl.bindTexture(gl.TEXTURE_2D, this.id);
     // Flip texture vertically so it's not upside down
     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
