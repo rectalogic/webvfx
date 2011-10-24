@@ -179,7 +179,7 @@ class FitViewToFace(bpy.types.Operator):
         center = obj.matrix_world * face.center
 
         # Make sure view location is very close to face center
-        if (center - region_3d.view_location).length > 3e-07:
+        if (center - region_3d.view_location).length > 9e-07:
             reportError(self, "View not aligned on active face center")
             return
 
@@ -200,7 +200,7 @@ class FitViewToFace(bpy.types.Operator):
         e2 = vertices[2] - vertices[1]
         a1 = abs(up.angle(e1, 0))
         a2 = abs(up.angle(e2, 0))
-        epsilon = 0.0005
+        epsilon = 0.005
         if a1 <= epsilon or (abs(a1 - math.pi) <= epsilon):
             height = e1.length / 2
         elif a2 <= epsilon or (abs(a2 - math.pi) <= epsilon):
