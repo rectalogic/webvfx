@@ -43,6 +43,22 @@ def importAnimation(animObject, animation):
 
 def load(operator, context, filepath=""):
     with open(filepath, "r") as file:
-        animation = json.load(file)
-    importAnimation(context.object, animation)
+        animationJS = file.read()
+        # Deal with variable declaration
+        var = animationJS.find("=")
+        if var >= 0:
+            animationJS = animationJS[var+1:]
+        animation = json.loads(animationJS)
+
+    if isinstance(animation, list):
+        # The order of the selected objects will need to match the array order.
+        if len(animation) == len(context.selected_objects):
+            i = 0
+            for obj in context.selected_objects:
+                importAnimation(obj, animation[i])
+                i += 1
+        else:
+            operator.report({'ERROR'}, 'Animation contains %d elements, but only %d objects are selected' % (len(animation), len(context.selected_objects)))
+    else:
+        importAnimation(context.object, animation)
     return {'FINISHED'}

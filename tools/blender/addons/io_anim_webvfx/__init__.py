@@ -61,6 +61,7 @@ class ExportWebVfx(bpy.types.Operator, ExportHelper):
     filter_glob = StringProperty(default="*.js", options={'HIDDEN'})
 
     option_compact = BoolProperty(name="Compact", description="Compact JSON", default=True)
+    option_varname = StringProperty(name="var Name", description="JavaScript variable name")
 
     @classmethod
     def poll(cls, context):
@@ -73,6 +74,7 @@ class ExportWebVfx(bpy.types.Operator, ExportHelper):
     def draw(self, context):
         layout = self.layout
         layout.prop(self.properties, "option_compact")
+        layout.prop(self.properties, "option_varname")
 
 def menu_func_import(self, context):
     self.layout.operator(ImportWebVfx.bl_idname, text="WebVfx Animation JSON (.js)")

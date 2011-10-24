@@ -29,7 +29,7 @@ def correctControlPoints(points):
         points[2][0] = points[3][0] - overlap * h2[0]
         points[2][1] = points[3][1] - overlap * h2[1]
 
-def exportAnimation(animObject, compact):
+def buildAnimation(animObject):
     action = animObject.animation_data.action
     fcurves = action.fcurves
     frame_range = list(action.frame_range)
@@ -61,14 +61,28 @@ def exportAnimation(animObject, compact):
                                  'bezierPoints': points})
             animation[name] = segments
 
-    if compact:
-        return json.dumps(animation, sort_keys=True, separators=(',',':'))
-    else:
-        return json.dumps(animation, sort_keys=True, indent=4,
-                          separators=(',',': '))
+    return animation
 
-def save(operator, context, option_compact, filepath=""):
-    animationJS = exportAnimation(context.object, option_compact)
+def save(operator, context, option_compact, option_varname, filepath=""):
+    if len(context.selected_objects) > 1:
+        animation = []
+        for obj in context.selected_objects:
+            if obj.animation_data:
+                animation.append(buildAnimation(obj))
+    else:
+        animation = buildAnimation(context.object)
+
+    animationJS = ""
+    if option_varname:
+        animationJS = "var %s =\n" % option_varname
+
+    if option_compact:
+        animationJS += json.dumps(animation, sort_keys=True,
+                                  separators=(',',':'))
+    else:
+        animationJS += json.dumps(animation, sort_keys=True, indent=4,
+                                  separators=(',',': '))
+
     with open(filepath, "w") as file:
         file.write(animationJS)
     return {'FINISHED'}
