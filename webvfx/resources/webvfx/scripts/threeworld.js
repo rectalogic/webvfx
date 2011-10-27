@@ -112,6 +112,7 @@ WebVfx.trackTextureImage = function (texture, tracker) {
 // backgroundColor - Background color css spec.
 // textAlign - "left", "right" or "center".
 // textBaseline - "top", "middle" or "bottom"
+// margin - array of [left-right, top-bottom] margins
 WebVfx.createTextTexture = function (text, targetWidth, targetHeight, options) {
     var fontStyle = options.fontStyle;
     var textColor = options.textColor;
@@ -132,7 +133,14 @@ WebVfx.createTextTexture = function (text, targetWidth, targetHeight, options) {
     var textHeight = span.offsetHeight;
     document.body.removeChild(span);
 
-    var scale = Math.min(targetWidth / textWidth, targetHeight / textHeight);
+    var boxWidth = targetWidth;
+    var boxHeight = targetHeight;
+    if (options.margin) {
+        var margin = options.margin;
+        boxWidth -= 2 * margin[0];
+        boxHeight -= 2 * margin[1];
+    }
+    var scale = Math.min(boxWidth / textWidth, boxHeight / textHeight);
 
     var canvas = document.createElement("canvas");
     canvas.width = targetWidth;
