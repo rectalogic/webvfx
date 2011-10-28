@@ -214,13 +214,15 @@ WebVfx.updateVideoTexture = function (texture, name) {
 //  borderColor - (optional) THREE.Color - color of regions outside UV space.
 //   Setting this also triggers antialiasing of the edges.
 //  borderOpacity - float opacity of regions outside UV space (default 1.0)
+//  lights - enable lighting if true
 WebVfx.MultitextureShaderMaterial = function (parameters) {
     var vertexShader = this.shaderLibrary['vertexShader'];
     var fragmentShader = this.shaderLibrary['fragmentShader'];
     var vertexPrefix = [];
     var fragmentPrefix = [];
 
-    var uniforms = THREE.UniformsUtils.merge([THREE.UniformsLib["shadowmap"]]);
+    var uniforms = THREE.UniformsUtils.merge([THREE.UniformsLib["lights"],
+                                              THREE.UniformsLib["shadowmap"]]);
     uniforms.texture1 = { type: "t", value: 0, texture: parameters.texture1 };
 
     if (parameters.texture2) {
@@ -242,7 +244,8 @@ WebVfx.MultitextureShaderMaterial = function (parameters) {
     THREE.ShaderMaterial.call(this, {
         uniforms: uniforms,
         fragmentShader: fragmentShader,
-        vertexShader: vertexShader
+        vertexShader: vertexShader,
+        lights: parameters.lights
     });
 };
 
@@ -256,6 +259,8 @@ WebVfx.MultitextureShaderMaterial.prototype.shaderLibrary = {
         "#ifdef USE_TEXTURE2",
         "varying vec2 vUv2;",
         "#endif",
+        "varying vec3 vLightWeighting;",
+        THREE.ShaderChunk["lights_pars_vertex"],
         THREE.ShaderChunk["shadowmap_pars_vertex"],
         "void main() {",
         "    vUv = uv;",
@@ -264,6 +269,8 @@ WebVfx.MultitextureShaderMaterial.prototype.shaderLibrary = {
         "#endif",
         "    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);",
         "    gl_Position = projectionMatrix * mvPosition;",
+        "    vec3 transformedNormal = normalize(normalMatrix * normal);",
+             THREE.ShaderChunk["lights_vertex"],
              THREE.ShaderChunk["shadowmap_vertex"],
         "}"
     ].join("\n"),
@@ -282,6 +289,8 @@ WebVfx.MultitextureShaderMaterial.prototype.shaderLibrary = {
         "uniform vec3 borderColor;",
         "uniform float borderOpacity;",
         "#endif",
+
+        "varying vec3 vLightWeighting;",
 
         THREE.ShaderChunk["shadowmap_pars_fragment"],
 
@@ -323,11 +332,12 @@ WebVfx.MultitextureShaderMaterial.prototype.shaderLibrary = {
         "#endif",
 
         "void main() {",
+        "    gl_FragColor = vec4(vLightWeighting, 1.0);",
         "#ifdef USE_BORDERCOLOR",
         "    vec4 border = vec4(borderColor, borderOpacity);",
-        "    gl_FragColor = antialias(vUv, fwidth(vUv), texture1, border);",
+        "    gl_FragColor = gl_FragColor * antialias(vUv, fwidth(vUv), texture1, border);",
         "#else",
-        "    gl_FragColor = texture2D(texture1, vUv);",
+        "    gl_FragColor = gl_FragColor * texture2D(texture1, vUv);",
         "#endif",
 
         "#ifdef USE_TEXTURE2",
