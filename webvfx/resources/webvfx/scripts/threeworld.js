@@ -225,6 +225,9 @@ WebVfx.MultitextureShaderMaterial = function (parameters) {
                                               THREE.UniformsLib["shadowmap"]]);
     uniforms.texture1 = { type: "t", value: 0, texture: parameters.texture1 };
 
+    // Default to off
+    uniforms.enableLighting.value = 0;
+
     if (parameters.texture2) {
         uniforms.texture2 = { type: "t", value: 1, texture: parameters.texture2 };
         vertexPrefix.push("#define USE_TEXTURE2");
@@ -416,7 +419,6 @@ WebVfx.AnimatedCamera = function (aspect, nearPlane, farPlane, animationData) {
     this.animation = anim;
     var fov = anim.radians2degrees(anim.verticalFOV(aspect));
     THREE.PerspectiveCamera.call(this, fov, aspect, nearPlane, farPlane);
-    this.useTarget = false;
     // Blender XYZ order is really ZYX
     this.eulerOrder = 'ZYX';
 };
