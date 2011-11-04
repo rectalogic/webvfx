@@ -6,23 +6,26 @@
 
 var WebVfx = WebVfx || {};
 
-WebVfx.ThreeWorld = function (width, height, nearPlane, farPlane, animationData, readyCallback) {
+WebVfx.ThreeWorld = function (width, height, nearPlane, farPlane, animationData, readyCallback, scene) {
     var self = this;
 
     this.tracker = new WebVfx.Tracker(function () {
         readyCallback();
         delete self.tracker;
     });
-    this.jsonLoader = new THREE.JSONLoader();
 
     var aspect = width / height;
     this.camera = new WebVfx.AnimatedCamera(aspect, nearPlane, farPlane,
                                             animationData);
-    this.scene = new THREE.Scene();
-    // Blender OBJ and three.js exporters rotate scene by -PI/2 in X,
-    // undo that here so our camera animation data works.
-    this.scene.rotation.x = Math.PI / 2;
-    this.scene.updateMatrix();
+    if (scene)
+        this.scene = scene;
+    else {
+        this.scene = new THREE.Scene();
+        // Blender OBJ and three.js exporters rotate scene by -PI/2 in X,
+        // undo that here so our camera animation data works.
+        this.scene.rotation.x = Math.PI / 2;
+        this.scene.updateMatrix();
+    }
 
     this.widescreen = aspect > (4 / 3);
 
@@ -56,6 +59,8 @@ WebVfx.ThreeWorld.prototype = {
     // Optional _callback_ will be passed the Mesh for additional configuring
     addJSONModel: function (url, material, callback) {
         var self = this;
+        if (!this.jsonLoader)
+            this.jsonLoader = new THREE.JSONLoader();
         this.tracker.increment();
         this.jsonLoader.load({ model: url, callback: function (geometry) {
             var mesh = new THREE.Mesh(geometry, material);
@@ -254,6 +259,10 @@ WebVfx.MultitextureShaderMaterial = function (parameters) {
 
 WebVfx.MultitextureShaderMaterial.prototype = new THREE.ShaderMaterial();
 WebVfx.MultitextureShaderMaterial.prototype.constructor = WebVfx.MultitextureShaderMaterial;
+
+// v offset in uv space for top bottom to render 16:9 image in 4:3 mesh.
+// 16:12 (4:3) vs 16:9, 12-9=3/2=1.5 so 1.5/9 is offset for top and bottom
+WebVfx.MultitextureShaderMaterial.vOffset = 1.5/9;
 
 WebVfx.MultitextureShaderMaterial.prototype.shaderLibrary = {
     vertexShader: [
