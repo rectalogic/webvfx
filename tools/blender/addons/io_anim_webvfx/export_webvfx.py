@@ -34,7 +34,7 @@ def buildAnimation(animObject):
     fcurves = action.fcurves
     frame_range = list(action.frame_range)
 
-    animation = {'range': frame_range}
+    animation = {'name': animObject.name, 'range': frame_range}
     # Save FOV if object is a Camera
     if animObject.type == 'CAMERA':
         animation['horizontalFOV'] = animObject.data.angle

@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 import bpy
-from io_anim_webvfx import KeyframeGroup, CurveNames, CoordNames
+from io_anim_webvfx import KeyframeGroup, CurveNames, CoordNames, reportError
 import numbers
 import json
 
@@ -51,14 +51,14 @@ def load(operator, context, filepath=""):
         animation = json.loads(animationJS)
 
     if isinstance(animation, list):
-        # The order of the selected objects will need to match the array order.
-        if len(animation) == len(context.selected_objects):
-            i = 0
-            for obj in context.selected_objects:
-                importAnimation(obj, animation[i])
-                i += 1
-        else:
-            operator.report({'ERROR'}, 'Animation contains %d elements, but only %d objects are selected' % (len(animation), len(context.selected_objects)))
+        for anim in animation:
+            if 'name' in anim:
+                if anim['name'] in bpy.data.objects:
+                    importAnimation(bpy.data.objects[anim['name']], anim)
+                else:
+                    reportError(self, 'Animation missing name')
+            else:
+                reportError(self, 'No object found for animation "%s"' % anim['name'])
     else:
         importAnimation(context.object, animation)
     return {'FINISHED'}

@@ -53,7 +53,7 @@ class ImportWebVfx(bpy.types.Operator, ImportHelper):
 
 
 class ExportWebVfx(bpy.types.Operator, ExportHelper):
-    '''Save WebVfx animation JSON file for the selected object'''
+    '''Save WebVfx animation JSON file for the selected object(s)'''
     bl_idname = "export_anim.webvfx"
     bl_label = "Export WebVfx JSON"
 
@@ -95,6 +95,9 @@ def unregister():
 
     bpy.types.INFO_MT_file_import.remove(menu_func_import)
     bpy.types.INFO_MT_file_export.remove(menu_func_export)
+
+def reportError(op, msg):
+    op.report({'ERROR'}, msg)
 
 if __name__ == "__main__":
     register()
