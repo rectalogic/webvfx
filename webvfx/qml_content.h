@@ -12,7 +12,6 @@
 #include "webvfx/effects.h"
 #include "webvfx/image.h"
 
-class QEventLoop;
 class QSize;
 class QUrl;
 
@@ -30,8 +29,7 @@ public:
     QmlContent(const QSize& size, Parameters* parameters);
     ~QmlContent();
 
-    // Load QML synchronously, return success
-    bool loadContent(const QUrl& url);
+    void loadContent(const QUrl& url);
     void setContentSize(const QSize& size);
     const Effects::ImageTypeMap& getImageTypeMap() { return contentContext->getImageTypeMap(); };
     bool renderContent(double time, Image* renderImage);
@@ -43,6 +41,9 @@ public:
         return this;
     }
 
+signals:
+    void contentLoadFinished(bool result);
+
 private slots:
     void qmlViewStatusChanged(QDeclarativeView::Status status);
     void contentContextLoadFinished(bool result);
@@ -53,7 +54,6 @@ private:
     LoadStatus pageLoadFinished;
     LoadStatus contextLoadFinished;
     ContentContext* contentContext;
-    QEventLoop* syncLoop;
     RenderStrategy* renderStrategy;
 };
 

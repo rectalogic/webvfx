@@ -15,7 +15,6 @@
 #include "webvfx/content_context.h"
 #include "webvfx/effects.h"
 
-class QEventLoop;
 class QGraphicsWebView;
 class QImage;
 class QSize;
@@ -42,8 +41,7 @@ public:
     WebContent(const QSize& size, Parameters* parameters);
     ~WebContent();
 
-    // Load URL synchronously, return success
-    bool loadContent(const QUrl& url);
+    void loadContent(const QUrl& url);
     void setContentSize(const QSize& size);
     const Effects::ImageTypeMap& getImageTypeMap() { return contentContext->getImageTypeMap(); };
     bool renderContent(double time, Image* renderImage);
@@ -54,6 +52,9 @@ public:
 
     // For debugging with Viewer
     QWebSettings* settings();
+
+signals:
+    void contentLoadFinished(bool result);
 
 private slots:
     void injectContentContext();
@@ -69,7 +70,6 @@ private:
     LoadStatus pageLoadFinished;
     LoadStatus contextLoadFinished;
     ContentContext* contentContext;
-    QEventLoop* syncLoop;
     RenderStrategy* renderStrategy;
 };
 

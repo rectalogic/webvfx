@@ -1,4 +1,3 @@
-#include <QEventLoop>
 #ifdef WEBVFX_GRAPHICSVIEW
 #include <QGLWidget>
 #include <QGraphicsScene>
@@ -65,7 +64,6 @@ WebContent::WebContent(const QSize& size, Parameters* parameters)
     , pageLoadFinished(LoadNotFinished)
     , contextLoadFinished(LoadNotFinished)
     , contentContext(new ContentContext(this, parameters))
-    , syncLoop(0)
     , renderStrategy(0)
 {
 // Enabling WEBVFX_GRAPHICSVIEW is the most efficient rendering path, especially
@@ -125,49 +123,26 @@ void WebContent::webPageLoadFinished(bool result)
 {
     if (pageLoadFinished == LoadNotFinished)
         pageLoadFinished = result ? LoadSucceeded : LoadFailed;
-    if (syncLoop && (pageLoadFinished == LoadFailed ||
-                     contextLoadFinished != LoadNotFinished))
-        syncLoop->exit(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
+    if (pageLoadFinished == LoadFailed || contextLoadFinished != LoadNotFinished)
+        emit contentLoadFinished(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
 }
 
 void WebContent::contentContextLoadFinished(bool result)
 {
     if (contextLoadFinished == LoadNotFinished)
         contextLoadFinished = result ? LoadSucceeded : LoadFailed;
-    if (syncLoop && (contextLoadFinished == LoadFailed ||
-                     pageLoadFinished != LoadNotFinished))
-        syncLoop->exit(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
+    if (contextLoadFinished == LoadFailed || pageLoadFinished != LoadNotFinished)
+        emit contentLoadFinished(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
 }
 
-bool WebContent::loadContent(const QUrl& url)
+void WebContent::loadContent(const QUrl& url)
 {
-    if (syncLoop) {
-        log("WebContent::loadContent recursive call detected");
-        return false;
-    }
-
     pageLoadFinished = LoadNotFinished;
     contextLoadFinished = LoadNotFinished;
 
     webPage->mainFrame()->load(url);
-
-    if (pageLoadFinished != LoadFailed
-        && (pageLoadFinished == LoadNotFinished
-            || contextLoadFinished == LoadNotFinished)) {
-        // Run a nested event loop which will be exited when both
-        // webPageLoadFinished and contentContextLoadFinished signal,
-        // returning the result code here.
-        // http://wiki.forum.nokia.com/index.php/How_to_wait_synchronously_for_a_Signal_in_Qt
-        // http://qt.gitorious.org/qt/qt/blobs/4.7/src/gui/dialogs/qdialog.cpp#line549
-        QEventLoop loop;
-        syncLoop = &loop;
-        bool result = loop.exec();
-        syncLoop = 0;
-        return result;
-    }
-    else
-        return pageLoadFinished == LoadSucceeded && contextLoadFinished == LoadSucceeded;
 }
+
 void WebContent::setContentSize(const QSize& size) {
 #ifdef WEBVFX_GRAPHICSVIEW
     if (size != this->size()) {
@@ -200,7 +175,7 @@ QWidget* WebContent::createView(QWidget* parent)
     return this;
 #else
     QWebView* webView = new QWebView(parent);
-    setParent(parent);
+    setParent(webView);
     webView->setPage(webPage);
     return webView;
 #endif

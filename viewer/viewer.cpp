@@ -98,10 +98,30 @@ Viewer::Viewer()
     sizeLabel = new QLabel(statusBar());
     statusBar()->addPermanentWidget(sizeLabel);
 
-    actionReload->setEnabled(false);
-    actionRenderImage->setEnabled(false);
+    setContentUIEnabled(false);
 
     handleResize();
+}
+
+void Viewer::setContentUIEnabled(bool enable)
+{
+    timeSpinBox->setEnabled(enable);
+    timeSlider->setEnabled(enable);
+    actionReload->setEnabled(enable);
+    actionRenderImage->setEnabled(enable);
+}
+
+void Viewer::onContentLoadFinished(bool result)
+{
+    if (result) {
+        setupImages(scrollArea->widget()->size());
+        content->renderContent(timeSpinBox->value(), 0);
+    }
+    else {
+        statusBar()->showMessage(tr("Load failed"), 2000);
+        setWindowFilePath("");
+    }
+    setContentUIEnabled(result);
 }
 
 void Viewer::on_actionOpen_triggered(bool)
@@ -137,10 +157,8 @@ void Viewer::loadFile(const QString& fileName)
 {
     if (fileName.isNull())
         return;
-    if (!createContent(fileName))
-        statusBar()->showMessage(tr("Load failed"), 2000);
-    else
-        setWindowFilePath(fileName);
+    createContent(fileName);
+    setWindowFilePath(fileName);
 }
 
 void Viewer::handleResize()
@@ -211,11 +229,14 @@ double Viewer::sliderTimeValue(int value)
     return value / (double)timeSlider->maximum();
 }
 
-bool Viewer::createContent(const QString& fileName)
+void Viewer::createContent(const QString& fileName)
 {
     if (fileName.endsWith(".qml", Qt::CaseInsensitive)) {
-        content = new WebVfx::QmlContent(scrollArea->widget()->size(),
-                                         new ViewerParameters(parametersTable));
+        WebVfx::QmlContent* qmlContent =
+            new WebVfx::QmlContent(scrollArea->widget()->size(),
+                                   new ViewerParameters(parametersTable));
+        content = qmlContent;
+        connect(qmlContent, SIGNAL(contentLoadFinished(bool)), SLOT(onContentLoadFinished(bool)));
     }
     else if (fileName.endsWith(".html", Qt::CaseInsensitive)){
         WebVfx::WebContent* webContent =
@@ -224,6 +245,7 @@ bool Viewer::createContent(const QString& fileName)
         // User can right-click to open WebInspector on the page
         webContent->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
         content = webContent;
+        connect(webContent, SIGNAL(contentLoadFinished(bool)), SLOT(onContentLoadFinished(bool)));
     }
 
     QWidget* view = content->createView(scrollArea);
@@ -231,21 +253,13 @@ bool Viewer::createContent(const QString& fileName)
 
     // Set content as direct widget of QScrollArea,
     // otherwise it creates an intermediate QWidget which messes up resizing.
+    // setWidget will destroy the old view.
     scrollArea->setWidget(view);
 
     logTextEdit->clear();
 
-    if (content->loadContent(fileName)) {
-        setupImages(view->size());
-
-        content->renderContent(timeSpinBox->value(), 0);
-
-        actionReload->setEnabled(true);
-        actionRenderImage->setEnabled(true);
-
-        return true;
-    }
-    return false;
+    setContentUIEnabled(false);
+    content->loadContent(fileName);
 }
 
 void Viewer::setupImages(const QSize& size)

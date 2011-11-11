@@ -1,9 +1,12 @@
 #include <QApplication>
 #include <QFileInfo>
+#include <QMutex>
+#include <QMutexLocker>
 #include <QSize>
 #include <QStringBuilder>
 #include <QThread>
 #include <QUrl>
+#include <QWaitCondition>
 #include "webvfx/content.h"
 #include "webvfx/effects_impl.h"
 #include "webvfx/image.h"
@@ -19,7 +22,9 @@ namespace WebVfx
 EffectsImpl::EffectsImpl()
     : QObject(0)
     , content(0)
-    , loadResult(false)
+    , mutex(0)
+    , waitCondition(0)
+    , initializeResult(false)
     , renderResult(false)
 {
 }
@@ -31,6 +36,11 @@ EffectsImpl::~EffectsImpl()
 
 bool EffectsImpl::initialize(const QString& fileName, int width, int height, Parameters* parameters)
 {
+    if (onUIThread()) {
+        log("WebVfx::Effects cannot be initialized on main UI thread.");
+        return false;
+    }
+
     QUrl url(QUrl::fromLocalFile(QFileInfo(fileName).absoluteFilePath()));
 
     if (!url.isValid()) {
@@ -40,19 +50,32 @@ bool EffectsImpl::initialize(const QString& fileName, int width, int height, Par
 
     QSize size(width, height);
 
-    loadResult = false;
-
-    if (onUIThread()) {
-        initializeInvokable(url, size, parameters);
-    }
-    else {
-        // Move ourself onto GUI thread and create our Content there
+    QMutex mutex;
+    QWaitCondition waitCondition;
+    this->mutex = &mutex;
+    this->waitCondition = &waitCondition;
+    {
+        QMutexLocker locker(&mutex);
+        // Move ourself onto GUI thread and create our Content there.
+        // Invoke this async then wait for result.
         this->moveToThread(QApplication::instance()->thread());
-        QMetaObject::invokeMethod(this, "initializeInvokable", Qt::BlockingQueuedConnection,
-                                  Q_ARG(QUrl, url), Q_ARG(QSize, size), Q_ARG(Parameters*, parameters));
+        QMetaObject::invokeMethod(this, "initializeInvokable",
+                                  Qt::QueuedConnection,
+                                  Q_ARG(QUrl, url), Q_ARG(QSize, size),
+                                  Q_ARG(Parameters*, parameters));
+        //XXX should we wait with a timeout and fail if expires?
+        waitCondition.wait(&mutex);
     }
+    this->mutex = 0;
+    this->waitCondition = 0;
+    return initializeResult;
+}
 
-    return loadResult;
+void EffectsImpl::initializeComplete(bool result)
+{
+    QMutexLocker locker(mutex);
+    initializeResult = result;
+    waitCondition->wakeAll();
 }
 
 void EffectsImpl::destroy()
@@ -96,18 +119,22 @@ void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parame
     QString path(url.path());
     // We can't parent QmlContent since we aren't a QWidget.
     // So don't parent either content, and destroy them explicitly.
-    if (path.endsWith(".html", Qt::CaseInsensitive))
-        content = new WebContent(size, parameters);
-    else if (path.endsWith(".qml", Qt::CaseInsensitive))
-        content = new QmlContent(size, parameters);
+    if (path.endsWith(".html", Qt::CaseInsensitive)) {
+        WebContent* webContent = new WebContent(size, parameters);
+        content = webContent;
+        connect(webContent, SIGNAL(contentLoadFinished(bool)), SLOT(initializeComplete(bool)));
+    }
+    else if (path.endsWith(".qml", Qt::CaseInsensitive)) {
+        QmlContent* qmlContent = new QmlContent(size, parameters);
+        content = qmlContent;
+        connect(qmlContent, SIGNAL(contentLoadFinished(bool)), SLOT(initializeComplete(bool)));
+    }
     else {
         log(QLatin1Literal("WebVfx Filename must end with '.html' or '.qml': ") % path);
-        loadResult = false;
         return;
     }
 
-    // Qt 4.8.0 allows BlockingQueuedConnection to return a value http://bugreports.qt.nokia.com/browse/QTBUG-10440
-    loadResult = content->loadContent(url);
+    content->loadContent(url);
 }
 
 void EffectsImpl::renderInvokable(double time, Image* renderImage)

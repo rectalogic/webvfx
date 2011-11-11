@@ -24,8 +24,8 @@ public:
     Content() {};
     virtual ~Content() = 0;
 
-    // This should synchronously load content
-    virtual bool loadContent(const QUrl& url) = 0;
+    // Implementor should emit contentLoadFinished(bool) signal
+    virtual void loadContent(const QUrl& url) = 0;
     virtual void setContentSize(const QSize& size) = 0;
     virtual const Effects::ImageTypeMap& getImageTypeMap() = 0;
     virtual void setImage(const QString& name, Image* image) = 0;

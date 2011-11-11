@@ -8,6 +8,8 @@
 #include <QObject>
 #include "webvfx/effects.h"
 
+class QMutex;
+class QWaitCondition;
 class QSize;
 class QString;
 class QUrl;
@@ -32,6 +34,9 @@ public:
     bool render(double time, Image* renderImage);
     void destroy();
 
+private slots:
+    void initializeComplete(bool result);
+
 private:
     ~EffectsImpl();
     Q_INVOKABLE void initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters);
@@ -41,7 +46,9 @@ private:
     bool onUIThread();
 
     Content* content;
-    bool loadResult;
+    QMutex* mutex;
+    QWaitCondition* waitCondition;
+    bool initializeResult;
     bool renderResult;
 };
 

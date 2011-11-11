@@ -27,6 +27,7 @@ public:
 
 private slots:
     void on_actionOpen_triggered(bool);
+    void onContentLoadFinished(bool);
     void on_actionReload_triggered(bool);
     void on_actionRenderImage_triggered(bool);
     void on_resizeButton_clicked();
@@ -37,7 +38,8 @@ private slots:
     void onImageChanged(const QString&, WebVfx::Image);
 
 private:
-    bool createContent(const QString& fileName);
+    void createContent(const QString& fileName);
+    void setContentUIEnabled(bool enable);
     void handleResize();
     void setImagesOnContent();
     void setupImages(const QSize& size);

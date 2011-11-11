@@ -1,5 +1,4 @@
 #include <QtDeclarative>
-#include <QEventLoop>
 #include <QGLWidget>
 #include <QImage>
 #include <QList>
@@ -56,7 +55,6 @@ QmlContent::QmlContent(const QSize& size, Parameters* parameters)
     , pageLoadFinished(LoadNotFinished)
     , contextLoadFinished(LoadNotFinished)
     , contentContext(new ContentContext(this, parameters))
-    , syncLoop(0)
     , renderStrategy(0)
 {
     if (!s_QmlContentRegistered) {
@@ -106,18 +104,21 @@ void QmlContent::qmlViewStatusChanged(QDeclarativeView::Status status)
 
     if (pageLoadFinished == LoadNotFinished)
         pageLoadFinished = (status == QDeclarativeView::Ready) ? LoadSucceeded : LoadFailed;
-    if (syncLoop && (pageLoadFinished == LoadFailed ||
-                     contextLoadFinished != LoadNotFinished))
-        syncLoop->exit(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
+    if (pageLoadFinished == LoadFailed || contextLoadFinished != LoadNotFinished) {
+
+        logWarnings(errors());
+        emit contentLoadFinished(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
+    }
 }
 
 void QmlContent::contentContextLoadFinished(bool result)
 {
     if (contextLoadFinished == LoadNotFinished)
         contextLoadFinished = result ? LoadSucceeded : LoadFailed;
-    if (syncLoop && (contextLoadFinished == LoadFailed ||
-                     pageLoadFinished != LoadNotFinished))
-        syncLoop->exit(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
+    if (contextLoadFinished == LoadFailed || pageLoadFinished != LoadNotFinished) {
+        logWarnings(errors());
+        emit contentLoadFinished(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
+    }
 }
 
 void QmlContent::logWarnings(const QList<QDeclarativeError>& warnings)
@@ -127,13 +128,8 @@ void QmlContent::logWarnings(const QList<QDeclarativeError>& warnings)
     }
 }
 
-bool QmlContent::loadContent(const QUrl& url)
+void QmlContent::loadContent(const QUrl& url)
 {
-    if (syncLoop) {
-        log("QmlContent::loadContent recursive call detected");
-        return false;
-    }
-
     pageLoadFinished = LoadNotFinished;
     contextLoadFinished = LoadNotFinished;
 
@@ -144,27 +140,6 @@ bool QmlContent::loadContent(const QUrl& url)
     // XXX QDeclarativeView::SizeRootObjectToView is broken, so resize after loading
     // http://bugreports.qt.nokia.com/browse/QTBUG-15863
     setContentSize(originalSize);
-
-    bool result = false;
-    if (pageLoadFinished != LoadFailed
-        && (pageLoadFinished == LoadNotFinished
-            || contextLoadFinished == LoadNotFinished)) {
-        // Run a nested event loop which will be exited when both
-        // qmlViewStatusChanged and contentContextLoadFinished signal,
-        // returning the result code here.
-        // http://wiki.forum.nokia.com/index.php/How_to_wait_synchronously_for_a_Signal_in_Qt
-        // http://qt.gitorious.org/qt/qt/blobs/4.7/src/gui/dialogs/qdialog.cpp#line549
-        QEventLoop loop;
-        syncLoop = &loop;
-        result = loop.exec();
-        syncLoop = 0;
-    }
-    else
-        result = pageLoadFinished == LoadSucceeded && contextLoadFinished == LoadSucceeded;
-
-    logWarnings(errors());
-
-    return result;
 }
 
 void QmlContent::setContentSize(const QSize& size) {
