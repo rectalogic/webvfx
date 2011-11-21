@@ -2,8 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#define WEBVFX_IGNORE_SEGV
+
 #ifndef Q_WS_MAC
 #include <pthread.h>
+#ifdef WEBVFX_IGNORE_SEGV
+#include <signal.h>
+#include <termios.h>
+#include <unistd.h>
+#endif
 #endif
 #include <cstdlib>
 #include <QApplication>
@@ -34,6 +41,16 @@ bool isMainThread();
 static pthread_t s_uiThread;
 typedef QPair<QMutex*, QWaitCondition*> ThreadSync;
 
+#ifdef WEBVFX_IGNORE_SEGV
+static void handleSEGV(int)
+{
+    const char msg[] = "WebVfx: Caught SIGSEGV during shutdown. Exiting successfully.\n";
+    write(STDERR_FILENO, msg, sizeof(msg));
+    tcflush(STDERR_FILENO, TCOFLUSH);
+    _exit(EXIT_SUCCESS);
+}
+#endif
+
 void* uiEventLoop(void* data)
 {
     ThreadSync* threadSync = static_cast<ThreadSync*>(data);
@@ -53,6 +70,19 @@ void* uiEventLoop(void* data)
     // Enter event loop
     app.exec();
     QCoreApplication::processEvents();
+
+#ifdef WEBVFX_IGNORE_SEGV
+    // WebKit threads can outlive QApplication and global Qt internal state.
+    // This can lead to crashes on shutdown.
+    // As a temporary workaround, trap SIGSEGV and exit normally during shutdown.
+    // https://bugs.webkit.org/show_bug.cgi?id=72155
+    struct sigaction action;
+    action.sa_handler = handlerSEGV;
+    sigemptyset(&action.sa_mask);
+    action.sa_flags = 0;
+    sigaction(SIGSEGV, &action, NULL);
+#endif
+
     return 0;
 }
 #endif
