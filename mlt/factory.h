@@ -17,6 +17,8 @@ mlt_service createProducer(mlt_profile profile);
 mlt_service createFilter();
 mlt_service createTransition();
 
+void* createPanzoomProducer(mlt_profile profile, mlt_service_type type, const char* id, const void* fileName);
+
 }
 
 #endif

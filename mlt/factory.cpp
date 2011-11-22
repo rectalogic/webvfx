@@ -74,6 +74,8 @@ extern "C" EXPORT MLT_REPOSITORY
     MLT_REGISTER(filter_type, "webvfx", createService);
     MLT_REGISTER(transition_type, "webvfx", createService);
 
+    MLT_REGISTER(producer_type, "webvfx.panzoom", MLTWebVfx::createPanzoomProducer);
+
     // Register shutdown hook - even if we don't initialize WebVfx
     // we want our logger deleted.
     mlt_factory_register_for_clean_up(0, reinterpret_cast<mlt_destructor>(WebVfx::shutdown));
