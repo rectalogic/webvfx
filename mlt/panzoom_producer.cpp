@@ -37,7 +37,7 @@ static QTransform computeTransform(mlt_producer producer, mlt_properties framePr
     struct mlt_geometry_item_s item;
     mlt_geometry_fetch(geometry, &item, position);
 
-    // Compute scale to "meet" geometry
+    // Compute scale to "meet" the geometry rect
     float scaleWidth = item.w / image->width();
     float scaleHeight = item.h / image->height();
     float scale = qMin(scaleWidth, scaleHeight);
@@ -51,6 +51,10 @@ static QTransform computeTransform(mlt_producer producer, mlt_properties framePr
     return QTransform::fromTranslate(item.x, item.y).scale(scale, scale);
 }
 
+static void destroyQImage(QImage* image) {
+    delete image;
+}
+
 static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format *format, int *width, int *height, int /*writable*/) {
     int error = 0;
 
@@ -61,15 +65,11 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
     mlt_producer producer = (mlt_producer)mlt_properties_get_data(properties, kPanzoomProducerPropertyName, NULL);
 
     // Allocate the image
-    //XXX support requested format?
-    //XXX need to memset this?
     *format = mlt_image_rgb24;
     int size = *width * *height * 3;
     *buffer = (uint8_t*)mlt_pool_alloc(size);
     if (!*buffer)
         return 1;
-    //XXX can we optimize this? i.e. don't need to clear if painting over it
-    memset(*buffer, 0, size);
 
     // Update the frame
     mlt_frame_set_image(frame, *buffer, size, mlt_pool_release);
@@ -77,13 +77,28 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
     mlt_properties_set_int(properties, "height", *height);
 
     mlt_properties producerProperties = MLT_PRODUCER_PROPERTIES(producer);
+
     QImage* image = static_cast<QImage*>(mlt_properties_get_data(producerProperties, kPanzoomQImagePropertyName, NULL));
+    if (!image) {
+        char* fileName = mlt_properties_get(producerProperties, "resource");
+        image = new QImage(static_cast<const char*>(fileName));
+        mlt_properties_set_data(producerProperties, kPanzoomQImagePropertyName, image, 0, reinterpret_cast<mlt_destructor>(destroyQImage), NULL);
+        if (!image || image->isNull())
+            return 1;
+    }
+
+    QTransform tx(computeTransform(producer, properties, image));
 
     QImage targetImage(static_cast<uchar*>(*buffer), *width, *height, *width * 3, QImage::Format_RGB888);
+
+    // Clear buffer if transformed rect doesn't fill it
+    QRect rect(tx.mapRect(image->rect()));
+    if (!rect.contains(targetImage.rect()))
+        memset(*buffer, 0, size);
+
     QPainter painter(&targetImage);
-    painter.setTransform(computeTransform(producer, properties, image));
+    painter.setTransform(tx);
     painter.setRenderHint(QPainter::SmoothPixmapTransform);
-//    painter.setRenderHint(QPainter::Antialiasing);
     painter.drawImage(QPoint(0, 0), *image);
 
     return error;
@@ -98,7 +113,7 @@ static int getFrame(mlt_producer producer, mlt_frame_ptr frame, int /*index*/) {
         mlt_properties properties = MLT_FRAME_PROPERTIES(*frame);
 
         // Obtain properties of producer
-        mlt_properties producer_props = MLT_PRODUCER_PROPERTIES(producer);
+        mlt_properties producerProperties = MLT_PRODUCER_PROPERTIES(producer);
 
         // Set the producer on the frame properties
         mlt_properties_set_data(properties, kPanzoomProducerPropertyName, producer, 0, NULL, NULL);
@@ -110,7 +125,7 @@ static int getFrame(mlt_producer producer, mlt_frame_ptr frame, int /*index*/) {
 
         // Set producer-specific frame properties
         mlt_properties_set_int(properties, "progressive", 1);
-        mlt_properties_set_double(properties, "aspect_ratio", mlt_properties_get_double(producer_props, "aspect_ratio"));
+        mlt_properties_set_double(properties, "aspect_ratio", mlt_properties_get_double(producerProperties, "aspect_ratio"));
 
         // Push the get_image method
         mlt_frame_push_get_image(*frame, producerGetImage);
@@ -122,23 +137,13 @@ static int getFrame(mlt_producer producer, mlt_frame_ptr frame, int /*index*/) {
     return 0;
 }
 
-static void destroyQImage(QImage* image) {
-    delete image;
-}
-
 void* MLTWebVfx::createPanzoomProducer(mlt_profile profile, mlt_service_type, const char*, const void* fileName) {
     mlt_producer self = mlt_producer_new(profile);
     if (self) {
         mlt_properties properties = MLT_PRODUCER_PROPERTIES(self);
         self->get_frame = getFrame;
-        if (!fileName)
-            fileName = mlt_properties_get(properties, "resource");
-        QImage* image = new QImage(static_cast<const char*>(fileName));
-        mlt_properties_set_data(properties, kPanzoomQImagePropertyName, image, 0, reinterpret_cast<mlt_destructor>(destroyQImage), NULL);
-        if (!image || image->isNull()) {
-            mlt_producer_close(self);
-            self = 0;
-        }
+        if (fileName)
+            mlt_properties_set(properties, "resource", static_cast<const char *>(fileName));
         mlt_properties_set(properties, "geometry", "0/0:100%x100%");
     }
     return self;
