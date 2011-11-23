@@ -47,9 +47,9 @@ static QTransform computeTransform(mlt_producer producer, mlt_properties framePr
 
     // If aspect ratio differs, need to center image
     if (scaleWidth > scaleHeight)
-        item.x = (item.w - scaleHeight * image->width()) / 2.0;
+        item.x += (item.w - scaleHeight * image->width()) / 2.0;
     else if (scaleHeight > scaleWidth)
-        item.y = (item.h - scaleWidth * image->height()) / 2.0;
+        item.y += (item.h - scaleWidth * image->height()) / 2.0;
 
     return QTransform::fromTranslate(item.x, item.y).scale(scale, scale);
 }
