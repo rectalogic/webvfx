@@ -6,12 +6,15 @@ extern "C" {
     #include <mlt/framework/mlt_geometry.h>
     #include <mlt/framework/mlt_producer.h>
     #include <mlt/framework/mlt_frame.h>
+    #include <mlt/framework/mlt_log.h>
 }
 #include <QImage>
+#include <QImageReader>
 #include <QPainter>
 #include <QTransform>
 #include "factory.h"
 
+static const char* kPanzoomFilenamePropertyName = "webvfx.panzoom.filename";
 static const char* kPanzoomProducerPropertyName = "WebVfxPanzoomProducer";
 static const char* kPanzoomPositionPropertyName = "webvfx.panzoom.position";
 static const char* kPanzoomQImagePropertyName = "webvfx.panzoom.QImage";
@@ -62,7 +65,7 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
     mlt_properties properties = MLT_FRAME_PROPERTIES(frame);
 
     // Obtain the producer for this frame
-    mlt_producer producer = (mlt_producer)mlt_properties_get_data(properties, kPanzoomProducerPropertyName, NULL);
+    mlt_producer producer = static_cast<mlt_producer>(mlt_properties_get_data(properties, kPanzoomProducerPropertyName, NULL));
 
     // Allocate the image
     *format = mlt_image_rgb24;
@@ -80,11 +83,29 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
 
     QImage* image = static_cast<QImage*>(mlt_properties_get_data(producerProperties, kPanzoomQImagePropertyName, NULL));
     if (!image) {
-        char* fileName = mlt_properties_get(producerProperties, "resource");
-        image = new QImage(static_cast<const char*>(fileName));
-        mlt_properties_set_data(producerProperties, kPanzoomQImagePropertyName, image, 0, reinterpret_cast<mlt_destructor>(destroyQImage), NULL);
-        if (!image || image->isNull())
+        const char* fileName = mlt_properties_get(producerProperties, kPanzoomFilenamePropertyName);
+        if (!fileName)
+            fileName = mlt_properties_get(producerProperties, "resource");
+
+        image = new QImage(fileName);
+        if (image) {
+            mlt_properties_set_data(producerProperties, kPanzoomQImagePropertyName, image, 0, reinterpret_cast<mlt_destructor>(destroyQImage), NULL);
+            if (image->isNull()) {
+                QImageReader reader(fileName);
+                reader.setDecideFormatFromContent(true);
+                *image = reader.read();
+                if (image->isNull()) {
+                    mlt_log(MLT_PRODUCER_SERVICE(producer), MLT_LOG_ERROR,
+                            "Failed to load QImage '%s'\n", fileName);
+                    return 1;
+                }
+            }
+        }
+        else {
+            mlt_log(MLT_PRODUCER_SERVICE(producer), MLT_LOG_ERROR,
+                    "Failed to create QImage\n");
             return 1;
+        }
     }
 
     QTransform tx(computeTransform(producer, properties, image));
@@ -142,8 +163,10 @@ void* MLTWebVfx::createPanzoomProducer(mlt_profile profile, mlt_service_type, co
     if (self) {
         mlt_properties properties = MLT_PRODUCER_PROPERTIES(self);
         self->get_frame = getFrame;
-        if (fileName)
-            mlt_properties_set(properties, "resource", static_cast<const char *>(fileName));
+        if (fileName) {
+            mlt_properties_set(properties, kPanzoomFilenamePropertyName,
+                               static_cast<const char *>(fileName));
+        }
         mlt_properties_set(properties, "geometry", "0/0:100%x100%");
     }
     return self;
