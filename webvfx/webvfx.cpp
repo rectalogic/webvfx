@@ -75,7 +75,7 @@ void* uiEventLoop(void* data)
     // WebKit threads can outlive QApplication and global Qt internal state.
     // This can lead to crashes on shutdown.
     // As a temporary workaround, trap SIGSEGV and exit normally during shutdown.
-    // https://bugs.webkit.org/show_bug.cgi?id=72155
+    // https://bugs.webkit.org/show_bug.cgi?id=72538
     struct sigaction action;
     action.sa_handler = handleSEGV;
     sigemptyset(&action.sa_mask);
