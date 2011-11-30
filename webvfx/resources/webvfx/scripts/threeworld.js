@@ -223,15 +223,21 @@ WebVfx.MultitextureShaderMaterial = function (parameters) {
                                               THREE.UniformsLib["shadowmap"]]);
     uniforms.texture1 = { type: "t", value: 0, texture: parameters.texture1 };
 
+    if (parameters.lights) {
+        uniforms.ambient = { type: "c", value: new THREE.Color(0x050505) };
+        vertexPrefix.push("#define USE_WEBVFX_LIGHTS");
+        fragmentPrefix.push("#define USE_WEBVFX_LIGHTS");
+    }
+
     if (parameters.texture2) {
         uniforms.texture2 = { type: "t", value: 1, texture: parameters.texture2 };
-        vertexPrefix.push("#define USE_TEXTURE2");
-        fragmentPrefix.push("#define USE_TEXTURE2");
+        vertexPrefix.push("#define USE_WEBVFX_TEXTURE2");
+        fragmentPrefix.push("#define USE_WEBVFX_TEXTURE2");
     }
     if (parameters.borderColor) {
         uniforms.borderColor = { type: "c", value: parameters.borderColor };
         uniforms.borderOpacity = { type: "f", value: parameters.borderOpacity || 1.0 };
-        fragmentPrefix.push("#define USE_BORDERCOLOR");
+        fragmentPrefix.push("#define USE_WEBVFX_BORDERCOLOR");
     }
 
     if (vertexPrefix.length > 0)
@@ -258,22 +264,28 @@ WebVfx.MultitextureShaderMaterial.prototype.shaderLibrary = {
     vertexShader: [
         "",
         "varying vec2 vUv;",
-        "#ifdef USE_TEXTURE2",
+        "#ifdef USE_WEBVFX_TEXTURE2",
         "varying vec2 vUv2;",
         "#endif",
+        "#ifdef USE_WEBVFX_LIGHTS",
         "varying vec3 vLightWeighting;",
         THREE.ShaderChunk["lights_lambert_pars_vertex"],
         THREE.ShaderChunk["shadowmap_pars_vertex"],
+        "#endif",
         "void main() {",
         "    vUv = uv;",
-        "#ifdef USE_TEXTURE2",
+        "#ifdef USE_WEBVFX_TEXTURE2",
         "    vUv2 = uv2;",
         "#endif",
         "    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);",
-        "    gl_Position = projectionMatrix * mvPosition;",
         "    vec3 transformedNormal = normalize(normalMatrix * normal);",
+        "#ifdef USE_WEBVFX_LIGHTS",
              THREE.ShaderChunk["lights_lambert_vertex"],
+        "#endif",
+             THREE.ShaderChunk["default_vertex"],
+        "#ifdef USE_WEBVFX_LIGHTS",
              THREE.ShaderChunk["shadowmap_vertex"],
+        "#endif",
         "}"
     ].join("\n"),
     fragmentShader: [
@@ -281,22 +293,24 @@ WebVfx.MultitextureShaderMaterial.prototype.shaderLibrary = {
         "varying vec2 vUv;",
         "uniform sampler2D texture1;",
 
-        "#ifdef USE_TEXTURE2",
+        "#ifdef USE_WEBVFX_TEXTURE2",
         "varying vec2 vUv2;",
         "uniform sampler2D texture2;",
         "#endif",
 
-        "#ifdef USE_BORDERCOLOR",
+        "#ifdef USE_WEBVFX_BORDERCOLOR",
         "#extension GL_OES_standard_derivatives : enable",
         "uniform vec3 borderColor;",
         "uniform float borderOpacity;",
         "#endif",
 
+        "#ifdef USE_WEBVFX_LIGHTS",
         "varying vec3 vLightWeighting;",
 
         THREE.ShaderChunk["shadowmap_pars_fragment"],
+        "#endif",
 
-        "#ifdef USE_BORDERCOLOR",
+        "#ifdef USE_WEBVFX_BORDERCOLOR",
         "vec4 antialias(vec2 uv, vec2 fw, sampler2D texture, vec4 color) {",
         "    vec2 marginTL = -fw;",
         "    vec2 marginBR = 1.0 + fw;",
@@ -334,23 +348,28 @@ WebVfx.MultitextureShaderMaterial.prototype.shaderLibrary = {
         "#endif",
 
         "void main() {",
+        "#ifdef USE_WEBVFX_LIGHTS",
         "    gl_FragColor = vec4(vLightWeighting, 1.0);",
-        "#ifdef USE_BORDERCOLOR",
+        "#else",
+        "    gl_FragColor = vec4(1.0);",
+        "#endif",
+        "#ifdef USE_WEBVFX_BORDERCOLOR",
         "    vec4 border = vec4(borderColor, borderOpacity);",
         "    gl_FragColor = gl_FragColor * antialias(vUv, fwidth(vUv), texture1, border);",
         "#else",
         "    gl_FragColor = gl_FragColor * texture2D(texture1, vUv);",
         "#endif",
 
-        "#ifdef USE_TEXTURE2",
-        "#ifdef USE_BORDERCOLOR",
+        "#ifdef USE_WEBVFX_TEXTURE2",
+        "#ifdef USE_WEBVFX_BORDERCOLOR",
         "    gl_FragColor = gl_FragColor * antialias(vUv2, fwidth(vUv2), texture2, border);",
         "#else",
         "    gl_FragColor = gl_FragColor * texture2D(texture2, vUv2);",
         "#endif",
         "#endif",
-
+        "#ifdef USE_WEBVFX_LIGHTS",
             THREE.ShaderChunk["shadowmap_fragment"],
+        "#endif",
         "}"
     ].join("\n")
 };
