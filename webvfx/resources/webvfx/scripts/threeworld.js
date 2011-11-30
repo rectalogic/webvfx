@@ -17,15 +17,8 @@ WebVfx.ThreeWorld = function (width, height, nearPlane, farPlane, animationData,
     var aspect = width / height;
     this.camera = new WebVfx.AnimatedCamera(aspect, nearPlane, farPlane,
                                             animationData);
-    if (scene)
-        this.scene = scene;
-    else {
-        this.scene = new THREE.Scene();
-        // Blender OBJ and three.js exporters rotate scene by -PI/2 in X,
-        // undo that here so our camera animation data works.
-        this.scene.rotation.x = Math.PI / 2;
-        this.scene.updateMatrix();
-    }
+    this.scene = scene ? scene : new THREE.Scene();
+    this.scene.add(this.camera);
 
     this.widescreen = aspect > (4 / 3);
 
@@ -62,13 +55,13 @@ WebVfx.ThreeWorld.prototype = {
         if (!this.jsonLoader)
             this.jsonLoader = new THREE.JSONLoader();
         this.tracker.increment();
-        this.jsonLoader.load({ model: url, callback: function (geometry) {
+        this.jsonLoader.load(url, function (geometry) {
             var mesh = new THREE.Mesh(geometry, material);
             if (callback)
                 callback(mesh);
             self.scene.add(mesh);
             self.tracker.decrement();
-        } });
+        });
     },
 
     resize: function (width, height) {
@@ -230,9 +223,6 @@ WebVfx.MultitextureShaderMaterial = function (parameters) {
                                               THREE.UniformsLib["shadowmap"]]);
     uniforms.texture1 = { type: "t", value: 0, texture: parameters.texture1 };
 
-    // Default to off
-    uniforms.enableLighting.value = 0;
-
     if (parameters.texture2) {
         uniforms.texture2 = { type: "t", value: 1, texture: parameters.texture2 };
         vertexPrefix.push("#define USE_TEXTURE2");
@@ -272,7 +262,7 @@ WebVfx.MultitextureShaderMaterial.prototype.shaderLibrary = {
         "varying vec2 vUv2;",
         "#endif",
         "varying vec3 vLightWeighting;",
-        THREE.ShaderChunk["lights_pars_vertex"],
+        THREE.ShaderChunk["lights_lambert_pars_vertex"],
         THREE.ShaderChunk["shadowmap_pars_vertex"],
         "void main() {",
         "    vUv = uv;",
@@ -282,7 +272,7 @@ WebVfx.MultitextureShaderMaterial.prototype.shaderLibrary = {
         "    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);",
         "    gl_Position = projectionMatrix * mvPosition;",
         "    vec3 transformedNormal = normalize(normalMatrix * normal);",
-             THREE.ShaderChunk["lights_vertex"],
+             THREE.ShaderChunk["lights_lambert_vertex"],
              THREE.ShaderChunk["shadowmap_vertex"],
         "}"
     ].join("\n"),
