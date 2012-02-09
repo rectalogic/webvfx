@@ -8,22 +8,56 @@ var WebVfx = WebVfx || {};
 ////////
 
 // canvas - canvas HTML element
-// shaderSource - fragment shader source code
-// uniforms - optional hash mapping uniform name to initial value
-WebVfx.Shader = function (canvas, shaderSource, uniforms) {
+WebVfx.Renderer = function (canvas) {
     this.gl = canvas.getContext("experimental-webgl");
     if (!this.gl)
         throw "This browswer does not have WebGL enabled.";
+    this.buildQuad();
+}
+
+WebVfx.Renderer.prototype.buildQuad = function () {
+    var gl = this.gl;
+
+    this.vertexBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER,
+                  new Float32Array([ 0, 0, 0, 1, 1, 0, 1, 1 ]),
+                  gl.STATIC_DRAW);
+}
+
+// shader - Shader to render
+// target - optional RenderTarget, if not specified then render to canvas
+WebVfx.Renderer.prototype.render = function (shader, target) {
+    var gl = this.gl;
+
+//XXX handle target
+    // Should use gl.drawingBufferWidth/Height but they aren't implemented
+    gl.viewport(0, 0, gl.canvas.clientWidth, gl.canvas.clientHeight);
+
+    gl.useProgram(shader.program);
+    gl.enableVertexAttribArray(shader.vertexAttribute);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    gl.disableVertexAttribArray(shader.vertexAttribute);
+}
+
+////////
+
+// renderer - Renderer
+// shaderSource - fragment shader source code
+// uniforms - optional hash mapping uniform name to initial value
+WebVfx.Shader = function (renderer, shaderSource, uniforms) {
+    this.renderer = renderer;
+    var gl = renderer.gl;
     this.program = this.compileProgram(shaderSource);
     this.uniforms = this.extractUniforms();
     // Set default values if specified
     if (uniforms) {
-        this.gl.useProgram(this.program);
+        gl.useProgram(this.program);
         for (var name in uniforms)
             this.uniforms[name].setValue(uniforms[name]);
     }
-
-    this.buildQuad();
+    this.vertexAttribute = gl.getAttribLocation(this.program, 'vertex');
+    gl.vertexAttribPointer(this.vertexAttribute, 2, gl.FLOAT, false, 0, 0);
 }
 
 // Return the script text from a <script type="x-shader/x-fragment">
@@ -44,7 +78,7 @@ WebVfx.Shader.prototype.updateUniform = function (name, value) {
         console.warn("Invalid uniform name " + name);
         return;
     }
-    this.gl.useProgram(this.program);
+    this.renderer.gl.useProgram(this.program);
     uniform.setValue(value);
 }
 
@@ -57,7 +91,7 @@ WebVfx.Shader.VERTEX_SHADER_SOURCE = [
     "}"].join("\n");
 
 WebVfx.Shader.prototype.compileProgram = function (shaderSource) {
-    var gl = this.gl;
+    var gl = this.renderer.gl;
     var program = gl.createProgram();
 
     var vs = this.compileSource(gl.VERTEX_SHADER,
@@ -76,7 +110,7 @@ WebVfx.Shader.prototype.compileProgram = function (shaderSource) {
 }
 
 WebVfx.Shader.prototype.compileSource = function (type, shaderSource) {
-    var gl = this.gl;
+    var gl = this.renderer.gl;
     var shader = gl.createShader(type);
     gl.shaderSource(shader, shaderSource);
     gl.compileShader(shader);
@@ -87,7 +121,7 @@ WebVfx.Shader.prototype.compileSource = function (type, shaderSource) {
 
 // Extract uniform declarations from program
 WebVfx.Shader.prototype.extractUniforms = function () {
-    var gl = this.gl;
+    var gl = this.renderer.gl;
     var textureCount = 0;
     var uniforms = {};
 
@@ -107,32 +141,6 @@ WebVfx.Shader.prototype.extractUniforms = function () {
     }
     return uniforms;
 }
-
-WebVfx.Shader.prototype.buildQuad = function () {
-    var gl = this.gl;
-
-    this.vertexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER,
-                  new Float32Array([ 0, 0, 0, 1, 1, 0, 1, 1 ]),
-                  gl.STATIC_DRAW);
-
-    this.vertexAttribute = gl.getAttribLocation(this.program, 'vertex');
-    gl.enableVertexAttribArray(this.vertexAttribute);
-}
-
-WebVfx.Shader.prototype.render = function () {
-    var gl = this.gl;
-
-    // Should use gl.drawingBufferWidth/Height but they aren't implemented
-    gl.viewport(0, 0, gl.canvas.clientWidth, gl.canvas.clientHeight);
-
-    gl.useProgram(this.program);
-    gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-    gl.vertexAttribPointer(this.vertexAttribute, 2, gl.FLOAT, false, 0, 0);
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-}
-
 
 ////////
 
