@@ -26,11 +26,13 @@ WebVfx.Renderer.prototype.buildQuad = function () {
 }
 
 // shader - Shader to render
-// target - optional RenderTarget, if not specified then render to canvas
-WebVfx.Renderer.prototype.render = function (shader, target) {
+// renderTarget - optional RenderTarget, if not specified then render to canvas
+WebVfx.Renderer.prototype.render = function (shader, renderTarget) {
     var gl = this.gl;
 
-//XXX handle target
+    if (renderTarget)
+        renderTarget.setCurrent(true);
+
     // Should use gl.drawingBufferWidth/Height but they aren't implemented
     gl.viewport(0, 0, gl.canvas.clientWidth, gl.canvas.clientHeight);
 
@@ -38,6 +40,45 @@ WebVfx.Renderer.prototype.render = function (shader, target) {
     gl.enableVertexAttribArray(shader.vertexAttribute);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     gl.disableVertexAttribArray(shader.vertexAttribute);
+
+    if (renderTarget)
+        renderTarget.setCurrent(false);
+}
+
+////////
+
+WebVfx.RenderTarget = function (renderer) {
+    this.renderer = renderer;
+    var gl = renderer.gl;
+    this.texture = gl.createTexture();
+    this.framebuffer = gl.createFramebuffer();
+    gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    // Set parameters to support NPOT textures
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    //XXX should listen for canvas size changes and recreate
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.canvas.width, gl.canvas.height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, this.framebuffer);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, this.texture, 0);
+
+    gl.bindTexture(gl.TEXTURE_2D, null);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+}
+
+WebVfx.RenderTarget.prototype.setCurrent = function (current) {
+    var gl = this.renderer.gl;
+    gl.bindFramebuffer(gl.FRAMEBUFFER, current ? this.framebuffer : null);
+}
+
+WebVfx.RenderTarget.prototype.destroy = function () {
+    var gl = this.renderer.gl;
+    gl.deleteTexture(this.texture);
+    this.texture = null;
+    gl.deleteFramebuffer(this.framebuffer);
+    this.framebuffer = null;
 }
 
 ////////
@@ -58,6 +99,14 @@ WebVfx.Shader = function (renderer, shaderSource, uniforms) {
     }
     this.vertexAttribute = gl.getAttribLocation(this.program, 'vertex');
     gl.vertexAttribPointer(this.vertexAttribute, 2, gl.FLOAT, false, 0, 0);
+}
+
+WebVfx.Shader.prototype.destroy = function () {
+    var gl = this.renderer.gl;
+    for (var name in uniforms)
+        this.uniforms[name].destroy();
+    gl.deleteProgram(this.program);
+    this.program = null;
 }
 
 // Return the script text from a <script type="x-shader/x-fragment">
@@ -199,6 +248,10 @@ WebVfx.Uniform.prototype.setValue = function(value) {
     this.uniformFunction.call(this.gl, this.uniformLocation, value);
 }
 
+WebVfx.Uniform.prototype.destroy = function() {
+    // do nothing
+}
+
 ////////
 
 // unit - texture unit, 0-7
@@ -206,29 +259,47 @@ WebVfx.Uniform.prototype.setValue = function(value) {
 WebVfx.Texture = function (gl, unit, location) {
     this.gl = gl;
     this.unit = unit;
-    this.id = gl.createTexture();
-
-    gl.activeTexture(gl.TEXTURE0 + this.unit);
-    gl.bindTexture(gl.TEXTURE_2D, this.id);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
     gl.uniform1i(location, this.unit);
 }
 
-// Upload image into texture.
+// Value can be a RenderTarget or an image to upload image into a texture.
 // The image can have textureOptions which map texParameteri enums to values.
 WebVfx.Texture.prototype.setValue = function(image) {
     var gl = this.gl;
     gl.activeTexture(gl.TEXTURE0 + this.unit);
-    if (image.textureOptions) {
-        for (var opt in image.textureOptions)
-            gl.texParameteri(gl.TEXTURE_2D, opt, image.textureOptions[opt]);
+
+    if (image instanceof WebVfx.RenderTarget) {
+        if (this.id != image.texture) {
+            this.id = image.texture;
+            gl.bindTexture(gl.TEXTURE_2D, this.id);
+        }
     }
-    gl.bindTexture(gl.TEXTURE_2D, this.id);
-    // Flip texture vertically so it's not upside down
-    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    else {
+        if (!this.id) {
+            this.id = gl.createTexture();
+            gl.bindTexture(gl.TEXTURE_2D, this.id);
+            // Set parameters to support NPOT textures
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        }
+
+        if (image.textureOptions) {
+            for (var opt in image.textureOptions)
+                gl.texParameteri(gl.TEXTURE_2D, opt, image.textureOptions[opt]);
+        }
+        gl.bindTexture(gl.TEXTURE_2D, this.id);
+        // Flip texture vertically so it's not upside down
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    }
+}
+
+WebVfx.Texture.prototype.destroy = function() {
+    if (this.id) {
+        this.gl.deleteTexture(this.id);
+        this.id = null;
+    }
 }
