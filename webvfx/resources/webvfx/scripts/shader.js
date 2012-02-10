@@ -36,10 +36,7 @@ WebVfx.Renderer.prototype.render = function (shader, renderTarget) {
     // Should use gl.drawingBufferWidth/Height but they aren't implemented
     gl.viewport(0, 0, gl.canvas.clientWidth, gl.canvas.clientHeight);
 
-    gl.useProgram(shader.program);
-    gl.enableVertexAttribArray(shader.vertexAttribute);
-    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-    gl.disableVertexAttribArray(shader.vertexAttribute);
+    shader.render();
 
     if (renderTarget)
         renderTarget.setCurrent(false);
@@ -101,9 +98,19 @@ WebVfx.Shader = function (renderer, shaderSource, uniforms) {
     gl.vertexAttribPointer(this.vertexAttribute, 2, gl.FLOAT, false, 0, 0);
 }
 
+WebVfx.Shader.prototype.render = function () {
+    var gl = this.renderer.gl;
+    for (var name in this.uniforms)
+        this.uniforms[name].bind();
+    gl.useProgram(this.program);
+    gl.enableVertexAttribArray(this.vertexAttribute);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+    gl.disableVertexAttribArray(this.vertexAttribute);
+}
+
 WebVfx.Shader.prototype.destroy = function () {
     var gl = this.renderer.gl;
-    for (var name in uniforms)
+    for (var name in this.uniforms)
         this.uniforms[name].destroy();
     gl.deleteProgram(this.program);
     this.program = null;
@@ -181,10 +188,8 @@ WebVfx.Shader.prototype.extractUniforms = function () {
         var info = gl.getActiveUniform(this.program, u);
         var location = gl.getUniformLocation(this.program, info.name);
 
-        if (info.type == gl.SAMPLER_2D) {
-            uniforms[info.name] = new WebVfx.Texture(gl, textureCount++,
-                                                     location);
-        }
+        if (info.type == gl.SAMPLER_2D)
+            uniforms[info.name] = new WebVfx.Texture(gl, textureCount++, location);
         else
             uniforms[info.name] = new WebVfx.Uniform(gl, info.type, location);
     }
@@ -248,6 +253,10 @@ WebVfx.Uniform.prototype.setValue = function(value) {
     this.uniformFunction.call(this.gl, this.uniformLocation, value);
 }
 
+WebVfx.Uniform.prototype.bind = function() {
+    // do nothing
+}
+
 WebVfx.Uniform.prototype.destroy = function() {
     // do nothing
 }
@@ -267,13 +276,9 @@ WebVfx.Texture = function (gl, unit, location) {
 // The image can have textureOptions which map texParameteri enums to values.
 WebVfx.Texture.prototype.setValue = function(image) {
     var gl = this.gl;
-    gl.activeTexture(gl.TEXTURE0 + this.unit);
 
     if (image instanceof WebVfx.RenderTarget) {
-        if (this.id != image.texture) {
-            this.id = image.texture;
-            gl.bindTexture(gl.TEXTURE_2D, this.id);
-        }
+        this.id = image.texture;
     }
     else {
         if (!this.id) {
@@ -295,6 +300,12 @@ WebVfx.Texture.prototype.setValue = function(image) {
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
     }
+}
+
+WebVfx.Texture.prototype.bind = function() {
+    var gl = this.gl;
+    gl.activeTexture(gl.TEXTURE0 + this.unit);
+    gl.bindTexture(gl.TEXTURE_2D, this.id);
 }
 
 WebVfx.Texture.prototype.destroy = function() {
