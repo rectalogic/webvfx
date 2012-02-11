@@ -8,7 +8,7 @@
      <file>org/webvfx/WebVfx/TextTexture.qml</file>
      <file>webvfx/scripts/animation.js</file>
      <file>webvfx/scripts/easing.js</file>
-     <file>webvfx/scripts/shader.js</file>
+     <file>webvfx/scripts/shaderkit.js</file>
      <file>webvfx/scripts/tracker.js</file>
      <file>webvfx/scripts/threeworld.js</file>
  </qresource>
