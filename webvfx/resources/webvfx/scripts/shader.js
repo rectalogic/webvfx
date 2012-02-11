@@ -272,12 +272,12 @@ WebVfx.Texture = function (gl, unit, location) {
     gl.uniform1i(location, this.unit);
 }
 
-// Value can be a RenderTarget or an image to upload image into a texture.
+// Value can be a RenderTarget, SharedTexture or an image to upload image into a texture.
 // The image can have textureOptions which map texParameteri enums to values.
 WebVfx.Texture.prototype.setValue = function(image) {
     var gl = this.gl;
 
-    if (image instanceof WebVfx.RenderTarget) {
+    if (image instanceof WebVfx.RenderTarget || image instanceof WebVfx.SharedTexture) {
         this.id = image.texture;
     }
     else {
@@ -303,6 +303,8 @@ WebVfx.Texture.prototype.setValue = function(image) {
 }
 
 WebVfx.Texture.prototype.bind = function() {
+    if (!this.id)
+        return;
     var gl = this.gl;
     gl.activeTexture(gl.TEXTURE0 + this.unit);
     gl.bindTexture(gl.TEXTURE_2D, this.id);
@@ -313,4 +315,27 @@ WebVfx.Texture.prototype.destroy = function() {
         this.gl.deleteTexture(this.id);
         this.id = null;
     }
+}
+
+////////
+
+WebVfx.SharedTexture = function (renderer) {
+    this.renderer = renderer;
+    var gl = renderer.gl;
+    this.texture = gl.createTexture();
+    gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    // Set parameters to support NPOT textures
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+}
+
+WebVfx.SharedTexture.prototype.setImage = function(image) {
+    var gl = this.renderer.gl;
+    gl.bindTexture(gl.TEXTURE_2D, this.texture);
+    // Flip texture vertically so it's not upside down
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 }
