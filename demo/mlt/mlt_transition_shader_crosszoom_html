@@ -5,4 +5,5 @@ export DISPLAY=${DISPLAY:-:0}
     -track -blank 69 \
     "${VFX_TARGET:-blue.mlt}" out=349 \
     -transition webvfx:../examples/transition-shader-crosszoom.html in=70 out=349 \
+        Strength=0.3 \
     $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}"))

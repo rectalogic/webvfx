@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var WebVfx = WebVfx || {};
+var ShaderKit = ShaderKit || {};
 
 
 ////////
 
 // canvas - canvas HTML element
-WebVfx.Renderer = function (canvas) {
+ShaderKit.Renderer = function (canvas) {
     this.gl = canvas.getContext("experimental-webgl");
     if (!this.gl)
         throw "This browswer does not have WebGL enabled.";
     this.buildQuad();
 }
 
-WebVfx.Renderer.prototype.buildQuad = function () {
+ShaderKit.Renderer.prototype.buildQuad = function () {
     var gl = this.gl;
 
     this.vertexBuffer = gl.createBuffer();
@@ -27,7 +27,7 @@ WebVfx.Renderer.prototype.buildQuad = function () {
 
 // shader - Shader to render
 // renderTarget - optional RenderTarget, if not specified then render to canvas
-WebVfx.Renderer.prototype.render = function (shader, renderTarget) {
+ShaderKit.Renderer.prototype.render = function (shader, renderTarget) {
     var gl = this.gl;
 
     if (renderTarget)
@@ -44,7 +44,7 @@ WebVfx.Renderer.prototype.render = function (shader, renderTarget) {
 
 ////////
 
-WebVfx.RenderTarget = function (renderer) {
+ShaderKit.RenderTarget = function (renderer) {
     this.renderer = renderer;
     var gl = renderer.gl;
     this.texture = gl.createTexture();
@@ -65,12 +65,12 @@ WebVfx.RenderTarget = function (renderer) {
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 }
 
-WebVfx.RenderTarget.prototype.setCurrent = function (current) {
+ShaderKit.RenderTarget.prototype.setCurrent = function (current) {
     var gl = this.renderer.gl;
     gl.bindFramebuffer(gl.FRAMEBUFFER, current ? this.framebuffer : null);
 }
 
-WebVfx.RenderTarget.prototype.destroy = function () {
+ShaderKit.RenderTarget.prototype.destroy = function () {
     var gl = this.renderer.gl;
     gl.deleteTexture(this.texture);
     this.texture = null;
@@ -83,7 +83,7 @@ WebVfx.RenderTarget.prototype.destroy = function () {
 // renderer - Renderer
 // shaderSource - fragment shader source code
 // uniforms - optional hash mapping uniform name to initial value
-WebVfx.Shader = function (renderer, shaderSource, uniforms) {
+ShaderKit.Shader = function (renderer, shaderSource, uniforms) {
     this.renderer = renderer;
     var gl = renderer.gl;
     this.program = this.compileProgram(shaderSource);
@@ -98,7 +98,7 @@ WebVfx.Shader = function (renderer, shaderSource, uniforms) {
     gl.vertexAttribPointer(this.vertexAttribute, 2, gl.FLOAT, false, 0, 0);
 }
 
-WebVfx.Shader.prototype.render = function () {
+ShaderKit.Shader.prototype.render = function () {
     var gl = this.renderer.gl;
     for (var name in this.uniforms)
         this.uniforms[name].bind();
@@ -108,7 +108,7 @@ WebVfx.Shader.prototype.render = function () {
     gl.disableVertexAttribArray(this.vertexAttribute);
 }
 
-WebVfx.Shader.prototype.destroy = function () {
+ShaderKit.Shader.prototype.destroy = function () {
     var gl = this.renderer.gl;
     for (var name in this.uniforms)
         this.uniforms[name].destroy();
@@ -118,7 +118,7 @@ WebVfx.Shader.prototype.destroy = function () {
 
 // Return the script text from a <script type="x-shader/x-fragment">
 // element of the given ID.
-WebVfx.Shader.loadShader = function (shaderId) {
+ShaderKit.Shader.loadShader = function (shaderId) {
     var shaderScript = document.getElementById(shaderId);
     if (!shaderScript || shaderScript.type != "x-shader/x-fragment") {
         throw "Could not find shader script ID " + shaderId +
@@ -128,7 +128,7 @@ WebVfx.Shader.loadShader = function (shaderId) {
 }
 
 // Update an existing uniforms value
-WebVfx.Shader.prototype.updateUniform = function (name, value) {
+ShaderKit.Shader.prototype.updateUniform = function (name, value) {
     var uniform = this.uniforms[name];
     if (!uniform) {
         console.warn("Invalid uniform name " + name);
@@ -138,7 +138,7 @@ WebVfx.Shader.prototype.updateUniform = function (name, value) {
     uniform.setValue(value);
 }
 
-WebVfx.Shader.VERTEX_SHADER_SOURCE = [
+ShaderKit.Shader.VERTEX_SHADER_SOURCE = [
     "attribute vec2 vertex;",
     "varying vec2 texCoord;",
     "void main() {",
@@ -146,12 +146,12 @@ WebVfx.Shader.VERTEX_SHADER_SOURCE = [
     "    gl_Position = vec4(vertex * 2.0 - 1.0, 0.0, 1.0);",
     "}"].join("\n");
 
-WebVfx.Shader.prototype.compileProgram = function (shaderSource) {
+ShaderKit.Shader.prototype.compileProgram = function (shaderSource) {
     var gl = this.renderer.gl;
     var program = gl.createProgram();
 
     var vs = this.compileSource(gl.VERTEX_SHADER,
-                                WebVfx.Shader.VERTEX_SHADER_SOURCE);
+                                ShaderKit.Shader.VERTEX_SHADER_SOURCE);
     var fs = this.compileSource(gl.FRAGMENT_SHADER, shaderSource);
     gl.attachShader(program, vs);
     gl.attachShader(program, fs);
@@ -165,7 +165,7 @@ WebVfx.Shader.prototype.compileProgram = function (shaderSource) {
     return program;
 }
 
-WebVfx.Shader.prototype.compileSource = function (type, shaderSource) {
+ShaderKit.Shader.prototype.compileSource = function (type, shaderSource) {
     var gl = this.renderer.gl;
     var shader = gl.createShader(type);
     gl.shaderSource(shader, shaderSource);
@@ -176,7 +176,7 @@ WebVfx.Shader.prototype.compileSource = function (type, shaderSource) {
 }
 
 // Extract uniform declarations from program
-WebVfx.Shader.prototype.extractUniforms = function () {
+ShaderKit.Shader.prototype.extractUniforms = function () {
     var gl = this.renderer.gl;
     var textureCount = 0;
     var uniforms = {};
@@ -189,9 +189,9 @@ WebVfx.Shader.prototype.extractUniforms = function () {
         var location = gl.getUniformLocation(this.program, info.name);
 
         if (info.type == gl.SAMPLER_2D)
-            uniforms[info.name] = new WebVfx.Texture(gl, textureCount++, location);
+            uniforms[info.name] = new ShaderKit.Texture(gl, textureCount++, location);
         else
-            uniforms[info.name] = new WebVfx.Uniform(gl, info.type, location);
+            uniforms[info.name] = new ShaderKit.Uniform(gl, info.type, location);
     }
     return uniforms;
 }
@@ -200,7 +200,7 @@ WebVfx.Shader.prototype.extractUniforms = function () {
 
 // type - uniform type
 // location - uniform location
-WebVfx.Uniform = function (gl, type, location) {
+ShaderKit.Uniform = function (gl, type, location) {
     this.gl = gl;
 
     this.uniformLocation = location;
@@ -246,18 +246,18 @@ WebVfx.Uniform = function (gl, type, location) {
 }
 
 // Set uniform value, can be float or array of floats
-WebVfx.Uniform.prototype.setValue = function(value) {
+ShaderKit.Uniform.prototype.setValue = function(value) {
     this.value = value;
     if (this.wrapperConstructor)
         value = new this.wrapperConstructor(value);
     this.uniformFunction.call(this.gl, this.uniformLocation, value);
 }
 
-WebVfx.Uniform.prototype.bind = function() {
+ShaderKit.Uniform.prototype.bind = function() {
     // do nothing
 }
 
-WebVfx.Uniform.prototype.destroy = function() {
+ShaderKit.Uniform.prototype.destroy = function() {
     // do nothing
 }
 
@@ -265,7 +265,7 @@ WebVfx.Uniform.prototype.destroy = function() {
 
 // unit - texture unit, 0-7
 // location - uniform location
-WebVfx.Texture = function (gl, unit, location) {
+ShaderKit.Texture = function (gl, unit, location) {
     this.gl = gl;
     this.unit = unit;
 
@@ -274,10 +274,10 @@ WebVfx.Texture = function (gl, unit, location) {
 
 // Value can be a RenderTarget, SharedTexture or an image to upload image into a texture.
 // The image can have textureOptions which map texParameteri enums to values.
-WebVfx.Texture.prototype.setValue = function(image) {
+ShaderKit.Texture.prototype.setValue = function(image) {
     var gl = this.gl;
 
-    if (image instanceof WebVfx.RenderTarget || image instanceof WebVfx.SharedTexture) {
+    if (image instanceof ShaderKit.RenderTarget || image instanceof ShaderKit.SharedTexture) {
         this.id = image.texture;
     }
     else {
@@ -302,7 +302,7 @@ WebVfx.Texture.prototype.setValue = function(image) {
     }
 }
 
-WebVfx.Texture.prototype.bind = function() {
+ShaderKit.Texture.prototype.bind = function() {
     if (!this.id)
         return;
     var gl = this.gl;
@@ -310,7 +310,7 @@ WebVfx.Texture.prototype.bind = function() {
     gl.bindTexture(gl.TEXTURE_2D, this.id);
 }
 
-WebVfx.Texture.prototype.destroy = function() {
+ShaderKit.Texture.prototype.destroy = function() {
     if (this.id) {
         this.gl.deleteTexture(this.id);
         this.id = null;
@@ -319,7 +319,7 @@ WebVfx.Texture.prototype.destroy = function() {
 
 ////////
 
-WebVfx.SharedTexture = function (renderer) {
+ShaderKit.SharedTexture = function (renderer) {
     this.renderer = renderer;
     var gl = renderer.gl;
     this.texture = gl.createTexture();
@@ -332,7 +332,7 @@ WebVfx.SharedTexture = function (renderer) {
     gl.bindTexture(gl.TEXTURE_2D, null);
 }
 
-WebVfx.SharedTexture.prototype.setImage = function(image) {
+ShaderKit.SharedTexture.prototype.setImage = function(image) {
     var gl = this.renderer.gl;
     gl.bindTexture(gl.TEXTURE_2D, this.texture);
     // Flip texture vertically so it's not upside down

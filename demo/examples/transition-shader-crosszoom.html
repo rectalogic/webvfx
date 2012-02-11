@@ -12,16 +12,20 @@ body, html {
 }
 </style>
 
-<script type="text/javascript" src="qrc:/webvfx/scripts/shader.js"></script>
+<script type="text/javascript" src="qrc:/webvfx/scripts/shaderkit.js"></script>
 <script type="text/javascript" src="qrc:/webvfx/scripts/easing.js"></script>
 
 <script type="text/javascript">
 function CrossZoom() {
-    this.shader = new WebVfx.Shader(document.getElementById("canvas"),
-                                    WebVfx.Shader.loadShader("crossZoom"));
+    this.renderer = new ShaderKit.Renderer(document.getElementById("canvas"));
+    this.shader = new ShaderKit.Shader(this.renderer,
+                                       ShaderKit.Shader.loadShader("crossZoom"));
 
-    // Mirrored sinusoidal loop. 0->0.5 then 0.5->0
-    this.easeStrength = new WebVfx.Easing.Sinusoidal(0, 0.5, 0.5)
+    // 0->1.0
+    var strength = webvfx.getNumberParameter("Strength");
+
+    // Mirrored sinusoidal loop. 0->strength then strength->0
+    this.easeStrength = new WebVfx.Easing.Sinusoidal(0, strength, 0.5);
     this.easeDissolve = new WebVfx.Easing.Exponential(0, 1, 1);
     // Linear interpolate center across center half of the image
     this.easeCenter = new WebVfx.Easing.Linear(0.25, 0.5, 1);
@@ -36,7 +40,7 @@ CrossZoom.prototype.render = function (time) {
     shader.updateUniform("strength", this.easeStrength.easeInOut(time));
     shader.updateUniform("dissolve", this.easeDissolve.easeInOut(time));
     shader.updateUniform("center", [this.easeCenter.ease(time), 0.5]);
-    shader.render();
+    this.renderer.render(shader);
 }
 
 function init() {
@@ -64,7 +68,7 @@ window.addEventListener("resize", resize, false);
 </script>
 
 
-<!-- Based on https://github.com/evanw/webgl-filter/blob/master/src/filter/zoomblur.js -->
+<!-- Based on https://github.com/evanw/glfx.js/blob/master/src/filters/blur/zoomblur.js -->
 <script id="crossZoom" type="x-shader/x-fragment">
 precision mediump float;
 varying vec2 texCoord;
@@ -94,8 +98,8 @@ void main() {
     /* randomize the lookup values to hide the fixed number of samples */
     float offset = random(vec3(12.9898, 78.233, 151.7182), 0.0);
 
-    for (float t = 0.0; t <= 60.0; t++) {
-        float percent = (t + offset) / 60.0;
+    for (float t = 0.0; t <= 40.0; t++) {
+        float percent = (t + offset) / 40.0;
         float weight = 4.0 * (percent - percent * percent);
         color += crossFade(texCoord + toCenter * percent * strength) * weight;
         total += weight;

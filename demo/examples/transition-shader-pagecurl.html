@@ -12,13 +12,13 @@ body, html {
 }
 </style>
 
-<script type="text/javascript" src="qrc:/webvfx/scripts/shader.js"></script>
+<script type="text/javascript" src="qrc:/webvfx/scripts/shaderkit.js"></script>
 <script type="text/javascript" src="qrc:/webvfx/scripts/easing.js"></script>
 
 <script type="text/javascript">
 function PageCurl() {
-    this.shader = new WebVfx.Shader(document.getElementById("canvas"),
-                                    WebVfx.Shader.loadShader("pageCurl"));
+    var renderer = new ShaderKit.Renderer(document.getElementById("canvas"));
+    this.shader = new ShaderKit.Shader(renderer, ShaderKit.Shader.loadShader("pageCurl"));
     this.easeCurl = new WebVfx.Easing.Sinusoidal(0, 1, 1);
 }
 
@@ -29,7 +29,7 @@ PageCurl.prototype.render = function (time) {
                          webvfx.getImage('sourceImage').toImageData());
     shader.updateUniform("targetTex",
                          webvfx.getImage('targetImage').toImageData());
-    shader.render();
+    shader.renderer.render(shader);
 }
 
 function init() {
