@@ -191,7 +191,7 @@ ShaderKit.Shader.prototype.extractUniforms = function () {
         if (info.type == gl.SAMPLER_2D)
             uniforms[info.name] = new ShaderKit.Texture(gl, textureCount++, location);
         else
-            uniforms[info.name] = new ShaderKit.Uniform(gl, info.type, location);
+            uniforms[info.name] = new ShaderKit.Uniform(gl, info.type, info.size, location);
     }
     return uniforms;
 }
@@ -200,18 +200,28 @@ ShaderKit.Shader.prototype.extractUniforms = function () {
 
 // type - uniform type
 // location - uniform location
-ShaderKit.Uniform = function (gl, type, location) {
+ShaderKit.Uniform = function (gl, type, size, location) {
     this.gl = gl;
 
     this.uniformLocation = location;
 
     switch (type) {
     case gl.FLOAT:
-        this.uniformFunction = gl.uniform1f;
+        if (size > 1) {
+            this.wrapperConstructor = Float32Array;
+            this.uniformFunction = gl.uniform1fv;
+        }
+        else
+            this.uniformFunction = gl.uniform1f;
         break;
     case gl.INT:
     case gl.BOOL:
-        this.uniformFunction = gl.uniform1i;
+        if (size > 1) {
+            this.wrapperConstructor = Int32Array;
+            this.uniformFunction = gl.uniform1iv;
+        }
+        else
+            this.uniformFunction = gl.uniform1i;
         break;
     case gl.FLOAT_VEC2:
         this.uniformFunction = gl.uniform2fv;
