@@ -12,10 +12,14 @@ ShaderKit.Renderer = function (canvas) {
     this.gl = canvas.getContext("experimental-webgl");
     if (!this.gl)
         throw "This browswer does not have WebGL enabled.";
-    this.buildQuad();
+    this._buildQuad();
 }
 
-ShaderKit.Renderer.prototype.buildQuad = function () {
+ShaderKit.Renderer.prototype.enableExtension = function (name) {
+    return this.gl.getExtension(name);
+}
+
+ShaderKit.Renderer.prototype._buildQuad = function () {
     var gl = this.gl;
 
     this.vertexBuffer = gl.createBuffer();
