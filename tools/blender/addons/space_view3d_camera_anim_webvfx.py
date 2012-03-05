@@ -186,12 +186,12 @@ class FitViewToFace(bpy.types.Operator):
             return
 
         # Get views up vector
-        up = mathutils.Vector(getUpVector(region_3d.view_matrix.copy().inverted()))
+        up = mathutils.Vector(getUpVector(region_3d.view_matrix))
 
         # Get transformed face vertices
         vertices = []
         for v in face.vertices:
-            vertices.append(mesh.vertices[v].co * obj.matrix_world)
+            vertices.append(obj.matrix_world * mesh.vertices[v].co)
 
         # Check the first two edges in the face, pick the one that is
         # parallel to the view up vector (angle is 0 or 180).
@@ -208,7 +208,7 @@ class FitViewToFace(bpy.types.Operator):
         elif a2 <= angleEpsilon or (abs(a2 - math.pi) <= angleEpsilon):
             height = e2.length / 2
         else:
-            reportError(self, "Could not find vertical edge in face")
+            reportError(self, "Could not find vertical edge in face (angles are %f and %f)" % (a1, a2))
             return
 
         # Angle from eye, halve for triangle.
