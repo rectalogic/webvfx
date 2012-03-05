@@ -243,10 +243,7 @@ class RotateView90(bpy.types.Operator):
 
     def execute(self, context):
         region_3d = context.space_data.region_3d
-        view_matrix = region_3d.view_matrix.inverted().to_3x3()
-        rot90 = mathutils.Euler((0, 0, math.pi / 2))
-        view_matrix.rotate(rot90)
-        region_3d.view_rotation = view_matrix.to_quaternion()
+        region_3d.view_rotation *= mathutils.Quaternion([0, 0, 1], math.pi / 2)
         return {'FINISHED'}
 
 
