@@ -179,8 +179,10 @@ class FitViewToFace(bpy.types.Operator):
         center = obj.matrix_world * face.center
 
         # Make sure view location is very close to face center
-        if (center - region_3d.view_location).length > 9e-07:
-            reportError(self, "View not aligned on active face center")
+        distance = (center - region_3d.view_location).length
+        distanceEpsilon = 9e07
+        if distance > distanceEpsilon:
+            reportError(self, "View not aligned on active face center (distance %f)" % (distance))
             return
 
         # Get views up vector
@@ -200,10 +202,10 @@ class FitViewToFace(bpy.types.Operator):
         e2 = vertices[2] - vertices[1]
         a1 = abs(up.angle(e1, 0))
         a2 = abs(up.angle(e2, 0))
-        epsilon = 0.005
-        if a1 <= epsilon or (abs(a1 - math.pi) <= epsilon):
+        angleEpsilon = 0.005
+        if a1 <= angleEpsilon or (abs(a1 - math.pi) <= angleEpsilon):
             height = e1.length / 2
-        elif a2 <= epsilon or (abs(a2 - math.pi) <= epsilon):
+        elif a2 <= angleEpsilon or (abs(a2 - math.pi) <= angleEpsilon):
             height = e2.length / 2
         else:
             reportError(self, "Could not find vertical edge in face")
