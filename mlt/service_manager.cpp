@@ -29,7 +29,7 @@ public:
     }
 
     QString getStringParameter(const QString& name) {
-        return mlt_properties_get(properties, name.toLatin1().constData());
+        return QString::fromUtf8(mlt_properties_get(properties, name.toLatin1().constData()));
     }
 
 private:
