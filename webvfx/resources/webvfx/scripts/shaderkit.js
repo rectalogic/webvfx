@@ -9,7 +9,7 @@ var ShaderKit = ShaderKit || {};
 
 // canvas - canvas HTML element
 ShaderKit.Renderer = function (canvas) {
-    this.gl = canvas.getContext("experimental-webgl");
+    this.gl = canvas.getContext("experimental-webgl", { antialias: false });
     if (!this.gl)
         throw "This browswer does not have WebGL enabled.";
     this._buildQuad();
