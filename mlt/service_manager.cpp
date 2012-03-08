@@ -54,6 +54,10 @@ public:
 
     const QString& getName() { return name; }
 
+    bool isPositionValid(mlt_position position) {
+        return position < mlt_producer_get_playtime(producer);
+    }
+
     WebVfx::Image produceImage(mlt_position position, int width, int height) {
         // Close previous frame and request a new one.
         // We don't close the current frame because the image data we return
@@ -196,7 +200,7 @@ int ServiceManager::render(WebVfx::Image* outputImage, mlt_position position, ml
         for (std::vector<ImageProducer*>::iterator it = imageProducers->begin();
              it != imageProducers->end(); it++) {
             ImageProducer* imageProducer = *it;
-            if (imageProducer) {
+            if (imageProducer && imageProducer->isPositionValid(position)) {
                 WebVfx::Image extraImage =
                     imageProducer->produceImage(position,
                                                 outputImage->width(),
