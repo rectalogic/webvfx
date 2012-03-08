@@ -198,7 +198,10 @@ WebVfx.createTextTexture = function (text, targetWidth, targetHeight, options) {
 ///////////
 
 WebVfx.updateVideoTexture = function (texture, name) {
-    texture.image = webvfx.getImage(name).toImageData();
+    var image = webvfx.getImage(name);
+    if (!image)
+        return;
+    texture.image = image.toImageData();
     texture.needsUpdate = true;
 };
 
