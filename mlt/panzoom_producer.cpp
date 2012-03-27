@@ -11,6 +11,7 @@ extern "C" {
 #include <QImage>
 #include <QImageReader>
 #include <QPainter>
+#include <QSize>
 #include <QTransform>
 #include "factory.h"
 
@@ -20,10 +21,28 @@ static const char* kPanzoomPositionPropertyName = "webvfx.panzoom.position";
 static const char* kPanzoomQImagePropertyName = "webvfx.panzoom.QImage";
 static const char* kPanzoomGeometryPropertyName = "webvfx.panzoom.Geometry";
 
-static QTransform computeTransform(mlt_producer producer, mlt_properties frameProperties, QImage* image) {
+
+static void destroyQImage(QImage* image) {
+    delete image;
+}
+
+static QSize computeMaxSize(mlt_geometry geometry) {
+    QSize size(0, 0);
+    struct mlt_geometry_item_s item;
+    int position = 0;
+    while (!mlt_geometry_next_key(geometry, &item, position)) {
+        if (item.w > size.width())
+            size.setWidth(item.w);
+        if (item.h > size.height())
+            size.setHeight(item.h);
+        position = item.frame + 1;
+    }
+    return size;
+}
+
+static mlt_geometry getGeometry(mlt_producer producer, mlt_properties frameProperties) {
     mlt_properties producerProperties = MLT_PRODUCER_PROPERTIES(producer);
     mlt_geometry geometry = static_cast<mlt_geometry>(mlt_properties_get_data(producerProperties, kPanzoomGeometryPropertyName, NULL));
-
     if (!geometry) {
         int nwidth = mlt_properties_get_int(frameProperties, "normalised_width");
         int nheight = mlt_properties_get_int(frameProperties, "normalised_height");
@@ -35,27 +54,47 @@ static QTransform computeTransform(mlt_producer producer, mlt_properties framePr
                                 kPanzoomGeometryPropertyName, geometry, 0,
                                 reinterpret_cast<mlt_destructor>(mlt_geometry_close), NULL);
     }
-
-    mlt_position position = mlt_properties_get_position(frameProperties, kPanzoomPositionPropertyName);
-    struct mlt_geometry_item_s item;
-    mlt_geometry_fetch(geometry, &item, position);
-
-    // Compute scale to "meet" the geometry rect
-    float scaleWidth = item.w / image->width();
-    float scaleHeight = item.h / image->height();
-    float scale = qMin(scaleWidth, scaleHeight);
-
-    // If aspect ratio differs, need to center image
-    if (scaleWidth > scaleHeight)
-        item.x += (item.w - scaleHeight * image->width()) / 2.0;
-    else if (scaleHeight > scaleWidth)
-        item.y += (item.h - scaleWidth * image->height()) / 2.0;
-
-    return QTransform::fromTranslate(item.x, item.y).scale(scale, scale);
+    return geometry;
 }
 
-static void destroyQImage(QImage* image) {
-    delete image;
+static QImage* getPrescaledSourceImage(mlt_producer producer, mlt_geometry geometry) {
+    mlt_properties producerProperties = MLT_PRODUCER_PROPERTIES(producer);
+    QImage* image = static_cast<QImage*>(mlt_properties_get_data(producerProperties, kPanzoomQImagePropertyName, NULL));
+    if (!image) {
+        const char* fileName = mlt_properties_get(producerProperties, kPanzoomFilenamePropertyName);
+        if (!fileName)
+            fileName = mlt_properties_get(producerProperties, "resource");
+
+        image = new QImage(fileName);
+        if (image) {
+            mlt_properties_set_data(producerProperties, kPanzoomQImagePropertyName, image, 0, reinterpret_cast<mlt_destructor>(destroyQImage), NULL);
+            if (image->isNull()) {
+                QImageReader reader(fileName);
+                reader.setDecideFormatFromContent(true);
+                *image = reader.read();
+                if (image->isNull()) {
+                    mlt_log(MLT_PRODUCER_SERVICE(producer), MLT_LOG_ERROR,
+                            "Failed to load QImage '%s'\n", fileName);
+                    return NULL;
+                }
+            }
+
+            // Prescale image down to max size needed
+            QSize maxSize(computeMaxSize(geometry));
+            QSize imageSize(image->size());
+            if (maxSize.width() < imageSize.width() && maxSize.height() < imageSize.height())
+                *image = image->scaled(maxSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+            // Image smooth scaling is more efficient for RGB32
+            if (image->format() != QImage::Format_RGB32)
+                *image = image->convertToFormat(QImage::Format_RGB32);
+        }
+        else {
+            mlt_log(MLT_PRODUCER_SERVICE(producer), MLT_LOG_ERROR,
+                    "Failed to create QImage\n");
+            return NULL;
+        }
+    }
+    return image;
 }
 
 static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format *format, int *width, int *height, int /*writable*/) {
@@ -79,48 +118,42 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
     mlt_properties_set_int(properties, "width", *width);
     mlt_properties_set_int(properties, "height", *height);
 
-    mlt_properties producerProperties = MLT_PRODUCER_PROPERTIES(producer);
+    mlt_geometry geometry = getGeometry(producer, properties);
+    QImage* image = getPrescaledSourceImage(producer, geometry);
+    if (!image)
+        return 1;
 
-    QImage* image = static_cast<QImage*>(mlt_properties_get_data(producerProperties, kPanzoomQImagePropertyName, NULL));
-    if (!image) {
-        const char* fileName = mlt_properties_get(producerProperties, kPanzoomFilenamePropertyName);
-        if (!fileName)
-            fileName = mlt_properties_get(producerProperties, "resource");
+    struct mlt_geometry_item_s item;
+    mlt_position position = mlt_properties_get_position(properties, kPanzoomPositionPropertyName);
+    mlt_geometry_fetch(geometry, &item, position);
 
-        image = new QImage(fileName);
-        if (image) {
-            mlt_properties_set_data(producerProperties, kPanzoomQImagePropertyName, image, 0, reinterpret_cast<mlt_destructor>(destroyQImage), NULL);
-            if (image->isNull()) {
-                QImageReader reader(fileName);
-                reader.setDecideFormatFromContent(true);
-                *image = reader.read();
-                if (image->isNull()) {
-                    mlt_log(MLT_PRODUCER_SERVICE(producer), MLT_LOG_ERROR,
-                            "Failed to load QImage '%s'\n", fileName);
-                    return 1;
-                }
-            }
-        }
-        else {
-            mlt_log(MLT_PRODUCER_SERVICE(producer), MLT_LOG_ERROR,
-                    "Failed to create QImage\n");
-            return 1;
-        }
-    }
+    // Compute scale to "meet" the geometry rect
+    float scaleWidth = item.w / image->width();
+    float scaleHeight = item.h / image->height();
+    float scale = qMin(scaleWidth, scaleHeight);
 
-    QTransform tx(computeTransform(producer, properties, image));
+    // If aspect ratio differs, need to center image
+    if (scaleWidth > scaleHeight)
+        item.x += (item.w - scaleHeight * image->width()) / 2.0;
+    else if (scaleHeight > scaleWidth)
+        item.y += (item.h - scaleWidth * image->height()) / 2.0;
+    QPointF offset(item.x, item.y);
+
+    QImage scaledImage;
+    if (scale != 1.0)
+        scaledImage = image->scaled(scale * image->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
+    else
+        scaledImage = *image;
 
     QImage targetImage(static_cast<uchar*>(*buffer), *width, *height, *width * 3, QImage::Format_RGB888);
 
-    // Clear buffer if transformed rect doesn't fill it
-    QRect rect(tx.mapRect(image->rect()));
-    if (!rect.contains(targetImage.rect()))
+    // Clear buffer if image doesn't fill it
+    QRectF imageRect(offset, scaledImage.size());
+    if (!imageRect.contains(targetImage.rect()))
         memset(*buffer, 0, size);
 
     QPainter painter(&targetImage);
-    painter.setTransform(tx);
-    painter.setRenderHint(QPainter::SmoothPixmapTransform);
-    painter.drawImage(QPoint(0, 0), *image);
+    painter.drawImage(offset, scaledImage);
 
     return error;
 }
