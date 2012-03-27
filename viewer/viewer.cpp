@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QDoubleSpinBox>
 #include <QFileDialog>
+#include <QFileInfo>
 #include <QLabel>
 #include <QList>
 #include <QPlainTextEdit>
@@ -259,7 +260,7 @@ void Viewer::createContent(const QString& fileName)
     logTextEdit->clear();
 
     setContentUIEnabled(false);
-    content->loadContent(fileName);
+    content->loadContent(QUrl::fromLocalFile(QFileInfo(fileName).absoluteFilePath()));
 }
 
 void Viewer::setupImages(const QSize& size)
