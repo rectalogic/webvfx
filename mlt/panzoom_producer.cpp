@@ -84,9 +84,6 @@ static QImage* getPrescaledSourceImage(mlt_producer producer, mlt_geometry geome
             QSize imageSize(image->size());
             if (maxSize.width() < imageSize.width() && maxSize.height() < imageSize.height())
                 *image = image->scaled(maxSize, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-            // Image smooth scaling is more efficient for RGB32
-            if (image->format() != QImage::Format_RGB32)
-                *image = image->convertToFormat(QImage::Format_RGB32);
         }
         else {
             mlt_log(MLT_PRODUCER_SERVICE(producer), MLT_LOG_ERROR,
@@ -137,23 +134,20 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
         item.x += (item.w - scaleHeight * image->width()) / 2.0;
     else if (scaleHeight > scaleWidth)
         item.y += (item.h - scaleWidth * image->height()) / 2.0;
-    QPointF offset(item.x, item.y);
-
-    QImage scaledImage;
-    if (scale != 1.0)
-        scaledImage = image->scaled(scale * image->size(), Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-    else
-        scaledImage = *image;
 
     QImage targetImage(static_cast<uchar*>(*buffer), *width, *height, *width * 3, QImage::Format_RGB888);
 
+    QTransform tx(QTransform::fromTranslate(item.x, item.y).scale(scale, scale));
+
     // Clear buffer if image doesn't fill it
-    QRectF imageRect(offset, scaledImage.size());
-    if (!imageRect.contains(targetImage.rect()))
+    QRect rect(tx.mapRect(image->rect()));
+    if (!rect.contains(targetImage.rect()))
         memset(*buffer, 0, size);
 
     QPainter painter(&targetImage);
-    painter.drawImage(offset, scaledImage);
+    painter.setTransform(tx);
+    painter.setRenderHint(QPainter::SmoothPixmapTransform);
+    painter.drawImage(QPointF(0, 0), *image);
 
     return error;
 }
