@@ -125,6 +125,7 @@ WebVfx.createTextTexture = function (text, targetWidth, targetHeight, options) {
     var span = document.createElement("span");
     span.style.visibility = "hidden";
     span.style.font = fontStyle;
+    span.style.whiteSpace = "nowrap";
     span.textContent = text;
     document.body.appendChild(span);
     var textWidth = span.offsetWidth;
