@@ -13,8 +13,7 @@ bl_info = {
     "description": "Set of tools to help create camera animation for WebVfx.",
     "author": "Andrew Wason <rectalogic@rectalogic.com>",
     "version": (1, 0),
-    "blender": (2, 5, 8),
-    "api": 38205,
+    "blender": (2, 6, 3),
     "location": "View3D > ToolShelf > WebVfx Camera Animation",
     "warning": '', # used for warning icon and text in addons panel
     "wiki_url": '',
@@ -170,34 +169,56 @@ class FitViewToFace(bpy.types.Operator):
         return (2 * math.atan(math.tan(camera.data.angle / 2) /
                               (viewportWidth / viewportHeight)))
 
+    def faceCenter(self, polygon):
+        """The midpoint of the face."""
+        face_verts = polygon.vertices[:]
+        mesh_verts = polygon.id_data.vertices
+        if len(face_verts) == 3:
+            return (mesh_verts[face_verts[0]].co +
+                    mesh_verts[face_verts[1]].co +
+                    mesh_verts[face_verts[2]].co
+                    ) / 3.0
+        elif len(face_verts) == 4:
+            return (mesh_verts[face_verts[0]].co +
+                    mesh_verts[face_verts[1]].co +
+                    mesh_verts[face_verts[2]].co +
+                    mesh_verts[face_verts[3]].co
+                    ) / 4.0
+        else:
+            return None
+
     def fitViewToFace(self, context):
         obj = context.active_object
         mesh = obj.data
-        face = mesh.faces[obj.data.faces.active]
+        polygon = mesh.polygons[obj.data.polygons.active]
 
         region_3d = context.space_data.region_3d
-        center = obj.matrix_world * face.center
+        polygonCenter = self.faceCenter(polygon)
+        if not polygonCenter:
+            reportError(self, "Could not find polygon center - not a triangle or quad")
+            return
+        center = obj.matrix_world * polygonCenter
 
-        # Make sure view location is very close to face center
+        # Make sure view location is very close to polygon center
         distance = (center - region_3d.view_location).length
         distanceEpsilon = 9e07
         if distance > distanceEpsilon:
-            reportError(self, "View not aligned on active face center (distance %f)" % (distance))
+            reportError(self, "View not aligned on active polygon center (distance %f)" % (distance))
             return
 
         # Get views up vector
         up = mathutils.Vector(getUpVector(region_3d.view_matrix))
 
-        # Get transformed face vertices
+        # Get transformed polygon vertices
         vertices = []
-        for v in face.vertices:
+        for v in polygon.vertices:
             vertices.append(obj.matrix_world * mesh.vertices[v].co)
 
-        # Check the first two edges in the face, pick the one that is
+        # Check the first two edges in the polygon, pick the one that is
         # parallel to the view up vector (angle is 0 or 180).
         # This will be the vertical vector we want to fit viewport height to.
-        # Distance between the vertices of that edge is the face height.
-        # Use half face height.
+        # Distance between the vertices of that edge is the polygon height.
+        # Use half polygon height.
         e1 = vertices[1] - vertices[0]
         e2 = vertices[2] - vertices[1]
         a1 = abs(up.angle(e1, 0))
@@ -208,7 +229,7 @@ class FitViewToFace(bpy.types.Operator):
         elif a2 <= angleEpsilon or (abs(a2 - math.pi) <= angleEpsilon):
             height = e2.length / 2
         else:
-            reportError(self, "Could not find vertical edge in face (angles are %f and %f)" % (a1, a2))
+            reportError(self, "Could not find vertical edge in polygon (angles are %f and %f)" % (a1, a2))
             return
 
         # Angle from eye, halve for triangle.
@@ -223,7 +244,7 @@ class FitViewToFace(bpy.types.Operator):
             math.sin(math.pi - math.pi/2 - fov) * (height / math.sin(fov))
 
     def execute(self, context):
-        # Toggle out of editmode to update mesh faces.active
+        # Toggle out of editmode to update mesh polygons.active
         bpy.ops.object.editmode_toggle()
         bpy.ops.object.editmode_toggle()
 
