@@ -1,0 +1,7 @@
+#!/bin/bash
+
+export DISPLAY=${DISPLAY:-:0}
+"${VFX_MELT:-melt}" -verbose "${VFX_SOURCE:-red.mlt}" out=299 \
+    -filter webvfx:../examples/filter-banner.html out=299 \
+        Title="${VFX_TITLE:-WebVfx Banner Demo}" \
+    $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}"))
