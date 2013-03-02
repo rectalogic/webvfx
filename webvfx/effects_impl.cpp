@@ -122,12 +122,30 @@ void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parame
     if (path.endsWith(".html", Qt::CaseInsensitive)) {
         WebContent* webContent = new WebContent(size, parameters);
         content = webContent;
-        connect(webContent, SIGNAL(contentLoadFinished(bool)), SLOT(initializeComplete(bool)));
+#ifdef WEBVFX_FILENAMEEXT
+        if (path.endsWith(".webvfx.html", Qt::CaseInsensitive)) {
+#else
+        if (!path.endsWith(".plain.html", Qt::CaseInsensitive)) {
+#endif
+            connect(webContent, SIGNAL(contentLoadFinished(bool)), SLOT(initializeComplete(bool)));
+        }
+        else {
+            connect(webContent, SIGNAL(vanillaLoadFinished(bool)), SLOT(initializeComplete(bool)));
+        }
     }
     else if (path.endsWith(".qml", Qt::CaseInsensitive)) {
         QmlContent* qmlContent = new QmlContent(size, parameters);
         content = qmlContent;
-        connect(qmlContent, SIGNAL(contentLoadFinished(bool)), SLOT(initializeComplete(bool)));
+#ifdef WEBVFX_FILENAMEEXT
+        if (path.endsWith(".webvfx.qml", Qt::CaseInsensitive)) {
+#else
+        if (!path.endsWith(".plain.qml", Qt::CaseInsensitive)) {
+#endif
+            connect(qmlContent, SIGNAL(contentLoadFinished(bool)), SLOT(initializeComplete(bool)));
+        }
+        else {
+            connect(qmlContent, SIGNAL(vanillaLoadFinished(bool)), SLOT(initializeComplete(bool)));
+        }
     }
     else {
         log(QLatin1Literal("WebVfx Filename must end with '.html' or '.qml': ") % path);

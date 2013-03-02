@@ -123,6 +123,10 @@ void WebContent::webPageLoadFinished(bool result)
 {
     if (pageLoadFinished == LoadNotFinished)
         pageLoadFinished = result ? LoadSucceeded : LoadFailed;
+
+    // This is useful when webvfx.renderReady(true) is not used.
+    emit vanillaLoadFinished(pageLoadFinished == LoadSucceeded);
+
     if (pageLoadFinished == LoadFailed || contextLoadFinished != LoadNotFinished)
         emit contentLoadFinished(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
 }

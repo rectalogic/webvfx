@@ -115,6 +115,10 @@ void QmlContent::contentContextLoadFinished(bool result)
 {
     if (contextLoadFinished == LoadNotFinished)
         contextLoadFinished = result ? LoadSucceeded : LoadFailed;
+
+    // This is useful when webvfx.renderReady(true) is not used.
+    emit vanillaLoadFinished(pageLoadFinished == LoadSucceeded);
+
     if (contextLoadFinished == LoadFailed || pageLoadFinished != LoadNotFinished) {
         logWarnings(errors());
         emit contentLoadFinished(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
