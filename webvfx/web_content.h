@@ -55,6 +55,7 @@ public:
 
 signals:
     void contentLoadFinished(bool result);
+    void contentPreLoadFinished(bool result);
 
 private slots:
     void injectContentContext();

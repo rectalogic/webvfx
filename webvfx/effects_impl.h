@@ -39,7 +39,7 @@ private slots:
 
 private:
     ~EffectsImpl();
-    Q_INVOKABLE void initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters);
+    Q_INVOKABLE void initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters, bool isPlain);
     Q_INVOKABLE void renderInvokable(double time, Image* renderImage);
 
     // Test if we are currently on the UI thread
