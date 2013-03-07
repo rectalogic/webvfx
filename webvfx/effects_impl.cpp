@@ -41,11 +41,17 @@ bool EffectsImpl::initialize(const QString& fileName, int width, int height, Par
         return false;
     }
 
-    QUrl url(QUrl::fromLocalFile(QFileInfo(fileName).absoluteFilePath()));
-
-    if (!url.isValid()) {
-        log(QLatin1Literal("Invalid URL: ") % fileName);
-        return false;
+    QUrl url(fileName);
+    bool isPlain = (url.scheme() == "plain");
+    if (isPlain) {
+        url = QUrl(url.toString(QUrl::RemoveScheme));
+    }
+    if (url.scheme().isEmpty()) {
+        url = QUrl::fromLocalFile(QFileInfo(url.toString()).absoluteFilePath());
+        if (!url.isValid()) {
+            log(QLatin1Literal("Invalid URL: ") % fileName);
+            return false;
+        }
     }
 
     QSize size(width, height);
@@ -62,7 +68,8 @@ bool EffectsImpl::initialize(const QString& fileName, int width, int height, Par
         QMetaObject::invokeMethod(this, "initializeInvokable",
                                   Qt::QueuedConnection,
                                   Q_ARG(QUrl, url), Q_ARG(QSize, size),
-                                  Q_ARG(Parameters*, parameters));
+                                  Q_ARG(Parameters*, parameters),
+                                  Q_ARG(bool, isPlain));
         //XXX should we wait with a timeout and fail if expires?
         waitCondition.wait(&mutex);
     }
@@ -114,20 +121,30 @@ bool EffectsImpl::render(double time, Image* renderImage)
     return renderResult;
 }
 
-void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters)
+void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters, bool isPlain)
 {
     QString path(url.path());
     // We can't parent QmlContent since we aren't a QWidget.
     // So don't parent either content, and destroy them explicitly.
-    if (path.endsWith(".html", Qt::CaseInsensitive)) {
+    if (path.endsWith(".html", Qt::CaseInsensitive) || !url.isLocalFile()) {
         WebContent* webContent = new WebContent(size, parameters);
         content = webContent;
-        connect(webContent, SIGNAL(contentLoadFinished(bool)), SLOT(initializeComplete(bool)));
+        if (isPlain) {
+            connect(webContent, SIGNAL(contentPreLoadFinished(bool)), SLOT(initializeComplete(bool)));
+        }
+        else {
+            connect(webContent, SIGNAL(contentLoadFinished(bool)), SLOT(initializeComplete(bool)));
+        }
     }
     else if (path.endsWith(".qml", Qt::CaseInsensitive)) {
         QmlContent* qmlContent = new QmlContent(size, parameters);
         content = qmlContent;
-        connect(qmlContent, SIGNAL(contentLoadFinished(bool)), SLOT(initializeComplete(bool)));
+        if (isPlain) {
+            connect(qmlContent, SIGNAL(contentPreLoadFinished(bool)), SLOT(initializeComplete(bool)));
+        }
+        else {
+            connect(qmlContent, SIGNAL(contentLoadFinished(bool)), SLOT(initializeComplete(bool)));
+        }
     }
     else {
         log(QLatin1Literal("WebVfx Filename must end with '.html' or '.qml': ") % path);

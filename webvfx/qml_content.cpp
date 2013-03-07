@@ -104,6 +104,10 @@ void QmlContent::qmlViewStatusChanged(QDeclarativeView::Status status)
 
     if (pageLoadFinished == LoadNotFinished)
         pageLoadFinished = (status == QDeclarativeView::Ready) ? LoadSucceeded : LoadFailed;
+
+    // This is useful when webvfx.renderReady(true) is not used.
+    emit contentPreLoadFinished(pageLoadFinished == LoadSucceeded);
+
     if (pageLoadFinished == LoadFailed || contextLoadFinished != LoadNotFinished) {
 
         logWarnings(errors());
