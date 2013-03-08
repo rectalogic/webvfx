@@ -1,0 +1,6 @@
+#!/bin/bash
+
+export DISPLAY=${DISPLAY:-:0}
+"${VFX_MELT:-melt}" -verbose \
+    -producer webvfx:plain:http://bl.ocks.org/mbostock/raw/1353700/ length=199 \
+    $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}"))
