@@ -53,6 +53,8 @@ public:
     // For debugging with Viewer
     QWebSettings* settings();
 
+    void setTransparent();
+
 signals:
     void contentLoadFinished(bool result);
     void contentPreLoadFinished(bool result);
