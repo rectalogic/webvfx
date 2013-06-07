@@ -190,4 +190,13 @@ QWebSettings* WebContent::settings()
     return webPage->settings();
 }
 
+void WebContent::setTransparent()
+{
+    if (webPage) {
+        QPalette pal = webPage->palette();
+        pal.setBrush(QPalette::Base, Qt::transparent);
+        webPage->setPalette(pal);
+    }
+}
+
 }

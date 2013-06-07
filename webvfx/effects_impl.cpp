@@ -130,6 +130,7 @@ void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parame
         WebContent* webContent = new WebContent(size, parameters);
         content = webContent;
         if (isPlain) {
+            webContent->setTransparent();
             connect(webContent, SIGNAL(contentPreLoadFinished(bool)), SLOT(initializeComplete(bool)));
         }
         else {
