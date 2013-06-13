@@ -34,7 +34,7 @@ void GLWidgetRenderStrategy::createFBO(const QSize& size)
         return;
 
     delete fbo;
-    fbo = new QGLFramebufferObject(size, GL_TEXTURE_RECTANGLE_ARB);
+    fbo = new QGLFramebufferObject(size);
 }
 
 bool GLWidgetRenderStrategy::render(Content* content, Image* renderImage)
@@ -107,7 +107,7 @@ void FBORenderStrategy::createFBOs(const QSize& size)
     delete multisampleFBO;
     multisampleFBO = new QGLFramebufferObject(size, fboFormat);
     delete resolveFBO;
-    resolveFBO = new QGLFramebufferObject(size, GL_TEXTURE_RECTANGLE_ARB);
+    resolveFBO = new QGLFramebufferObject(size);
 }
 
 bool FBORenderStrategy::render(Content* content, Image* renderImage)
