@@ -34,7 +34,6 @@ macx:SOURCES += webvfx_mac.mm
 RESOURCES += resources/resources.qrc
 
 macx:LIBS += -framework Foundation
-macx:QMAKE_LFLAGS_SONAME = -Wl,-install_name,$$PREFIX/lib/
 
 CONFIG += shared thread
 QT += webkit opengl declarative
