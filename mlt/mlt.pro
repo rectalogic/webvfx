@@ -26,6 +26,11 @@ TARGET = mltwebvfx
 
 LIBS += -L$$DESTDIR -lwebvfx
 
+win32 {
+    QT += webkit opengl declarative
+    LIBS += -lglu32 -lopengl32 -lpthread
+}
+
 QMAKE_RPATHDIR += $$PREFIX/lib
 
 # Install in mlt plugins directory
