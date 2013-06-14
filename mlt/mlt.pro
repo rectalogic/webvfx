@@ -19,20 +19,17 @@ SOURCES += webvfx_transition.cpp
 
 CONFIG += plugin shared
 
-unix {
-    CONFIG += link_pkgconfig
-    PKGCONFIG += mlt-framework
-}
+CONFIG += link_pkgconfig
+PKGCONFIG += mlt-framework
 
 TARGET = mltwebvfx
+
 LIBS += -L$$DESTDIR -lwebvfx
 
 QMAKE_RPATHDIR += $$PREFIX/lib
 
-unix {
-    # Install in mlt plugins directory
-    target.path = $$system(pkg-config --variable=libdir mlt-framework)/mlt
-    INSTALLS += target
-    # Add mlt plugins to rpath so we can dlopen ourself without a full path.
-    QMAKE_RPATHDIR += $$target.path
-}
+# Install in mlt plugins directory
+target.path = $$system(pkg-config --variable=libdir mlt-framework)/mlt
+INSTALLS += target
+# Add mlt plugins to rpath so we can dlopen ourself without a full path.
+QMAKE_RPATHDIR += $$target.path
