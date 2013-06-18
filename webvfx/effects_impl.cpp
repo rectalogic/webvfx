@@ -129,8 +129,8 @@ void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parame
     if (path.endsWith(".html", Qt::CaseInsensitive) || !url.isLocalFile()) {
         WebContent* webContent = new WebContent(size, parameters);
         content = webContent;
+	webContent->setTransparent();
         if (isPlain) {
-            webContent->setTransparent();
             connect(webContent, SIGNAL(contentPreLoadFinished(bool)), SLOT(initializeComplete(bool)));
         }
         else {

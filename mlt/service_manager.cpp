@@ -58,7 +58,7 @@ public:
         return position < mlt_producer_get_playtime(producer);
     }
 
-    WebVfx::Image produceImage(mlt_position position, int width, int height) {
+    WebVfx::Image produceImage(mlt_position position, int width, int height, bool hasAlpha) {
         // Close previous frame and request a new one.
         // We don't close the current frame because the image data we return
         // needs to remain valid until we are rendered.
@@ -69,13 +69,18 @@ public:
         mlt_producer_seek(producer, position);
         mlt_service_get_frame(MLT_PRODUCER_SERVICE(producer), &producerFrame, 0);
 
-        mlt_image_format format = mlt_image_rgb24;
+        mlt_image_format format;
+	if ( hasAlpha )
+	    format = mlt_image_rgb24a;
+	else
+	    format = mlt_image_rgb24;  
+	    
         uint8_t *image = NULL;
         int error = mlt_frame_get_image(producerFrame, &image, &format,
                                         &width, &height, 0);
         if (error)
             return WebVfx::Image();
-        return WebVfx::Image(image, width, height, width * height * 3);
+        return WebVfx::Image(image, width, height, width * height * hasAlpha ? 4 : 3, hasAlpha);
     }
 
 private:
@@ -191,7 +196,7 @@ void ServiceManager::setImageForName(const QString& name, WebVfx::Image* image)
         effects->setImage(name, image);
 }
 
-int ServiceManager::render(WebVfx::Image* outputImage, mlt_position position, mlt_position length)
+int ServiceManager::render(WebVfx::Image* outputImage, mlt_position position, mlt_position length, bool hasAlpha)
 {
     double time = length > 0 ? position / (double)length : 0;
 
@@ -204,7 +209,9 @@ int ServiceManager::render(WebVfx::Image* outputImage, mlt_position position, ml
                 WebVfx::Image extraImage =
                     imageProducer->produceImage(position,
                                                 outputImage->width(),
-                                                outputImage->height());
+                                                outputImage->height(),
+						hasAlpha
+ 					      );
                 if (extraImage.isNull()) {
                     mlt_log(service, MLT_LOG_ERROR, "WebVfx failed to produce image for name %s\n", imageProducer->getName().toLatin1().constData());
                     return 1;

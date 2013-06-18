@@ -12,7 +12,6 @@ extern "C" {
 }
 #include "factory.h"
 
-
 namespace MLTWebVfx
 {
 class Logger : public WebVfx::Logger

@@ -27,7 +27,8 @@ public:
         : pixels_(0)
         , width_(0)
         , height_(0)
-        , byteCount_(0) {}
+        , byteCount_(0)
+	, hasAlpha_(false) {}
 
     /*!
      * @param pixels 24 bit RGB image data. Must be valid for the lifetime
@@ -37,11 +38,12 @@ public:
      * @param byteCount Number of bytes in the image.
      *  A row can have more than @c width * @c BytesPerPixel bytes.
      */
-    Image(unsigned char* pixels, int width, int height, int byteCount)
+    Image(unsigned char* pixels, int width, int height, int byteCount, bool hasAlpha = false)
         : pixels_(pixels)
         , width_(width)
         , height_(height)
-        , byteCount_(byteCount) {}
+        , byteCount_(byteCount)
+        , hasAlpha_(hasAlpha) {}
 
     bool isNull() { return !pixels_; }
     unsigned char* pixels() { return pixels_; }
@@ -50,6 +52,7 @@ public:
     int height() const { return height_; }
     int bytesPerLine() const { return byteCount_ / height_; }
     int byteCount() const { return byteCount_; }
+    bool hasAlpha() const { return hasAlpha_; }
 
     void copyPixelsFrom(const Image& sourceImage);
     void copyPixelsTo(Image& targetImage) const;
@@ -67,6 +70,7 @@ private:
     int width_;
     int height_;
     int byteCount_;
+    bool hasAlpha_;
 };
 
 }
