@@ -45,15 +45,15 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
         locker.getManager()->render(&outputImage,
                                     mlt_properties_get_position(properties, kWebVfxPositionPropertyName),
                                     mlt_producer_get_length(producer), hasTransparency);
-	}
+    }
     mlt_frame_set_image(frame, *buffer, size, mlt_pool_release);
     if (hasTransparency) {
-	// Create the alpha channel
-	int alpha_size = *width * *height;
-	uint8_t *alpha = (uint8_t *)mlt_pool_alloc( alpha_size );
-	// Initialise the alpha
-	memset( alpha, 255, alpha_size );
-	mlt_frame_set_alpha(frame, alpha, alpha_size, mlt_pool_release);
+        // Create the alpha channel
+        int alpha_size = *width * *height;
+        uint8_t *alpha = (uint8_t *)mlt_pool_alloc( alpha_size );
+        // Initialise the alpha
+        memset( alpha, 255, alpha_size );
+        mlt_frame_set_alpha(frame, alpha, alpha_size, mlt_pool_release);
     }
 
     mlt_properties_set_int(properties, "meta.media.width", *width);
@@ -69,9 +69,6 @@ static int getFrame(mlt_producer producer, mlt_frame_ptr frame, int /*index*/) {
         // Obtain properties of frame and producer
         mlt_properties properties = MLT_FRAME_PROPERTIES(*frame);
 
-        // Obtain properties of producer
-        //mlt_properties producer_props = MLT_PRODUCER_PROPERTIES(producer);
-
         // Set the producer on the frame properties
         mlt_properties_set_data(properties, kWebVfxProducerPropertyName, producer, 0, NULL, NULL);
 
@@ -79,6 +76,9 @@ static int getFrame(mlt_producer producer, mlt_frame_ptr frame, int /*index*/) {
         mlt_position position = mlt_producer_position(producer);
         mlt_frame_set_position(*frame, position);
         mlt_properties_set_position(properties, kWebVfxPositionPropertyName, position);
+        
+        // Set producer-specific frame properties
+        mlt_properties_set_int(properties, "progressive", 1);
 
         // Push the get_image method
         mlt_frame_push_get_image(*frame, producerGetImage);
