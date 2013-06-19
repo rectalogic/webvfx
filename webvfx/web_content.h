@@ -5,6 +5,7 @@
 #ifndef WEBVFX_WEB_CONTENT_H_
 #define WEBVFX_WEB_CONTENT_H_
 
+
 #include <QMap>
 
 #ifdef WEBVFX_GRAPHICSVIEW

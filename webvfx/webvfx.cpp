@@ -13,7 +13,6 @@
 #endif
 #endif
 #include <cstdlib>
-#include <stdio.h>
 #include <QApplication>
 #include <QMetaType>
 #include <QMutex>
@@ -106,7 +105,6 @@ bool initialize()
     // from the main thread.
     // http://bugreports.qt.nokia.com/browse/QTBUG-7393
     if (!qApp) {
-	fprintf(stderr, "  * ** * *NO QAPP * * **  * * *\n\n * * * ** * * * *\n");
 #ifdef Q_WS_MAC
         if (!isMainThread()) {
             log("WebVfx must be initialized on the main thread on MacOS");
@@ -149,10 +147,10 @@ bool initialize()
     return true;
 }
 
-Effects* createEffects(const QString& fileName, int width, int height, Parameters* parameters)
+Effects* createEffects(const QString& fileName, int width, int height, Parameters* parameters, bool isTransparent)
 {
     EffectsImpl* effects = new EffectsImpl();
-    if (!effects->initialize(fileName, width, height, parameters)) {
+    if (!effects->initialize(fileName, width, height, parameters, isTransparent)) {
         effects->destroy();
         return 0;
     }

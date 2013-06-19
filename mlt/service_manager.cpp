@@ -70,11 +70,11 @@ public:
         mlt_service_get_frame(MLT_PRODUCER_SERVICE(producer), &producerFrame, 0);
 
         mlt_image_format format;
-	if ( hasAlpha )
-	    format = mlt_image_rgb24a;
-	else
-	    format = mlt_image_rgb24;  
-	    
+        if (hasAlpha)
+            format = mlt_image_rgb24a;
+        else
+            format = mlt_image_rgb24;  
+
         uint8_t *image = NULL;
         int error = mlt_frame_get_image(producerFrame, &image, &format,
                                         &width, &height, 0);
@@ -125,8 +125,9 @@ bool ServiceManager::initialize(int width, int height)
         mlt_log(service, MLT_LOG_ERROR, "No 'resource' property found\n");
         return false;
     }
+    bool isTransparent = mlt_properties_get_int(properties, "transparent") || mlt_service_identify(service) == filter_type;
     effects = WebVfx::createEffects(fileName, width, height,
-                                    new ServiceParameters(service));
+                                    new ServiceParameters(service), isTransparent);
     if (!effects) {
         mlt_log(service, MLT_LOG_ERROR,
                 "Failed to create WebVfx Effects for resource %s\n", fileName);

@@ -32,7 +32,7 @@ public:
     ~GLWidgetRenderStrategy();
 
     bool render(Content* content, Image* renderImage);
-
+    
 private:
     void createFBO(const QSize& size);
 

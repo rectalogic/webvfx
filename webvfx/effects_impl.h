@@ -28,7 +28,7 @@ public:
     EffectsImpl();
 
     // EffectsImpl will take ownership of Parameters
-    bool initialize(const QString& fileName, int width, int height, Parameters* parameters = 0);
+    bool initialize(const QString& fileName, int width, int height, Parameters* parameters = 0, bool isTransparent = false);
     const ImageTypeMap& getImageTypeMap();
     void setImage(const QString& name, Image* image);
     bool render(double time, Image* renderImage);
@@ -39,7 +39,7 @@ private slots:
 
 private:
     ~EffectsImpl();
-    Q_INVOKABLE void initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters, bool isPlain);
+    Q_INVOKABLE void initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters, bool isPlain, bool isTransparent = false);
     Q_INVOKABLE void renderInvokable(double time, Image* renderImage);
 
     // Test if we are currently on the UI thread

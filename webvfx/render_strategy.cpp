@@ -35,8 +35,9 @@ void GLWidgetRenderStrategy::createFBO(const QSize& size)
         return;
 
     delete fbo;
-    fbo = new QGLFramebufferObject(size);
+    fbo = new QGLFramebufferObject(size, GL_TEXTURE_2D);
 }
+
 
 bool GLWidgetRenderStrategy::render(Content* content, Image* renderImage)
 {
@@ -50,30 +51,31 @@ bool GLWidgetRenderStrategy::render(Content* content, Image* renderImage)
     // Render frame into QGLWidget.
     // This isn't really valid for a hidden QGLWidget due to the OpenGL
     // "pixel ownership test". But it works with some graphics drivers.
-    QPainter painter(glWidget);
+
+    fbo->bind();
+    QPainter painter(fbo);
+    painter.translate(0, size.height());
+    painter.scale(1, -1);
     painter.setRenderHints(QPainter::Antialiasing |
                            QPainter::TextAntialiasing |
                            QPainter::SmoothPixmapTransform, true);
     content->paintContent(&painter);
     painter.end();
-
-    // Blit from QGLWidget to FBO, flipping image vertically
-    QRect srcRect(0, 0, renderImage->width(), renderImage->height());
-    QRect dstRect(0, renderImage->height(),
-                  renderImage->width(), -renderImage->height());
-    QGLFramebufferObject::blitFramebuffer(fbo, srcRect, 0, dstRect);
-
-    // Read back the pixels from the FBO
-    fbo->bind();
+    
     glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
-    glPixelStorei(GL_PACK_ROW_LENGTH, renderImage->bytesPerLine() / renderImage->hasAlpha() ? 4 : 3 );
-    if ( renderImage->hasAlpha() )
-	glReadPixels(0, 0, renderImage->width(), renderImage->height(),
+    if (renderImage->hasAlpha()) {
+        glPixelStorei(GL_UNPACK_ROW_LENGTH,   0);
+        glPixelStorei(GL_UNPACK_ALIGNMENT,    4);
+        glReadPixels(0, 0, renderImage->width(), renderImage->height(),
                  GL_RGBA, GL_UNSIGNED_BYTE, renderImage->pixels());
-    else
-	glReadPixels(0, 0, renderImage->width(), renderImage->height(),
+    }
+    else {
+        glPixelStorei(GL_UNPACK_ROW_LENGTH,   0);
+        glPixelStorei(GL_UNPACK_ALIGNMENT,    3);
+        glReadPixels(0, 0, renderImage->width(), renderImage->height(),
                  GL_RGB, GL_UNSIGNED_BYTE, renderImage->pixels());
+    }
     glPopClientAttrib();
     fbo->release();
     glWidget->doneCurrent();
@@ -121,7 +123,8 @@ bool FBORenderStrategy::render(Content* content, Image* renderImage)
         return false;
 
     glWidget->makeCurrent();
-    createFBOs(QSize(renderImage->width(), renderImage->height()));
+    QSize size(renderImage->width(), renderImage->height());
+    createFBOs(size);
 
     // Render frame into multisample FBO
     QPainter painter(multisampleFBO);
@@ -145,14 +148,20 @@ bool FBORenderStrategy::render(Content* content, Image* renderImage)
     resolveFBO->bind();
     glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
-    glPixelStorei(GL_PACK_ROW_LENGTH, renderImage->bytesPerLine() / renderImage->hasAlpha() ? 4 : 3 );
     
-    if ( renderImage->hasAlpha() )
-	glReadPixels(0, 0, renderImage->width(), renderImage->height(),
+    if (renderImage->hasAlpha()) {
+        glPixelStorei(GL_UNPACK_ROW_LENGTH,   0);
+        glPixelStorei(GL_UNPACK_ALIGNMENT,    4);
+        glReadPixels(0, 0, renderImage->width(), renderImage->height(),
                  GL_RGBA, GL_UNSIGNED_BYTE, renderImage->pixels());
-    else
-	glReadPixels(0, 0, renderImage->width(), renderImage->height(),
+    }
+    else {
+        glPixelStorei(GL_UNPACK_ROW_LENGTH,   0);
+        glPixelStorei(GL_UNPACK_ALIGNMENT,    3);
+        glReadPixels(0, 0, renderImage->width(), renderImage->height(),
                  GL_RGB, GL_UNSIGNED_BYTE, renderImage->pixels());
+    }
+    
     glPopClientAttrib();
 
     resolveFBO->release();
@@ -165,22 +174,22 @@ bool ImageRenderStrategy::render(Content* content, Image* renderImage)
 {
     if (!renderImage)
         return false;
-    
     if ( renderImage->hasAlpha() ) {
-	// we need to swap r and b channels
-	QImage img(renderImage->width(), renderImage->height(), QImage::Format_ARGB32_Premultiplied);
-	// Paint into image
-	QPainter painter(&img);
-	painter.setRenderHints(QPainter::Antialiasing |
+        // we need to swap r and b channels
+        QImage img(renderImage->width(), renderImage->height(), QImage::Format_ARGB32_Premultiplied);
+        // Paint into image
+        img.fill(Qt::transparent);
+        QPainter painter(&img);
+        painter.setRenderHints(QPainter::Antialiasing |
                            QPainter::TextAntialiasing |
                            QPainter::SmoothPixmapTransform, true);
-	content->paintContent(&painter);
-	painter.end();
-	QImage swapped = img.rgbSwapped();
-	const uchar* from = swapped.constBits();
-	int numFromBytes = swapped.numBytes();
-	memcpy((uchar*)renderImage->pixels(), from, numFromBytes);
-	return true;
+        content->paintContent(&painter);
+        painter.end();
+        QImage swapped = img.rgbSwapped();
+        const uchar* from = swapped.constBits();
+        int numFromBytes = swapped.numBytes();
+        memcpy((uchar*)renderImage->pixels(), from, numFromBytes);
+        return true;
     }
     // QImage referencing our Image bits
     QImage image((uchar*)renderImage->pixels(), renderImage->width(),

@@ -34,7 +34,7 @@ EffectsImpl::~EffectsImpl()
     delete content;
 }
 
-bool EffectsImpl::initialize(const QString& fileName, int width, int height, Parameters* parameters)
+bool EffectsImpl::initialize(const QString& fileName, int width, int height, Parameters* parameters, bool isTransparent)
 {
     if (onUIThread()) {
         log("WebVfx::Effects cannot be initialized on main UI thread.");
@@ -69,7 +69,8 @@ bool EffectsImpl::initialize(const QString& fileName, int width, int height, Par
                                   Qt::QueuedConnection,
                                   Q_ARG(QUrl, url), Q_ARG(QSize, size),
                                   Q_ARG(Parameters*, parameters),
-                                  Q_ARG(bool, isPlain));
+                                  Q_ARG(bool, isPlain),
+                                  Q_ARG(bool, isTransparent));
         //XXX should we wait with a timeout and fail if expires?
         waitCondition.wait(&mutex);
     }
@@ -121,7 +122,7 @@ bool EffectsImpl::render(double time, Image* renderImage)
     return renderResult;
 }
 
-void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters, bool isPlain)
+void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters, bool isPlain, bool isTransparent)
 {
     QString path(url.path());
     // We can't parent QmlContent since we aren't a QWidget.
@@ -129,7 +130,9 @@ void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parame
     if (path.endsWith(".html", Qt::CaseInsensitive) || !url.isLocalFile()) {
         WebContent* webContent = new WebContent(size, parameters);
         content = webContent;
-	webContent->setTransparent();
+        if (isTransparent)
+            webContent->setTransparent();
+
         if (isPlain) {
             connect(webContent, SIGNAL(contentPreLoadFinished(bool)), SLOT(initializeComplete(bool)));
         }

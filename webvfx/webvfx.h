@@ -59,7 +59,7 @@ bool initialize();
  * @param parameters Parameters implementation to provide named parameter
  *   values for this effect
  */
-Effects* createEffects(const QString& fileName, int width, int height, Parameters* parameters = 0);
+Effects* createEffects(const QString& fileName, int width, int height, Parameters* parameters = 0, bool isTransparent = false);
 
 /*!
  * @brief Workaround for MacOS
