@@ -33,6 +33,7 @@ public:
     void setImage(const QString& name, Image* image);
     bool render(double time, Image* renderImage);
     void destroy();
+    void renderComplete(bool result);
 
 private slots:
     void initializeComplete(bool result);

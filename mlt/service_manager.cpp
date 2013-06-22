@@ -8,6 +8,7 @@ extern "C" {
     #include <mlt/framework/mlt_factory.h>
     #include <mlt/framework/mlt_frame.h>
     #include <mlt/framework/mlt_producer.h>
+    #include <mlt/framework/mlt_consumer.h>
 }
 #include "service_manager.h"
 
@@ -88,6 +89,7 @@ private:
 
 ServiceManager::ServiceManager(mlt_service service)
     : service(service)
+    , event(0)
     , effects(0)
     , imageProducers(0)
 {
@@ -191,9 +193,22 @@ void ServiceManager::setImageForName(const QString& name, WebVfx::Image* image)
         effects->setImage(name, image);
 }
 
+static void consumerStoppingListener(mlt_properties owner, ServiceManager* self)
+{
+    Q_UNUSED(owner);
+    self->onConsumerStopping();
+}
+
 int ServiceManager::render(WebVfx::Image* outputImage, mlt_position position, mlt_position length)
 {
     double time = length > 0 ? position / (double)length : 0;
+
+    // If there is a consumer property, listen to the consumer-stopping event to cancel rendering.
+    if (!event && mlt_properties_get_data(MLT_SERVICE_PROPERTIES(service), "consumer", 0)) {
+        mlt_consumer consumer = static_cast<mlt_consumer>(mlt_properties_get_data(MLT_SERVICE_PROPERTIES(service), "consumer", 0));
+        event = mlt_events_listen(MLT_CONSUMER_PROPERTIES(consumer), this, "consumer-stopping",
+            reinterpret_cast<mlt_listener>(MLTWebVfx::consumerStoppingListener));
+    }
 
     // Produce any extra images
     if (imageProducers) {
@@ -215,6 +230,13 @@ int ServiceManager::render(WebVfx::Image* outputImage, mlt_position position, ml
     }
 
     return !effects->render(time, outputImage);
+}
+
+void ServiceManager::onConsumerStopping()
+{
+    mlt_consumer consumer = static_cast<mlt_consumer>(mlt_properties_get_data(MLT_SERVICE_PROPERTIES(service), "consumer", 0));
+    mlt_events_disconnect(MLT_CONSUMER_PROPERTIES(consumer), this);
+    effects->renderComplete(false);
 }
 
 }
