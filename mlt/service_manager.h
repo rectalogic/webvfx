@@ -30,6 +30,7 @@ public:
     const QString& getTargetImageName() { return targetImageName; }
     void setImageForName(const QString& name, WebVfx::Image* image);
     int render(WebVfx::Image* outputImage, mlt_position position, mlt_position length, bool hasAlpha = false);
+    void onConsumerStopping();
 
 private:
     friend class ServiceLocker;
@@ -38,6 +39,7 @@ private:
     bool initialize(int width, int height);
 
     mlt_service service;
+    mlt_event event;
     WebVfx::Effects* effects;
 
     QString sourceImageName;

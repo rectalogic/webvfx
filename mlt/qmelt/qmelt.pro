@@ -15,9 +15,13 @@ DEFINES += VERSION=\\\"qmelt\\\"
 INCLUDEPATH += $$MLT_SOURCE
 
 CONFIG -= app_bundle
-unix {
-    CONFIG += link_pkgconfig
-    PKGCONFIG += mlt-framework
+
+CONFIG += link_pkgconfig
+PKGCONFIG += mlt-framework
+
+win32 {
+    CONFIG += console
+    DEFINES += MELT_NOSDL
 }
 
 TARGET = qmelt

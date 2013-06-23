@@ -35,7 +35,9 @@ RESOURCES += resources/resources.qrc
 
 macx:LIBS += -framework Foundation
 
-CONFIG += shared thread
+win32:CONFIG += staticlib
+unix:CONFIG += shared thread
+
 QT += webkit opengl declarative
 
 TARGET = webvfx

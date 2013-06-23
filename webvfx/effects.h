@@ -80,6 +80,13 @@ public:
      */
     virtual void destroy() = 0;
 
+    /*!
+     * @brief Indicate that rendering is done.
+     *
+     * @param result This is the success/fail value to return from render().
+     */
+    virtual void renderComplete(bool result) = 0;
+
 protected:
     Effects() {};
     virtual ~Effects() = 0;

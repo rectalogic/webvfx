@@ -2,16 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#define WEBVFX_IGNORE_SEGV
-
-#ifndef Q_WS_MAC
-#include <pthread.h>
-#ifdef WEBVFX_IGNORE_SEGV
-#include <signal.h>
-#include <termios.h>
-#include <unistd.h>
-#endif
-#endif
 #include <cstdlib>
 #include <QApplication>
 #include <QMetaType>
@@ -24,6 +14,17 @@
 #include "webvfx/webvfx.h"
 #include "webvfx/effects_impl.h"
 
+#ifndef Q_WS_WIN
+#define WEBVFX_IGNORE_SEGV
+#endif
+#ifndef Q_WS_MAC
+#include <pthread.h>
+#ifdef WEBVFX_IGNORE_SEGV
+#include <signal.h>
+#include <termios.h>
+#include <unistd.h>
+#endif
+#endif
 
 namespace WebVfx
 {

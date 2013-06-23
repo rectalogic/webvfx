@@ -15,7 +15,7 @@ SUBDIRS += viewer
 SUBDIRS += tools/render
 SUBDIRS += tools/browser
 
-unix:system(pkg-config --exists mlt-framework) {
+system(pkg-config --exists mlt-framework) {
     SUBDIRS += mlt
     mlt.depends = webvfx
     isEmpty(MLT_SOURCE) {

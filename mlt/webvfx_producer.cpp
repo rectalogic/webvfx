@@ -55,9 +55,6 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
         memset( alpha, 255, alpha_size );
         mlt_frame_set_alpha(frame, alpha, alpha_size, mlt_pool_release);
     }
-
-    mlt_properties_set_int(properties, "meta.media.width", *width);
-    mlt_properties_set_int(properties, "meta.media.height", *height);
     return error;
 }
 
@@ -108,6 +105,8 @@ mlt_service MLTWebVfx::createProducer(mlt_profile profile) {
         mlt_properties_set_int( properties, "meta.media.progressive", 1 );
         mlt_properties_set_int( properties, "meta.media.sample_aspect_num", 1 );
         mlt_properties_set_int( properties, "meta.media.sample_aspect_den", 1 );
+        mlt_properties_set_int(properties, "meta.media.width", profile->width);
+        mlt_properties_set_int(properties, "meta.media.height", profile->height);
         return MLT_PRODUCER_SERVICE(producer);
     }
     return 0;

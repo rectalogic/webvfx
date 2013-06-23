@@ -114,12 +114,32 @@ bool EffectsImpl::render(double time, Image* renderImage)
         renderInvokable(time, renderImage);
     }
     else {
-        QMetaObject::invokeMethod(this, "renderInvokable",
-                                  Qt::BlockingQueuedConnection,
-                                  Q_ARG(double, time),
-                                  Q_ARG(Image*, renderImage));
+        QMutex mutex;
+        QWaitCondition waitCondition;
+        this->mutex = &mutex;
+        this->waitCondition = &waitCondition;
+        {
+            QMutexLocker locker(&mutex);
+            QMetaObject::invokeMethod(this, "renderInvokable",
+                                      Qt::QueuedConnection,
+                                      Q_ARG(double, time),
+                                      Q_ARG(Image*, renderImage));
+            //XXX should we wait with a timeout and fail if expires?
+            waitCondition.wait(&mutex);
+        }
+        this->mutex = 0;
+        this->waitCondition = 0;
     }
     return renderResult;
+}
+
+void EffectsImpl::renderComplete(bool result)
+{
+    if (mutex && waitCondition) {
+        QMutexLocker locker(mutex);
+        renderResult = result;
+        waitCondition->wakeAll();
+    }
 }
 
 void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters, bool isPlain, bool isTransparent)
@@ -161,7 +181,7 @@ void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parame
 void EffectsImpl::renderInvokable(double time, Image* renderImage)
 {
     content->setContentSize(QSize(renderImage->width(), renderImage->height()));
-    renderResult = content->renderContent(time, renderImage);
+    renderComplete(content->renderContent(time, renderImage));
 }
 
 }
