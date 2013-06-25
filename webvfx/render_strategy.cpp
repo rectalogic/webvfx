@@ -53,6 +53,7 @@ bool GLWidgetRenderStrategy::render(Content* content, Image* renderImage)
     // "pixel ownership test". But it works with some graphics drivers.
 
     fbo->bind();
+    glClear(GL_COLOR_BUFFER_BIT);
     QPainter painter(fbo);
     painter.translate(0, size.height());
     painter.scale(1, -1);
@@ -61,7 +62,7 @@ bool GLWidgetRenderStrategy::render(Content* content, Image* renderImage)
                            QPainter::SmoothPixmapTransform, true);
     content->paintContent(&painter);
     painter.end();
-    
+
     glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);
     glPixelStorei(GL_PACK_ALIGNMENT, 1);
     if (renderImage->hasAlpha()) {
@@ -176,7 +177,7 @@ bool ImageRenderStrategy::render(Content* content, Image* renderImage)
         return false;
     if ( renderImage->hasAlpha() ) {
         // we need to swap r and b channels
-        QImage img(renderImage->width(), renderImage->height(), QImage::Format_ARGB32_Premultiplied);
+        QImage img(renderImage->width(), renderImage->height(), QImage::Format_ARGB32);
         // Paint into image
         img.fill(Qt::transparent);
         QPainter painter(&img);
