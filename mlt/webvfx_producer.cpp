@@ -30,6 +30,12 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
     if (!*buffer)
         return 1;
 
+    // Plain web content is set transparent by WebVfx when no body background color has been set.
+    // Therefore, we need to clear the background of a producer (whereas a filter's image is
+    // retrieved from its producer).
+    if (!strncmp(mlt_properties_get(MLT_PRODUCER_PROPERTIES(producer), "resource"), "plain:", 6))
+        memset(*buffer, 0xFF, size);
+
     // Update the frame
     mlt_frame_set_image(frame, *buffer, size, mlt_pool_release);
     mlt_properties_set_int(properties, "width", *width);
