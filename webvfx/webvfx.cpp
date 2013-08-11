@@ -14,10 +14,10 @@
 #include "webvfx/webvfx.h"
 #include "webvfx/effects_impl.h"
 
-#ifndef Q_WS_WIN
+#ifndef Q_OS_WIN
 #define WEBVFX_IGNORE_SEGV
 #endif
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
 #include <pthread.h>
 #ifdef WEBVFX_IGNORE_SEGV
 #include <signal.h>
@@ -36,7 +36,7 @@ static bool s_ownApp = false;
 
 static QMutex s_initializedMutex;
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
 bool isMainThread();
 #else
 static pthread_t s_uiThread;
@@ -106,7 +106,7 @@ bool initialize()
     // from the main thread.
     // http://bugreports.qt.nokia.com/browse/QTBUG-7393
     if (!qApp) {
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
         if (!isMainThread()) {
             log("WebVfx must be initialized on the main thread on MacOS");
             return false;
@@ -119,7 +119,7 @@ bool initialize()
         s_ownApp = true;
 #else
         {
-#ifdef Q_WS_X11
+#if defined(Q_OS_UNIX) && !defined(Q_OS_MAC)
             if (std::getenv("DISPLAY") == 0) {
                 log("DISPLAY environment variable not set");
                 return false;
@@ -160,7 +160,7 @@ Effects* createEffects(const QString& fileName, int width, int height, Parameter
 
 int processEvents()
 {
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
     // We didn't create the app, the user should be running its event loop.
     if (!s_ownApp)
         return 0;
@@ -191,7 +191,7 @@ void shutdown()
         // Quit the application
         if (qApp)
             qApp->quit();
-#ifndef Q_WS_MAC
+#ifndef Q_OS_MAC
         // Wait for the app thread to finish
         pthread_join(s_uiThread, 0);
 #endif

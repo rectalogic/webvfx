@@ -38,7 +38,12 @@ macx:LIBS += -framework Foundation
 win32:CONFIG += staticlib
 unix:CONFIG += shared thread
 
-QT += webkit opengl declarative
+isEqual(QT_MAJOR_VERSION, 5) {
+    QT += webkitwidgets
+} else {
+    QT += webkit
+}
+QT += opengl declarative
 
 TARGET = webvfx
 

@@ -9,7 +9,11 @@ SOURCES = main.cpp browser.cpp
 HEADERS = browser.h
 FORMS = browser.ui
 
-QT += webkit
+isEqual(QT_MAJOR_VERSION, 5) {
+    QT += webkitwidgets
+} else {
+    QT += webkit
+}
 !mac:TARGET = webvfx_browser
 mac:TARGET = "WebVfx Browser"
 
