@@ -188,7 +188,7 @@ bool ImageRenderStrategy::render(Content* content, Image* renderImage)
         painter.end();
         QImage swapped = img.rgbSwapped();
         const uchar* from = swapped.constBits();
-        int numFromBytes = swapped.numBytes();
+        int numFromBytes = swapped.byteCount();
         memcpy((uchar*)renderImage->pixels(), from, numFromBytes);
         return true;
     }
