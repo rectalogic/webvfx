@@ -11,7 +11,6 @@ extern "C" {
     #include <mlt/framework/mlt_consumer.h>
 }
 #include "service_manager.h"
-#include <QDebug>
 
 namespace MLTWebVfx
 {
@@ -203,7 +202,6 @@ void ServiceManager::setImageForName(const QString& name, WebVfx::Image* image)
 static void consumerStoppingListener(mlt_properties owner, ServiceManager* self)
 {
     Q_UNUSED(owner);
-    qDebug() << "\n+ + + + + +\n CONSUMER ABOUT TO STOP\n\n+ + + + +";
     self->onConsumerStopping();
 }
 
@@ -213,12 +211,10 @@ int ServiceManager::render(WebVfx::Image* outputImage, mlt_position position, ml
 
     // If there is a consumer property, listen to the consumer-stopping event to cancel rendering.
     if (!event && mlt_properties_get_data(MLT_SERVICE_PROPERTIES(service), "consumer", 0)) {
-        qDebug() << "We have a CONSUMER PROPERTY!!!";
         mlt_consumer consumer = static_cast<mlt_consumer>(mlt_properties_get_data(MLT_SERVICE_PROPERTIES(service), "consumer", 0));
         event = mlt_events_listen(MLT_CONSUMER_PROPERTIES(consumer), this, "consumer-stopping",
             reinterpret_cast<mlt_listener>(MLTWebVfx::consumerStoppingListener));
     }
-    else if (!event) qDebug() << "We have NO CONSUMER PROPERTY!!!";
 
     // Produce any extra images
     if (imageProducers) {
@@ -230,8 +226,7 @@ int ServiceManager::render(WebVfx::Image* outputImage, mlt_position position, ml
                     imageProducer->produceImage(position,
                                                 outputImage->width(),
                                                 outputImage->height(),
-						hasAlpha
- 					      );
+                                                hasAlpha);
                 if (extraImage.isNull()) {
                     mlt_log(service, MLT_LOG_ERROR, "WebVfx failed to produce image for name %s\n", imageProducer->getName().toLatin1().constData());
                     return 1;
