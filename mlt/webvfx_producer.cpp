@@ -39,8 +39,8 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
         size = *width * *height * bpp;
         *buffer = (uint8_t*)mlt_pool_alloc(size);
 
-        // When not using transparency, this will make the background black...
-        memset( *buffer, 255, size );
+        // When not using transparency, this will make the background white.
+        memset(*buffer, 255, size);
         WebVfx::Image outputImage(*buffer, *width, *height, size, hasTransparency);
         locker.getManager()->render(&outputImage,
                                     mlt_properties_get_position(properties, kWebVfxPositionPropertyName),
