@@ -24,6 +24,10 @@ win32 {
     DEFINES += MELT_NOSDL
 }
 
+isEqual(QT_MAJOR_VERSION, 5) {
+    QT += widgets
+}
+
 TARGET = qmelt
 QMAKE_RPATHDIR += $$PREFIX/lib
 

@@ -15,7 +15,13 @@ HEADERS += viewer.h
 FORMS += render_dialog.ui
 FORMS += viewer.ui
 
-QT += webkit declarative
+isEqual(QT_MAJOR_VERSION, 5) {
+    QT += webkitwidgets
+} else {
+    QT += webkit
+}
+QT += declarative
+
 !mac:TARGET = webvfx_viewer
 mac:TARGET = "WebVfx Viewer"
 LIBS += -L$$DESTDIR -lwebvfx
