@@ -1,6 +1,6 @@
 #include <QtGlobal>
 
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MAC
 
 #include <Foundation/NSThread.h>
 #include "webvfx/webvfx.h"

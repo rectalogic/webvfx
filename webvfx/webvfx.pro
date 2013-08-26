@@ -29,7 +29,7 @@ SOURCES += qml_content.cpp
 SOURCES += render_strategy.cpp
 SOURCES += web_content.cpp
 SOURCES += webvfx.cpp
-macx:SOURCES += webvfx_mac.mm
+macx:OBJECTIVE_SOURCES += webvfx_mac.mm
 
 RESOURCES += resources/resources.qrc
 

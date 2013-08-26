@@ -5,6 +5,7 @@
 isEmpty(PREFIX) {
     message("Install PREFIX not set, using default.")
 }
+isEqual(QT_MAJOR_VERSION, 5):cache()
 include(common.pri)
 
 TEMPLATE = subdirs

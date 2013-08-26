@@ -16,13 +16,13 @@ INCLUDEPATH += $$MLT_SOURCE
 
 CONFIG -= app_bundle
 
-macx {
-    QMAKE_MACOSX_DEPLOYMENT_TARGET = 10.6
+macx:isEqual(QT_MAJOR_VERSION, 5) {
     # QMake from Qt 5.1.0 on OSX is messing with the environment in which it runs
     # pkg-config such that the PKG_CONFIG_PATH env var is not set.
     isEmpty(MLT_PREFIX) {
         MLT_PREFIX = /opt/local
     }
+    INCLUDEPATH += $$MLT_PREFIX/include
     INCLUDEPATH += $$MLT_PREFIX/include/mlt
     LIBS += -L$$MLT_PREFIX/lib -lmlt
 } else {
