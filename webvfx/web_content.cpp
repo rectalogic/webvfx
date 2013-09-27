@@ -185,6 +185,11 @@ QWidget* WebContent::createView(QWidget* parent)
 #endif
 }
 
+void WebContent::reload()
+{
+    webPage->triggerAction(QWebPage::ReloadAndBypassCache);
+}
+
 QWebSettings* WebContent::settings()
 {
     return webPage->settings();

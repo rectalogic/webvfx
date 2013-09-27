@@ -135,7 +135,7 @@ void Viewer::on_actionOpen_triggered(bool)
 
 void Viewer::on_actionReload_triggered(bool)
 {
-    createContent(windowFilePath());
+    content->reload();
 }
 
 void Viewer::on_actionRenderImage_triggered(bool)
@@ -259,7 +259,7 @@ void Viewer::createContent(const QString& fileName)
 
     logTextEdit->clear();
 
-    setContentUIEnabled(false);
+    setContentUIEnabled(true);
     content->loadContent(QUrl::fromLocalFile(QFileInfo(fileName).absoluteFilePath()));
 }
 

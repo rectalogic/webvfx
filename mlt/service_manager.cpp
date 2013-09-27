@@ -216,6 +216,11 @@ int ServiceManager::render(WebVfx::Image* outputImage, mlt_position position, ml
             reinterpret_cast<mlt_listener>(MLTWebVfx::consumerStoppingListener));
     }
 
+    if (mlt_properties_get_int(MLT_SERVICE_PROPERTIES(service), "_refresh")) {
+        mlt_properties_set_int(MLT_SERVICE_PROPERTIES(service), "_refresh", 0);
+        effects->reload();
+    }
+
     // Produce any extra images
     if (imageProducers) {
         for (std::vector<ImageProducer*>::iterator it = imageProducers->begin();

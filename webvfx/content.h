@@ -33,6 +33,7 @@ public:
     virtual void paintContent(QPainter* painter) = 0;
 
     virtual QWidget* createView(QWidget* parent) = 0;
+    virtual void reload() = 0;
 };
 
 }

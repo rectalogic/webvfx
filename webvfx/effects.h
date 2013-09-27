@@ -87,6 +87,11 @@ public:
      */
     virtual void renderComplete(bool result) = 0;
 
+    /*!
+     * @brief Reload the content.
+     */
+    virtual void reload() = 0;
+
 protected:
     Effects() {};
     virtual ~Effects() = 0;

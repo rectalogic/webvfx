@@ -50,6 +50,7 @@ public:
     void setImage(const QString& name, Image* image) { contentContext->setImage(name, image); }
 
     QWidget* createView(QWidget* parent);
+    void reload();
 
     // For debugging with Viewer
     QWebSettings* settings();

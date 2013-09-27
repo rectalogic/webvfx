@@ -142,6 +142,27 @@ void EffectsImpl::renderComplete(bool result)
     }
 }
 
+void EffectsImpl::reload()
+{
+    if (onUIThread()) {
+        reloadInvokable();
+    }
+    else {
+        QMutex mutex;
+        QWaitCondition waitCondition;
+        this->mutex = &mutex;
+        this->waitCondition = &waitCondition;
+        {
+            QMutexLocker locker(&mutex);
+            QMetaObject::invokeMethod(this, "reloadInvokable", Qt::QueuedConnection);
+            //XXX should we wait with a timeout and fail if expires?
+            waitCondition.wait(&mutex);
+        }
+        this->mutex = 0;
+        this->waitCondition = 0;
+    }
+}
+
 void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters, bool isPlain, bool isTransparent)
 {
     QString path(url.path());
@@ -182,6 +203,11 @@ void EffectsImpl::renderInvokable(double time, Image* renderImage)
 {
     content->setContentSize(QSize(renderImage->width(), renderImage->height()));
     renderComplete(content->renderContent(time, renderImage));
+}
+
+void EffectsImpl::reloadInvokable()
+{
+    content->reload();
 }
 
 }

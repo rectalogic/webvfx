@@ -172,4 +172,11 @@ void QmlContent::paintContent(QPainter* painter)
     render(painter);
 }
 
+void QmlContent::reload()
+{
+    engine()->clearComponentCache(); 
+    setSource(source());
+
+}
+
 }

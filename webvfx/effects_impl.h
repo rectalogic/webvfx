@@ -34,6 +34,7 @@ public:
     bool render(double time, Image* renderImage);
     void destroy();
     void renderComplete(bool result);
+    void reload();
 
 private slots:
     void initializeComplete(bool result);
@@ -42,6 +43,7 @@ private:
     ~EffectsImpl();
     Q_INVOKABLE void initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters, bool isPlain, bool isTransparent = false);
     Q_INVOKABLE void renderInvokable(double time, Image* renderImage);
+    Q_INVOKABLE void reloadInvokable();
 
     // Test if we are currently on the UI thread
     bool onUIThread();
