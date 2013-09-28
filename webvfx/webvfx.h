@@ -53,7 +53,7 @@ bool initialize();
  * @brief Create an Effects instance
  *
  * @param fileName Path to a QML or HTML effects implementation.
- *   @c fileName must end in @c .html or @c .qml
+ *   @c fileName must end in @c .html, @c .html, or @c .qml
  * @param width Initial width of effect in pixels
  * @param height Initial height of effect in pixels
  * @param parameters Parameters implementation to provide named parameter

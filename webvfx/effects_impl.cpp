@@ -168,7 +168,7 @@ void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parame
     QString path(url.path());
     // We can't parent QmlContent since we aren't a QWidget.
     // So don't parent either content, and destroy them explicitly.
-    if (path.endsWith(".html", Qt::CaseInsensitive) || !url.isLocalFile()) {
+    if (path.endsWith(".html", Qt::CaseInsensitive) || path.endsWith(".htm", Qt::CaseInsensitive) || !url.isLocalFile()) {
         WebContent* webContent = new WebContent(size, parameters);
         content = webContent;
         if (isTransparent)
@@ -192,7 +192,7 @@ void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parame
         }
     }
     else {
-        log(QLatin1Literal("WebVfx Filename must end with '.html' or '.qml': ") % path);
+        log(QLatin1Literal("WebVfx Filename must end with '.html', '.htm', or '.qml': ") % path);
         return;
     }
 
