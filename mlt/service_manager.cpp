@@ -248,7 +248,8 @@ void ServiceManager::onConsumerStopping()
 {
     mlt_consumer consumer = static_cast<mlt_consumer>(mlt_properties_get_data(MLT_SERVICE_PROPERTIES(service), "consumer", 0));
     mlt_events_disconnect(MLT_CONSUMER_PROPERTIES(consumer), this);
-    effects->renderComplete(false);
+    if (effects)
+        effects->renderComplete(false);
 }
 
 }
