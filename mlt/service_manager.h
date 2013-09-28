@@ -30,6 +30,7 @@ public:
     const QString& getTargetImageName() { return targetImageName; }
     void setImageForName(const QString& name, WebVfx::Image* image);
     int render(WebVfx::Image* outputImage, mlt_position position, mlt_position length, bool hasAlpha = false);
+    void setupConsumerListener(mlt_frame frame);
     void onConsumerStopping();
 
 private:

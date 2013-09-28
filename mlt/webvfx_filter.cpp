@@ -36,6 +36,7 @@ static int filterGetImage(mlt_frame frame, uint8_t **image, mlt_image_format *fo
         WebVfx::Image renderedImage(*image, *width, *height,
                                     *width * *height * WebVfx::Image::BytesPerPixel);
         manager->setImageForName(manager->getSourceImageName(), &renderedImage);
+        manager->setupConsumerListener(frame);
         manager->render(&renderedImage, position, length);
     }
 

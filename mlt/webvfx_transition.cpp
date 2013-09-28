@@ -45,6 +45,7 @@ static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_forma
         WebVfx::Image targetImage(bImage, bWidth, bHeight,
                                   bWidth * bHeight * WebVfx::Image::BytesPerPixel);
         manager->setImageForName(manager->getTargetImageName(), &targetImage);
+        manager->setupConsumerListener(aFrame);
         manager->render(&renderedImage, position, length);
     }
 

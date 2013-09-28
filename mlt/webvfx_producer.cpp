@@ -42,6 +42,7 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
         // When not using transparency, this will make the background white.
         memset(*buffer, 255, size);
         WebVfx::Image outputImage(*buffer, *width, *height, size, hasTransparency);
+        locker.getManager()->setupConsumerListener(frame);
         locker.getManager()->render(&outputImage,
                                     mlt_properties_get_position(properties, kWebVfxPositionPropertyName),
                                     mlt_producer_get_length(producer), hasTransparency);
