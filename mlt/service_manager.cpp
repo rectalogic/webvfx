@@ -102,8 +102,10 @@ ServiceManager::ServiceManager(mlt_service service)
 
 ServiceManager::~ServiceManager()
 {
+    mlt_events_disconnect(event, this);
     if (effects)
         effects->destroy();
+    
     if (imageProducers) {
         for (std::vector<ImageProducer*>::iterator it = imageProducers->begin();
              it != imageProducers->end(); it++) {
@@ -240,20 +242,22 @@ int ServiceManager::render(WebVfx::Image* outputImage, mlt_position position, ml
 void ServiceManager::setupConsumerListener(mlt_frame frame)
 {
     // If there is a consumer property, listen to the consumer-stopping event to cancel rendering.
-    if (!event && mlt_properties_get_data(MLT_FRAME_PROPERTIES(frame), "consumer", 0)) {
+    if (!event) {
         mlt_consumer consumer = static_cast<mlt_consumer>(mlt_properties_get_data(MLT_FRAME_PROPERTIES(frame), "consumer", 0));
-        event = mlt_events_listen(MLT_CONSUMER_PROPERTIES(consumer), this, "consumer-stopping",
-            reinterpret_cast<mlt_listener>(MLTWebVfx::consumerStoppingListener));
+        if (consumer) {
+            event = MLT_CONSUMER_PROPERTIES(consumer);
+            mlt_events_listen(event, this, "consumer-stopping",
+                reinterpret_cast<mlt_listener>(MLTWebVfx::consumerStoppingListener));
+        }
     }
 }
 
 void ServiceManager::onConsumerStopping()
 {
-    if (service && effects) {
-        mlt_consumer consumer = static_cast<mlt_consumer>(mlt_properties_get_data(MLT_SERVICE_PROPERTIES(service), "consumer", 0));
-        mlt_events_disconnect(MLT_CONSUMER_PROPERTIES(consumer), this);
+    mlt_events_disconnect(event, this);
+    event = 0;
+    if (effects)
         effects->renderComplete(false);
-    }
 }
 
 }

@@ -40,7 +40,7 @@ private:
     bool initialize(int width, int height);
 
     mlt_service service;
-    mlt_event event;
+    mlt_properties event;
     WebVfx::Effects* effects;
 
     QString sourceImageName;
