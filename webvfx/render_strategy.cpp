@@ -173,7 +173,7 @@ bool FBORenderStrategy::render(Content* content, Image* renderImage)
 
 bool ImageRenderStrategy::render(Content* content, Image* renderImage)
 {
-    if (!renderImage)
+    if (!renderImage || !renderImage->pixels() || !renderImage->width() || !renderImage->height())
         return false;
     if ( renderImage->hasAlpha() ) {
         // we need to swap r and b channels

@@ -50,7 +50,7 @@ public:
     const unsigned char* pixels() const { return pixels_; }
     int width() const { return width_; }
     int height() const { return height_; }
-    int bytesPerLine() const { return byteCount_ / height_; }
+    int bytesPerLine() const { return (height_ > 0)? (byteCount_ / height_) : 0; }
     int byteCount() const { return byteCount_; }
     bool hasAlpha() const { return hasAlpha_; }
 
