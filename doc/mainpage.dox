@@ -27,7 +27,7 @@ rendered using them with MLT can be viewed here:
 @li @ref examples/filter-demo.qml "demo/examples/filter-demo.qml"
 
 %WebVfx is hosted at github,
-see the <a href="https://github.com/rectalogic/webvfx#readme">README</a>
+see the <a href="https://github.com/mltframework/webvfx#readme">README</a>
 there for build instructions.
 
 %WebVfx is licensed using a BSD-style @ref license.
