@@ -76,7 +76,10 @@ static int getFrame(mlt_producer producer, mlt_frame_ptr frame, int /*index*/) {
         mlt_properties_set_position(properties, kWebVfxPositionPropertyName, position);
         
         // Set producer-specific frame properties
-        mlt_properties_set_int(properties, "progressive", 1);
+        mlt_properties_set_int(properties, "meta.media.progressive", 1);
+        mlt_properties_set_double(properties, "aspect_ratio",
+            mlt_properties_get_double(properties, "meta.media.sample_aspect_num") /
+            mlt_properties_get_double(properties, "meta.media.sample_aspect_den"));
 
         // Push the get_image method
         mlt_frame_push_get_image(*frame, producerGetImage);
