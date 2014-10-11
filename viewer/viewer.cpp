@@ -129,7 +129,7 @@ void Viewer::on_actionOpen_triggered(bool)
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open"),
                                                     QString(),
-                                                    tr("WebVfx Files (*.html *.qml)"));
+                                                    tr("WebVfx Files (*.html *.htm *.qml)"));
     loadFile(fileName);
 }
 
@@ -239,7 +239,7 @@ void Viewer::createContent(const QString& fileName)
         content = qmlContent;
         connect(qmlContent, SIGNAL(contentLoadFinished(bool)), SLOT(onContentLoadFinished(bool)));
     }
-    else if (fileName.endsWith(".html", Qt::CaseInsensitive)){
+    else if (fileName.endsWith(".html", Qt::CaseInsensitive) || fileName.endsWith(".htm", Qt::CaseInsensitive)){
         WebVfx::WebContent* webContent =
             new WebVfx::WebContent(scrollArea->widget()->size(),
                                    new ViewerParameters(parametersTable));
