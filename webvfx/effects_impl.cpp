@@ -44,9 +44,12 @@ bool EffectsImpl::initialize(const QString& fileName, int width, int height, Par
     QUrl url(fileName);
     bool isPlain = (url.scheme() == "plain");
     if (isPlain) {
+        // Remove the "plain:" prefix interpeted as the scheme.
         url = QUrl(url.toString(QUrl::RemoveScheme));
     }
-    if (url.scheme().isEmpty()) {
+    // If no scheme or the scheme is a Windows drive letter.
+    if (url.scheme().size() < 2) {
+        // Prepend the file scheme.
         url = QUrl::fromLocalFile(QFileInfo(url.toString()).absoluteFilePath());
         if (!url.isValid()) {
             log(QLatin1Literal("Invalid URL: ") % fileName);
