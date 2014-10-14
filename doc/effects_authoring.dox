@@ -65,13 +65,13 @@ images it retrieved before returning from the @c renderRequested slot.
 
 @section qml_effects_authoring QML Effects Authoring
 
-Effects can be authored using QtQuick
-<a href="http://doc.qt.nokia.com/latest/qtquick.html">QML</a>,
+Effects can be authored using Qt Quick
+<a href="http://qt-project.org/doc/latest/qtquick-index.html">QML</a>,
 a declarative UI language.
 
 The @c webvfx.renderRequested(time) signal can be handled using
 the QML
-<a href="http://doc.qt.nokia.com/latest/qml-connections.html">Connections</a>
+<a href="http://qt-project.org/doc/latest/qml-qtqml-connections.html">Connections</a>
 element with @c webvfx as the target.
 The @c time parameter is available to the code, e.g.:
 @code
@@ -86,7 +86,7 @@ Connections {
 
 Video frame images retrieved via @c webvfx.getImage(name) are QImage
 objects. These can be assigned directly to some QML properties,
-e.g. <a href="http://doc.qt.nokia.com/qt-quick3d-snapshot/qml-effect.html#textureImage-prop">Effect.textureImage</a>.
+e.g. <a href="http://doc.qt.digia.com/qt-quick3d-snapshot/qml-effect.html#textureImage-prop">Effect.textureImage</a>.
 Other QML properties require an image URL - this can be retrived via
 @c webvfx.getImageUrl(name). It is more efficient to use the image
 directly when possible, instead of the URL.
@@ -100,7 +100,7 @@ is extended with 3D support - see @ref effects_3d.
 @section web_effects_authoring Web (HTML) Effects Authoring
 
 Effects can be authored using
-<a href="http://doc.qt.nokia.com/latest/qtwebkit.html">QtWebKit</a>
+<a href="http://qt-project.org/doc/latest/qtwebkitwidgets-index.html">Qt WebKit Widgets</a>
 HTML.
 
 The @c webvfx.renderRequested(time) signal can be handled by connecting
@@ -117,7 +117,7 @@ webvfx.renderRequested.connect(render);
 for the current frame of video for the named image.
 This must be assigned to a DOM @c Image element so that it can be
 used in the HTML.
-The <a href="http://doc.qt.nokia.com/latest/qtwebkit-bridge.html">QtWebKit Bridge</a>
+The <a href="http://qt-project.org/doc/latest/qtwebkit-bridge.html">Qt WebKit Bridge</a>
 provides a method @c assignToHTMLImageElement() to do this.
 You can assign to a new @c Image:
 @code
@@ -140,7 +140,7 @@ webvfx.getImage("sourceImage").assignToHTMLImageElement(document.getElementById(
 @subsection web_effects_shader_authoring WebGL GLSL Shader Effects Authoring
 
 %WebVfx includes a simple framework for implementing 2D GLSL fragment shader
-effects. This requires QtWebKit to be compiled with WebGL enabled.
+effects. This requires Qt WebKit to be compiled with WebGL enabled.
 A recent build should be used so the @c toImageData feature is available.
 
 The HTML effect should reference the @c shader.js JavaScript resource:

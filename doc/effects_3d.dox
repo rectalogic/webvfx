@@ -6,7 +6,7 @@
 
 QML is more interesting as a video effects technology when it
 is extended with
-<a href="http://doc.qt.nokia.com/qt-quick3d-snapshot/index.html">QtQuick3D</a>.
+<a href="http://doc.qt.digia.com/qt-quick3d-snapshot/">QtQuick3D</a>.
 
 Textured 3D scenes can be modeled in a tool like
 <a href="http://www.blender.org/">Blender</a>.
@@ -22,16 +22,16 @@ import org.webvfx.WebVfx 1.0
 @endcode
 
 @li @c BlenderItem - this is an
-  @c <a href="http://doc.qt.nokia.com/qt-quick3d-snapshot/qml-item3d.html">Item3D</a>
+  @c <a href="http://doc.qt.digia.com/qt-quick3d-snapshot/qml-item3d.html">Item3D</a>
   that applies a coordinate system
   transformation to convert from Blenders coordinate system to QtQuick3D.
   If the mesh was exported from Blender, you should load it inside
   a @c BlenderItem instead of an ordinary @c Item3D.
-@li @c AnimatedCamera - this is a @c <a href="http://doc.qt.nokia.com/qt-quick3d-snapshot/qml-camera.html">Camera</a>
+@li @c AnimatedCamera - this is a @c <a href="http://doc.qt.digia.com/qt-quick3d-snapshot/qml-camera.html">Camera</a>
   that supports an additional @c animationData property.
   This property should be set to the JSON camera path data exported
   by the Blender addon in @c tools/blender/webvfx-camera.py
-@li @c TextTexture - this is a @c <a href="http://doc.qt.nokia.com/latest/qml-text.html">Text</a>
+@li @c TextTexture - this is a @c <a href="http://qt-project.org/doc/latest/qml-qtquick-text.html">Text</a>
   element that renders itself to an image which can then be used
   as a 3D texture. The texture image is accessed using the @c textureImage
   property.
