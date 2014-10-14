@@ -24,13 +24,13 @@ class Image;
 class Parameters;
 
 // See QtWebKit Bridge docs:
-// http://doc.qt.nokia.com/4.7-snapshot/qtwebkit-bridge.html
+// http://qt-project.org/doc/latest/qtwebkit-bridge.html
 
 class ContentContext : public QObject
 {
     Q_OBJECT
     //XXX We could use Q_ENUMS for this once this bug is fixed
-    // http://bugreports.qt.nokia.com/browse/QTBUG-12706
+    // https://bugreports.qt-project.org/browse/QTBUG-12706
     Q_PROPERTY(int SourceImageType READ getSourceImageType CONSTANT FINAL)
     Q_PROPERTY(int TargetImageType READ getTargetImageType CONSTANT FINAL)
     Q_PROPERTY(int ExtraImageType READ getExtraImageType CONSTANT FINAL)

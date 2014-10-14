@@ -72,7 +72,7 @@ void ContentContext::setImageTypeMap(const QVariantMap& variantMap)
 // One issue is the next time we write to the QImage, it's shared data
 // will be duplicated. But since it is being transferred to a QPixmap,
 // this shouldn't be an issue (i.e. we should be the only reference).
-// http://doc.qt.nokia.com/latest/qimage.html#bits
+// http://qt-project.org/doc/latest/qimage.html#bits
 QImage ContentContext::getImage(const QString& name)
 {
     return imageMap.value(name);

@@ -43,7 +43,7 @@ void log(const QString& msg);
  * In a Qt based MacOS application, or a non-MacOS application,
  * initialize() can be called from any thread and processEvents()
  * need not be called.
- * See <a href="http://bugreports.qt.nokia.com/browse/QTBUG-7393">QTBUG-7393</a>.
+ * See <a href="https://bugreports.qt-project.org/browse/QTBUG-7393">QTBUG-7393</a>.
  *
  * @return Indicates whether initialization was successful
  */

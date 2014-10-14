@@ -142,7 +142,7 @@ void QmlContent::loadContent(const QUrl& url)
     setSource(url);
 
     // XXX QDeclarativeView::SizeRootObjectToView is broken, so resize after loading
-    // http://bugreports.qt.nokia.com/browse/QTBUG-15863
+    // https://bugreports.qt-project.org/browse/QTBUG-15863
     setContentSize(originalSize);
 }
 

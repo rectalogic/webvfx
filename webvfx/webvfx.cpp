@@ -104,7 +104,7 @@ bool initialize()
     // For mac, the qApp must be created on the main thread, so check we are
     // on the main thread and create it - user must then call processEvents()
     // from the main thread.
-    // http://bugreports.qt.nokia.com/browse/QTBUG-7393
+    // https://bugreports.qt-project.org/browse/QTBUG-7393
     if (!qApp) {
 #ifdef Q_OS_MAC
         if (!isMainThread()) {
