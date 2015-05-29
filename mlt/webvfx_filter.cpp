@@ -6,6 +6,7 @@ extern "C" {
     #include <mlt/framework/mlt_filter.h>
     #include <mlt/framework/mlt_frame.h>
     #include <mlt/framework/mlt_log.h>
+    #include <mlt/framework/mlt_consumer.h>
 }
 #include <webvfx/image.h>
 #include "factory.h"
@@ -37,7 +38,15 @@ static int filterGetImage(mlt_frame frame, uint8_t **image, mlt_image_format *fo
                                     *width * *height * WebVfx::Image::BytesPerPixel);
         manager->setImageForName(manager->getSourceImageName(), &renderedImage);
         manager->setupConsumerListener(frame);
-        manager->render(&renderedImage, position, length);
+
+        // If there is a consumer set on the frame and the consumer is stopped,
+        // skip the render step to avoid deadlock. Another thread could have
+        // already called mlt_consumer_stop() thereby triggering
+        // ServiceManager::onConsumerStopping() and Effects::renderComplete().
+        mlt_consumer consumer = static_cast<mlt_consumer>(
+            mlt_properties_get_data(MLT_FRAME_PROPERTIES(frame), "consumer", NULL));
+        if (!consumer || !mlt_consumer_is_stopped(consumer))
+            manager->render(&renderedImage, position, length);
     }
 
     return error;

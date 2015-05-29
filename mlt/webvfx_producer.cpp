@@ -5,6 +5,7 @@
 extern "C" {
     #include <mlt/framework/mlt_producer.h>
     #include <mlt/framework/mlt_frame.h>
+    #include <mlt/framework/mlt_consumer.h>
 }
 #include <webvfx/image.h>
 #include "factory.h"
@@ -43,9 +44,17 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
         memset(*buffer, 255, size);
         WebVfx::Image outputImage(*buffer, *width, *height, size, hasTransparency);
         locker.getManager()->setupConsumerListener(frame);
-        locker.getManager()->render(&outputImage,
-                                    mlt_properties_get_position(properties, kWebVfxPositionPropertyName),
-                                    mlt_producer_get_length(producer), hasTransparency);
+
+        // If there is a consumer set on the frame and the consumer is stopped,
+        // skip the render step to avoid deadlock. Another thread could have
+        // already called mlt_consumer_stop() thereby triggering
+        // ServiceManager::onConsumerStopping() and Effects::renderComplete().
+        mlt_consumer consumer = static_cast<mlt_consumer>(
+            mlt_properties_get_data(MLT_FRAME_PROPERTIES(frame), "consumer", NULL));
+        if (!consumer || !mlt_consumer_is_stopped(consumer))
+            locker.getManager()->render(&outputImage,
+                                        mlt_properties_get_position(properties, kWebVfxPositionPropertyName),
+                                        mlt_producer_get_length(producer), hasTransparency);
     }
     mlt_frame_set_image(frame, *buffer, size, mlt_pool_release);
     if (hasTransparency) {
