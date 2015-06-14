@@ -21,19 +21,31 @@ class ServiceParameters : public WebVfx::Parameters
 {
 public:
     ServiceParameters(mlt_service service)
-        : properties(MLT_SERVICE_PROPERTIES(service)) {
+        : properties(MLT_SERVICE_PROPERTIES(service))
+        , position(0)
+        , length(0)
+    {
     }
 
     double getNumberParameter(const QString& name) {
-        return mlt_properties_get_double(properties, name.toLatin1().constData());
+        return mlt_properties_anim_get_double(properties, name.toLatin1().constData(), position, length);
     }
 
     QString getStringParameter(const QString& name) {
-        return QString::fromUtf8(mlt_properties_get(properties, name.toLatin1().constData()));
+        return QString::fromUtf8(mlt_properties_anim_get(properties, name.toLatin1().constData(), position, length));
     }
+
+    void setPositionAndLength(mlt_position newPosition, mlt_position newLength)
+    {
+        position = newPosition;
+        length = newLength;
+    }
+
 
 private:
     mlt_properties properties;
+    mlt_position position;
+    mlt_position length;
 };
 
 ////////////////////////
@@ -129,8 +141,9 @@ bool ServiceManager::initialize(int width, int height)
         return false;
     }
     bool isTransparent = mlt_properties_get_int(properties, "transparent") || mlt_service_identify(service) == filter_type;
+    parameters = new ServiceParameters(service);
     effects = WebVfx::createEffects(fileName, width, height,
-                                    new ServiceParameters(service), isTransparent);
+                                    parameters, isTransparent);
     if (!effects) {
         mlt_log(service, MLT_LOG_ERROR,
                 "Failed to create WebVfx Effects for resource %s\n", fileName);
@@ -210,6 +223,8 @@ static void consumerStoppingListener(mlt_properties owner, ServiceManager* self)
 int ServiceManager::render(WebVfx::Image* outputImage, mlt_position position, mlt_position length, bool hasAlpha)
 {
     double time = length > 0 ? position / (double)length : 0;
+
+    parameters->setPositionAndLength(position, length);
 
     if (mlt_properties_get_int(MLT_SERVICE_PROPERTIES(service), "_reload")) {
         mlt_properties_set_int(MLT_SERVICE_PROPERTIES(service), "_reload", 0);
