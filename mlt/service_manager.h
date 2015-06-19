@@ -22,6 +22,7 @@ namespace MLTWebVfx
 {
 class ImageProducer;
 class ServiceLocker;
+class ServiceParameters;
 
 class ServiceManager
 {
@@ -42,6 +43,7 @@ private:
     mlt_service service;
     mlt_properties event;
     WebVfx::Effects* effects;
+    ServiceParameters* parameters;
 
     QString sourceImageName;
     QString targetImageName;
