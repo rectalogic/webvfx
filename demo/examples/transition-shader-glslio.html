@@ -1,0 +1,77 @@
+<html>
+<head>
+<style type="text/css">
+body, html {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+#canvas {
+    width: 100%;
+    height: 100%;
+}
+</style>
+
+<script type="text/javascript" src="qrc:/webvfx/scripts/shaderkit.js"></script>
+<script type="text/javascript" src="transitions.json"></script>
+
+<script type="text/javascript">
+
+function GlslTransition(transition) {
+    this.transition = transition;
+    this.renderer = new ShaderKit.Renderer(document.getElementById("canvas"));
+    this.shader = new ShaderKit.Shader(this.renderer, transition.glsl);
+}
+
+GlslTransition.prototype.render = function (time) {
+    var shader = this.shader;
+    shader.updateUniform("progress", time);
+    shader.updateUniform("from", webvfx.getImage('sourceImage').toImageData());
+    var target = webvfx.getImage('targetImage');
+    shader.updateUniform("to", target.toImageData());
+    shader.updateUniform("resolution", [target.width, target.height]);
+
+    for (var key in this.transition.uniforms) {
+        var value = this.transition.uniforms[key];
+        shader.updateUniform(key, webvfx.getNumberParameter(key) || value);
+    }
+
+    this.renderer.render(shader);
+}
+
+function init() {
+    try {
+        resize();
+        var name = webvfx.getStringParameter('glslio_name').toLowerCase() || 'cube';
+        var transition = g_transitions[0];
+        for (var i in g_transitions) {
+            if (g_transitions[i].name.toLowerCase() === name) {
+                transition = g_transitions[i];
+            }
+        }
+        var transition = new GlslTransition(transition);
+        webvfx.renderRequested.connect(transition, GlslTransition.prototype.render);
+        webvfx.imageTypeMap = { "sourceImage" : webvfx.SourceImageType,
+                                "targetImage" : webvfx.TargetImageType };
+        webvfx.readyRender(true);
+    } catch (e) {
+        console.warn(e);
+        webvfx.readyRender(false);
+    }
+}
+
+function resize() {
+    var canvas = document.getElementById("canvas");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+
+window.addEventListener("load", init, false);
+window.addEventListener("resize", resize, false);
+</script>
+
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+</body>
+</html>

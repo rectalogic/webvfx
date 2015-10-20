@@ -1,0 +1,9 @@
+#!/bin/bash
+
+export DISPLAY=${DISPLAY:-:0}
+"${VFX_MELT:-qmelt}" -verbose "${VFX_SOURCE:-red.mlt}" out=349 \
+    -track -blank 69 \
+    "${VFX_TARGET:-blue.mlt}" out=349 \
+    -transition webvfx:../examples/transition-shader-glslio.html in=70 out=349 \
+        glslio_name=swap \
+    $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}"))
