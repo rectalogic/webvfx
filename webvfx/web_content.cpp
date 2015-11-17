@@ -25,9 +25,7 @@ WebPage::WebPage(QObject* parent) : QWebPage(parent) {
 
     settings()->setAttribute(QWebSettings::SiteSpecificQuirksEnabled, false);
     settings()->setAttribute(QWebSettings::AcceleratedCompositingEnabled, true);
-#if (QTWEBKIT_VERSION >= QTWEBKIT_VERSION_CHECK(2, 2, 0))
     settings()->setAttribute(QWebSettings::WebGLEnabled, true);
-#endif
 }
 
 bool WebPage::shouldInterruptJavaScript() {
