@@ -15,9 +15,7 @@ Browser::Browser(QWidget *parent)
     settings->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
     settings->setAttribute(QWebSettings::SiteSpecificQuirksEnabled, false);
     settings->setAttribute(QWebSettings::AcceleratedCompositingEnabled, true);
-#if (QTWEBKIT_VERSION >= QTWEBKIT_VERSION_CHECK(2, 2, 0))
     settings->setAttribute(QWebSettings::WebGLEnabled, true);
-#endif
 }
 
 void Browser::on_urlEdit_returnPressed()
