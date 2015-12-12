@@ -92,7 +92,7 @@ public:
                                         &width, &height, 0);
         if (error)
             return WebVfx::Image();
-        return WebVfx::Image(image, width, height, width * height * hasAlpha ? 4 : 3, hasAlpha);
+        return WebVfx::Image(image, width, height, width * height * (hasAlpha ? 4 : 3), hasAlpha);
     }
 
 private:
