@@ -29,6 +29,7 @@ macx:isEqual(QT_MAJOR_VERSION, 5) {
     CONFIG += link_pkgconfig
     PKGCONFIG += mlt-framework
 }
+macx:DEFINES += MELT_NOSDL
 win32 {
     CONFIG += console
     DEFINES += MELT_NOSDL
