@@ -177,32 +177,32 @@ bool ImageRenderStrategy::render(Content* content, Image* renderImage)
         return false;
     if ( renderImage->hasAlpha() ) {
         // we need to swap r and b channels
-        QImage img(renderImage->width(), renderImage->height(), QImage::Format_ARGB32);
+        QImage image(renderImage->width(), renderImage->height(), QImage::Format_ARGB32);
+        image.fill(Qt::transparent);
         // Paint into image
-        img.fill(Qt::transparent);
-        QPainter painter(&img);
+        QPainter painter(&image);
         painter.setRenderHints(QPainter::Antialiasing |
                            QPainter::TextAntialiasing |
                            QPainter::SmoothPixmapTransform, true);
         content->paintContent(&painter);
         painter.end();
-        QImage swapped = img.rgbSwapped();
-        const uchar* from = swapped.constBits();
-        int numFromBytes = swapped.byteCount();
-        memcpy((uchar*)renderImage->pixels(), from, numFromBytes);
-        return true;
+        QImage swapped = image.rgbSwapped();
+        WebVfx::Image sourceImage(const_cast<uchar*>(swapped.constBits()),
+            swapped.width(), swapped.height(), swapped.byteCount(), swapped.hasAlphaChannel());
+        renderImage->copyPixelsFrom(sourceImage);
+    } else {
+        // QImage referencing our Image bits
+        QImage image((uchar*)renderImage->pixels(), renderImage->width(),
+                     renderImage->height(), renderImage->bytesPerLine(),
+                     QImage::Format_RGB888);
+        // Paint into image
+        QPainter painter(&image);
+        painter.setRenderHints(QPainter::Antialiasing |
+                               QPainter::TextAntialiasing |
+                               QPainter::SmoothPixmapTransform, true);
+        content->paintContent(&painter);
+        painter.end();
     }
-    // QImage referencing our Image bits
-    QImage image((uchar*)renderImage->pixels(), renderImage->width(),
-                 renderImage->height(), renderImage->bytesPerLine(),
-                 QImage::Format_RGB888);
-    // Paint into image
-    QPainter painter(&image);
-    painter.setRenderHints(QPainter::Antialiasing |
-                           QPainter::TextAntialiasing |
-                           QPainter::SmoothPixmapTransform, true);
-    content->paintContent(&painter);
-    painter.end();
     return true;
 }
 

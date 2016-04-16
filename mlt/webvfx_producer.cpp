@@ -36,12 +36,13 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
             *format = mlt_image_rgb24;
         }
         // Get bpp from image format
-        mlt_image_format_size(*format, 0, 0, &bpp);
-        size = *width * *height * bpp;
+        size = mlt_image_format_size(*format, *width, *height, &bpp);
         *buffer = (uint8_t*)mlt_pool_alloc(size);
+        mlt_frame_set_image(frame, *buffer, size, mlt_pool_release);
 
         // When not using transparency, this will make the background white.
         memset(*buffer, 255, size);
+        size = *width * *height * bpp;
         WebVfx::Image outputImage(*buffer, *width, *height, size, hasTransparency);
         locker.getManager()->setupConsumerListener(frame);
 
@@ -56,7 +57,6 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
                                         mlt_properties_get_position(properties, kWebVfxPositionPropertyName),
                                         mlt_producer_get_length(producer), hasTransparency);
     }
-    mlt_frame_set_image(frame, *buffer, size, mlt_pool_release);
     if (hasTransparency) {
         // Create the alpha channel
         int alpha_size = *width * *height;
@@ -65,6 +65,9 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
         memset( alpha, 255, alpha_size );
         mlt_frame_set_alpha(frame, alpha, alpha_size, mlt_pool_release);
     }
+    mlt_properties_set_int(properties, "meta.media.width", *width);
+    mlt_properties_set_int(properties, "meta.media.height", *height);
+
     return error;
 }
 
@@ -85,10 +88,14 @@ static int getFrame(mlt_producer producer, mlt_frame_ptr frame, int /*index*/) {
         mlt_properties_set_position(properties, kWebVfxPositionPropertyName, position);
         
         // Set producer-specific frame properties
+        mlt_properties producer_props = MLT_PRODUCER_PROPERTIES(producer);
         mlt_properties_set_int(properties, "meta.media.progressive", 1);
+        mlt_properties_set_int(properties, "progressive", 1 );
         mlt_frame_set_aspect_ratio(*frame,
-            mlt_properties_get_double(MLT_PRODUCER_PROPERTIES(producer), "meta.media.sample_aspect_num") /
-            mlt_properties_get_double(MLT_PRODUCER_PROPERTIES(producer), "meta.media.sample_aspect_den"));
+            mlt_properties_get_double(producer_props, "meta.media.sample_aspect_num") /
+            mlt_properties_get_double(producer_props, "meta.media.sample_aspect_den"));
+        mlt_profile profile = mlt_service_profile(MLT_PRODUCER_SERVICE( producer ));
+        mlt_properties_set_double(properties, "aspect_ratio", mlt_profile_sar(profile));
 
         // Push the get_image method
         mlt_frame_push_get_image(*frame, producerGetImage);

@@ -16,9 +16,8 @@ void Image::copyPixels(const Image& sourceImage, Image& targetImage)
         int sourceRowBytes = sourceImage.bytesPerLine();
         unsigned char* targetP = targetImage.pixels_;
         int targetRowBytes = targetImage.bytesPerLine();
-        int widthBytes = targetImage.width_ * (targetImage.hasAlpha() ? 4 : 3);
         for (int i = 0; i < targetImage.height_; i++) {
-            memcpy(targetP, sourceP, widthBytes);
+            memcpy(targetP, sourceP, targetRowBytes);
             sourceP += sourceRowBytes;
             targetP += targetRowBytes;
         }
