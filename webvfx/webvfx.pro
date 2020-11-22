@@ -14,8 +14,6 @@ HEADERS += image.h
 HEADERS += logger.h
 HEADERS += parameters.h
 HEADERS += qml_content.h
-HEADERS += render_strategy.h
-HEADERS += web_content.h
 HEADERS += webvfx.h
 
 SOURCES += content.cpp
@@ -26,8 +24,6 @@ SOURCES += image.cpp
 SOURCES += logger.cpp
 SOURCES += parameters.cpp
 SOURCES += qml_content.cpp
-SOURCES += render_strategy.cpp
-SOURCES += web_content.cpp
 SOURCES += webvfx.cpp
 macx:SOURCES += webvfx_mac.mm
 
@@ -36,7 +32,7 @@ RESOURCES += resources/resources.qrc
 macx:LIBS += -framework Foundation
 
 CONFIG += shared thread
-QT += webkit opengl declarative
+QT += quick quick3d
 
 TARGET = webvfx
 

@@ -124,20 +124,7 @@ bool EffectsImpl::render(double time, Image* renderImage)
 void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters, bool isPlain)
 {
     QString path(url.path());
-    // We can't parent QmlContent since we aren't a QWidget.
-    // So don't parent either content, and destroy them explicitly.
-    if (path.endsWith(".html", Qt::CaseInsensitive) || !url.isLocalFile()) {
-        WebContent* webContent = new WebContent(size, parameters);
-        content = webContent;
-        if (isPlain) {
-            webContent->setTransparent();
-            connect(webContent, SIGNAL(contentPreLoadFinished(bool)), SLOT(initializeComplete(bool)));
-        }
-        else {
-            connect(webContent, SIGNAL(contentLoadFinished(bool)), SLOT(initializeComplete(bool)));
-        }
-    }
-    else if (path.endsWith(".qml", Qt::CaseInsensitive)) {
+    if (path.endsWith(".qml", Qt::CaseInsensitive)) {
         QmlContent* qmlContent = new QmlContent(size, parameters);
         content = qmlContent;
         if (isPlain) {
@@ -148,7 +135,7 @@ void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parame
         }
     }
     else {
-        log(QLatin1Literal("WebVfx Filename must end with '.html' or '.qml': ") % path);
+        log(QLatin1Literal("WebVfx Filename must end with '.qml': ") % path);
         return;
     }
 

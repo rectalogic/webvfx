@@ -1,5 +1,6 @@
-#include <QtDeclarative>
-#include <QGLWidget>
+#include <QQuickImageProvider>
+#include <QQuickRenderControl>
+#include <QQuickView>
 #include <QImage>
 #include <QList>
 #include <QPainter>
@@ -9,39 +10,35 @@
 #include <QVariant>
 #include "webvfx/image.h"
 #include "webvfx/qml_content.h"
-#include "webvfx/render_strategy.h"
 #include "webvfx/webvfx.h"
 
 
 namespace WebVfx
 {
 
-static bool s_QmlContentRegistered = false;
-
-class PixmapProvider : public QDeclarativeImageProvider
+class ImageProvider : public QQuickImageProvider
 {
  public:
-     PixmapProvider(ContentContext* contentContext)
-         : QDeclarativeImageProvider(QDeclarativeImageProvider::Pixmap)
+     ImageProvider(ContentContext* contentContext)
+         : QQuickImageProvider(QQmlImageProviderBase::Image)
          , contentContext(contentContext)
      {
      }
 
-    QPixmap requestPixmap(const QString& id, QSize* size, const QSize& requestedSize)
+    QImage requestImage(const QString& id, QSize* size, const QSize& requestedSize)
     {
         // URLs are of the form image://webvfx/<name>/<count>
         // where <count> is a unique ID to force refresh and is ignored.
         QImage image(contentContext->getImage(id.section('/', 0, 0)));
-        QPixmap pixmap(QPixmap::fromImage(image));
 
         if (size)
-            *size = pixmap.size();
+            *size = image.size();
 
         if (!requestedSize.isEmpty())
-            return pixmap.scaled(requestedSize, Qt::IgnoreAspectRatio,
-                                 Qt::SmoothTransformation);
+            return image.scaled(requestedSize, Qt::IgnoreAspectRatio,
+                                Qt::SmoothTransformation);
 
-        return pixmap;
+        return image;
     }
 
 private:
@@ -51,65 +48,46 @@ private:
 ////////////////////
 
 QmlContent::QmlContent(const QSize& size, Parameters* parameters)
-    : QDeclarativeView(0)
+    : renderControl(new QQuickRenderControl())
+    , QQuickView(QUrl(), renderControl)
     , pageLoadFinished(LoadNotFinished)
     , contextLoadFinished(LoadNotFinished)
     , contentContext(new ContentContext(this, parameters))
-    , renderStrategy(0)
 {
-    if (!s_QmlContentRegistered) {
-        s_QmlContentRegistered = true;
-        qmlRegisterType<GraphicsCaptureEffect>("org.webvfx.WebVfx", 1, 0, "Capture");
-    }
     // Add root of our qrc:/ resource path so embedded QML components are available.
     engine()->addImportPath(":/");
 
-    // Turn off scrollbars
-    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-    setInteractive(false);
-    setResizeMode(QDeclarativeView::SizeRootObjectToView);
-    setResizeAnchor(QDeclarativeView::AnchorViewCenter);
+    setResizeMode(ResizeMode::SizeRootObjectToView);
     resize(size);
-
-    QGLWidget* glWidget = new QGLWidget();
-    setViewport(glWidget);
-
-    renderStrategy = new FBORenderStrategy(glWidget);
-
-    // OpenGL needs this
-    setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
 
     // Expose context to the QML
     rootContext()->setContextProperty("webvfx", contentContext);
 
     // Register image provider for image://webvfx/<name>/<counter>
-    engine()->addImageProvider(QLatin1String("webvfx"), new PixmapProvider(contentContext));
+    engine()->addImageProvider(QLatin1String("webvfx"), new ImageProvider(contentContext));
 
-    connect(this, SIGNAL(statusChanged(QDeclarativeView::Status)), SLOT(qmlViewStatusChanged(QDeclarativeView::Status)));
+    connect(this, SIGNAL(statusChanged(QQuickView::Status)), SLOT(qmlViewStatusChanged(QQuickView::Status)));
     connect(engine(), SIGNAL(warnings(QList<QDeclarativeError>)), SLOT(logWarnings(QList<QDeclarativeError>)));
     connect(contentContext, SIGNAL(readyRender(bool)), SLOT(contentContextLoadFinished(bool)));
 }
 
 QmlContent::~QmlContent()
 {
-    delete renderStrategy;
+    delete renderControl;
 }
 
-void QmlContent::qmlViewStatusChanged(QDeclarativeView::Status status)
+void QmlContent::qmlViewStatusChanged(QQuickView::Status status)
 {
-    if (status != QDeclarativeView::Ready && status != QDeclarativeView::Error)
+    if (status != QQuickView::Ready && status != QQuickView::Error)
         return;
 
     if (pageLoadFinished == LoadNotFinished)
-        pageLoadFinished = (status == QDeclarativeView::Ready) ? LoadSucceeded : LoadFailed;
+        pageLoadFinished = (status == QQuickView::Ready) ? LoadSucceeded : LoadFailed;
 
     // This is useful when webvfx.renderReady(true) is not used.
     emit contentPreLoadFinished(pageLoadFinished == LoadSucceeded);
 
     if (pageLoadFinished == LoadFailed || contextLoadFinished != LoadNotFinished) {
-
         logWarnings(errors());
         emit contentLoadFinished(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
     }
@@ -125,9 +103,9 @@ void QmlContent::contentContextLoadFinished(bool result)
     }
 }
 
-void QmlContent::logWarnings(const QList<QDeclarativeError>& warnings)
+void QmlContent::logWarnings(const QList<QQmlError>& warnings)
 {
-    foreach (const QDeclarativeError& warning, warnings) {
+    foreach (const QQmlError& warning, warnings) {
         log(warning.toString());
     }
 }
@@ -136,14 +114,7 @@ void QmlContent::loadContent(const QUrl& url)
 {
     pageLoadFinished = LoadNotFinished;
     contextLoadFinished = LoadNotFinished;
-
-    QSize originalSize(size());
-
     setSource(url);
-
-    // XXX QDeclarativeView::SizeRootObjectToView is broken, so resize after loading
-    // http://bugreports.qt.nokia.com/browse/QTBUG-15863
-    setContentSize(originalSize);
 }
 
 void QmlContent::setContentSize(const QSize& size) {
@@ -165,11 +136,6 @@ bool QmlContent::renderContent(double time, Image* renderImage)
     contentContext->render(time);
     return renderStrategy->render(this, renderImage);
     //XXX also check errors() after each render()
-}
-
-void QmlContent::paintContent(QPainter* painter)
-{
-    render(painter);
 }
 
 }

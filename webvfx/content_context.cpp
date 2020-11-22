@@ -82,7 +82,7 @@ QUrl ContentContext::getImageUrl(const QString& name)
 {
     // Include renderCount in URL - this makes the URL unique
     // so QML will actually reload the image.
-    return QUrl::fromEncoded(QString("image://webvfx/%1/%2").arg(name).arg(renderCount).toAscii(), QUrl::StrictMode);
+    return QUrl::fromEncoded(QString("image://webvfx/%1/%2").arg(name).arg(renderCount).toLatin1(), QUrl::StrictMode);
 }
 
 }
