@@ -32,7 +32,7 @@ RESOURCES += resources/resources.qrc
 macx:LIBS += -framework Foundation
 
 CONFIG += shared thread
-QT += quick quick3d
+QT += core qml quick quick3d
 
 TARGET = webvfx
 

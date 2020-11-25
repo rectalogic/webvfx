@@ -3,7 +3,8 @@
 #include <QQuickView>
 #include <QImage>
 #include <QList>
-#include <QPainter>
+#include <QQmlError>
+#include <QQmlContext>
 #include <QResizeEvent>
 #include <QSize>
 #include <QString>
@@ -47,12 +48,12 @@ private:
 
 ////////////////////
 
-QmlContent::QmlContent(const QSize& size, Parameters* parameters)
-    : renderControl(new QQuickRenderControl())
-    , QQuickView(QUrl(), renderControl)
+QmlContent::QmlContent(QQuickRenderControl* renderControl, const QSize& size, Parameters* parameters)
+    : QQuickView(QUrl(), renderControl)
     , pageLoadFinished(LoadNotFinished)
     , contextLoadFinished(LoadNotFinished)
     , contentContext(new ContentContext(this, parameters))
+    , renderControl(renderControl)
 {
     // Add root of our qrc:/ resource path so embedded QML components are available.
     engine()->addImportPath(":/");
@@ -69,6 +70,11 @@ QmlContent::QmlContent(const QSize& size, Parameters* parameters)
     connect(this, SIGNAL(statusChanged(QQuickView::Status)), SLOT(qmlViewStatusChanged(QQuickView::Status)));
     connect(engine(), SIGNAL(warnings(QList<QDeclarativeError>)), SLOT(logWarnings(QList<QDeclarativeError>)));
     connect(contentContext, SIGNAL(readyRender(bool)), SLOT(contentContextLoadFinished(bool)));
+}
+
+QmlContent::QmlContent(const QSize& size, Parameters* parameters)
+    : QmlContent(new QQuickRenderControl(), size, parameters)
+{
 }
 
 QmlContent::~QmlContent()
@@ -134,8 +140,10 @@ bool QmlContent::renderContent(double time, Image* renderImage)
 {
     // Allow the content to render for this time
     contentContext->render(time);
-    return renderStrategy->render(this, renderImage);
+    //XXX grabImage, or SGTexture?
+    //return renderStrategy->render(this, renderImage);
     //XXX also check errors() after each render()
+    return true;
 }
 
 }

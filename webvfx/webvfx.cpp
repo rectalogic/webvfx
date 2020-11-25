@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include <cstdlib>
-#include <QApplication>
+#include <QGuiApplication>
 #include <QMetaType>
 #include <QMutex>
 #include <QMutexLocker>
@@ -58,7 +58,7 @@ void* uiEventLoop(void* data)
 
     static const char *const empty = "";
     int argc = 1;
-    QApplication app(argc, (char**)&empty);
+    QGuiApplication app(argc, (char**)&empty);
     s_ownApp = true;
 
     // Signal s_initialized() that app has been created

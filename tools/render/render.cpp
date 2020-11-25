@@ -157,7 +157,7 @@ int main(int argc, char* argv[]) {
             // Use constBits to avoid a deep copy
             WebVfx::Image inputImage(const_cast<unsigned char*>(image.constBits()),
                                      image.width(), image.height(),
-                                     image.byteCount());
+                                     image.sizeInBytes());
             effects->setImage((*it).first, &inputImage);
         }
 

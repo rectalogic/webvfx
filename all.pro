@@ -13,7 +13,6 @@ CONFIG += ordered
 SUBDIRS += webvfx
 SUBDIRS += viewer
 SUBDIRS += tools/render
-SUBDIRS += tools/browser
 
 system(pkg-config --exists mlt-framework) {
     SUBDIRS += mlt

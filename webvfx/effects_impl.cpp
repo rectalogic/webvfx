@@ -1,5 +1,5 @@
-#include <QApplication>
 #include <QFileInfo>
+#include <QGuiApplication>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QSize>
@@ -12,7 +12,6 @@
 #include "webvfx/image.h"
 #include "webvfx/parameters.h"
 #include "webvfx/qml_content.h"
-#include "webvfx/web_content.h"
 #include "webvfx/webvfx.h"
 
 
@@ -49,7 +48,7 @@ bool EffectsImpl::initialize(const QString& fileName, int width, int height, Par
     if (url.scheme().isEmpty()) {
         url = QUrl::fromLocalFile(QFileInfo(url.toString()).absoluteFilePath());
         if (!url.isValid()) {
-            log(QLatin1Literal("Invalid URL: ") % fileName);
+            log(QLatin1String("Invalid URL: ") % fileName);
             return false;
         }
     }
@@ -64,7 +63,7 @@ bool EffectsImpl::initialize(const QString& fileName, int width, int height, Par
         QMutexLocker locker(&mutex);
         // Move ourself onto GUI thread and create our Content there.
         // Invoke this async then wait for result.
-        this->moveToThread(QApplication::instance()->thread());
+        this->moveToThread(QGuiApplication::instance()->thread());
         QMetaObject::invokeMethod(this, "initializeInvokable",
                                   Qt::QueuedConnection,
                                   Q_ARG(QUrl, url), Q_ARG(QSize, size),
@@ -91,7 +90,7 @@ void EffectsImpl::destroy()
 }
 
 bool EffectsImpl::onUIThread() {
-    return QThread::currentThread() == QApplication::instance()->thread();
+    return QThread::currentThread() == QGuiApplication::instance()->thread();
 }
 
 const Effects::ImageTypeMap& EffectsImpl::getImageTypeMap()
@@ -135,7 +134,7 @@ void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parame
         }
     }
     else {
-        log(QLatin1Literal("WebVfx Filename must end with '.qml': ") % path);
+        log(QLatin1String("WebVfx Filename must end with '.qml': ") % path);
         return;
     }
 

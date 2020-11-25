@@ -10,18 +10,17 @@
 #include <QList>
 #include <QPlainTextEdit>
 #include <QPushButton>
+#include <QRandomGenerator>
 #include <QStringBuilder>
 #include <QTableWidget>
 #include <QTableWidgetItem>
 #include <QUrl>
-#include <QWebSettings>
 #include <QtGlobal>
 #include <webvfx/effects.h>
 #include <webvfx/image.h>
 #include <webvfx/parameters.h>
 #include <webvfx/webvfx.h>
 #include <webvfx/qml_content.h>
-#include <webvfx/web_content.h>
 #include "image_color.h"
 #include "render_dialog.h"
 #include "viewer.h"
@@ -142,7 +141,7 @@ void Viewer::on_actionRenderImage_triggered(bool)
 {
     QImage image(scrollArea->widget()->size(), QImage::Format_RGB888);
     WebVfx::Image renderImage(image.bits(), image.width(), image.height(),
-                              image.byteCount());
+                              image.sizeInBytes());
     content->renderContent(timeSpinBox->value(), &renderImage);
     RenderDialog* dialog = new RenderDialog(this);
     dialog->setImage(image);
@@ -169,7 +168,7 @@ void Viewer::handleResize()
     scrollArea->widget()->resize(width, height);
     if (content)
         content->setContentSize(QSize(width, height));
-    sizeLabel->setText(QString::number(width) % QLatin1Literal("x") %
+    sizeLabel->setText(QString::number(width) % QLatin1String("x") %
                        QString::number(height));
 
     // Iterate over ImageColor widgets in table and change their sizes
@@ -232,24 +231,13 @@ double Viewer::sliderTimeValue(int value)
 
 void Viewer::createContent(const QString& fileName)
 {
-    if (fileName.endsWith(".qml", Qt::CaseInsensitive)) {
-        WebVfx::QmlContent* qmlContent =
-            new WebVfx::QmlContent(scrollArea->widget()->size(),
-                                   new ViewerParameters(parametersTable));
-        content = qmlContent;
-        connect(qmlContent, SIGNAL(contentLoadFinished(bool)), SLOT(onContentLoadFinished(bool)));
-    }
-    else if (fileName.endsWith(".html", Qt::CaseInsensitive)){
-        WebVfx::WebContent* webContent =
-            new WebVfx::WebContent(scrollArea->widget()->size(),
-                                   new ViewerParameters(parametersTable));
-        // User can right-click to open WebInspector on the page
-        webContent->settings()->setAttribute(QWebSettings::DeveloperExtrasEnabled, true);
-        content = webContent;
-        connect(webContent, SIGNAL(contentLoadFinished(bool)), SLOT(onContentLoadFinished(bool)));
-    }
+    WebVfx::QmlContent* qmlContent =
+        new WebVfx::QmlContent(scrollArea->widget()->size(),
+                                new ViewerParameters(parametersTable));
+    content = qmlContent;
+    QWidget* view = QWidget::createWindowContainer(qmlContent, scrollArea);
+    connect(qmlContent, SIGNAL(contentLoadFinished(bool)), SLOT(onContentLoadFinished(bool)));
 
-    QWidget* view = content->createView(scrollArea);
     view->resize(scrollArea->widget()->size());
 
     // Set content as direct widget of QScrollArea,
@@ -287,7 +275,7 @@ void Viewer::setupImages(const QSize& size)
         connect(imageColor, SIGNAL(imageChanged(QString,WebVfx::Image)),
                 SLOT(onImageChanged(QString,WebVfx::Image)));
         // Set color here so signal fires
-        imageColor->setImageColor(QColor::fromHsv(qrand() % 360, 200, 230));
+        imageColor->setImageColor(QColor::fromHsv(QRandomGenerator::global()->generate() % 360, 200, 230));
         imagesTable->setCellWidget(row, 1, imageColor);
 
         // Type name in column 2

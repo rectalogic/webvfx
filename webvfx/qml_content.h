@@ -5,6 +5,7 @@
 #ifndef WEBVFX_QML_CONTENT_H_
 #define WEBVFX_QML_CONTENT_H_
 
+#include <QQmlError>
 #include <QQuickView>
 #include <QQuickRenderControl>
 #include "webvfx/content.h"
@@ -35,11 +36,6 @@ public:
     bool renderContent(double time, Image* renderImage);
     void setImage(const QString& name, Image* image) { contentContext->setImage(name, image); }
 
-    QWidget* createView(QWidget* parent) {
-        setParent(parent);
-        return this;
-    }
-
 signals:
     void contentLoadFinished(bool result);
     void contentPreLoadFinished(bool result);
@@ -50,6 +46,7 @@ private slots:
     void logWarnings(const QList<QQmlError>& warnings);
 
 private:
+    QmlContent(QQuickRenderControl* renderControl, const QSize& size, Parameters* parameters);
     enum LoadStatus { LoadNotFinished, LoadFailed, LoadSucceeded };
     LoadStatus pageLoadFinished;
     LoadStatus contextLoadFinished;

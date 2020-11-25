@@ -9,12 +9,12 @@
 #include <QImage>
 #include <QMap>
 #include <QObject>
+#include <QVariant>
 #include <QUrl>
 #include "webvfx/effects.h"
 
 class QSize;
 class QString;
-class QVariant;
 typedef QMap<QString, QVariant> QVariantMap;
 
 namespace WebVfx

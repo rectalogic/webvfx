@@ -15,7 +15,7 @@ HEADERS += viewer.h
 FORMS += render_dialog.ui
 FORMS += viewer.ui
 
-QT += webkit declarative
+QT += widgets quick
 !mac:TARGET = webvfx_viewer
 mac:TARGET = "WebVfx Viewer"
 LIBS += -L$$DESTDIR -lwebvfx
