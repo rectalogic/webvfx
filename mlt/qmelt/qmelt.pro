@@ -17,7 +17,9 @@ INCLUDEPATH += $$MLT_SOURCE
 CONFIG -= app_bundle
 
 CONFIG += link_pkgconfig
-PKGCONFIG += mlt-framework
+PKGCONFIG += mlt-framework sdl2
+
+QT += core
 
 win32 {
     CONFIG += console

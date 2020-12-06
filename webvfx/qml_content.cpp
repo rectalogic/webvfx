@@ -1,14 +1,21 @@
 #include <QQuickImageProvider>
+#include <QQuickItem>
+#include <QQuickItemGrabResult>
 #include <QQuickRenderControl>
+#include <QQuickRenderTarget>
 #include <QQuickView>
 #include <QImage>
 #include <QList>
 #include <QQmlError>
 #include <QQmlContext>
 #include <QResizeEvent>
+#include <QSharedPointer>
 #include <QSize>
 #include <QString>
 #include <QVariant>
+#include <QtGui/private/qrhi_p.h>
+#include <QtQuick/private/qquickrendercontrol_p.h>
+
 #include "webvfx/image.h"
 #include "webvfx/qml_content.h"
 #include "webvfx/webvfx.h"
@@ -80,6 +87,53 @@ QmlContent::QmlContent(const QSize& size, Parameters* parameters)
 QmlContent::~QmlContent()
 {
     delete renderControl;
+
+    //XXX these probably need to be deleted on SG thread?
+    delete renderPassDescriptor;
+    delete textureRenderTarget;
+    delete stencilBuffer;
+    delete texture;
+}
+
+bool QmlContent::initialize()
+{
+    if (!renderControl->initialize()) {
+        log("Failed to initialize render control");
+        return false;
+    }
+
+    QRhi *rhi = QQuickRenderControlPrivate::get(renderControl)->rhi;
+
+    const QSize size = rootObject()->size().toSize();
+    texture = rhi->newTexture(QRhiTexture::RGBA8, size, 1, QRhiTexture::RenderTarget | QRhiTexture::UsedAsTransferSource);
+    if (!texture->create()) {
+        log("Failed to create texture");
+        return false;
+    }
+
+    // depth-stencil is mandatory with RHI, although strictly speaking the
+    // scenegraph could operate without one, but it has no means to figure out
+    // the lack of a ds buffer, so just be nice and provide one.
+    stencilBuffer = rhi->newRenderBuffer(QRhiRenderBuffer::DepthStencil, size, 1);
+    if (!stencilBuffer->create()) {
+        log("Failed to create render buffer");
+        return false;
+    }
+
+    QRhiTextureRenderTargetDescription renderTargetDescription((QRhiColorAttachment(texture)));
+    renderTargetDescription.setDepthStencilBuffer(stencilBuffer);
+    QRhiTextureRenderTarget* textureRenderTarget = rhi->newTextureRenderTarget(renderTargetDescription);
+    QRhiRenderPassDescriptor* renderPassDescriptor = textureRenderTarget->newCompatibleRenderPassDescriptor();
+    textureRenderTarget->setRenderPassDescriptor(renderPassDescriptor);
+    if (!textureRenderTarget->create()) {
+        log("Failed to create render target");
+        return false;
+    }
+
+    // redirect Qt Quick rendering into our texture
+    setRenderTarget(QQuickRenderTarget::fromRhiRenderTarget(textureRenderTarget));
+
+    return true;
 }
 
 void QmlContent::qmlViewStatusChanged(QQuickView::Status status)
@@ -120,6 +174,11 @@ void QmlContent::loadContent(const QUrl& url)
 {
     pageLoadFinished = LoadNotFinished;
     contextLoadFinished = LoadNotFinished;
+    if (!initialize()) {
+        pageLoadFinished = LoadFailed;
+        emit contentPreLoadFinished(false);
+        return;
+    }
     setSource(url);
 }
 
@@ -138,11 +197,43 @@ void QmlContent::setContentSize(const QSize& size) {
 
 bool QmlContent::renderContent(double time, Image* renderImage)
 {
+    if (!renderImage) {
+        return false;
+    }
     // Allow the content to render for this time
     contentContext->render(time);
-    //XXX grabImage, or SGTexture?
-    //return renderStrategy->render(this, renderImage);
-    //XXX also check errors() after each render()
+
+    renderControl->polishItems();
+    renderControl->beginFrame();
+    renderControl->sync();
+    renderControl->render();
+
+    if (status() == QQuickView::Error) {
+        logWarnings(errors());
+    }
+
+    QQuickRenderControlPrivate *renderControlPrivate = QQuickRenderControlPrivate::get(renderControl);
+    QRhi *rhi = renderControlPrivate->rhi;
+
+    bool readCompleted = false;
+    QRhiReadbackResult readResult;
+    QImage result;
+    readResult.completed = [&readCompleted, &readResult, &result, &rhi] {
+        readCompleted = true;
+        QImage wrapperImage(reinterpret_cast<const uchar *>(readResult.data.constData()),
+                            readResult.pixelSize.width(), readResult.pixelSize.height(),
+                            QImage::Format_RGBA8888_Premultiplied);
+        if (rhi->isYUpInFramebuffer())
+            result = wrapperImage.mirrored();
+        else
+            result = wrapperImage.copy();
+    };
+    QRhiResourceUpdateBatch *readbackBatch = rhi->nextResourceUpdateBatch();
+    readbackBatch->readBackTexture(texture, &readResult);
+    renderControlPrivate->cb->resourceUpdate(readbackBatch);
+
+    renderControl->endFrame();
+
     return true;
 }
 

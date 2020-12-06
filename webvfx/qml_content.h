@@ -13,6 +13,10 @@
 #include "webvfx/effects.h"
 #include "webvfx/image.h"
 
+class QRhiRenderBuffer;
+class QRhiRenderPassDescriptor;
+class QRhiTexture;
+class QRhiTextureRenderTarget;
 class QSize;
 class QUrl;
 
@@ -41,6 +45,7 @@ signals:
     void contentPreLoadFinished(bool result);
 
 private slots:
+    bool initialize();
     void qmlViewStatusChanged(QQuickView::Status status);
     void contentContextLoadFinished(bool result);
     void logWarnings(const QList<QQmlError>& warnings);
@@ -52,6 +57,11 @@ private:
     LoadStatus contextLoadFinished;
     ContentContext* contentContext;
     QQuickRenderControl* renderControl;
+
+    QRhiTexture* texture;
+    QRhiRenderBuffer* stencilBuffer;
+    QRhiTextureRenderTarget* textureRenderTarget;
+    QRhiRenderPassDescriptor* renderPassDescriptor;
 };
 
 }

@@ -112,10 +112,10 @@ bool initialize()
             return false;
         }
 
-        // Create a QApplication, we will delete it in processEvents()
+        // Create a QGuiApplication, we will delete it in processEvents()
         static const char *const empty = "";
         int argc = 1;
-        new QApplication(argc, (char**)&empty);
+        new QGuiApplication(argc, (char**)&empty);
         s_ownApp = true;
 #else
         {

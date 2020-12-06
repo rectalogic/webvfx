@@ -4,7 +4,7 @@
 
 #undef main
 
-#include <QApplication>
+#include <QGuiApplication>
 #include <QThread>
 
 extern "C" int melt_main(int argc, char** argv);
@@ -29,7 +29,7 @@ private:
 
 int main(int argc, char** argv)
 {
-    QApplication app(argc, argv);
+    QGuiApplication app(argc, argv);
     MeltThread meltThread(argc, argv);
     meltThread.start();
     return app.exec();
