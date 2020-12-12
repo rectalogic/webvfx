@@ -1,3 +1,4 @@
+#include <QPainter>
 #include <QQuickImageProvider>
 #include <QQuickItem>
 #include <QQuickItemGrabResult>
@@ -61,6 +62,7 @@ QmlContent::QmlContent(QQuickRenderControl* renderControl, const QSize& size, Pa
     , contextLoadFinished(LoadNotFinished)
     , contentContext(new ContentContext(this, parameters))
     , renderControl(renderControl)
+    , initialized(false)
 {
     // Add root of our qrc:/ resource path so embedded QML components are available.
     engine()->addImportPath(":/");
@@ -75,7 +77,7 @@ QmlContent::QmlContent(QQuickRenderControl* renderControl, const QSize& size, Pa
     engine()->addImageProvider(QLatin1String("webvfx"), new ImageProvider(contentContext));
 
     connect(this, SIGNAL(statusChanged(QQuickView::Status)), SLOT(qmlViewStatusChanged(QQuickView::Status)));
-    connect(engine(), SIGNAL(warnings(QList<QDeclarativeError>)), SLOT(logWarnings(QList<QDeclarativeError>)));
+    connect(engine(), SIGNAL(warnings(QList<QQmlError>)), SLOT(logWarnings(QList<QQmlError>)));
     connect(contentContext, SIGNAL(readyRender(bool)), SLOT(contentContextLoadFinished(bool)));
 }
 
@@ -88,7 +90,6 @@ QmlContent::~QmlContent()
 {
     delete renderControl;
 
-    //XXX these probably need to be deleted on SG thread?
     delete renderPassDescriptor;
     delete textureRenderTarget;
     delete stencilBuffer;
@@ -97,6 +98,8 @@ QmlContent::~QmlContent()
 
 bool QmlContent::initialize()
 {
+    if (initialized)
+        return true;
     if (!renderControl->initialize()) {
         log("Failed to initialize render control");
         return false;
@@ -133,6 +136,7 @@ bool QmlContent::initialize()
     // redirect Qt Quick rendering into our texture
     setRenderTarget(QQuickRenderTarget::fromRhiRenderTarget(textureRenderTarget));
 
+    initialized = true;
     return true;
 }
 
@@ -174,11 +178,6 @@ void QmlContent::loadContent(const QUrl& url)
 {
     pageLoadFinished = LoadNotFinished;
     contextLoadFinished = LoadNotFinished;
-    if (!initialize()) {
-        pageLoadFinished = LoadFailed;
-        emit contentPreLoadFinished(false);
-        return;
-    }
     setSource(url);
 }
 
@@ -197,7 +196,7 @@ void QmlContent::setContentSize(const QSize& size) {
 
 bool QmlContent::renderContent(double time, Image* renderImage)
 {
-    if (!renderImage) {
+    if (!renderImage || !initialize()) {
         return false;
     }
     // Allow the content to render for this time
@@ -217,16 +216,21 @@ bool QmlContent::renderContent(double time, Image* renderImage)
 
     bool readCompleted = false;
     QRhiReadbackResult readResult;
-    QImage result;
-    readResult.completed = [&readCompleted, &readResult, &result, &rhi] {
+    readResult.completed = [&readCompleted, &readResult, &rhi, &renderImage] {
         readCompleted = true;
-        QImage wrapperImage(reinterpret_cast<const uchar *>(readResult.data.constData()),
-                            readResult.pixelSize.width(), readResult.pixelSize.height(),
-                            QImage::Format_RGBA8888_Premultiplied);
-        if (rhi->isYUpInFramebuffer())
-            result = wrapperImage.mirrored();
-        else
-            result = wrapperImage.copy();
+        QImage sourceImage(reinterpret_cast<const uchar *>(readResult.data.constData()),
+                           readResult.pixelSize.width(), readResult.pixelSize.height(),
+                           QImage::Format_RGBA8888_Premultiplied);
+        QImage destImage((uchar*)renderImage->pixels(), renderImage->width(),
+                         renderImage->height(), renderImage->bytesPerLine(),
+                         QImage::Format_RGB888);
+        QPainter painter(&destImage);
+        if (rhi->isYUpInFramebuffer()) {
+            painter.scale(1, -1);
+            painter.translate(0, readResult.pixelSize.height());
+        }
+        painter.drawImage(0, 0, sourceImage);
+        painter.end();
     };
     QRhiResourceUpdateBatch *readbackBatch = rhi->nextResourceUpdateBatch();
     readbackBatch->readBackTexture(texture, &readResult);

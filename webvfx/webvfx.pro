@@ -32,9 +32,11 @@ RESOURCES += resources/resources.qrc
 macx:LIBS += -framework Foundation
 
 CONFIG += shared thread
-QT += core gui-private qml quick quick-private quick3d
+QT += core gui gui-private qml quick quick-private quick3d
 
 TARGET = webvfx
 
 target.path = $$PREFIX/lib
 INSTALLS += target
+
+QMAKE_SONAME_PREFIX = @rpath

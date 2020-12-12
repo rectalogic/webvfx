@@ -62,6 +62,7 @@ private:
     QRhiRenderBuffer* stencilBuffer;
     QRhiTextureRenderTarget* textureRenderTarget;
     QRhiRenderPassDescriptor* renderPassDescriptor;
+    bool initialized;
 };
 
 }
