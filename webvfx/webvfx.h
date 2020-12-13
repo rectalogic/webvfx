@@ -62,17 +62,6 @@ bool initialize();
 Effects* createEffects(const QString& fileName, int width, int height, Parameters* parameters = 0);
 
 /*!
- * @brief Workaround for MacOS
- *
- * Must be called on the main thread after initialize() in
- * non-Qt based MacOS applications if Effects is going to be used
- * from any other threads.
- * It is a noop on other platforms or on Qt-based MacOS applications.
- * @note This method will block until shutdown() is called.
- */
-int processEvents();
-
-/*!
  * @brief Shut down WebVfx.
  *
  * All Effects should be destroyed before calling shutdown().

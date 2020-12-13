@@ -14,18 +14,6 @@
 #include "webvfx/webvfx.h"
 #include "webvfx/effects_impl.h"
 
-#ifndef Q_WS_WIN
-#define WEBVFX_IGNORE_SEGV
-#endif
-#ifndef Q_WS_MAC
-#include <pthread.h>
-#ifdef WEBVFX_IGNORE_SEGV
-#include <signal.h>
-#include <termios.h>
-#include <unistd.h>
-#endif
-#endif
-
 namespace WebVfx
 {
 
@@ -36,29 +24,16 @@ static bool s_ownApp = false;
 
 static QMutex s_initializedMutex;
 
-#ifdef Q_WS_MAC
-bool isMainThread();
-#else
 static pthread_t s_uiThread;
 typedef QPair<QMutex*, QWaitCondition*> ThreadSync;
-
-#ifdef WEBVFX_IGNORE_SEGV
-static void handleSEGV(int)
-{
-    const char msg[] = "WebVfx: Caught SIGSEGV during shutdown. Exiting successfully.\n";
-    (void)write(STDERR_FILENO, msg, sizeof(msg));
-    tcflush(STDERR_FILENO, TCOFLUSH);
-    _exit(EXIT_SUCCESS);
-}
-#endif
 
 void* uiEventLoop(void* data)
 {
     ThreadSync* threadSync = static_cast<ThreadSync*>(data);
 
-    static const char *const empty = "";
-    int argc = 1;
-    QGuiApplication app(argc, (char**)&empty);
+    static char * argv[] = {"", "-platform", "offscreen"};
+    int argc = 3;
+    QGuiApplication app(argc, argv);
     s_ownApp = true;
 
     // Signal s_initialized() that app has been created
@@ -70,23 +45,10 @@ void* uiEventLoop(void* data)
 
     // Enter event loop
     app.exec();
-    QCoreApplication::processEvents();
-
-#ifdef WEBVFX_IGNORE_SEGV
-    // WebKit threads can outlive QApplication and global Qt internal state.
-    // This can lead to crashes on shutdown.
-    // As a temporary workaround, trap SIGSEGV and exit normally during shutdown.
-    // https://bugs.webkit.org/show_bug.cgi?id=72538
-    struct sigaction action;
-    action.sa_handler = handleSEGV;
-    sigemptyset(&action.sa_mask);
-    action.sa_flags = 0;
-    sigaction(SIGSEGV, &action, NULL);
-#endif
+    QGuiApplication::processEvents();
 
     return 0;
 }
-#endif
 
 void setLogger(Logger* logger)
 {
@@ -100,24 +62,8 @@ bool initialize()
     if (s_initialized)
         return true;
 
-    // For non-mac, spawn a GUI application thread if qApp doesn't already exist.
-    // For mac, the qApp must be created on the main thread, so check we are
-    // on the main thread and create it - user must then call processEvents()
-    // from the main thread.
-    // http://bugreports.qt.nokia.com/browse/QTBUG-7393
+    // Spawn a GUI application thread if qApp doesn't already exist.
     if (!qApp) {
-#ifdef Q_WS_MAC
-        if (!isMainThread()) {
-            log("WebVfx must be initialized on the main thread on MacOS");
-            return false;
-        }
-
-        // Create a QGuiApplication, we will delete it in processEvents()
-        static const char *const empty = "";
-        int argc = 1;
-        new QGuiApplication(argc, (char**)&empty);
-        s_ownApp = true;
-#else
         {
 #ifdef Q_WS_X11
             if (std::getenv("DISPLAY") == 0) {
@@ -137,7 +83,6 @@ bool initialize()
             // Wait for signal that ui thread has created qApp
             uiThreadCondition.wait(&uiThreadMutex);
         }
-#endif
     }
 
     // Register metatypes for queued connections
@@ -158,24 +103,6 @@ Effects* createEffects(const QString& fileName, int width, int height, Parameter
     return effects;
 }
 
-int processEvents()
-{
-#ifdef Q_WS_MAC
-    // We didn't create the app, the user should be running its event loop.
-    if (!s_ownApp)
-        return 0;
-    if (!isMainThread()) {
-        log("WebVfx::processEvents() must be called from the main thread.");
-        return 1;
-    }
-    int result = qApp->exec();
-    delete qApp;
-    return result;
-#else
-    return 0;
-#endif
-}
-
 void shutdown()
 {
     QMutexLocker initLock(&s_initializedMutex);
@@ -191,14 +118,12 @@ void shutdown()
         // Quit the application
         if (qApp)
             qApp->quit();
-#ifndef Q_WS_MAC
         // Wait for the app thread to finish
         pthread_join(s_uiThread, 0);
-#endif
         s_ownApp = false;
     }
     else
-        QCoreApplication::processEvents();
+        QGuiApplication::processEvents();
 }
 
 void log(const QString& msg)

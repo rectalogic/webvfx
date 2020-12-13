@@ -33,6 +33,7 @@ macx:LIBS += -framework Foundation
 
 CONFIG += shared thread
 QT += core gui gui-private qml quick quick-private quick3d
+QTPLUGIN.platforms += qoffscreen
 
 TARGET = webvfx
 

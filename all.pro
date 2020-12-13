@@ -17,11 +17,6 @@ SUBDIRS += tools/render
 system(pkg-config --exists mlt-framework) {
     SUBDIRS += mlt
     mlt.depends = webvfx
-    isEmpty(MLT_SOURCE) {
-        warning("MLT_SOURCE not set, skipping qmelt. Set MLT_SOURCE to the MLT source code directory to build qmelt.")
-    } else {
-        SUBDIRS += mlt/qmelt
-    }
 } else {
     warning("MLT framework not found, skipping MLT plugin. Need to set PKG_CONFIG_PATH environment variable?")
 }

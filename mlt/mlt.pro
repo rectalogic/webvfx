@@ -31,5 +31,3 @@ QMAKE_RPATHDIR += $$PREFIX/lib
 # Install in mlt plugins directory
 target.path = $$system(pkg-config --variable=libdir mlt-framework)/mlt
 INSTALLS += target
-# Add mlt plugins to rpath so we can dlopen ourself without a full path.
-QMAKE_RPATHDIR += $$target.path

@@ -73,9 +73,6 @@ The demos default to using the SDL consumer, this can be changed to the avformat
 consumer by setting @c VFX_CONSUMER=consumer_av and setting @c VFX_OUTPUT
 to the path of the output QuickTime movie file to be created.
 
-On MacOS, you will need to build @c qmelt and set @c VFX_MELT=qmelt
-to run the demos.
-
 @htmlonly
 Each of the demos has been rendered as a video and can be previewed
 from the corresponding <a href="examples.html">example</a>.
