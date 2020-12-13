@@ -2,6 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+!versionAtLeast(QT_VERSION, 6.0.0) {
+    message("Cannot use Qt $${QT_VERSION}")
+    error("Use Qt 6.0 or newer")
+}
+
 isEmpty(PREFIX) {
     unix:PREFIX = /usr/local
 }

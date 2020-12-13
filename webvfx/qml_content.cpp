@@ -88,12 +88,11 @@ QmlContent::QmlContent(const QSize& size, Parameters* parameters)
 
 QmlContent::~QmlContent()
 {
-    delete renderControl;
-
     delete renderPassDescriptor;
     delete textureRenderTarget;
     delete stencilBuffer;
     delete texture;
+    delete renderControl;
 }
 
 bool QmlContent::initialize()
@@ -125,8 +124,8 @@ bool QmlContent::initialize()
 
     QRhiTextureRenderTargetDescription renderTargetDescription((QRhiColorAttachment(texture)));
     renderTargetDescription.setDepthStencilBuffer(stencilBuffer);
-    QRhiTextureRenderTarget* textureRenderTarget = rhi->newTextureRenderTarget(renderTargetDescription);
-    QRhiRenderPassDescriptor* renderPassDescriptor = textureRenderTarget->newCompatibleRenderPassDescriptor();
+    textureRenderTarget = rhi->newTextureRenderTarget(renderTargetDescription);
+    renderPassDescriptor = textureRenderTarget->newCompatibleRenderPassDescriptor();
     textureRenderTarget->setRenderPassDescriptor(renderPassDescriptor);
     if (!textureRenderTarget->create()) {
         log("Failed to create render target");
@@ -211,6 +210,8 @@ bool QmlContent::renderContent(double time, Image* renderImage)
         logWarnings(errors());
     }
 
+    // RHI is private, we need to use it to avoid writing platform specific code for every platform
+    // See https://bugreports.qt.io/browse/QTBUG-88876
     QQuickRenderControlPrivate *renderControlPrivate = QQuickRenderControlPrivate::get(renderControl);
     QRhi *rhi = renderControlPrivate->rhi;
 
