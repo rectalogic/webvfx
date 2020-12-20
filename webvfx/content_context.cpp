@@ -54,15 +54,8 @@ QString ContentContext::getStringParameter(const QString& name)
         return QString();
 }
 
-void ContentContext::setImageTypeMap(const QVariantMap& variantMap)
-{
-    // Convert QVariantMap to ImageTypeMap
-    QMapIterator<QString, QVariant> it(variantMap);
-    while (it.hasNext()) {
-        it.next();
-        //XXX validate the type enums
-        imageTypeMap[it.key()] = static_cast<Effects::ImageType>(it.value().toInt());
-    }
+void ContentContext::registerImageType(const QString& imageName, Effects::ImageType imageType) {
+    imageTypeMap[imageName] = imageType;
 }
 
 // QtWebkit Bridge converts QImages to QPixmaps.

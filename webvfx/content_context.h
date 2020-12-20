@@ -34,10 +34,6 @@ class ContentContext : public QObject
     Q_PROPERTY(int SourceImageType READ getSourceImageType CONSTANT FINAL)
     Q_PROPERTY(int TargetImageType READ getTargetImageType CONSTANT FINAL)
     Q_PROPERTY(int ExtraImageType READ getExtraImageType CONSTANT FINAL)
-    // Page contents should set this if it consumes images.
-    // JS:
-    //   webvfx.imageTypeMap = { "video" : webvfx.SourceImageType }
-    Q_PROPERTY(QVariantMap imageTypeMap WRITE setImageTypeMap)
 
 public:
     ContentContext(QObject* parent, Parameters* parameters);
@@ -68,7 +64,11 @@ public:
     int getSourceImageType() { return Effects::SourceImageType; }
     int getTargetImageType() { return Effects::TargetImageType; }
     int getExtraImageType() { return Effects::ExtraImageType; }
-    void setImageTypeMap(const QVariantMap& imageTypeMap);
+
+    // Page contents should register if it consumes images.
+    // JS:
+    //   webvfx.registerImageType("video", webvfx.SourceImageType);
+    Q_INVOKABLE void registerImageType(const QString& imageName, Effects::ImageType imageType);
 
     const Effects::ImageTypeMap& getImageTypeMap() { return imageTypeMap; }
 

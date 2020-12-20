@@ -10,9 +10,7 @@ Image {
     required property int imageType
 
     Component.onCompleted: {
-        var map = {};
-        map[video.imageName] = video.imageType;
-        webvfx.imageTypeMap = map;
+        webvfx.registerImageType(video.imageName, video.imageType);
     }
 
     Connections {
