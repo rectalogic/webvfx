@@ -1,4 +1,5 @@
-import Qt 4.7
+import QtQuick
+import org.webvfx.WebVfx 1.0
 
 Rectangle {
     width: 576;
@@ -6,12 +7,13 @@ Rectangle {
     color: "lightgray"
 
     Component.onCompleted: {
-        webvfx.imageTypeMap = { "sourceImage" : webvfx.SourceImageType };
         webvfx.readyRender(true);
     }
 
-    Image {
-        id: image
+    Video {
+        id: video
+        imageName: "SourceImage"
+        imageType: webvfx.SourceImageType
         width: parent.width
         height: parent.height
         clip: true
@@ -25,10 +27,9 @@ Rectangle {
     }
     Connections {
         target: webvfx
-        onRenderRequested: {
-    	    image.source = webvfx.getImageUrl("sourceImage");
-            image.rotation = time * 360;
-	        timeText.text = "rotating " + Math.round(image.rotation);
+        function onRenderRequested(time) {
+            video.rotation = time * 360;
+	        timeText.text = "rotating " + Math.round(video.rotation);
             timeText.rotation = -time * 360;
 	    }
     }
