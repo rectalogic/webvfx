@@ -73,10 +73,6 @@ public:
     const Effects::ImageTypeMap& getImageTypeMap() { return imageTypeMap; }
 
 signals:
-    // Page contents must signal this when ready to render.
-    // status indicates setup failure/success.
-    void readyRender(bool status);
-
     // Signal raised when page contents should render for the given time.
     // time is normalized 0..1.0
     // JS: webvfx.renderRequested.connect(function (time) { doSomething(); })

@@ -6,10 +6,6 @@ Rectangle {
     height: 432
     color: "lightgray"
 
-    Component.onCompleted: {
-        webvfx.readyRender(true);
-    }
-
     Video {
         id: video
         imageName: "SourceImage"

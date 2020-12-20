@@ -59,7 +59,6 @@ private:
 QmlContent::QmlContent(QQuickRenderControl* renderControl, const QSize& size, Parameters* parameters)
     : QQuickView(QUrl(), renderControl)
     , pageLoadFinished(LoadNotFinished)
-    , contextLoadFinished(LoadNotFinished)
     , contentContext(new ContentContext(this, parameters))
     , renderControl(renderControl)
     , initialized(false)
@@ -78,7 +77,6 @@ QmlContent::QmlContent(QQuickRenderControl* renderControl, const QSize& size, Pa
 
     connect(this, SIGNAL(statusChanged(QQuickView::Status)), SLOT(qmlViewStatusChanged(QQuickView::Status)));
     connect(engine(), SIGNAL(warnings(QList<QQmlError>)), SLOT(logWarnings(QList<QQmlError>)));
-    connect(contentContext, SIGNAL(readyRender(bool)), SLOT(contentContextLoadFinished(bool)));
 }
 
 QmlContent::QmlContent(const QSize& size, Parameters* parameters)
@@ -147,23 +145,8 @@ void QmlContent::qmlViewStatusChanged(QQuickView::Status status)
     if (pageLoadFinished == LoadNotFinished)
         pageLoadFinished = (status == QQuickView::Ready) ? LoadSucceeded : LoadFailed;
 
-    // This is useful when webvfx.renderReady(true) is not used.
-    emit contentPreLoadFinished(pageLoadFinished == LoadSucceeded);
-
-    if (pageLoadFinished == LoadFailed || contextLoadFinished != LoadNotFinished) {
-        logWarnings(errors());
-        emit contentLoadFinished(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
-    }
-}
-
-void QmlContent::contentContextLoadFinished(bool result)
-{
-    if (contextLoadFinished == LoadNotFinished)
-        contextLoadFinished = result ? LoadSucceeded : LoadFailed;
-    if (contextLoadFinished == LoadFailed || pageLoadFinished != LoadNotFinished) {
-        logWarnings(errors());
-        emit contentLoadFinished(contextLoadFinished == LoadSucceeded && pageLoadFinished == LoadSucceeded);
-    }
+    logWarnings(errors());
+    emit contentLoadFinished(pageLoadFinished == LoadSucceeded);
 }
 
 void QmlContent::logWarnings(const QList<QQmlError>& warnings)
@@ -176,7 +159,6 @@ void QmlContent::logWarnings(const QList<QQmlError>& warnings)
 void QmlContent::loadContent(const QUrl& url)
 {
     pageLoadFinished = LoadNotFinished;
-    contextLoadFinished = LoadNotFinished;
     setSource(url);
 }
 

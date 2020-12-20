@@ -42,19 +42,16 @@ public:
 
 signals:
     void contentLoadFinished(bool result);
-    void contentPreLoadFinished(bool result);
 
 private slots:
     bool initialize();
     void qmlViewStatusChanged(QQuickView::Status status);
-    void contentContextLoadFinished(bool result);
     void logWarnings(const QList<QQmlError>& warnings);
 
 private:
     QmlContent(QQuickRenderControl* renderControl, const QSize& size, Parameters* parameters);
     enum LoadStatus { LoadNotFinished, LoadFailed, LoadSucceeded };
     LoadStatus pageLoadFinished;
-    LoadStatus contextLoadFinished;
     ContentContext* contentContext;
     QQuickRenderControl* renderControl;
 

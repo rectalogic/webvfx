@@ -41,10 +41,6 @@ bool EffectsImpl::initialize(const QString& fileName, int width, int height, Par
     }
 
     QUrl url(fileName);
-    bool isPlain = (url.scheme() == "plain");
-    if (isPlain) {
-        url = QUrl(url.toString(QUrl::RemoveScheme));
-    }
     if (url.scheme().isEmpty()) {
         url = QUrl::fromLocalFile(QFileInfo(url.toString()).absoluteFilePath());
         if (!url.isValid()) {
@@ -67,8 +63,7 @@ bool EffectsImpl::initialize(const QString& fileName, int width, int height, Par
         QMetaObject::invokeMethod(this, "initializeInvokable",
                                   Qt::QueuedConnection,
                                   Q_ARG(QUrl, url), Q_ARG(QSize, size),
-                                  Q_ARG(Parameters*, parameters),
-                                  Q_ARG(bool, isPlain));
+                                  Q_ARG(Parameters*, parameters));
         //XXX should we wait with a timeout and fail if expires?
         waitCondition.wait(&mutex);
     }
@@ -120,18 +115,13 @@ bool EffectsImpl::render(double time, Image* renderImage)
     return renderResult;
 }
 
-void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters, bool isPlain)
+void EffectsImpl::initializeInvokable(const QUrl& url, const QSize& size, Parameters* parameters)
 {
     QString path(url.path());
     if (path.endsWith(".qml", Qt::CaseInsensitive)) {
         QmlContent* qmlContent = new QmlContent(size, parameters);
         content = qmlContent;
-        if (isPlain) {
-            connect(qmlContent, SIGNAL(contentPreLoadFinished(bool)), SLOT(initializeComplete(bool)));
-        }
-        else {
-            connect(qmlContent, SIGNAL(contentLoadFinished(bool)), SLOT(initializeComplete(bool)));
-        }
+        connect(qmlContent, SIGNAL(contentLoadFinished(bool)), SLOT(initializeComplete(bool)));
     }
     else {
         log(QLatin1String("WebVfx Filename must end with '.qml': ") % path);
