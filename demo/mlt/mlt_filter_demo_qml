@@ -3,4 +3,4 @@
 export DISPLAY=${DISPLAY:-:0}
 "${VFX_MELT:-melt}" -verbose "${VFX_SOURCE:-red.mlt}" out=299 \
     -filter webvfx:../examples/filter-demo.qml out=299 \
-    -consumer ${VFX_CONSUMER:-sdl2} audio_off=1 mlt_profile=webvfx_profile
+    $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}")) mlt_profile=webvfx_profile
