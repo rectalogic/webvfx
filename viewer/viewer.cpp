@@ -128,7 +128,7 @@ void Viewer::on_actionOpen_triggered(bool)
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open"),
                                                     QString(),
-                                                    tr("WebVfx Files (*.html *.qml)"));
+                                                    tr("WebVfx Files (*.qml)"));
     loadFile(fileName);
 }
 

@@ -8,6 +8,7 @@
 #include <QQmlError>
 #include <QQuickView>
 #include <QQuickRenderControl>
+#include <QtQuick3D/QQuick3DTextureData>
 #include "webvfx/content.h"
 #include "webvfx/content_context.h"
 #include "webvfx/effects.h"
@@ -60,6 +61,34 @@ private:
     QRhiTextureRenderTarget* textureRenderTarget;
     QRhiRenderPassDescriptor* renderPassDescriptor;
     bool initialized;
+};
+
+
+class ImageTexture : public QQuick3DTextureData
+{
+    Q_OBJECT
+    Q_PROPERTY(QImage image READ image WRITE setImage NOTIFY imageChanged)
+    QML_NAMED_ELEMENT(ImageTexture)
+
+public:
+    ImageTexture()
+    {}
+
+    QImage image() const
+    {
+        return m_image;
+    }
+
+public Q_SLOTS:
+    void setImage(QImage image);
+
+Q_SIGNALS:
+    void imageChanged(QImage image);
+
+private:
+    void updateTexture();
+
+    QImage m_image;
 };
 
 }

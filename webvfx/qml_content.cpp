@@ -1,3 +1,4 @@
+#include <QByteArray>
 #include <QPainter>
 #include <QQuickImageProvider>
 #include <QQuickItem>
@@ -56,11 +57,56 @@ private:
 
 ////////////////////
 
+
+void ImageTexture::setImage(QImage image)
+{
+    if (image == m_image)
+        return;
+
+    m_image = image;
+    emit imageChanged(m_image);
+    updateTexture();
+}
+
+void ImageTexture::updateTexture()
+{
+    setSize(m_image.size());
+    bool needsConvert = false;
+    switch (m_image.format()) {
+        case QImage::Format_RGB888:
+        case QImage::Format_RGBX8888:
+            setHasTransparency(false);
+            break;
+        case QImage::Format_RGBA8888:
+            setHasTransparency(true);
+            break;
+        default:
+            setHasTransparency(m_image.hasAlphaChannel());
+            needsConvert = true;
+            break;
+    }
+    setFormat(QQuick3DTextureData::RGBA8);
+    QImage tmp;
+    if (needsConvert)
+        tmp = m_image.convertToFormat(QImage::Format_RGBA8888);
+    else
+        tmp = m_image;
+    if (m_image.width() * m_image.depth() != m_image.bytesPerLine() * 8)
+        tmp = tmp.copy();
+    setTextureData(QByteArray::fromRawData((const char *)tmp.constBits(), tmp.sizeInBytes()));
+}
+
+////////////////////
+
 QmlContent::QmlContent(QQuickRenderControl* renderControl, const QSize& size, Parameters* parameters)
     : QQuickView(QUrl(), renderControl)
     , pageLoadFinished(LoadNotFinished)
     , contentContext(new ContentContext(this, parameters))
     , renderControl(renderControl)
+    , texture(0)
+    , stencilBuffer(0)
+    , textureRenderTarget(0)
+    , renderPassDescriptor(0)
     , initialized(false)
 {
     // Add root of our qrc:/ resource path so embedded QML components are available.

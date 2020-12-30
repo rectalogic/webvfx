@@ -13,13 +13,6 @@ Rectangle {
         width: parent.width
         height: parent.height
         clip: true
-        NumberAnimation on x {
-            id: sourceAnim
-            running: false
-            from: 0
-            to: -sourceVideo.width
-            duration: 100
-        }
     }
     Video {
         id: targetVideo
@@ -28,27 +21,32 @@ Rectangle {
         width: parent.width
         height: parent.height
         clip: true
-        NumberAnimation on x {
-            id: targetAnim
-            running: false
+    }
+    ParallelAnimation {
+        id: animation
+        NumberAnimation {
+            property: "x"
+            target: sourceVideo
+            from: 0
+            to: -sourceVideo.width
+            duration: 100
+        }
+        NumberAnimation {
+            property: "x"
+            target: targetVideo
             from: targetVideo.width
             to: 0
             duration: 100
         }
     }
     AnimationController {
-        id: sourceController
-        animation: sourceAnim
-    }
-    AnimationController {
-        id: targetController
-        animation: targetAnim
+        id: animationController
+        animation: animation
     }
     Connections {
         target: webvfx
         function onRenderRequested(time) {
-            sourceController.progress = time;
-            targetController.progress = time;
+            animationController.progress = time;
         }
     }
 }

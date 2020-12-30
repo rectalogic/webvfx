@@ -25,15 +25,15 @@ SOURCES += logger.cpp
 SOURCES += parameters.cpp
 SOURCES += qml_content.cpp
 SOURCES += webvfx.cpp
-macx:SOURCES += webvfx_mac.mm
 
 RESOURCES += resources/resources.qrc
 
-macx:LIBS += -framework Foundation
-
-CONFIG += shared thread
+CONFIG += shared thread qmltypes
 QT += core gui gui-private qml quick quick-private quick3d
 QTPLUGIN.platforms += qoffscreen
+
+QML_IMPORT_NAME = org.webvfx.WebVfx
+QML_IMPORT_MAJOR_VERSION = 1
 
 TARGET = webvfx
 

@@ -1,6 +1,10 @@
+.qmake.stash
 Makefile
 Makefile.*
 debug
 release
 build
 doxydoc
+*.qmltypes
+*_metatypes.json
+*_qmltyperegistrations.cpp
