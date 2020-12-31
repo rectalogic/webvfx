@@ -22,7 +22,6 @@
 #include <webvfx/webvfx.h>
 #include <webvfx/qml_content.h>
 #include "image_color.h"
-#include "render_dialog.h"
 #include "viewer.h"
 
 
@@ -103,19 +102,23 @@ Viewer::Viewer()
     handleResize();
 }
 
+Viewer::~Viewer()
+{
+    delete content;
+}
+
 void Viewer::setContentUIEnabled(bool enable)
 {
     timeSpinBox->setEnabled(enable);
     timeSlider->setEnabled(enable);
     actionReload->setEnabled(enable);
-    actionRenderImage->setEnabled(enable);
 }
 
 void Viewer::onContentLoadFinished(bool result)
 {
     if (result) {
         setupImages(scrollArea->widget()->size());
-        content->renderContent(timeSpinBox->value(), 0);
+        renderContent();
     }
     else {
         statusBar()->showMessage(tr("Load failed"), 2000);
@@ -137,15 +140,16 @@ void Viewer::on_actionReload_triggered(bool)
     createContent(windowFilePath());
 }
 
-void Viewer::on_actionRenderImage_triggered(bool)
+void Viewer::renderContent()
 {
+    if (!content)
+        return;
+    setImagesOnContent();
     QImage image(scrollArea->widget()->size(), QImage::Format_RGB888);
     WebVfx::Image renderImage(image.bits(), image.width(), image.height(),
                               image.sizeInBytes());
     content->renderContent(timeSpinBox->value(), &renderImage);
-    RenderDialog* dialog = new RenderDialog(this);
-    dialog->setImage(image);
-    dialog->show();
+    imageLabel->setPixmap(QPixmap::fromImage(image));
 }
 
 void Viewer::on_resizeButton_clicked()
@@ -179,6 +183,7 @@ void Viewer::handleResize()
         if (imageColor)
             imageColor->setImageSize(size);
     }
+    renderContent();
 }
 
 void Viewer::setImagesOnContent()
@@ -198,17 +203,15 @@ void Viewer::setImagesOnContent()
 void Viewer::on_timeSlider_valueChanged(int value)
 {
     timeSpinBox->setValue(sliderTimeValue(value));
+    renderContent();
 }
 
 void Viewer::onTimeSpinBoxValueChanged(double time)
 {
-    if (content) {
-        setImagesOnContent();
-        content->renderContent(time, 0);
-    }
     timeSlider->blockSignals(true);
     timeSlider->setValue(time * timeSlider->maximum());
     timeSlider->blockSignals(false);
+    renderContent();
 }
 
 void Viewer::on_addParameterButton_clicked()
@@ -234,16 +237,17 @@ void Viewer::createContent(const QString& fileName)
     WebVfx::QmlContent* qmlContent =
         new WebVfx::QmlContent(scrollArea->widget()->size(),
                                 new ViewerParameters(parametersTable));
+    delete content;
     content = qmlContent;
-    QWidget* view = QWidget::createWindowContainer(qmlContent, scrollArea);
+    imageLabel = new QLabel(scrollArea);
     connect(qmlContent, SIGNAL(contentLoadFinished(bool)), SLOT(onContentLoadFinished(bool)));
 
-    view->resize(scrollArea->widget()->size());
+    imageLabel->resize(scrollArea->widget()->size());
 
     // Set content as direct widget of QScrollArea,
     // otherwise it creates an intermediate QWidget which messes up resizing.
     // setWidget will destroy the old view.
-    scrollArea->setWidget(view);
+    scrollArea->setWidget(imageLabel);
 
     logTextEdit->clear();
 
@@ -272,10 +276,9 @@ void Viewer::setupImages(const QSize& size)
         ImageColor* imageColor = new ImageColor();
         imageColor->setImageSize(size);
         imageColor->setObjectName(imageName);
+        imageColor->setImageColor(QColor::fromHsv(QRandomGenerator::global()->generate() % 360, 200, 230));
         connect(imageColor, SIGNAL(imageChanged(QString,WebVfx::Image)),
                 SLOT(onImageChanged(QString,WebVfx::Image)));
-        // Set color here so signal fires
-        imageColor->setImageColor(QColor::fromHsv(QRandomGenerator::global()->generate() % 360, 200, 230));
         imagesTable->setCellWidget(row, 1, imageColor);
 
         // Type name in column 2
@@ -299,9 +302,10 @@ void Viewer::setupImages(const QSize& size)
     }
 }
 
-void Viewer::onImageChanged(const QString& name, WebVfx::Image image)
+void Viewer::onImageChanged(const QString&, WebVfx::Image)
 {
     if (!content)
         return;
-    content->setImage(name, &image);
+    setImagesOnContent();
+    renderContent();
 }

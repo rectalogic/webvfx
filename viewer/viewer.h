@@ -23,13 +23,13 @@ class Viewer : public QMainWindow, private Ui::Viewer
 
 public:
     Viewer();
+    ~Viewer();
     void loadFile(const QString& fileName);
 
 private slots:
     void on_actionOpen_triggered(bool);
     void onContentLoadFinished(bool);
     void on_actionReload_triggered(bool);
-    void on_actionRenderImage_triggered(bool);
     void on_resizeButton_clicked();
     void on_timeSlider_valueChanged(int);
     void onTimeSpinBoxValueChanged(double);
@@ -39,6 +39,7 @@ private slots:
 
 private:
     void createContent(const QString& fileName);
+    void renderContent();
     void setContentUIEnabled(bool enable);
     void handleResize();
     void setImagesOnContent();
@@ -46,6 +47,7 @@ private:
     double sliderTimeValue(int value);
     QLabel* sizeLabel;
     QDoubleSpinBox* timeSpinBox;
+    QLabel* imageLabel;
     WebVfx::Content* content;
 };
 
