@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <QApplication>
+#include <QtGlobal>
 #include "viewer.h"
 
 int main(int argc, char *argv[])
@@ -13,7 +14,11 @@ int main(int argc, char *argv[])
     app.setOrganizationName("WebVfx");
     app.setApplicationName("WebVfx Viewer");
 
-    Viewer viewer;
+    static Viewer viewer;
+    auto messageHandler = +[] (QtMsgType type, const QMessageLogContext &context, const QString &msg) -> void {
+        viewer.messageHandler(type, context, msg);
+    };
+    qInstallMessageHandler(messageHandler);
     viewer.show();
 
     QStringList args(QApplication::arguments());

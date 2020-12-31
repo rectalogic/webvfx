@@ -14,8 +14,8 @@
 #include <QStringBuilder>
 #include <QTableWidget>
 #include <QTableWidgetItem>
+#include <QTextStream>
 #include <QUrl>
-#include <QtGlobal>
 #include <webvfx/effects.h>
 #include <webvfx/image.h>
 #include <webvfx/parameters.h>
@@ -105,6 +105,13 @@ Viewer::Viewer()
 Viewer::~Viewer()
 {
     delete content;
+}
+
+void Viewer::messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+{
+    QString result;
+    QTextStream(&result) << type << ": " << msg << " (" << (context.file ? context.file : "") << ":" << context.line << ", " << (context.function ? context.function : "") << ")\n";
+    logTextEdit->appendPlainText(result);
 }
 
 void Viewer::setContentUIEnabled(bool enable)

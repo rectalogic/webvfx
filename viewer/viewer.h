@@ -6,6 +6,8 @@
 #define VIEWER_H
 
 #include <QMainWindow>
+#include <QMessageLogContext>
+#include <QtGlobal>
 #include <webvfx/image.h>
 #include "ui_viewer.h"
 
@@ -25,7 +27,7 @@ public:
     Viewer();
     ~Viewer();
     void loadFile(const QString& fileName);
-
+    void messageHandler(QtMsgType, const QMessageLogContext &, const QString &);
 private slots:
     void on_actionOpen_triggered(bool);
     void onContentLoadFinished(bool);
