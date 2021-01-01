@@ -35,11 +35,11 @@ public:
     QmlContent(const QSize& size, Parameters* parameters);
     ~QmlContent();
 
-    void loadContent(const QUrl& url);
-    void setContentSize(const QSize& size);
-    const Effects::ImageTypeMap& getImageTypeMap() { return contentContext->getImageTypeMap(); };
-    bool renderContent(double time, Image* renderImage);
-    void setImage(const QString& name, Image* image) { contentContext->setImage(name, image); }
+    void loadContent(const QUrl& url) override;
+    void setContentSize(const QSize& size) override;
+    const Effects::ImageTypeMap& getImageTypeMap() override { return contentContext->getImageTypeMap(); };
+    bool renderContent(double time, Image* renderImage) override;
+    void setImage(const QString& name, Image* image) override { contentContext->setImage(name, image); }
 
 signals:
     void contentLoadFinished(bool result);
