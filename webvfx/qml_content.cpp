@@ -101,7 +101,7 @@ void ImageTexture::updateTexture()
 QmlContent::QmlContent(QQuickRenderControl* renderControl, const QSize& size, Parameters* parameters)
     : QQuickView(QUrl(), renderControl)
     , pageLoadFinished(LoadNotFinished)
-    , contentContext(new ContentContext(this, parameters))
+    , contentContext(new ContentContext(this, parameters, size))
     , renderControl(renderControl)
     , texture(0)
     , stencilBuffer(0)
@@ -112,8 +112,7 @@ QmlContent::QmlContent(QQuickRenderControl* renderControl, const QSize& size, Pa
     // Add root of our qrc:/ resource path so embedded QML components are available.
     engine()->addImportPath(":/");
 
-    setResizeMode(ResizeMode::SizeRootObjectToView);
-    resize(size);
+    setResizeMode(ResizeMode::SizeViewToRootObject);
 
     // Expose context to the QML
     rootContext()->setContextProperty("webvfx", contentContext);
@@ -132,11 +131,24 @@ QmlContent::QmlContent(const QSize& size, Parameters* parameters)
 
 QmlContent::~QmlContent()
 {
-    delete renderPassDescriptor;
-    delete textureRenderTarget;
-    delete stencilBuffer;
-    delete texture;
+    uninitialize();
     delete renderControl;
+}
+
+void QmlContent::uninitialize()
+{
+    if (!initialized)
+        return;
+    delete renderPassDescriptor;
+    renderPassDescriptor = 0;
+    delete textureRenderTarget;
+    textureRenderTarget = 0;
+    delete stencilBuffer;
+    stencilBuffer = 0;
+    delete texture;
+    texture = 0;
+    renderControl->invalidate();
+    initialized = false;
 }
 
 bool QmlContent::initialize()
@@ -150,7 +162,7 @@ bool QmlContent::initialize()
 
     QRhi *rhi = QQuickRenderControlPrivate::get(renderControl)->rhi;
 
-    const QSize size = rootObject()->size().toSize();
+    const QSize size = contentContext->getVideoSize();
     texture = rhi->newTexture(QRhiTexture::RGBA8, size, 1, QRhiTexture::RenderTarget | QRhiTexture::UsedAsTransferSource);
     if (!texture->create()) {
         log("Failed to create texture");
@@ -209,15 +221,9 @@ void QmlContent::loadContent(const QUrl& url)
 }
 
 void QmlContent::setContentSize(const QSize& size) {
-    QSize oldSize(this->size());
-    if (oldSize != size) {
-        resize(size);
-        // The resize event is delayed until we are shown.
-        // Since we are never shown, send the event here.
-        // Superclass does some calculations in resizeEvent
-        // (sizing and centering the scene etc.)
-        QResizeEvent event(size, oldSize);
-        resizeEvent(&event);
+    if (contentContext->getVideoSize() != size) {
+        contentContext->setVideoSize(size);
+        uninitialize();
     }
 }
 

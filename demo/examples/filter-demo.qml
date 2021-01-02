@@ -2,8 +2,8 @@ import QtQuick
 import org.webvfx.WebVfx 1.0
 
 Rectangle {
-    width: 576;
-    height: 432
+    width: webvfx.videoWidth
+    height: webvfx.videoHeight
     color: "lightgray"
 
     Video {

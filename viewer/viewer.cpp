@@ -110,7 +110,7 @@ Viewer::~Viewer()
 void Viewer::messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
     QString result;
-    QTextStream(&result) << type << ": " << msg << " (" << (context.file ? context.file : "") << ":" << context.line << ", " << (context.function ? context.function : "") << ")\n";
+    QTextStream(&result) << type << ": " << msg << " (line " << context.line << ", " << (context.function ? context.function : "") << ")\n";
     logTextEdit->appendPlainText(result);
 }
 
@@ -241,20 +241,20 @@ double Viewer::sliderTimeValue(int value)
 
 void Viewer::createContent(const QString& fileName)
 {
+    QSize size(scrollArea->widget()->size());
     WebVfx::QmlContent* qmlContent =
-        new WebVfx::QmlContent(scrollArea->widget()->size(),
-                                new ViewerParameters(parametersTable));
+        new WebVfx::QmlContent(size, new ViewerParameters(parametersTable));
     delete content;
     content = qmlContent;
     imageLabel = new QLabel(scrollArea);
     connect(qmlContent, SIGNAL(contentLoadFinished(bool)), SLOT(onContentLoadFinished(bool)));
 
-    imageLabel->resize(scrollArea->widget()->size());
-
     // Set content as direct widget of QScrollArea,
     // otherwise it creates an intermediate QWidget which messes up resizing.
     // setWidget will destroy the old view.
     scrollArea->setWidget(imageLabel);
+    scrollArea->widget()->resize(size);
+    imageLabel->show();
 
     logTextEdit->clear();
 

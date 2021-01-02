@@ -2,8 +2,8 @@ import QtQuick
 import org.webvfx.WebVfx 1.0
 
 Rectangle {
-    width: 576;
-    height: 432
+    width: webvfx.videoWidth
+    height: webvfx.videoHeight
     color: "lightgray"
 
     Video {
@@ -29,14 +29,14 @@ Rectangle {
             target: sourceVideo
             from: 0
             to: -sourceVideo.width
-            duration: 100
+            duration: 1000
         }
         NumberAnimation {
             property: "x"
             target: targetVideo
             from: targetVideo.width
             to: 0
-            duration: 100
+            duration: 1000
         }
     }
     AnimationController {

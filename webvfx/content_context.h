@@ -35,8 +35,11 @@ class ContentContext : public QObject
     Q_PROPERTY(int TargetImageType READ getTargetImageType CONSTANT FINAL)
     Q_PROPERTY(int ExtraImageType READ getExtraImageType CONSTANT FINAL)
 
+    Q_PROPERTY(int videoWidth READ getVideoWidth NOTIFY videoSizeChanged)
+    Q_PROPERTY(int videoHeight READ getVideoHeight NOTIFY videoSizeChanged)
+
 public:
-    ContentContext(QObject* parent, Parameters* parameters);
+    ContentContext(QObject* parent, Parameters* parameters, QSize size);
     ~ContentContext();
 
     // Inform page contents to render at time.
@@ -65,6 +68,11 @@ public:
     int getTargetImageType() { return Effects::TargetImageType; }
     int getExtraImageType() { return Effects::ExtraImageType; }
 
+    int getVideoWidth() { return videoSize.width(); }
+    int getVideoHeight() { return videoSize.height(); }
+    QSize getVideoSize() { return videoSize; };
+    void setVideoSize(QSize size);
+
     // Page contents should register if it consumes images.
     // JS:
     //   webvfx.registerImageType("video", webvfx.SourceImageType);
@@ -77,12 +85,14 @@ signals:
     // time is normalized 0..1.0
     // JS: webvfx.renderRequested.connect(function (time) { doSomething(); })
     void renderRequested(double time);
+    void videoSizeChanged();
 
 private:
     Parameters* parameters;
     QHash<QString, QImage> imageMap;
     Effects::ImageTypeMap imageTypeMap;
     unsigned int renderCount;
+    QSize videoSize;
 };
 
 }

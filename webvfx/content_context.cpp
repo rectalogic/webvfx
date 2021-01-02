@@ -8,10 +8,11 @@
 namespace WebVfx
 {
 
-ContentContext::ContentContext(QObject* parent, Parameters* parameters)
+ContentContext::ContentContext(QObject* parent, Parameters* parameters, QSize size)
     : QObject(parent)
     , parameters(parameters)
     , renderCount(0)
+    , videoSize(size)
 {
 }
 
@@ -76,6 +77,13 @@ QUrl ContentContext::getImageUrl(const QString& name)
     // Include renderCount in URL - this makes the URL unique
     // so QML will actually reload the image.
     return QUrl::fromEncoded(QString("image://webvfx/%1/%2").arg(name).arg(renderCount).toLatin1(), QUrl::StrictMode);
+}
+
+void ContentContext::setVideoSize(QSize size) {
+    if (videoSize == size)
+        return;
+    videoSize = size;
+    emit videoSizeChanged();
 }
 
 }
