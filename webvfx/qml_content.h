@@ -88,7 +88,7 @@ Q_SIGNALS:
     void imageChanged(QImage image);
 
 private:
-    void updateTexture();
+    void updateTexture(QImage image);
 
     QImage m_image;
 };
