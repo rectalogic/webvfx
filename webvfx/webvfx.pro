@@ -32,7 +32,7 @@ CONFIG += shared thread qmltypes
 QT += core gui gui-private qml quick quick-private quick3d
 QTPLUGIN.platforms += qoffscreen
 
-QML_IMPORT_NAME = org.webvfx.WebVfx
+QML_IMPORT_NAME = org.webvfx.WebVfx.native
 QML_IMPORT_MAJOR_VERSION = 1
 
 TARGET = webvfx

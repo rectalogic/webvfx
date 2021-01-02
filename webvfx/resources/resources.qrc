@@ -7,6 +7,7 @@
      <file>org/webvfx/WebVfx/BlenderItem3D.qml</file>
      <file>org/webvfx/WebVfx/TextTexture.qml</file>
      <file>org/webvfx/WebVfx/Video.qml</file>
+     <file>org/webvfx/WebVfx/VideoTexture.qml</file>
      <file>webvfx/scripts/animation.js</file>
      <file>webvfx/scripts/easing.js</file>
      <file>webvfx/scripts/shaderkit.js</file>
