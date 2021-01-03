@@ -10,6 +10,8 @@ import org.webvfx.WebVfx 1.0
     environment: SceneEnvironment {
         clearColor: "skyblue"
         backgroundMode: SceneEnvironment.Color
+        antialiasingMode: SceneEnvironment.MSAA
+        antialiasingQuality: SceneEnvironment.High
     }
 
     PerspectiveCamera {
@@ -26,28 +28,23 @@ import org.webvfx.WebVfx 1.0
         position: Qt.vector3d(0, -200, 0)
         source: "#Cube"
         materials: [ DefaultMaterial {
-                diffuseMap: sourceTexture
+                diffuseMap: VideoTexture {
+                    imageName: "SourceImage"
+                    imageType: webvfx.SourceImageType
+                }
             }
         ]
-    }
-    VideoTexture {
-        id: sourceTexture
-        imageName: "SourceImage"
-        imageType: webvfx.SourceImageType
     }
 
     Model {
         position: Qt.vector3d(0, 150, 0)
         source: "#Sphere"
-
         materials: [ DefaultMaterial {
-                diffuseMap: targetTexture
+                diffuseMap: VideoTexture {
+                    imageName: "TargetImage"
+                    imageType: webvfx.TargetImageType
+                }
             }
         ]
-    }
-    VideoTexture {
-        id: targetTexture
-        imageName: "TargetImage"
-        imageType: webvfx.TargetImageType
     }
 }
