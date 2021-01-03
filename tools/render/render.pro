@@ -10,9 +10,12 @@ SOURCES += render.cpp
 CONFIG += console
 mac:CONFIG -= app_bundle
 TARGET = webvfx_render
-LIBS += -L$$DESTDIR -lwebvfx
 
-QMAKE_RPATHDIR += $$PREFIX/lib
+DEPENDPATH += $$PWD/../../webvfx
+CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../../webvfx/release/ -lwebvfx
+else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../../webvfx/debug/ -lwebvfx
 
-target.path = $$PREFIX/bin
+QMAKE_RPATHDIR += $$[QT_INSTALL_LIBS]
+
+target.path = $$[QT_INSTALL_BINS]
 INSTALLS += target

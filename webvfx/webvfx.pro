@@ -37,7 +37,7 @@ QML_IMPORT_MAJOR_VERSION = 1
 
 TARGET = webvfx
 
-target.path = $$PREFIX/lib
+target.path = $$[QT_INSTALL_LIBS]
 INSTALLS += target
 
 QMAKE_SONAME_PREFIX = @rpath

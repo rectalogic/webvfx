@@ -2,9 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-isEmpty(PREFIX) {
-    message("Install PREFIX not set, using default.")
-}
 include(common.pri)
 
 TEMPLATE = subdirs

@@ -15,9 +15,12 @@ FORMS += viewer.ui
 QT += widgets quick
 !mac:TARGET = webvfx_viewer
 mac:TARGET = "WebVfx Viewer"
-LIBS += -L$$DESTDIR -lwebvfx
 
-QMAKE_RPATHDIR += $$PREFIX/lib
+DEPENDPATH += $$PWD/../webvfx
+CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../webvfx/release/ -lwebvfx
+else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../webvfx/debug/ -lwebvfx
 
-target.path = $$PREFIX/bin
+QMAKE_RPATHDIR += $$[QT_INSTALL_LIBS]
+
+target.path = $$[QT_INSTALL_BINS]
 INSTALLS += target

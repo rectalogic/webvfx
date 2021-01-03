@@ -24,9 +24,11 @@ PKGCONFIG += mlt-framework
 
 TARGET = mltwebvfx
 
-LIBS += -L$$DESTDIR -lwebvfx
+DEPENDPATH += $$PWD/../webvfx
+CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../webvfx/release/ -lwebvfx
+else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../webvfx/debug/ -lwebvfx
 
-QMAKE_RPATHDIR += $$PREFIX/lib
+QMAKE_RPATHDIR += $$[QT_INSTALL_LIBS]
 
 # Install in mlt plugins directory
 target.path = $$system(pkg-config --variable=libdir mlt-framework)/mlt
