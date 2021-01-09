@@ -2,6 +2,8 @@
 
 export DISPLAY=${DISPLAY:-:0}
 "${VFX_MELT:-melt}" -verbose "${VFX_SOURCE:-red.mlt}" out=299 \
-    -filter webvfx:../examples/filter-banner.html out=299 \
+    -filter webvfx:../examples/filter-banner.qml out=299 \
         Title="${VFX_TITLE:-WebVfx Banner Demo}" \
+        FadeIn="${VFX_FADEIN:-20}" \
+        FadeOut="${VFX_FADEOUT:-20}" \
     $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}"))
