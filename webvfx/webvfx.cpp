@@ -28,13 +28,6 @@ static QMutex s_initializedMutex;
 static pthread_t s_uiThread;
 typedef QPair<QMutex*, QWaitCondition*> ThreadSync;
 
-class NullAnimationDriver : public QAnimationDriver
-{
-public:
-    void advance() override
-    {}
-};
-
 void* uiEventLoop(void* data)
 {
     ThreadSync* threadSync = static_cast<ThreadSync*>(data);
@@ -43,10 +36,6 @@ void* uiEventLoop(void* data)
     int argc = 3;
     QGuiApplication app(argc, (char **)argv);
     s_ownApp = true;
-
-    // Disable default driver, we drive manually in the effect qml files
-    NullAnimationDriver animationDriver;
-    animationDriver.install();
 
     // Signal s_initialized() that app has been created
     {

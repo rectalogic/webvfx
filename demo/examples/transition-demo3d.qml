@@ -38,6 +38,24 @@ import org.webvfx.WebVfx 1.0
         ]
     }
 
+    Node {
+        position: Qt.vector3d(100, 100, 0)
+        Rectangle {
+            anchors.horizontalCenter: parent.horizontalCenter
+            color: "blue"
+            width: text3d.width + 20
+            height: text3d.height + 20
+            Text {
+                id: text3d
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                text: webvfx.getStringParameter("title")
+                font.pointSize: 32
+                color: "white"
+            }
+        }
+    }
+
     Model {
         position: Qt.vector3d(200, 200, 0)
         source: "#Cube"
