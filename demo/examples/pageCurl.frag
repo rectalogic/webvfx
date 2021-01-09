@@ -1,75 +1,18 @@
-<html>
-<head>
-<style type="text/css">
-body, html {
-    margin: 0;
-    width: 100%;
-    height: 100%;
-}
-#canvas {
-    width: 100%;
-    height: 100%;
-}
-</style>
+// PageCurl fragment shader is based on code from http://labs.calyptus.eu/pagecurl/
+// Copyright (c) 2010 Calyptus Life AB <http://calyptus.eu>
+// Licensed under The MIT License:
+// http://www.opensource.org/licenses/mit-license.php
 
-<script type="text/javascript" src="qrc:/webvfx/scripts/shaderkit.js"></script>
-<script type="text/javascript" src="qrc:/webvfx/scripts/easing.js"></script>
-
-<script type="text/javascript">
-function PageCurl() {
-    var renderer = new ShaderKit.Renderer(document.getElementById("canvas"));
-    this.shader = new ShaderKit.Shader(renderer, ShaderKit.Shader.loadShader("pageCurl"));
-    this.easeCurl = new WebVfx.Easing.Sinusoidal(0, 1, 1);
-}
-
-PageCurl.prototype.render = function (time) {
-    var shader = this.shader;
-    shader.updateUniform("time", this.easeCurl.easeOut(time));
-    shader.updateUniform("sourceTex",
-                         webvfx.getImage('sourceImage').toImageData());
-    shader.updateUniform("targetTex",
-                         webvfx.getImage('targetImage').toImageData());
-    shader.renderer.render(shader);
-}
-
-function init() {
-    try {
-        resize();
-        var pageCurl = new PageCurl();
-        webvfx.renderRequested.connect(pageCurl, PageCurl.prototype.render);
-        webvfx.imageTypeMap = { "sourceImage" : webvfx.SourceImageType,
-                                "targetImage" : webvfx.TargetImageType };
-        webvfx.readyRender(true);
-    } catch (e) {
-        console.warn(e);
-        webvfx.readyRender(false);
-    }
-}
-
-function resize() {
-    var canvas = document.getElementById("canvas");
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-
-window.addEventListener("load", init, false);
-window.addEventListener("resize", resize, false);
-</script>
-
-
-<!--
-PageCurl fragment shader is based on code from http://labs.calyptus.eu/pagecurl/
-Copyright (c) 2010 Calyptus Life AB <http://calyptus.eu>
-Licensed under The MIT License:
-http://www.opensource.org/licenses/mit-license.php
--->
-<script id="pageCurl" type="x-shader/x-fragment">
-precision mediump float;
-
-varying vec2 texCoord;
-uniform sampler2D sourceTex;
-uniform sampler2D targetTex;
-uniform float time; // Ranges from 0.0 to 1.0
+#version 440
+layout(location = 0) in vec2 qt_TexCoord0;
+layout(location = 0) out vec4 fragColor;
+layout(std140, binding = 0) uniform buf {
+    mat4 qt_Matrix;
+    float qt_Opacity;
+    float time;  // Ranges from 0.0 to 1.0
+};
+layout(binding = 1) uniform sampler2D sourceTex;
+layout(binding = 2) uniform sampler2D targetTex;
 
 const float MIN_AMOUNT = -0.16;
 const float MAX_AMOUNT = 1.3;
@@ -117,12 +60,12 @@ vec4 seeThrough(float yc, vec2 p, mat3 rotation, mat3 rrotation) {
     vec3 point = hitPoint(hitAngle, yc, rotation * vec3(p, 1.0), rrotation);
 
     if (yc <= 0.0 && (point.x < 0.0 || point.y < 0.0 || point.x > 1.0 || point.y > 1.0)) {
-        return texture2D(targetTex, texCoord);
+        return texture(targetTex, qt_TexCoord0);
     }
 
-    if (yc > 0.0) return texture2D(sourceTex, p);
+    if (yc > 0.0) return texture(sourceTex, p);
 
-    vec4 color = texture2D(sourceTex, point.xy);
+    vec4 color = texture(sourceTex, point.xy);
     vec4 tcolor = vec4(0.0);
 
     return antiAlias(color, tcolor, distanceToEdge(point));
@@ -142,7 +85,7 @@ vec4 seeThroughWithShadow(float yc, vec2 p, vec3 point, mat3 rotation, mat3 rrot
 }
 
 vec4 backside(float yc, vec3 point) {
-    vec4 color = texture2D(sourceTex, point.xy);
+    vec4 color = texture(sourceTex, point.xy);
     float gray = (color.r + color.b + color.g) / 15.0;
     gray += (8.0 / 10.0) * (pow(1.0 - abs(yc / cylinderRadius), 2.0 / 10.0) / 2.0 + (5.0 / 10.0));
     color.rgb = vec3(gray);
@@ -165,7 +108,7 @@ vec4 behindSurface(float yc, vec3 point, mat3 rrotation) {
     } else
         shado = 0.0;
 
-    return vec4(texture2D(targetTex, texCoord).rgb - shado, 1.0);
+    return vec4(texture(targetTex, qt_TexCoord0).rgb - shado, 1.0);
 }
 
 void main(void) {
@@ -188,19 +131,19 @@ void main(void) {
         0.15, -0.5, 1
     );
 
-    vec3 point = rotation * vec3(texCoord, 1.0);
+    vec3 point = rotation * vec3(qt_TexCoord0, 1.0);
 
     float yc = point.y - cylinderCenter;
 
     if (yc < -cylinderRadius) {
         // Behind surface
-        gl_FragColor = behindSurface(yc, point, rrotation);
+        fragColor = behindSurface(yc, point, rrotation);
         return;
     }
 
     if (yc > cylinderRadius) {
         // Flat surface
-        gl_FragColor = texture2D(sourceTex, texCoord);
+        fragColor = texture(sourceTex, qt_TexCoord0);
         return;
     }
 
@@ -208,14 +151,14 @@ void main(void) {
 
     float hitAngleMod = mod(hitAngle, 2.0 * PI);
     if ((hitAngleMod > PI && amount < 0.5) || (hitAngleMod > PI/2.0 && amount < 0.0)) {
-        gl_FragColor = seeThrough(yc, texCoord, rotation, rrotation);
+        fragColor = seeThrough(yc, qt_TexCoord0, rotation, rrotation);
         return;
     }
 
     point = hitPoint(hitAngle, yc, point, rrotation);
 
     if (point.x < 0.0 || point.y < 0.0 || point.x > 1.0 || point.y > 1.0) {
-        gl_FragColor = seeThroughWithShadow(yc, texCoord, point, rotation, rrotation);
+        fragColor = seeThroughWithShadow(yc, qt_TexCoord0, point, rotation, rrotation);
         return;
     }
 
@@ -228,20 +171,13 @@ void main(void) {
         shado *= 0.5;
         otherColor = vec4(0.0, 0.0, 0.0, shado);
     } else {
-        otherColor = texture2D(sourceTex, texCoord);
+        otherColor = texture(sourceTex, qt_TexCoord0);
     }
 
     color = antiAlias(color, otherColor, cylinderRadius - abs(yc));
 
-    vec4 cl = seeThroughWithShadow(yc, texCoord, point, rotation, rrotation);
+    vec4 cl = seeThroughWithShadow(yc, qt_TexCoord0, point, rotation, rrotation);
     float dist = distanceToEdge(point);
 
-    gl_FragColor = antiAlias(color, cl, dist);
+    fragColor = antiAlias(color, cl, dist) * qt_Opacity;
 }
-</script>
-
-</head>
-<body>
-    <canvas id="canvas"></canvas>
-</body>
-</html>
