@@ -18,7 +18,7 @@ Rectangle {
     Video {
         id: targetVideo
         imageName: "TargetImage"
-        imageType: webvfx.SourceImageType
+        imageType: webvfx.TargetImageType
         width: parent.width
         height: parent.height
         clip: true
