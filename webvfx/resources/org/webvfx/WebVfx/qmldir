@@ -1,5 +1,3 @@
-AnimatedCamera 1.0 AnimatedCamera.qml
 BlenderItem3D 1.0 BlenderItem3D.qml
-TextTexture 1.0 TextTexture.qml
 Video 1.0 Video.qml
 VideoTexture 1.0 VideoTexture.qml
