@@ -253,7 +253,7 @@ bool QmlContent::renderContent(double time, Image* renderImage)
         QPainter painter(&destImage);
         if (rhi->isYUpInFramebuffer()) {
             painter.scale(1, -1);
-            painter.translate(0, readResult.pixelSize.height());
+            painter.translate(0, -readResult.pixelSize.height());
         }
         painter.drawImage(0, 0, sourceImage);
         painter.end();

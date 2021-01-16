@@ -40,4 +40,4 @@ TARGET = webvfx
 target.path = $$[QT_INSTALL_LIBS]
 INSTALLS += target
 
-QMAKE_SONAME_PREFIX = @rpath
+macx:QMAKE_SONAME_PREFIX = @rpath
