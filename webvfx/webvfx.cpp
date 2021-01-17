@@ -32,8 +32,13 @@ void* uiEventLoop(void* data)
 {
     ThreadSync* threadSync = static_cast<ThreadSync*>(data);
 
-    static const char * argv[] = {"", "-platform", "offscreen"};
-    int argc = 3;
+    static const char * argv[] =
+#ifdef Q_WS_MAC
+        {"", "-platform", "offscreen"};
+#else
+        {""};
+#endif
+    int argc = sizeof(argv) / sizeof(argv[0]);
     QGuiApplication app(argc, (char **)argv);
     s_ownApp = true;
 

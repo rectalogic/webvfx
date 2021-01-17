@@ -30,7 +30,7 @@ RESOURCES += resources/resources.qrc
 
 CONFIG += shared thread qmltypes
 QT += core gui gui-private qml quick quick-private quick3d
-QTPLUGIN.platforms += qoffscreen
+macx:QTPLUGIN.platforms += qoffscreen
 
 QML_IMPORT_NAME = org.webvfx.WebVfx.native
 QML_IMPORT_MAJOR_VERSION = 1

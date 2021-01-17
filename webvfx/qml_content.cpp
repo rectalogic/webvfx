@@ -240,10 +240,8 @@ bool QmlContent::renderContent(double time, Image* renderImage)
     QQuickRenderControlPrivate *renderControlPrivate = QQuickRenderControlPrivate::get(renderControl);
     QRhi *rhi = renderControlPrivate->rhi;
 
-    bool readCompleted = false;
     QRhiReadbackResult readResult;
-    readResult.completed = [&readCompleted, &readResult, &rhi, &renderImage] {
-        readCompleted = true;
+    readResult.completed = [&readResult, &rhi, &renderImage] {
         QImage sourceImage(reinterpret_cast<const uchar *>(readResult.data.constData()),
                            readResult.pixelSize.width(), readResult.pixelSize.height(),
                            QImage::Format_RGBA8888_Premultiplied);
