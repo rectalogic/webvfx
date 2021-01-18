@@ -8,3 +8,5 @@ doxydoc
 *.qmltypes
 *_metatypes.json
 *_qmltyperegistrations.cpp
+demo/examples/*.qsb
+demo/mlt/*.mov

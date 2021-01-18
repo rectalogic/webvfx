@@ -1,8 +1,9 @@
 #!/bin/bash
 
+BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 export DISPLAY=${DISPLAY:-:0}
 melt -verbose "${VFX_SOURCE:-red.mlt}" out=349 \
     -track -blank 69 \
     "${VFX_TARGET:-blue.mlt}" out=349 \
-    -transition webvfx:../examples/transition-simple.qml in=70 out=349 \
-    $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}"))
+    -transition webvfx:${BASEDIR}/../examples/transition-simple.qml in=70 out=349 \
+    $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}")) mlt_profile=${BASEDIR}/webvfx_profile

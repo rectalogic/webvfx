@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+if [[ ${#} -eq 0 ]]; then
+    echo "Usage: $(basename $0) [-d DURATION] [-c COLOR] FILE.mov" 2>&1
+    exit 1
+fi
+
+while getopts "d:c:" arg; do
+    case ${arg} in
+      c) COLOR="${OPTARG}" ;;
+      d) DURATION="${OPTARG}" ;;
+    esac
+done
+shift "$((OPTIND-1))"
+FILE=$1
+
+ffmpeg -f lavfi -i testsrc=duration=${DURATION:-10}:size=640x360:rate=30:decimals=2 -f mov -vcodec rawvideo -pix_fmt uyvy422 -framerate 30 -vtag yuvs -vf drawbox=color=${COLOR:-white}:t=ih/16 -y ${FILE}

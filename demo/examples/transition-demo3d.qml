@@ -112,7 +112,7 @@ import org.webvfx.WebVfx 1.0
             }
             Keyframe {
                 frame: 500
-                value: 200
+                value: 250
             }
             Keyframe {
                 frame: 1000

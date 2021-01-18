@@ -1,12 +1,13 @@
 #!/bin/bash
 
+BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 export DISPLAY=${DISPLAY:-:0}
-FRAG=../examples/pageCurl.frag
+FRAG=${BASEDIR}/../examples/pageCurl.frag
 if [ ! -f "${FRAG}.qsb" ]; then
     qsb --glsl "100 es,120,150" --hlsl 50 --msl 12 -o "${FRAG}.qsb" "$FRAG"
 fi
 melt -verbose "${VFX_SOURCE:-red.mlt}" out=349 \
     -track -blank 69 \
     "${VFX_TARGET:-blue.mlt}" out=349 \
-    -transition webvfx:../examples/transition-shader-pagecurl.qml in=70 out=349 \
-    $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}"))
+    -transition webvfx:${BASEDIR}/../examples/transition-shader-pagecurl.qml in=70 out=349 \
+    $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}")) mlt_profile=${BASEDIR}/webvfx_profile

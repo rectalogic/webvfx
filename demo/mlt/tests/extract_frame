@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+if [[ ${#} -eq 0 ]]; then
+    echo "Usage: $(basename $0) [-s SEEKTIME] FILE.png" 2>&1
+    exit 1
+fi
+
+while getopts "s:" arg; do
+    case ${arg} in
+      s) SEEK="${OPTARG}" ;;
+    esac
+done
+shift "$((OPTIND-1))"
+FILE=$1
+
+ffmpeg -f rawvideo -video_size 640x360 -pixel_format rgb24 -framerate 30 -i - -ss ${SEEK:-00:00:03} -f image2 -vframes 1 -y "${FILE}"

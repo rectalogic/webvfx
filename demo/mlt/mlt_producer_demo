@@ -1,7 +1,8 @@
 #!/bin/bash
 
+BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 export DISPLAY=${DISPLAY:-:0}
 melt -verbose \
-    -producer webvfx:../examples/producer-demo.qml length=199 \
+    -producer webvfx:${BASEDIR}/../examples/producer-demo.qml length=199 \
         title="${VFX_TITLE:-WebVfx Producer Demo}" \
-    $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}"))
+    $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}")) mlt_profile=${BASEDIR}/webvfx_profile

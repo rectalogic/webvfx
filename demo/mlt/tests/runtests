@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+OUTPUT_DIR=${1:?Usage: $(basename $0) OUTPUT_DIR}
+
+BASEDIR=$(dirname "${BASH_SOURCE[0]}")
+
+export VFX_SOURCE=${BASEDIR}/../red.mov
+export VFX_TARGET=${BASEDIR}/../blue.mov
+export VFX_EXTRA=${BASEDIR}/../green.mov
+export VFX_CONSUMER=${BASEDIR}/../consumer_raw
+
+if [ ! -f "$VFX_SOURCE" ]; then
+    ${BASEDIR}/testsrc -d 12 -c red "$VFX_SOURCE"
+fi
+if [ ! -f "$VFX_TARGET" ]; then
+    ${BASEDIR}/testsrc -d 12 -c blue "$VFX_TARGET"
+fi
+if [ ! -f "$VFX_EXTRA" ]; then
+    ${BASEDIR}/testsrc -d 12 -c green "$VFX_EXTRA"
+fi
+
+${BASEDIR}/../mlt_filter_banner | ${BASEDIR}/extract_frame -s 00:00:04 "${OUTPUT_DIR}/filter_banner.png"
+${BASEDIR}/../mlt_filter_demo | ${BASEDIR}/extract_frame -s 00:00:04 "${OUTPUT_DIR}/filter_demo.png"
+${BASEDIR}/../mlt_producer_demo | ${BASEDIR}/extract_frame -s 00:00:04 "${OUTPUT_DIR}/producer_demo.png"
+${BASEDIR}/../mlt_transition_demo3d | ${BASEDIR}/extract_frame -s 00:00:06 "${OUTPUT_DIR}/transition_demo3d.png"
+${BASEDIR}/../mlt_transition_shader_crosszoom | ${BASEDIR}/extract_frame -s 00:00:04 "${OUTPUT_DIR}/transition_shader_crosszoom.png"
+${BASEDIR}/../mlt_transition_shader_pagecurl | ${BASEDIR}/extract_frame -s 00:00:07 "${OUTPUT_DIR}/transition_shader_pagecurl.png"
+${BASEDIR}/../mlt_transition_simple | ${BASEDIR}/extract_frame -s 00:00:05 "${OUTPUT_DIR}/transition_simple.png"

@@ -1,0 +1,1 @@
+-consumer avformat f=rawvideo vcodec=rawvideo pix_fmt=rgb24 r=30 width=640 height=360 an=1

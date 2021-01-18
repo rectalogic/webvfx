@@ -1,1 +1,1 @@
--consumer avformat target=\"${VFX_OUTPUT:-melt.mov}\" f=mov vcodec=rawvideo pix_fmt=uyvy422 vtag=yuvs an=1 rescale=lanczos
+-consumer avformat target=\"${VFX_OUTPUT:-melt.mov}\" f=mov vcodec=rawvideo pix_fmt=uyvy422 vtag=yuvs an=1

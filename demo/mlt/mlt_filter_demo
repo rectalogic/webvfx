@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
+BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 export DISPLAY=${DISPLAY:-:0}
 melt -verbose "${VFX_SOURCE:-red.mlt}" out=299 \
-    -filter webvfx:../examples/filter-demo.qml out=299 \
-    $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}")) mlt_profile=webvfx_profile
+    -filter webvfx:${BASEDIR}/../examples/filter-demo.qml out=299 \
+    $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}")) mlt_profile=${BASEDIR}/webvfx_profile
