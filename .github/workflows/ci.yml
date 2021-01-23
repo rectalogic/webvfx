@@ -25,7 +25,7 @@ jobs:
     - name: Test
       run: |
         docker run --rm --init \
-          --mount="type=bind,src=${PWD},dst=/webvfx,consistency=cached" \
+          --mount="type=bind,src=${{ github.workspace }},dst=/webvfx,consistency=cached" \
           --workdir=/webvfx \
           webvfx /webvfx/linux.sh
     - name: Upload Failed Artifacts
@@ -88,6 +88,9 @@ jobs:
         qmake ..
         sudo make install
     - name: Test
+      # Disable for now, no GPU on macos
+      # https://github.com/actions/virtual-environments/issues/1779#issuecomment-707071183
+      if: false
       run: |
         cd demo/mlt/tests
         mkdir -p fixtures/output
