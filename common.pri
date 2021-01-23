@@ -15,3 +15,5 @@ CONFIG(debug, debug|release) {
 }
 
 INCLUDEPATH += $$PWD
+
+DEFINES += QT_DEPRECATED_WARNINGS

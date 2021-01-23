@@ -1,0 +1,30 @@
+name: linux
+on:
+  push:
+    branches:
+      - '*'
+jobs:
+  linux:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Cache Docker image
+      uses: satackey/action-docker-layer-caching@v0.0.11
+      continue-on-error: true
+    - name: Build Docker image
+      run: |
+        cd docker
+        DOCKER_BUILDKIT=1 docker build --tag webvfx .
+    - name: Test
+      run: |
+        docker run --rm --init \
+          --mount="type=bind,src=${PWD},dst=/webvfx,consistency=cached" \
+          --workdir=/webvfx \
+          webvfx /webvfx/linux.sh
+    - name: Upload Failed Artifacts
+      if: failure()
+      uses: actions/upload-artifact@v2
+      with:
+        name: failed-images
+        path: demo/mlt/tests/fixtures/output
