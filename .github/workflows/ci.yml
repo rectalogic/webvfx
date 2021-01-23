@@ -51,19 +51,20 @@ jobs:
       uses: actions/cache@v2
       id: qt6-cache
       with:
-        path: qt6-build
-        key: ${{ runner.os }}-qt-${{ env.QT_VER }}
+        path: qt-everywhere-src-${QT_VER}
+        key: ${{ runner.os }}-qt6-${{ env.QT_VER }}
     - name: Build Qt6
       if: steps.qt6-cache.outputs.cache-hit != 'true'
       run: |
         brew install cmake ninja
         curl -L http://download.qt.io/official_releases/qt/6.0/${QT_VER}/single/qt-everywhere-src-${QT_VER}.tar.xz | tar xJf -
-        mkdir qt6-build
-        cd qt6-build
-        ../qt-everywhere-src-${QT_VER}/configure && cmake --build . --parallel
+        cd qt-everywhere-src-${QT_VER}
+        ./configure
+        cmake --build . --parallel
     - name: Install Qt6
       run: |
-        cd qt6-build && sudo cmake --install .
+        cd qt-everywhere-src-${QT_VER}
+        sudo cmake --install .
     - name: Cache MLT
       uses: actions/cache@v2
       id: mlt-cache
