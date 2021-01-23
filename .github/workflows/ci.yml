@@ -11,13 +11,17 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Cache Docker image
-      uses: satackey/action-docker-layer-caching@v0.0.11
-      continue-on-error: true
+    - name: Cache Docker layers
+      uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
     - name: Build Docker image
       run: |
         cd docker
-        DOCKER_BUILDKIT=1 docker build --tag webvfx .
+        docker buildx build --tag webvfx .
     - name: Test
       run: |
         docker run --rm --init \
