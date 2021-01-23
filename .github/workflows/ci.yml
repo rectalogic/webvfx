@@ -27,7 +27,7 @@ jobs:
         docker run --rm --init \
           --mount="type=bind,src=${{ github.workspace }},dst=/webvfx,consistency=cached" \
           --workdir=/webvfx \
-          webvfx /webvfx/linux.sh
+          webvfx /webvfx/.github/workflows/linux.sh
     - name: Upload Failed Artifacts
       if: failure()
       uses: actions/upload-artifact@v2
