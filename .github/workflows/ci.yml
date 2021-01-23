@@ -39,13 +39,14 @@ jobs:
     runs-on: macos-10.15
     env:
       QT_VER: 6.0.0
+      MLT_VER: 6.24.0
     steps:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Provision
       run: |
         sudo xcode-select -s "/Applications/Xcode_11.7.app"
-        brew install imagemagick pkg-config mlt
+        brew install imagemagick pkg-config ffmpeg
     - name: Cache Qt6
       uses: actions/cache@v2
       id: qt6-cache
@@ -63,6 +64,23 @@ jobs:
     - name: Install Qt6
       run: |
         cd qt6-build && sudo cmake --install .
+    - name: Cache MLT
+      uses: actions/cache@v2
+      id: mlt-cache
+      with:
+        path: mlt-${MLT_VER}
+        key: ${{ runner.os }}-mlt-${{ env.MLT_VER }}
+    - name: Build MLT
+      if: steps.mlt-cache.outputs.cache-hit != 'true'
+      run: |
+        curl -L https://github.com/mltframework/mlt/releases/download/v${MLT_VER}/mlt-${MLT_VER}.tar.gz | tar xzf -
+        cd mlt-${MLT_VER}
+        ./configure
+        make
+    - name: Install MLT
+      run: |
+        cd mlt-${MLT_VER}
+        sudo make install
     - name: Install WebVfx
       run: |
         mkdir build
