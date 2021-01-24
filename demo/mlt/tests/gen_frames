@@ -25,4 +25,5 @@ ${BASEDIR}/../mlt_producer_demo | ${BASEDIR}/extract_frame -s 00:00:04 "${OUTPUT
 ${BASEDIR}/../mlt_transition_demo3d | ${BASEDIR}/extract_frame -s 00:00:06 "${OUTPUT_DIR}/transition_demo3d.png"
 ${BASEDIR}/../mlt_transition_shader_crosszoom | ${BASEDIR}/extract_frame -s 00:00:04 "${OUTPUT_DIR}/transition_shader_crosszoom.png"
 ${BASEDIR}/../mlt_transition_shader_pagecurl | ${BASEDIR}/extract_frame -s 00:00:07 "${OUTPUT_DIR}/transition_shader_pagecurl.png"
-${BASEDIR}/../mlt_transition_simple | ${BASEDIR}/extract_frame -s 00:00:05 "${OUTPUT_DIR}/transition_simple.png"
+${BASEDIR}/../mlt_transition_simple | ${BASEDIR}/extract_frame -s 00:00:10 "${OUTPUT_DIR}/transition_simple-1.png"
+${BASEDIR}/../mlt_transition_simple | ${BASEDIR}/extract_frame -s 00:00:17 "${OUTPUT_DIR}/transition_simple-2.png"

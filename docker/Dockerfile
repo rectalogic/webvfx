@@ -39,5 +39,9 @@ RUN export MLT_VER=6.24.0 \
 
 RUN ldconfig
 
+RUN mkdir -p /webvfx
+VOLUME /webvfx
+WORKDIR /webvfx
+
 ENTRYPOINT ["/usr/bin/xvfb-run"]
-CMD ["/usr/local/bin/melt"]
+CMD ["/webvfx/docker/runtests.sh"]

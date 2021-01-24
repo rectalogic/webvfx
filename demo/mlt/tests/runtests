@@ -13,7 +13,7 @@ for fixture in "${FIXTURE_DIR}/"*.png; do
     name=$(basename "$fixture")
     # ImageMagick compare
     if ! compare -metric MAE "$fixture" "${OUTPUT_DIR}/${name}" "${OUTPUT_DIR}/compare/${name}"; then
-        FAILED+=(name)
+        FAILED+=($name)
     fi
 done
 if [ ${#FAILED[*]} != 0 ]; then

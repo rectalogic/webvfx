@@ -18,16 +18,9 @@ jobs:
         key: ${{ runner.os }}-buildx-${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-buildx-
-    - name: Build Docker image
-      run: |
-        cd docker
-        docker buildx build --tag webvfx .
     - name: Test
       run: |
-        docker run --rm --init \
-          --mount="type=bind,src=${{ github.workspace }},dst=/webvfx,consistency=cached" \
-          --workdir=/webvfx \
-          webvfx /webvfx/.github/workflows/linux.sh
+        docker/docker-run.sh "${{ github.workspace }}"
     - name: Upload Failed Artifacts
       if: failure()
       uses: actions/upload-artifact@v2
