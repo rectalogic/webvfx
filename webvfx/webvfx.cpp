@@ -33,7 +33,7 @@ void* uiEventLoop(void* data)
     ThreadSync* threadSync = static_cast<ThreadSync*>(data);
 
     static const char * argv[] =
-#ifdef Q_WS_MAC
+#ifdef Q_OS_MACOS
         {"", "-platform", "offscreen"};
 #else
         {""};
@@ -71,12 +71,6 @@ bool initialize()
     // Spawn a GUI application thread if qApp doesn't already exist.
     if (!qApp) {
         {
-#ifdef Q_WS_X11
-            if (std::getenv("DISPLAY") == 0) {
-                log("DISPLAY environment variable not set");
-                return false;
-            }
-#endif
             QMutex uiThreadMutex;
             QWaitCondition uiThreadCondition;
             ThreadSync uiThreadSync(&uiThreadMutex, &uiThreadCondition);
