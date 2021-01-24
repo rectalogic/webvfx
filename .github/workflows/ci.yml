@@ -20,7 +20,8 @@ jobs:
           ${{ runner.os }}-buildx-
     - name: Test
       run: |
-        docker/docker-run.sh "${{ github.workspace }}"
+        # docker/docker-run.sh "${{ github.workspace }}"
+        docker buildx build --tag webvfx docker
     - name: Upload Failed Artifacts
       if: failure()
       uses: actions/upload-artifact@v2
