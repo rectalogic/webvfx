@@ -18,9 +18,9 @@ jobs:
         key: ${{ runner.os }}-buildx-${{ github.sha }}
         restore-keys: |
           ${{ runner.os }}-buildx-
-    # - name: Test
-    #   run: |
-    #     docker/docker-run.sh "${{ github.workspace }}"
+    - name: Test
+      run: |
+        docker/docker-run.sh "${{ github.workspace }}"
     - name: Upload Failed Artifacts
       if: failure()
       uses: actions/upload-artifact@v2
@@ -75,20 +75,20 @@ jobs:
       run: |
         cd mlt-${MLT_VER}
         sudo make install
-    # - name: Install WebVfx
-    #   run: |
-    #     mkdir build
-    #     cd build
-    #     qmake ..
-    #     sudo make install
-    # - name: Test
-    #   # Disable for now, no GPU on macos
-    #   # https://github.com/actions/virtual-environments/issues/1779#issuecomment-707071183
-    #   if: false
-    #   run: |
-    #     cd demo/mlt/tests
-    #     mkdir -p fixtures/output
-    #     ./runtests fixtures/macos fixtures/output
+    - name: Install WebVfx
+      run: |
+        mkdir build
+        cd build
+        qmake ..
+        sudo make install
+    - name: Test
+      # Disable for now, no GPU on macos
+      # https://github.com/actions/virtual-environments/issues/1779#issuecomment-707071183
+      if: false
+      run: |
+        cd demo/mlt/tests
+        mkdir -p fixtures/output
+        ./runtests fixtures/macos fixtures/output
     - name: Failed Artifacts
       if: failure()
       uses: actions/upload-artifact@v2
