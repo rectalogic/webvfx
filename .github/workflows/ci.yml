@@ -44,7 +44,7 @@ jobs:
       uses: actions/cache@v2
       id: qt6-cache
       with:
-        path: qt-everywhere-src-${QT_VER}
+        path: qt6-install-${QT_VER}.tar
         key: ${{ runner.os }}-qt6-${{ env.QT_VER }}
     - name: Build Qt6
       if: steps.qt6-cache.outputs.cache-hit != 'true'
@@ -54,15 +54,17 @@ jobs:
         cd qt-everywhere-src-${QT_VER}
         ./configure
         cmake --build . --parallel
+        mkdir -p /tmp/qt
+        DESTDIR=/tmp/qt cmake --install .
+        tar -C /tmp/qt -cf qt6-install-${QT_VER}.tar .
     - name: Install Qt6
       run: |
-        cd qt-everywhere-src-${QT_VER}
-        sudo cmake --install .
+        sudo tar -C / -xf qt6-install-${QT_VER}.tar
     - name: Cache MLT
       uses: actions/cache@v2
       id: mlt-cache
       with:
-        path: mlt-${MLT_VER}
+        path: mlt-${MLT_VER}.tar
         key: ${{ runner.os }}-mlt-${{ env.MLT_VER }}-v2
     - name: Build MLT
       if: steps.mlt-cache.outputs.cache-hit != 'true'
@@ -71,10 +73,12 @@ jobs:
         cd mlt-${MLT_VER}
         ./configure
         make
+        mkdir /tmp/mlt
+        DESTDIR=/tmp/mlt make install
+        tar -C /tmp/mlt -cf mlt-${MLT_VER}.tar .
     - name: Install MLT
       run: |
-        cd mlt-${MLT_VER}
-        sudo make install
+        sudo tar -C / -xf mlt-${MLT_VER}.tar
     - name: Install WebVfx
       run: |
         mkdir build
