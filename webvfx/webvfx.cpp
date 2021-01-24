@@ -31,13 +31,12 @@ typedef QPair<QMutex*, QWaitCondition*> ThreadSync;
 void* uiEventLoop(void* data)
 {
     ThreadSync* threadSync = static_cast<ThreadSync*>(data);
-
-    static const char * argv[] =
-#ifdef Q_OS_MACOS
+    const char * argv[] =
+    #ifdef Q_OS_MACOS
         {"", "-platform", "offscreen"};
-#else
+    #else
         {""};
-#endif
+    #endif
     int argc = sizeof(argv) / sizeof(argv[0]);
     QGuiApplication app(argc, (char **)argv);
     s_ownApp = true;
