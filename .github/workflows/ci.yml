@@ -63,7 +63,7 @@ jobs:
       id: mlt-cache
       with:
         path: mlt-${MLT_VER}
-        key: ${{ runner.os }}-mlt-${{ env.MLT_VER }}
+        key: ${{ runner.os }}-MLT-${{ env.MLT_VER }}
     - name: Build MLT
       if: steps.mlt-cache.outputs.cache-hit != 'true'
       run: |

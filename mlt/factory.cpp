@@ -12,6 +12,20 @@ extern "C" {
 }
 #include "factory.h"
 
+#ifdef Q_OS_MACOS
+#include <dlfcn.h>
+
+// macos does not support -znodelete linker option.
+// So dlopen ourself so we are never unloaded.
+// Unloading can crash since Qt global objects can be destructed after we are dlclosed
+void __attribute__((constructor)) init()
+{
+    Dl_info info;
+    if (dladdr((void *)init, &info)) {
+        dlopen(info.dli_fname, RTLD_NOW);
+    }
+}
+#endif
 
 namespace MLTWebVfx
 {

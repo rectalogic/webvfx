@@ -30,6 +30,8 @@ else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../webvfx/debug/ -lwebvfx
 
 QMAKE_RPATHDIR += $$[QT_INSTALL_LIBS]
 
+linux:QMAKE_LFLAGS += -Wl,-znodelete
+
 # Install in mlt plugins directory
 target.path = $$system(pkg-config --variable=libdir mlt-framework)/mlt
 INSTALLS += target
