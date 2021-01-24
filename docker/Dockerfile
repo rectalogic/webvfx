@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1.2
 FROM ubuntu:focal
 LABEL maintainer=rectalogic
 
