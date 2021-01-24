@@ -3,9 +3,9 @@
 BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 export DISPLAY=${DISPLAY:-:0}
 melt -verbose \
-    "${VFX_SOURCE:-red.mlt}" out=349 \
-    "${VFX_TARGET:-blue.mlt}" out=349 \
+    "${VFX_SOURCE:-${BASEDIR}/red.mlt}" out=349 \
+    "${VFX_TARGET:-${BASEDIR}/blue.mlt}" out=349 \
     -mix 120 -mixer webvfx:${BASEDIR}/../examples/transition-simple.qml \
-    "${VFX_EXTRA:-green.mlt}" out=349 \
+    "${VFX_EXTRA:-${BASEDIR}/green.mlt}" out=349 \
     -mix 120 -mixer webvfx:${BASEDIR}/../examples/transition-simple.qml \
-    $(eval echo $(< "${VFX_CONSUMER:-consumer_sdl}")) mlt_profile=${BASEDIR}/webvfx_profile
+    $(eval echo $(< "${VFX_CONSUMER:-${BASEDIR}/consumer_sdl}")) mlt_profile=${BASEDIR}/webvfx_profile
