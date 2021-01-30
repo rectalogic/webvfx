@@ -4,6 +4,7 @@ LABEL maintainer=rectalogic
 ENV container docker
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=en_US.UTF-8
+ENV LC_ALL=C.UTF-8
 RUN echo "locales locales/default_environment_locale select en_US.UTF-8" | debconf-set-selections \
     && echo "locales locales/locales_to_be_generated multiselect en_US.UTF-8 UTF-8" | debconf-set-selections \
     && echo "tzdata tzdata/Areas select Etc" | debconf-set-selections \

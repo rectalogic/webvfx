@@ -20,7 +20,7 @@ jobs:
           ${{ runner.os }}-buildx-
     - name: Test
       run: |
-        docker/docker-run.sh "${{ github.workspace }}"
+        docker/docker-run.sh
     - name: Upload Failed Artifacts
       if: failure()
       uses: actions/upload-artifact@v2
@@ -56,6 +56,7 @@ jobs:
         cmake --build . --parallel
         mkdir -p /tmp/qt
         DESTDIR=/tmp/qt cmake --install .
+        cd ..
         tar -C /tmp/qt -cf qt6-install-${QT_VER}.tar .
     - name: Install Qt6
       run: |
@@ -75,6 +76,7 @@ jobs:
         make
         mkdir /tmp/mlt
         DESTDIR=/tmp/mlt make install
+        cd ..
         tar -C /tmp/mlt -cf mlt-${MLT_VER}.tar .
     - name: Install MLT
       run: |
