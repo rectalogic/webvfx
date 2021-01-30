@@ -20,7 +20,7 @@ jobs:
           ${{ runner.os }}-buildx-
     - name: Test
       run: |
-        docker/docker-run.sh /bin/echo foo
+        docker/docker-run.sh
     - name: Upload Failed Artifacts
       if: failure()
       uses: actions/upload-artifact@v2
