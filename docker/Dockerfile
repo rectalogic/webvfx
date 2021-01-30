@@ -1,3 +1,4 @@
+# syntax = docker/dockerfile:1.2
 FROM ubuntu:focal
 LABEL maintainer=rectalogic
 
@@ -5,7 +6,9 @@ ENV container docker
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LANG=en_US.UTF-8
 ENV LC_ALL=C.UTF-8
-RUN echo "locales locales/default_environment_locale select en_US.UTF-8" | debconf-set-selections \
+RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
+RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/apt \
+    echo "locales locales/default_environment_locale select en_US.UTF-8" | debconf-set-selections \
     && echo "locales locales/locales_to_be_generated multiselect en_US.UTF-8 UTF-8" | debconf-set-selections \
     && echo "tzdata tzdata/Areas select Etc" | debconf-set-selections \
     && echo "tzdata tzdata/Areas/Etc select UTC" | debconf-set-selections \
@@ -24,8 +27,7 @@ RUN echo "locales locales/default_environment_locale select en_US.UTF-8" | debco
     && curl https://apt.kitware.com/keys/kitware-archive-latest.asc | gpg --dearmor - > /etc/apt/trusted.gpg.d/kitware.gpg \
     && apt-add-repository 'deb https://apt.kitware.com/ubuntu/ focal main' \
     && apt-get -y update \
-    && apt-get -y install cmake \
-    && rm -rf /var/lib/apt/lists/*
+    && apt-get -y install cmake
 
 RUN export QT_VER=6.0.0 \
     && curl -L http://download.qt.io/official_releases/qt/6.0/${QT_VER}/single/qt-everywhere-src-${QT_VER}.tar.xz | tar xJf - \
