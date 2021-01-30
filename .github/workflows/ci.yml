@@ -20,7 +20,7 @@ jobs:
           ${{ runner.os }}-buildx-
     - name: Test
       run: |
-        docker/docker-run.sh
+        docker/docker-run.sh /bin/echo foo
     - name: Upload Failed Artifacts
       if: failure()
       uses: actions/upload-artifact@v2
@@ -60,7 +60,7 @@ jobs:
         tar -C /tmp/qt -cf qt6-install-${QT_VER}.tar .
     - name: Install Qt6
       run: |
-        sudo tar -C / -xf qt6-install-${QT_VER}.tar
+        sudo tar -C / -xmf qt6-install-${QT_VER}.tar
     - name: Cache MLT
       uses: actions/cache@v2
       id: mlt-cache
@@ -80,7 +80,7 @@ jobs:
         tar -C /tmp/mlt -cf mlt-${MLT_VER}.tar .
     - name: Install MLT
       run: |
-        sudo tar -C / -xf mlt-${MLT_VER}.tar
+        sudo tar -C / -xmf mlt-${MLT_VER}.tar
     - name: Install WebVfx
       run: |
         mkdir build
