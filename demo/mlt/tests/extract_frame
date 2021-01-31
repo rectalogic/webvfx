@@ -44,4 +44,4 @@ if [ ! -f "$VFX_EXTRA" ]; then
     ${BASEDIR}/gen_testsrc -d 12 -c green "$VFX_EXTRA"
 fi
 
-${MLT_SCRIPT} | ffmpeg -f rawvideo -video_size 640x360 -pixel_format rgb24 -framerate 30 -i - -ss ${SEEK:-00:00:03} -f image2 -vframes 1 -y "${THUMBNAIL}"
+${MLT_SCRIPT} | ffmpeg -f rawvideo -video_size 640x360 -pixel_format rgb24 -framerate 30 -i - -ss ${SEEKTIME:-00:00:03} -f image2 -vframes 1 -y "${THUMBNAIL}"

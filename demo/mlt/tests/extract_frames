@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -x
+
 BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 OUTPUT_DIR=${1:?Usage: $(basename $0) OUTPUT_DIR}
 
@@ -10,4 +12,4 @@ ${BASEDIR}/extract_frame -s 00:00:06 "${BASEDIR}/../mlt_transition_demo3d" "${OU
 ${BASEDIR}/extract_frame -s 00:00:04 "${BASEDIR}/../mlt_transition_shader_crosszoom" "${OUTPUT_DIR}/transition_shader_crosszoom.png"
 ${BASEDIR}/extract_frame -s 00:00:07 "${BASEDIR}/../mlt_transition_shader_pagecurl" "${OUTPUT_DIR}/transition_shader_pagecurl.png"
 ${BASEDIR}/extract_frame -s 00:00:10 "${BASEDIR}/../mlt_transition_simple" "${OUTPUT_DIR}/transition_simple-1.png"
-${BASEDIR}/extract_frame -s 00:00:17 "${BASEDIR}/../mlt_transition_simple ""${OUTPUT_DIR}/transition_simple-2.png"
+${BASEDIR}/extract_frame -s 00:00:17 "${BASEDIR}/../mlt_transition_simple" "${OUTPUT_DIR}/transition_simple-2.png"
