@@ -82,7 +82,7 @@ jobs:
       id: mlt-cache
       with:
         path: mlt-${MLT_VER}.tar
-        key: ${{ runner.os }}-mlt-${{ env.MLT_VER }}-v2
+        key: ${{ runner.os }}-mlt-${{ env.MLT_VER }}-v3
     - name: Build MLT
       run: |
         if ! tar -tf mlt-${MLT_VER}.tar > /dev/null; then
