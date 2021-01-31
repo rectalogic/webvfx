@@ -26,8 +26,9 @@ jobs:
         push: false
         context: docker
         tags: webvfx
+        load: true
         cache-from: type=local,src=/tmp/.buildx-cache
-        cache-to: type=local,dest=/tmp/.buildx-cache
+        cache-to: type=local,mode=max,dest=/tmp/.buildx-cache
     - name: Test
       run: docker/docker-run.sh
     - name: Upload Failed Artifacts
@@ -54,7 +55,7 @@ jobs:
       id: qt6-cache
       with:
         path: qt6-install-${QT_VER}.tar
-        key: ${{ runner.os }}-qt6-${{ env.QT_VER }}
+        key: ${{ runner.os }}-qt6-${{ env.QT_VER }}-v2
     - name: Build Qt6
       if: steps.qt6-cache.outputs.cache-hit != 'true'
       run: |
