@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-ROOT=$(dirname "${BASH_SOURCE[0]}")
-MOUNT="$(dirname "$(cd "${ROOT}"; pwd)")"
-docker buildx build --tag webvfx "$ROOT"
+MOUNT="$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")"; pwd)")"
 docker run --rm --init \
     --mount="type=bind,src=${MOUNT},dst=/webvfx,consistency=cached" webvfx "$@"

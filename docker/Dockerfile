@@ -32,7 +32,13 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
 RUN export QT_VER=6.0.0 \
     && curl -L http://download.qt.io/official_releases/qt/6.0/${QT_VER}/single/qt-everywhere-src-${QT_VER}.tar.xz | tar xJf - \
     && mkdir qt6-build \
-    && cd qt6-build && ../qt-everywhere-src-${QT_VER}/configure && cmake --build . --parallel && cmake --install . \
+    && cd qt6-build \
+    && ../qt-everywhere-src-${QT_VER}/configure \
+        -skip qtdoc -skip qtlocation -skip qttranslations -skip qtremoteobjects \
+        -skip qtwebengine -skip qtwebchannel -skip qtmultimedia -skip qtwebview -skip qtqa \
+        -skip qtsensors -skip qtserialbus -skip qtserialport -skip qtspeech -skip qtvirtualkeyboard \
+    && cmake --build . --parallel \
+    && cmake --install . \
     && cd .. && rm -rf qt6-build qt-everywhere-src-${QT_VER}
 RUN export MLT_VER=6.24.0 \
     && curl -L https://github.com/mltframework/mlt/releases/download/v${MLT_VER}/mlt-${MLT_VER}.tar.gz | tar xzf - \
@@ -46,4 +52,4 @@ VOLUME /webvfx
 WORKDIR /webvfx
 
 ENTRYPOINT ["/usr/bin/xvfb-run"]
-CMD ["/webvfx/docker/runtests.sh"]
+CMD ["/webvfx/docker/docker-runtests.sh"]
