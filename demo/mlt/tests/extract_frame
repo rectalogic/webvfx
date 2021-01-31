@@ -1,16 +1,47 @@
 #!/usr/bin/env bash
 
-if [[ ${#} -eq 0 ]]; then
-    echo "Usage: $(basename $0) [-s SEEKTIME] FILE.png" 2>&1
-    exit 1
-fi
+BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 
-while getopts "s:" arg; do
+usage () {
+    echo "Usage: $(basename $0) [-s SEEKTIME] MLT_SCRIPT THUMBNAIL.png" 2>&1
+    exit 1
+}
+
+while getopts ":f:o:s:" arg; do
     case ${arg} in
-      s) SEEK="${OPTARG}" ;;
+      s) SEEKTIME="${OPTARG}" ;;
+      \?) echo "Unknown option: -$OPTARG" >&2; usage;;
+      :) echo "Missing option argument for -$OPTARG" >&2; usage;;
+      *) echo "Unimplemented option: -$OPTARG" >&2; usage;;
     esac
 done
-shift "$((OPTIND-1))"
-FILE=$1
+if ((OPTIND == 1)); then
+    usage
+fi
+shift $((OPTIND - 1))
+if (($# == 0)); then
+    usage
+fi
 
-ffmpeg -f rawvideo -video_size 640x360 -pixel_format rgb24 -framerate 30 -i - -ss ${SEEK:-00:00:03} -f image2 -vframes 1 -y "${FILE}"
+MLT_SCRIPT=$1
+THUMBNAIL=$2
+if ! [[ -f "$MLT_SCRIPT" ]]; then
+    usage
+fi
+
+export VFX_SOURCE=${BASEDIR}/../red.mov
+export VFX_TARGET=${BASEDIR}/../blue.mov
+export VFX_EXTRA=${BASEDIR}/../green.mov
+export VFX_CONSUMER=${BASEDIR}/../consumer_raw
+
+if [ ! -f "$VFX_SOURCE" ]; then
+    ${BASEDIR}/gen_testsrc -d 12 -c red "$VFX_SOURCE"
+fi
+if [ ! -f "$VFX_TARGET" ]; then
+    ${BASEDIR}/gen_testsrc -d 12 -c blue "$VFX_TARGET"
+fi
+if [ ! -f "$VFX_EXTRA" ]; then
+    ${BASEDIR}/gen_testsrc -d 12 -c green "$VFX_EXTRA"
+fi
+
+${MLT_SCRIPT} | ffmpeg -f rawvideo -video_size 640x360 -pixel_format rgb24 -framerate 30 -i - -ss ${SEEK:-00:00:03} -f image2 -vframes 1 -y "${THUMBNAIL}"

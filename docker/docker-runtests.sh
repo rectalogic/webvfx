@@ -6,6 +6,6 @@ qmake ../..
 make install
 
 cd /webvfx/demo/mlt/tests
-mkdir -p fixtures/output
-./runtests fixtures/linux fixtures/output
+mkdir -p /webvfx/build/linux/output
+./runtests fixtures/linux /webvfx/build/linux/output
 exit $?

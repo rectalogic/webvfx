@@ -6,7 +6,8 @@ OUTPUT_DIR=${2:?Usage: $(basename $0) FIXTURE_DIR OUTPUT_DIR}
 BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 
 mkdir -p "${OUTPUT_DIR}/compare"
-"${BASEDIR}/gen_frames" "$OUTPUT_DIR"
+
+"${BASEDIR}/extract_frames" "$OUTPUT_DIR"
 
 FAILED=()
 for fixture in "${FIXTURE_DIR}/"*.png; do
