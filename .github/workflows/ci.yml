@@ -46,7 +46,7 @@ jobs:
   macos:
     runs-on: macos-10.15
     env:
-      QT_VER: 6.0.0
+      QT_VER: 6.0.1
       MLT_VER: 6.24.0
     steps:
     - name: Checkout
@@ -67,7 +67,22 @@ jobs:
           brew install cmake ninja
           curl -L http://download.qt.io/official_releases/qt/6.0/${QT_VER}/single/qt-everywhere-src-${QT_VER}.tar.xz | tar xJf -
           cd qt-everywhere-src-${QT_VER}
-          ./configure
+          ./configure \
+            -skip qtdoc \
+            -skip qtlocation \
+            -skip qtmultimedia \
+            -skip qtqa \
+            -skip qtremoteobjects \
+            -skip qtsensors \
+            -skip qtserialbus \
+            -skip qtserialport \
+            -skip qtspeech \
+            -skip qttools \
+            -skip qttranslations \
+            -skip qtvirtualkeyboard \
+            -skip qtwebengine \
+            -skip qtwebchannel \
+            -skip qtwebview
           cmake --build . --parallel
           mkdir -p /tmp/qt
           DESTDIR=/tmp/qt cmake --install .
