@@ -46,7 +46,7 @@ jobs:
   macos:
     runs-on: macos-10.15
     env:
-      QT_VER: 6.0.1
+      QT_VER: 6.0.2
       MLT_VER: 6.24.0
     steps:
     - name: Checkout

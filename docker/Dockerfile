@@ -29,7 +29,7 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
     && apt-get -y update \
     && apt-get -y install cmake
 
-RUN export QT_VER=6.0.1 \
+RUN export QT_VER=6.0.2 \
     && curl -L http://download.qt.io/official_releases/qt/6.0/${QT_VER}/single/qt-everywhere-src-${QT_VER}.tar.xz | tar xJf - \
     && mkdir qt6-build \
     && cd qt6-build \
