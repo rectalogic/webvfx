@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 mkdir -p /webvfx/build/linux
 cd /webvfx/build/linux
 qmake ../..

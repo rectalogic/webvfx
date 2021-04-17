@@ -15,43 +15,24 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
     && apt-get -y update \
     && apt-get -y install locales tzdata \
     && dpkg-reconfigure locales tzdata \
-    && apt-get -y install build-essential ninja-build perl python \
-       apt-transport-https ca-certificates gnupg software-properties-common \
-       curl xz-utils ffmpeg libsdl2-dev libgtk2.0-dev xvfb clang libclang-dev libpulse-dev libssl-dev libxml2-dev pkg-config \
+    && apt-get -y install build-essential build-essential \
+       libgl1-mesa-dev libxkbcommon-x11-0 libpulse-dev libxcb1 libx11-xcb1 libxcb-glx0 \
+       libxcb-icccm4 libxcb-image0 libxcb-render-util0 libxcb-keysyms1 \
+       python3 python3-pip \
+       curl xz-utils ffmpeg libsdl2-dev libgtk2.0-dev xvfb pkg-config \
        libavutil-dev libavformat-dev libavdevice-dev libavresample-dev libpostproc-dev libavfilter-dev libswscale-dev libswresample-dev \
-       libgl1-mesa-dev libfontconfig1-dev libfreetype6-dev libx11-dev libx11-xcb-dev libxext-dev libxfixes-dev libxi-dev libxrender-dev \
-       libxcb1-dev libxcb-glx0-dev libxcb-keysyms1-dev libxcb-image0-dev libxcb-shm0-dev \
-       libxcb-icccm4-dev libxcb-sync-dev libxcb-xfixes0-dev libxcb-shape0-dev libxcb-util-dev \
-       libxcb-randr0-dev libxcb-render-util0-dev libxcb-xinerama0-dev libxkbcommon-dev libxkbcommon-x11-dev \
-       fontconfig fonts-liberation imagemagick \
-    && curl https://apt.kitware.com/keys/kitware-archive-latest.asc | gpg --dearmor - > /etc/apt/trusted.gpg.d/kitware.gpg \
-    && apt-add-repository 'deb https://apt.kitware.com/ubuntu/ focal main' \
-    && apt-get -y update \
-    && apt-get -y install cmake
+       fontconfig fonts-liberation imagemagick
 
-RUN export QT_VER=6.0.2 \
-    && curl -L http://download.qt.io/official_releases/qt/6.0/${QT_VER}/single/qt-everywhere-src-${QT_VER}.tar.xz | tar xJf - \
-    && mkdir qt6-build \
-    && cd qt6-build \
-    && ../qt-everywhere-src-${QT_VER}/configure \
-        -skip qtdoc \
-        -skip qtlocation \
-        -skip qtmultimedia \
-        -skip qtqa \
-        -skip qtremoteobjects \
-        -skip qtsensors \
-        -skip qtserialbus \
-        -skip qtserialport \
-        -skip qtspeech \
-        -skip qttools \
-        -skip qttranslations \
-        -skip qtvirtualkeyboard \
-        -skip qtwebengine \
-        -skip qtwebchannel \
-        -skip qtwebview \
-    && cmake --build . --parallel \
-    && cmake --install . \
-    && cd .. && rm -rf qt6-build qt-everywhere-src-${QT_VER}
+ARG QT_VER=6.0.2
+
+RUN pip3 install aqtinstall \
+    && python3 -m aqt install --outputdir /usr/local/Qt ${QT_VER} linux desktop -m qtquick3d qtshadertools qtquicktimeline
+
+ENV PATH /usr/local/Qt/${QT_VER}/gcc_64/bin:$PATH
+ENV QT_PLUGIN_PATH /usr/local/Qt/${QT_VER}/gcc_64/plugins/
+ENV QML_IMPORT_PATH /usr/local/Qt/${QT_VER}/gcc_64/qml/
+ENV QML2_IMPORT_PATH /usr/local/Qt/${QT_VER}/gcc_64/qml/
+
 RUN export MLT_VER=6.24.0 \
     && curl -L https://github.com/mltframework/mlt/releases/download/v${MLT_VER}/mlt-${MLT_VER}.tar.gz | tar xzf - \
     && cd mlt-${MLT_VER} && ./configure && make && make install \

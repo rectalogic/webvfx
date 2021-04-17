@@ -55,43 +55,18 @@ jobs:
       run: |
         sudo xcode-select -s "/Applications/Xcode_11.7.app"
         brew install imagemagick pkg-config ffmpeg
-    - name: Cache Qt6
-      uses: actions/cache@v2
-      id: qt6-cache
+    - name: Cache Qt
+      id: cache-qt
+      uses: actions/cache@v1
       with:
-        path: qt6-install-${QT_VER}.tar
-        key: ${{ runner.os }}-qt6-${{ env.QT_VER }}-v2
-    - name: Build Qt6
-      run: |
-        if ! tar -tf qt6-install-${QT_VER}.tar > /dev/null; then
-          brew install cmake ninja
-          curl -L http://download.qt.io/official_releases/qt/6.0/${QT_VER}/single/qt-everywhere-src-${QT_VER}.tar.xz | tar xJf -
-          cd qt-everywhere-src-${QT_VER}
-          ./configure \
-            -skip qtdoc \
-            -skip qtlocation \
-            -skip qtmultimedia \
-            -skip qtqa \
-            -skip qtremoteobjects \
-            -skip qtsensors \
-            -skip qtserialbus \
-            -skip qtserialport \
-            -skip qtspeech \
-            -skip qttools \
-            -skip qttranslations \
-            -skip qtvirtualkeyboard \
-            -skip qtwebengine \
-            -skip qtwebchannel \
-            -skip qtwebview
-          cmake --build . --parallel
-          mkdir -p /tmp/qt
-          DESTDIR=/tmp/qt cmake --install .
-          cd ..
-          tar -C /tmp/qt -cf qt6-install-${QT_VER}.tar .
-        fi
-    - name: Install Qt6
-      run: |
-        sudo tar -C / --no-same-owner --modification-time -xf qt6-install-${QT_VER}.tar
+        path: ../Qt
+        key: ${{ runner.os }}-QtCache
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v2
+      with:
+        cached: ${{ steps.cache-qt.outputs.cache-hit }}
+        version: ${{ env.QT_VER }}
+        modules: 'qtquick3d qtshadertools qtquicktimeline'
     - name: Cache MLT
       uses: actions/cache@v2
       id: mlt-cache
