@@ -84,8 +84,7 @@ extern "C" EXPORT MLT_REPOSITORY
 
     MLT_REGISTER(producer_type, "webvfx.panzoom", MLTWebVfx::createPanzoomProducer);
 
-    // Register shutdown hook - even if we don't initialize WebVfx
-    // we want our logger deleted.
-    mlt_factory_register_for_clean_up(0, reinterpret_cast<mlt_destructor>(WebVfx::shutdown));
+    // Not safe to tear down Qt when it's running on a thread
+    // mlt_factory_register_for_clean_up(0, reinterpret_cast<mlt_destructor>(WebVfx::shutdown));
     WebVfx::setLogger(new MLTWebVfx::Logger());
 }

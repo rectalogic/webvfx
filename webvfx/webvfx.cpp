@@ -31,6 +31,8 @@ typedef QPair<QMutex*, QWaitCondition*> ThreadSync;
 void* uiEventLoop(void* data)
 {
     ThreadSync* threadSync = static_cast<ThreadSync*>(data);
+    // Can't use offscreen with linux
+    // https://bugreports.qt.io/browse/QTBUG-90992
     const char * argv[] =
     #ifdef Q_OS_MACOS
         {"", "-platform", "offscreen"};
