@@ -23,7 +23,7 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
        libavutil-dev libavformat-dev libavdevice-dev libavresample-dev libpostproc-dev libavfilter-dev libswscale-dev libswresample-dev \
        fontconfig fonts-liberation imagemagick
 
-ARG QT_VER=6.0.3
+ARG QT_VER=6.2.0
 
 RUN pip3 install aqtinstall \
     && python3 -m aqt install --outputdir /usr/local/Qt ${QT_VER} linux desktop -m qtquick3d qtshadertools qtquicktimeline
@@ -33,7 +33,7 @@ ENV QT_PLUGIN_PATH /usr/local/Qt/${QT_VER}/gcc_64/plugins/
 ENV QML_IMPORT_PATH /usr/local/Qt/${QT_VER}/gcc_64/qml/
 ENV QML2_IMPORT_PATH /usr/local/Qt/${QT_VER}/gcc_64/qml/
 
-RUN export MLT_VER=6.24.0 \
+RUN export MLT_VER=7.4.0 \
     && curl -L https://github.com/mltframework/mlt/releases/download/v${MLT_VER}/mlt-${MLT_VER}.tar.gz | tar xzf - \
     && cd mlt-${MLT_VER} && ./configure && make && make install \
     && cd .. && rm -rf mlt-${MLT_VER}

@@ -44,16 +44,16 @@ jobs:
         path: /webvfx/build/linux/output
 
   macos:
-    runs-on: macos-10.15
+    runs-on: macos-11
     env:
-      QT_VER: 6.0.3
-      MLT_VER: 6.24.0
+      QT_VER: 6.2.0
+      MLT_VER: 7.4.0
     steps:
     - name: Checkout
       uses: actions/checkout@v2
     - name: Provision
       run: |
-        sudo xcode-select -s "/Applications/Xcode_11.7.app"
+        sudo xcode-select -s "/Applications/Xcode_13.2.1.app"
         brew install imagemagick pkg-config ffmpeg
     - name: Cache Qt
       id: cache-qt
