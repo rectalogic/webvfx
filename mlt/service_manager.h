@@ -7,7 +7,7 @@
 
 #include <QString>
 extern "C" {
-    #include <mlt-7/framework/mlt_service.h>
+    #include <framework/mlt_service.h>
 }
 #include <vector>
 

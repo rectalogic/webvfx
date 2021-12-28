@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 extern "C" {
-    #include <mlt-7/framework/mlt_filter.h>
-    #include <mlt-7/framework/mlt_frame.h>
-    #include <mlt-7/framework/mlt_log.h>
+    #include <framework/mlt_filter.h>
+    #include <framework/mlt_frame.h>
+    #include <framework/mlt_log.h>
 }
 #include <webvfx/image.h>
 #include "factory.h"
