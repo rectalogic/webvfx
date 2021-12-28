@@ -57,10 +57,10 @@ jobs:
         brew install imagemagick pkg-config cmake ffmpeg
     - name: Cache Qt
       id: cache-qt
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ../Qt
-        key: ${{ runner.os }}-QtCache
+        key: ${{ runner.os }}-QtCache-${{ env.QT_VER }}
     - name: Install Qt
       uses: jurplel/install-qt-action@v2
       with:
