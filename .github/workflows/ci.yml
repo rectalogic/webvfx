@@ -72,15 +72,15 @@ jobs:
       id: mlt-cache
       with:
         path: mlt-${MLT_VER}.tar
-        key: ${{ runner.os }}-mlt-${{ env.MLT_VER }}-v3
+        key: ${{ runner.os }}-mlt-${{ env.MLT_VER }}-v4
     - name: Build MLT
       run: |
         if ! tar -tf mlt-${MLT_VER}.tar > /dev/null; then
           curl -L https://github.com/mltframework/mlt/releases/download/v${MLT_VER}/mlt-${MLT_VER}.tar.gz | tar xzf -
           cd mlt-${MLT_VER}
-          cmake .
           mkdir /tmp/mlt
-          make DESTDIR=/tmp/mlt install
+          cmake -DCMAKE_INSTALL_PREFIX=/tmp/mlt --build .
+          cmake --install .
           cd ..
           tar -C /tmp/mlt -cf mlt-${MLT_VER}.tar .
         fi

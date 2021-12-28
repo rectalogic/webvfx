@@ -78,11 +78,11 @@ static void* createService(mlt_profile profile,
 
 extern "C" EXPORT MLT_REPOSITORY
 {
-    MLT_REGISTER(producer_type, "webvfx", createService);
-    MLT_REGISTER(filter_type, "webvfx", createService);
-    MLT_REGISTER(transition_type, "webvfx", createService);
+    MLT_REGISTER(mlt_service_producer_type, "webvfx", createService);
+    MLT_REGISTER(mlt_service_filter_type, "webvfx", createService);
+    MLT_REGISTER(mlt_service_transition_type, "webvfx", createService);
 
-    MLT_REGISTER(producer_type, "webvfx.panzoom", MLTWebVfx::createPanzoomProducer);
+    MLT_REGISTER(mlt_service_producer_type, "webvfx.panzoom", MLTWebVfx::createPanzoomProducer);
 
     // Not safe to tear down Qt when it's running on a thread
     // mlt_factory_register_for_clean_up(0, reinterpret_cast<mlt_destructor>(WebVfx::shutdown));
