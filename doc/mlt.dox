@@ -20,14 +20,6 @@ melt -transition webvfx:/path/to/transition.html
 melt -transition webvfx resource=/path/to/transition.html
 @endcode
 
-@section mlt_panzoom Panzoom Producer Plugin
-
-%WebVfx also provides an image producer that implements a pan and zoom effect.
-This is similar to the MLT @c affine filter, but more efficient.
-The MLT service ID is @c webvfx.panzoom and the @c resource property
-is the source image to load.
-The @c geometry property holds the MLT geometry keyframe specifications.
-
 @section mlt_extra Extra Images
 
 Effects that use extra images (i.e. that register @c webvfx.ExtraImageType

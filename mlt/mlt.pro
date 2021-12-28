@@ -10,7 +10,6 @@ HEADERS += service_locker.h
 HEADERS += service_manager.h
 
 SOURCES += factory.cpp
-SOURCES += panzoom_producer.cpp
 SOURCES += service_locker.cpp
 SOURCES += service_manager.cpp
 SOURCES += webvfx_filter.cpp

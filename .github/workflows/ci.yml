@@ -79,7 +79,8 @@ jobs:
           curl -L https://github.com/mltframework/mlt/releases/download/v${MLT_VER}/mlt-${MLT_VER}.tar.gz | tar xzf -
           cd mlt-${MLT_VER}
           mkdir /tmp/mlt
-          cmake -DCMAKE_INSTALL_PREFIX=/tmp/mlt --build .
+          cmake -DCMAKE_INSTALL_PREFIX=/tmp/mlt .
+          make
           cmake --install .
           cd ..
           tar -C /tmp/mlt -cf mlt-${MLT_VER}.tar .

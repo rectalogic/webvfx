@@ -48,13 +48,13 @@ static void* createService(mlt_profile profile,
 
     mlt_service service = 0;
     switch (serviceType) {
-        case producer_type:
+        case mlt_service_producer_type:
             service = MLTWebVfx::createProducer(profile);
             break;
-        case filter_type:
+        case mlt_service_filter_type:
             service = MLTWebVfx::createFilter();
             break;
-        case transition_type:
+        case mlt_service_transition_type:
             service = MLTWebVfx::createTransition();
             break;
         default:
@@ -81,8 +81,6 @@ extern "C" EXPORT MLT_REPOSITORY
     MLT_REGISTER(mlt_service_producer_type, "webvfx", createService);
     MLT_REGISTER(mlt_service_filter_type, "webvfx", createService);
     MLT_REGISTER(mlt_service_transition_type, "webvfx", createService);
-
-    MLT_REGISTER(mlt_service_producer_type, "webvfx.panzoom", MLTWebVfx::createPanzoomProducer);
 
     // Not safe to tear down Qt when it's running on a thread
     // mlt_factory_register_for_clean_up(0, reinterpret_cast<mlt_destructor>(WebVfx::shutdown));
