@@ -87,7 +87,7 @@ jobs:
         fi
     - name: Install MLT
       run: |
-        sudo tar -C / --no-same-owner --modification-time -xf mlt-${MLT_VER}.tar
+        sudo tar -C /usr/local/ --no-same-owner --modification-time -xf mlt-${MLT_VER}.tar
     - name: Install WebVfx
       run: |
         mkdir build
