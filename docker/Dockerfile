@@ -23,7 +23,7 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
        libavutil-dev libavformat-dev libavdevice-dev libavresample-dev libpostproc-dev libavfilter-dev libswscale-dev libswresample-dev \
        fontconfig fonts-liberation imagemagick
 
-ARG QT_VER=6.2.0
+ARG QT_VER=6.2.2
 
 RUN pip3 install aqtinstall \
     && python3 -m aqt install --outputdir /usr/local/Qt ${QT_VER} linux desktop -m qtquick3d qtshadertools qtquicktimeline
