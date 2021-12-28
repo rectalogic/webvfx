@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 extern "C" {
-    #include <mlt/framework/mlt_producer.h>
-    #include <mlt/framework/mlt_frame.h>
+    #include <mlt-7/framework/mlt_producer.h>
+    #include <mlt-7/framework/mlt_frame.h>
 }
 #include <webvfx/image.h>
 #include "factory.h"

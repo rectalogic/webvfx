@@ -6,7 +6,7 @@
 #define MLTWEBVFX_SERVICE_LOCKER_H_
 
 extern "C" {
-    #include <mlt/framework/mlt_service.h>
+    #include <mlt-7/framework/mlt_service.h>
 }
 
 

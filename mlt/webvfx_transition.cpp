@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 extern "C" {
-    #include <mlt/framework/mlt_transition.h>
-    #include <mlt/framework/mlt_frame.h>
-    #include <mlt/framework/mlt_log.h>
+    #include <mlt-7/framework/mlt_transition.h>
+    #include <mlt-7/framework/mlt_frame.h>
+    #include <mlt-7/framework/mlt_log.h>
 }
 #include <cstring>
 #include <webvfx/image.h>

@@ -4,10 +4,10 @@
 
 #include <webvfx/webvfx.h>
 extern "C" {
-    #include <mlt/framework/mlt_log.h>
-    #include <mlt/framework/mlt_factory.h>
-    #include <mlt/framework/mlt_frame.h>
-    #include <mlt/framework/mlt_producer.h>
+    #include <mlt-7/framework/mlt_log.h>
+    #include <mlt-7/framework/mlt_factory.h>
+    #include <mlt-7/framework/mlt_frame.h>
+    #include <mlt-7/framework/mlt_producer.h>
 }
 #include "service_manager.h"
 

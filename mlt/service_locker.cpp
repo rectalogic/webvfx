@@ -5,7 +5,7 @@
 #include <string>
 #include <webvfx/webvfx.h>
 extern "C" {
-    #include <mlt/framework/mlt_log.h>
+    #include <mlt-7/framework/mlt_log.h>
 }
 #include "service_locker.h"
 #include "service_manager.h"

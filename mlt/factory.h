@@ -6,8 +6,8 @@
 #define MLTWEBVFX_FACTORY_H_
 
 extern "C" {
-    #include <mlt/framework/mlt_service.h>
-    #include <mlt/framework/mlt_profile.h>
+    #include <mlt-7/framework/mlt_service.h>
+    #include <mlt-7/framework/mlt_profile.h>
 }
 
 namespace MLTWebVfx

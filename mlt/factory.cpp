@@ -6,9 +6,9 @@
 #include <QString>
 #include <webvfx/webvfx.h>
 extern "C" {
-    #include <mlt/framework/mlt_factory.h>
-    #include <mlt/framework/mlt_log.h>
-    #include <mlt/framework/mlt_repository.h>
+    #include <mlt-7/framework/mlt_factory.h>
+    #include <mlt-7/framework/mlt_log.h>
+    #include <mlt-7/framework/mlt_repository.h>
 }
 #include "factory.h"
 
