@@ -20,7 +20,7 @@ SOURCES += webvfx_transition.cpp
 CONFIG += plugin shared
 
 CONFIG += link_pkgconfig
-PKGCONFIG += mlt-framework
+PKGCONFIG += mlt-framework-7
 
 TARGET = mltwebvfx
 
@@ -33,5 +33,5 @@ QMAKE_RPATHDIR += $$[QT_INSTALL_LIBS]
 linux:QMAKE_LFLAGS += -Wl,-znodelete
 
 # Install in mlt plugins directory
-target.path = $$system(pkg-config --variable=libdir mlt-framework)/mlt
+target.path = $$system(pkg-config --variable=libdir mlt-framework-7)/mlt
 INSTALLS += target
