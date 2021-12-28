@@ -69,7 +69,7 @@ public:
         mlt_producer_seek(producer, position);
         mlt_service_get_frame(MLT_PRODUCER_SERVICE(producer), &producerFrame, 0);
 
-        mlt_image_format format = mlt_image_rgb24;
+        mlt_image_format format = mlt_image_rgb;
         uint8_t *image = NULL;
         int error = mlt_frame_get_image(producerFrame, &image, &format,
                                         &width, &height, 0);

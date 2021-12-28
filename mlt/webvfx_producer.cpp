@@ -24,7 +24,7 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
     mlt_producer producer = (mlt_producer)mlt_properties_get_data(properties, kWebVfxProducerPropertyName, NULL);
 
     // Allocate the image
-    *format = mlt_image_rgb24;
+    *format = mlt_image_rgb;
     int size = *width * *height * WebVfx::Image::BytesPerPixel;
     *buffer = (uint8_t*)mlt_pool_alloc(size);
     if (!*buffer)

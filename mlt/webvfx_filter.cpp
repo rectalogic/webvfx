@@ -23,7 +23,7 @@ static int filterGetImage(mlt_frame frame, uint8_t **image, mlt_image_format *fo
     mlt_position length = mlt_filter_get_length(filter);
 
     // Get the source image, we will also write our output to it
-    *format = mlt_image_rgb24;
+    *format = mlt_image_rgb;
     if ((error = mlt_frame_get_image(frame, image, format, width, height, 1)) != 0)
         return error;
 
