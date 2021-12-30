@@ -12,7 +12,6 @@ extern "C" {
 #include "service_manager.h"
 
 static const char* kVFXPipeProducerPropertyName = "VFXPipeProducer";
-static const char* kVFXPipePositionPropertyName = "vfxpipe.position";
 
 static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format *format, int *width, int *height, int /*writable*/) {
     int error = 0;
@@ -42,8 +41,7 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
 
         mlt_image_s outputImage;
         mlt_image_set_values(&outputImage, *buffer, *format, *width, *height);
-        locker.getManager()->render(nullptr, nullptr, &outputImage,
-                                    mlt_properties_get_position(properties, kVFXPipePositionPropertyName));
+        locker.getManager()->render(nullptr, nullptr, &outputImage);
     }
 
     return error;
@@ -66,7 +64,6 @@ static int getFrame(mlt_producer producer, mlt_frame_ptr frame, int /*index*/) {
         // Update timecode on the frame we're creating
         mlt_position position = mlt_producer_position(producer);
         mlt_frame_set_position(*frame, position);
-        mlt_properties_set_position(properties, kVFXPipePositionPropertyName, position);
 
         // Set producer-specific frame properties
         mlt_properties_set_int(properties, "progressive", 1);

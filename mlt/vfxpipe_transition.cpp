@@ -19,7 +19,6 @@ static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_forma
     mlt_frame bFrame = mlt_frame_pop_frame(aFrame);
     mlt_transition transition = (mlt_transition)mlt_frame_pop_service(aFrame);
 
-    mlt_position position = mlt_transition_get_position(transition, aFrame);
     mlt_position length = mlt_transition_get_length(transition);
 
     // Get the aFrame image, we will write our output to it
@@ -42,7 +41,7 @@ static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_forma
         mlt_image_set_values(&renderedImage, *image, *format, *width, *height);
         mlt_image_s targetImage;
         mlt_image_set_values(&targetImage, bImage, *format, bWidth, bHeight);
-        manager->render(&renderedImage, &targetImage, &renderedImage, position);
+        manager->render(&renderedImage, &targetImage, &renderedImage);
     }
 
     return error;

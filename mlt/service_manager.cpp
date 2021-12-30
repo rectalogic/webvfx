@@ -259,7 +259,7 @@ bool ServiceManager::initialize(int width, int height, mlt_position length)
     return true;
 }
 
-int ServiceManager::render(mlt_image sourceImage, mlt_image targetImage, mlt_image outputImage, mlt_position position)
+int ServiceManager::render(mlt_image sourceImage, mlt_image targetImage, mlt_image outputImage)
 {
     if (pipeRead == -1 || pipeWrite == -1)
         return 1;

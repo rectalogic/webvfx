@@ -20,7 +20,7 @@ class ServiceLocker;
 class ServiceManager
 {
 public:
-    int render(mlt_image sourceImage, mlt_image targetImage, mlt_image outputImage, mlt_position position);
+    int render(mlt_image sourceImage, mlt_image targetImage, mlt_image outputImage);
 
 private:
     friend class ServiceLocker;

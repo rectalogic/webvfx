@@ -20,7 +20,6 @@ static int filterGetImage(mlt_frame frame, uint8_t **image, mlt_image_format *fo
     // Get the filter
     mlt_filter filter = (mlt_filter)mlt_frame_pop_service(frame);
 
-    mlt_position position = mlt_filter_get_position(filter, frame);
     mlt_position length = mlt_filter_get_length(filter);
 
     // Get the source image, we will also write our output to it
@@ -36,7 +35,7 @@ static int filterGetImage(mlt_frame frame, uint8_t **image, mlt_image_format *fo
         VFXPipe::ServiceManager* manager = locker.getManager();
         mlt_image_s renderedImage;
         mlt_image_set_values(&renderedImage, *image, *format, *width, *height);
-        manager->render(&renderedImage, nullptr, &renderedImage, position);
+        manager->render(&renderedImage, nullptr, &renderedImage);
     }
 
     return error;
