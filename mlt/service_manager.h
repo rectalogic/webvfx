@@ -27,6 +27,7 @@ private:
     ServiceManager(mlt_service service);
     ~ServiceManager();
     bool initialize(int width, int height, mlt_position length);
+    template <typename T> bool dataIO(int fd, void *data, size_t size, T ioFunc);
 
     mlt_service service;
     pid_t pid;

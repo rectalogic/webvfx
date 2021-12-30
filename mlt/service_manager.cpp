@@ -68,21 +68,6 @@ private:
 
 ////////////////////////
 
-template <typename T>
-static bool dataIO(int fd, void *data, size_t size, T ioFunc) {
-    size_t bytesIO = 0;
-    while (bytesIO < size) {
-        ssize_t n = ioFunc(fd, static_cast<std::byte *>(data) + bytesIO, size - bytesIO);
-        if (n < 0) {
-            return false;
-        }
-        bytesIO = bytesIO + n;
-    }
-    return true;
-}
-
-////////////////////////
-
 ServiceManager::ServiceManager(mlt_service service)
     : service(service)
     , pipeRead(-1)
@@ -259,25 +244,48 @@ bool ServiceManager::initialize(int width, int height, mlt_position length)
     return true;
 }
 
+template <typename T>
+bool ServiceManager::dataIO(int fd, void *data, size_t size, T ioFunc) {
+    size_t bytesIO = 0;
+    while (bytesIO < size) {
+        ssize_t n = ioFunc(fd, static_cast<std::byte *>(data) + bytesIO, size - bytesIO);
+        // EOF
+        if (n == 0) {
+            close(pipeRead);
+            pipeRead = -1;
+            close(pipeWrite);
+            pipeWrite = -1;
+            return false;
+        }
+        if (n == -1) {
+            mlt_log_error(service, "%s: Image IO failed: %s\n", __FUNCTION__, strerror(errno));
+            close(pipeRead);
+            pipeRead = -1;
+            close(pipeWrite);
+            pipeWrite = -1;
+            return false;
+        }
+        bytesIO = bytesIO + n;
+    }
+    return true;
+}
+
 int ServiceManager::render(mlt_image sourceImage, mlt_image targetImage, mlt_image outputImage)
 {
     if (pipeRead == -1 || pipeWrite == -1)
         return 1;
     if (sourceImage != nullptr) {
         if (!dataIO(pipeWrite, sourceImage->data, mlt_image_calculate_size(sourceImage), write)) {
-            mlt_log_error(service, "%s: Failed to write source image: %s\n", __FUNCTION__, strerror(errno));
             return 1;
         }
     }
     if (targetImage != nullptr) {
         if (!dataIO(pipeWrite, targetImage->data, mlt_image_calculate_size(targetImage), write)) {
-            mlt_log_error(service, "%s: Failed to write target image: %s\n", __FUNCTION__, strerror(errno));
             return 1;
         }
     }
     //XXX write producer extra images
     if (!dataIO(pipeRead, outputImage->data, mlt_image_calculate_size(outputImage), read)) {
-        mlt_log_error(service, "%s: Failed to read output image: %s\n", __FUNCTION__, strerror(errno));
         return 1;
     }
     return 0;
