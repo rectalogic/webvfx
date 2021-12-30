@@ -2,23 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MLTWEBVFX_SERVICE_MANAGER_H_
-#define MLTWEBVFX_SERVICE_MANAGER_H_
+#ifndef VFXPIPE_SERVICE_MANAGER_H_
+#define VFXPIPE_SERVICE_MANAGER_H_
 
-#include <QString>
 extern "C" {
     #include <framework/mlt_service.h>
+    #include <framework/mlt_image.h>
 }
 #include <vector>
+#include <unistd.h>
 
-
-namespace WebVfx
-{
-    class Effects;
-    class Image;
-}
-
-namespace MLTWebVfx
+namespace VFXPipe
 {
 class ImageProducer;
 class ServiceLocker;
@@ -26,22 +20,18 @@ class ServiceLocker;
 class ServiceManager
 {
 public:
-    const QString& getSourceImageName() { return sourceImageName; }
-    const QString& getTargetImageName() { return targetImageName; }
-    void setImageForName(const QString& name, WebVfx::Image* image);
-    int render(WebVfx::Image* outputImage, mlt_position position, mlt_position length);
+    int render(mlt_image sourceImage, mlt_image targetImage, mlt_image outputImage, mlt_position position);
 
 private:
     friend class ServiceLocker;
     ServiceManager(mlt_service service);
     ~ServiceManager();
-    bool initialize(int width, int height);
+    bool initialize(int width, int height, mlt_position length);
 
     mlt_service service;
-    WebVfx::Effects* effects;
-
-    QString sourceImageName;
-    QString targetImageName;
+    pid_t pid;
+    int pipeRead;
+    int pipeWrite;
     std::vector<ImageProducer*>* imageProducers;
 };
 

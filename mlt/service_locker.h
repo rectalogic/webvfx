@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MLTWEBVFX_SERVICE_LOCKER_H_
-#define MLTWEBVFX_SERVICE_LOCKER_H_
+#ifndef VFXPIPE_SERVICE_LOCKER_H_
+#define VFXPIPE_SERVICE_LOCKER_H_
 
 extern "C" {
     #include <framework/mlt_service.h>
 }
 
 
-namespace MLTWebVfx
+namespace VFXPipe
 {
 class ServiceManager;
 
@@ -20,7 +20,7 @@ public:
     ServiceLocker(mlt_service service);
     ~ServiceLocker();
 
-    bool initialize(int width, int height);
+    bool initialize(int width, int height, mlt_position length);
     ServiceManager* getManager();
 
 private:

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MLTWEBVFX_FACTORY_H_
-#define MLTWEBVFX_FACTORY_H_
+#ifndef VFXPIPE_FACTORY_H_
+#define VFXPIPE_FACTORY_H_
 
 extern "C" {
     #include <framework/mlt_service.h>
     #include <framework/mlt_profile.h>
 }
 
-namespace MLTWebVfx
+namespace VFXPipe
 {
 
 mlt_service createProducer(mlt_profile profile);

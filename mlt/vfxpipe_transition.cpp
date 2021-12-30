@@ -8,7 +8,6 @@ extern "C" {
     #include <framework/mlt_log.h>
 }
 #include <cstring>
-#include <webvfx/image.h>
 #include "factory.h"
 #include "service_locker.h"
 #include "service_manager.h"
@@ -34,18 +33,16 @@ static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_forma
         return error;
 
     { // Scope the lock
-        MLTWebVfx::ServiceLocker locker(MLT_TRANSITION_SERVICE(transition));
-        if (!locker.initialize(*width, *height))
+        VFXPipe::ServiceLocker locker(MLT_TRANSITION_SERVICE(transition));
+        if (!locker.initialize(*width, *height, length))
             return 1;
 
-        MLTWebVfx::ServiceManager* manager = locker.getManager();
-        WebVfx::Image renderedImage(*image, *width, *height,
-                                    *width * *height * WebVfx::Image::BytesPerPixel);
-        manager->setImageForName(manager->getSourceImageName(), &renderedImage);
-        WebVfx::Image targetImage(bImage, bWidth, bHeight,
-                                  bWidth * bHeight * WebVfx::Image::BytesPerPixel);
-        manager->setImageForName(manager->getTargetImageName(), &targetImage);
-        manager->render(&renderedImage, position, length);
+        VFXPipe::ServiceManager* manager = locker.getManager();
+        mlt_image_s renderedImage;
+        mlt_image_set_values(&renderedImage, *image, *format, *width, *height);
+        mlt_image_s targetImage;
+        mlt_image_set_values(&targetImage, bImage, *format, bWidth, bHeight);
+        manager->render(&renderedImage, &targetImage, &renderedImage, position);
     }
 
     return error;
@@ -58,7 +55,7 @@ static mlt_frame transitionProcess(mlt_transition transition, mlt_frame aFrame, 
     return aFrame;
 }
 
-mlt_service MLTWebVfx::createTransition() {
+mlt_service VFXPipe::createTransition() {
     mlt_transition self = mlt_transition_new();
     if (self) {
         self->process = transitionProcess;

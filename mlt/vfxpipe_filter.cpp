@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstddef>
 extern "C" {
     #include <framework/mlt_filter.h>
     #include <framework/mlt_frame.h>
+    #include <framework/mlt_image.h>
     #include <framework/mlt_log.h>
 }
-#include <webvfx/image.h>
 #include "factory.h"
 #include "service_locker.h"
 #include "service_manager.h"
@@ -28,15 +29,14 @@ static int filterGetImage(mlt_frame frame, uint8_t **image, mlt_image_format *fo
         return error;
 
     { // Scope the lock
-        MLTWebVfx::ServiceLocker locker(MLT_FILTER_SERVICE(filter));
-        if (!locker.initialize(*width, *height))
+        VFXPipe::ServiceLocker locker(MLT_FILTER_SERVICE(filter));
+        if (!locker.initialize(*width, *height, length))
             return 1;
 
-        MLTWebVfx::ServiceManager* manager = locker.getManager();
-        WebVfx::Image renderedImage(*image, *width, *height,
-                                    *width * *height * WebVfx::Image::BytesPerPixel);
-        manager->setImageForName(manager->getSourceImageName(), &renderedImage);
-        manager->render(&renderedImage, position, length);
+        VFXPipe::ServiceManager* manager = locker.getManager();
+        mlt_image_s renderedImage;
+        mlt_image_set_values(&renderedImage, *image, *format, *width, *height);
+        manager->render(&renderedImage, nullptr, &renderedImage, position);
     }
 
     return error;
@@ -50,7 +50,7 @@ static mlt_frame filterProcess(mlt_filter filter, mlt_frame frame) {
     return frame;
 }
 
-mlt_service MLTWebVfx::createFilter() {
+mlt_service VFXPipe::createFilter() {
     mlt_filter self = mlt_filter_new();
     if (self) {
         self->process = filterProcess;

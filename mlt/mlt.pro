@@ -12,24 +12,18 @@ HEADERS += service_manager.h
 SOURCES += factory.cpp
 SOURCES += service_locker.cpp
 SOURCES += service_manager.cpp
-SOURCES += webvfx_filter.cpp
-SOURCES += webvfx_producer.cpp
-SOURCES += webvfx_transition.cpp
+SOURCES += vfxpipe_filter.cpp
+SOURCES += vfxpipe_producer.cpp
+SOURCES += vfxpipe_transition.cpp
 
 CONFIG += plugin shared
 
 CONFIG += link_pkgconfig
 PKGCONFIG += mlt-framework-7
 
-TARGET = mltwebvfx
-
-DEPENDPATH += $$PWD/../webvfx
-CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../webvfx/release/ -lwebvfx
-else:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../webvfx/debug/ -lwebvfx
+TARGET = vfxpipe
 
 QMAKE_RPATHDIR += $$[QT_INSTALL_LIBS]
-
-linux:QMAKE_LFLAGS += -Wl,-znodelete
 
 # Install in mlt plugins directory
 target.path = $$system(pkg-config --variable=libdir mlt-framework-7)/mlt

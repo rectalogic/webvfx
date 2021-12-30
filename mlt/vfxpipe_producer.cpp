@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstddef>
 extern "C" {
     #include <framework/mlt_producer.h>
     #include <framework/mlt_frame.h>
 }
-#include <webvfx/image.h>
 #include "factory.h"
 #include "service_locker.h"
 #include "service_manager.h"
 
-static const char* kWebVfxProducerPropertyName = "WebVfxProducer";
-static const char* kWebVfxPositionPropertyName = "webvfx.position";
+static const char* kVFXPipeProducerPropertyName = "VFXPipeProducer";
+static const char* kVFXPipePositionPropertyName = "vfxpipe.position";
 
 static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format *format, int *width, int *height, int /*writable*/) {
     int error = 0;
@@ -21,11 +21,11 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
     mlt_properties properties = MLT_FRAME_PROPERTIES(frame);
 
     // Obtain the producer for this frame
-    mlt_producer producer = (mlt_producer)mlt_properties_get_data(properties, kWebVfxProducerPropertyName, NULL);
+    mlt_producer producer = (mlt_producer)mlt_properties_get_data(properties, kVFXPipeProducerPropertyName, NULL);
 
     // Allocate the image
     *format = mlt_image_rgb;
-    int size = *width * *height * WebVfx::Image::BytesPerPixel;
+    int size = *width * *height * 3;
     *buffer = (uint8_t*)mlt_pool_alloc(size);
     if (!*buffer)
         return 1;
@@ -36,14 +36,14 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
     mlt_properties_set_int(properties, "height", *height);
 
     { // Scope the lock
-        MLTWebVfx::ServiceLocker locker(MLT_PRODUCER_SERVICE(producer));
-        if (!locker.initialize(*width, *height))
+        VFXPipe::ServiceLocker locker(MLT_PRODUCER_SERVICE(producer));
+        if (!locker.initialize(*width, *height, mlt_producer_get_length(producer)))
             return 1;
 
-        WebVfx::Image outputImage(*buffer, *width, *height, size);
-        locker.getManager()->render(&outputImage,
-                                    mlt_properties_get_position(properties, kWebVfxPositionPropertyName),
-                                    mlt_producer_get_length(producer));
+        mlt_image_s outputImage;
+        mlt_image_set_values(&outputImage, *buffer, *format, *width, *height);
+        locker.getManager()->render(nullptr, nullptr, &outputImage,
+                                    mlt_properties_get_position(properties, kVFXPipePositionPropertyName));
     }
 
     return error;
@@ -61,12 +61,12 @@ static int getFrame(mlt_producer producer, mlt_frame_ptr frame, int /*index*/) {
         mlt_properties producer_props = MLT_PRODUCER_PROPERTIES(producer);
 
         // Set the producer on the frame properties
-        mlt_properties_set_data(properties, kWebVfxProducerPropertyName, producer, 0, NULL, NULL);
+        mlt_properties_set_data(properties, kVFXPipeProducerPropertyName, producer, 0, NULL, NULL);
 
         // Update timecode on the frame we're creating
         mlt_position position = mlt_producer_position(producer);
         mlt_frame_set_position(*frame, position);
-        mlt_properties_set_position(properties, kWebVfxPositionPropertyName, position);
+        mlt_properties_set_position(properties, kVFXPipePositionPropertyName, position);
 
         // Set producer-specific frame properties
         mlt_properties_set_int(properties, "progressive", 1);
@@ -82,7 +82,7 @@ static int getFrame(mlt_producer producer, mlt_frame_ptr frame, int /*index*/) {
     return 0;
 }
 
-mlt_service MLTWebVfx::createProducer(mlt_profile profile) {
+mlt_service VFXPipe::createProducer(mlt_profile profile) {
     mlt_producer self = mlt_producer_new(profile);
     if (self) {
         self->get_frame = getFrame;

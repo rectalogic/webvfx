@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <string>
-#include <webvfx/webvfx.h>
 extern "C" {
     #include <framework/mlt_log.h>
 }
@@ -11,9 +10,9 @@ extern "C" {
 #include "service_manager.h"
 
 
-namespace MLTWebVfx
+namespace VFXPipe
 {
-const char* ServiceLocker::kManagerPropertyName = "WebVfxManager";
+const char* ServiceLocker::kManagerPropertyName = "VFXPipeManager";
 
 
 ServiceLocker::ServiceLocker(mlt_service service)
@@ -27,17 +26,17 @@ ServiceLocker::~ServiceLocker()
     mlt_service_unlock(service);
 }
 
-bool ServiceLocker::initialize(int width, int height)
+bool ServiceLocker::initialize(int width, int height, mlt_position length)
 {
     // If we don't have a ServiceManager, create one and store on service
     mlt_properties properties = MLT_SERVICE_PROPERTIES(service);
     manager = static_cast<ServiceManager*>(mlt_properties_get_data(properties, ServiceLocker::kManagerPropertyName, 0));
     if (!manager) {
         manager = new ServiceManager(service);
-        bool result = manager->initialize(width, height);
+        bool result = manager->initialize(width, height, length);
         if (!result) {
             destroyManager(manager);
-            mlt_log(service, MLT_LOG_ERROR, "Failed to create WebVfx ServiceManager\n");
+            mlt_log(service, MLT_LOG_ERROR, "Failed to create vfxpipe ServiceManager\n");
             return result;
         }
 
