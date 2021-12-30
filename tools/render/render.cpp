@@ -6,9 +6,12 @@
 #include <string>
 #include <getopt.h>
 #include <webvfx/webvfx.h>
+#include <webvfx/image.h>
+#include <webvfx/qml_content.h>
 #include <QFileInfo>
 #include <QImage>
 #include <QStringList>
+#include <QUrl>
 
 void usage(const char* name) {
     std::cerr << "Usage: " << name << " -s|--size <width>x<height> [-p|--parameter <name>=<value>]... [-i|--image <name>=<image-filename>] [-t|--times <time0>,<time1>,...] [-c|--comment <comment>] -o|--output <output-filename> [-h|--help] <html-or-qml-filename>" << std::endl;
@@ -133,15 +136,15 @@ int main(int argc, char* argv[]) {
     public:
         //XXX check return code
         AutoWebVfx() { WebVfx::initialize(); }
-        ~AutoWebVfx() { WebVfx::shutdown(); }
     };
     AutoWebVfx vfx;
 
-    WebVfx::Effects* effects = WebVfx::createEffects(effectFile, width, height, new Parameters(parameterMap));
+    WebVfx::QmlContent* effects = new WebVfx::QmlContent(QSize(width, height), new Parameters(parameterMap));
     if (!effects) {
         std::cerr << "Failed to create Effects" << std::endl;
         return 1;
     }
+    effects->loadContent(QUrl::fromLocalFile(QFileInfo(effectFile).absoluteFilePath()));
 
     uchar data[width * height * 3];
     WebVfx::Image renderImage(data, width, height, sizeof(data));
@@ -163,7 +166,7 @@ int main(int argc, char* argv[]) {
 
         // Render
         double time = renderTimes.at(i).toDouble();
-        if (!effects->render(time, &renderImage)) {
+        if (!effects->renderContent(time, &renderImage)) {
             std::cerr << "Failed to render time " << time << std::endl;
             return 1;
         }

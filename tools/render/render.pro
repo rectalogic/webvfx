@@ -7,6 +7,7 @@ TEMPLATE = app
 
 SOURCES += render.cpp
 
+QT += qml quick
 CONFIG += console
 mac:CONFIG -= app_bundle
 TARGET = webvfx_render

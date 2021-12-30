@@ -36,7 +36,6 @@ void log(const QString& msg);
  * @brief Initialize the WebVfx framework
  *
  * initialize() is threadsafe and may be called multiple times.
- * It must be called before calling createEffects() for the first time.
  *
  * On MacOS, in a non Qt host application, initialize() and processEvents()
  * must be called from the main thread.
@@ -48,28 +47,6 @@ void log(const QString& msg);
  * @return Indicates whether initialization was successful
  */
 bool initialize();
-
-/*!
- * @brief Create an Effects instance
- *
- * @param fileName Path to a QML effects implementation.
- *   @c fileName must end in @c .qml
- * @param width Initial width of effect in pixels
- * @param height Initial height of effect in pixels
- * @param parameters Parameters implementation to provide named parameter
- *   values for this effect
- */
-Effects* createEffects(const QString& fileName, int width, int height, Parameters* parameters = 0);
-
-/*!
- * @brief Shut down WebVfx.
- *
- * All Effects should be destroyed before calling shutdown().
- * shutdown() can be called from any thread.
- * It is safe to call shutdown() more than once,
- * or without having called initialize().
- */
-void shutdown();
 
 }
 #endif

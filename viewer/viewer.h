@@ -13,7 +13,7 @@
 
 namespace WebVfx
 {
-    class Content;
+    class QmlContent;
 }
 
 class QDoubleSpinBox;
@@ -50,7 +50,7 @@ private:
     QLabel* sizeLabel;
     QDoubleSpinBox* timeSpinBox;
     QLabel* imageLabel;
-    WebVfx::Content* content;
+    WebVfx::QmlContent* content;
 };
 
 #endif

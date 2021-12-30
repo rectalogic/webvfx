@@ -6,20 +6,15 @@ include(../common.pri)
 TEMPLATE = lib
 #VERSION = 
 
-HEADERS += content.h
 HEADERS += content_context.h
 HEADERS += effects.h
-HEADERS += effects_impl.h
 HEADERS += image.h
 HEADERS += logger.h
 HEADERS += parameters.h
 HEADERS += qml_content.h
 HEADERS += webvfx.h
 
-SOURCES += content.cpp
 SOURCES += content_context.cpp
-SOURCES += effects.cpp
-SOURCES += effects_impl.cpp
 SOURCES += image.cpp
 SOURCES += logger.cpp
 SOURCES += parameters.cpp
@@ -30,7 +25,6 @@ RESOURCES += resources/resources.qrc
 
 CONFIG += shared thread qmltypes
 QT += core gui gui-private qml quick quick-private quick3d
-macx:QTPLUGIN.platforms += qoffscreen
 
 QML_IMPORT_NAME = org.webvfx.WebVfx.native
 QML_IMPORT_MAJOR_VERSION = 1
