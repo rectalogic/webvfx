@@ -8,6 +8,7 @@ TEMPLATE = subdirs
 CONFIG += ordered
 
 SUBDIRS += webvfx
+SUBDIRS += frameserver
 SUBDIRS += viewer
 SUBDIRS += tools/render
 
@@ -19,6 +20,7 @@ system(pkg-config --exists mlt-framework-7) {
 }
 
 viewer.depends = webvfx
+frameserver.depends = webvfx
 render.depends = webvfx
 
 # Documentation

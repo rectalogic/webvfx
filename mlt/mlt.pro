@@ -16,7 +16,8 @@ SOURCES += vfxpipe_filter.cpp
 SOURCES += vfxpipe_producer.cpp
 SOURCES += vfxpipe_transition.cpp
 
-CONFIG += plugin shared
+CONFIG -= qt
+CONFIG += shared
 
 CONFIG += link_pkgconfig
 PKGCONFIG += mlt-framework-7

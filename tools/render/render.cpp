@@ -13,6 +13,8 @@
 #include <QStringList>
 #include <QUrl>
 
+//XXX need a QApplication for this now
+
 void usage(const char* name) {
     std::cerr << "Usage: " << name << " -s|--size <width>x<height> [-p|--parameter <name>=<value>]... [-i|--image <name>=<image-filename>] [-t|--times <time0>,<time1>,...] [-c|--comment <comment>] -o|--output <output-filename> [-h|--help] <html-or-qml-filename>" << std::endl;
 }
