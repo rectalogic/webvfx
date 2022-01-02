@@ -6,9 +6,11 @@ include(../common.pri)
 TEMPLATE = app
 
 HEADERS += frameserver.h
+HEADERS += pipe_reader.h
 
 SOURCES += main.cpp
 SOURCES += frameserver.cpp
+SOURCES += pipe_reader.cpp
 
 QT += quick
 CONFIG += console

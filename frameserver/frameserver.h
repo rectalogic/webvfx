@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FRAMESERVER_H
-#define FRAMESERVER_H
+#pragma once
 
 #include <QObject>
+#include <QSize>
+#include <QStringList>
+#include <webvfx/image.h>
 
 namespace WebVfx
 {
@@ -17,15 +19,21 @@ class FrameServer : public QObject
     Q_OBJECT
 
 public:
-    FrameServer(QObject *parent, const QSize &size, int frameCount, const QMap<QString, QString>& propertyMap, const QUrl& qmlUrl);
+    FrameServer(const QSize &size, unsigned int frameCount, const QStringList& imageNames, const QMap<QString, QString>& propertyMap, const QUrl& qmlUrl, QObject *parent = nullptr);
     ~FrameServer();
 
 private slots:
     void onContentLoadFinished(bool);
 
 private:
+    void renderFrame();
+
     WebVfx::QmlContent* content;
+    QSize videoSize;
+    unsigned int frameCount;
+    unsigned int currentFrame;
+    QStringList imageNames;
+    unsigned int imageByteCount;
+    unsigned char *imageData;
+    WebVfx::Image *images;
 };
-
-#endif
-

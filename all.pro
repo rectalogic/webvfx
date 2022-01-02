@@ -14,7 +14,6 @@ SUBDIRS += tools/render
 
 system(pkg-config --exists mlt-framework-7) {
     SUBDIRS += mlt
-    mlt.depends = webvfx
 } else {
     warning("MLT framework not found, skipping MLT plugin. Need to set PKG_CONFIG_PATH environment variable?")
 }
