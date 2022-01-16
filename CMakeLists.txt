@@ -22,12 +22,12 @@ endif()
 add_subdirectory(webvfx)
 add_subdirectory(frameserver)
 add_subdirectory(viewer)
-add_subdirectory(tools/render)
+add_subdirectory(tools/driver)
 add_subdirectory(mlt)
 
 add_dependencies(webvfx_viewer webvfx)
 add_dependencies(webvfx_frameserver webvfx)
-add_dependencies(webvfx_render webvfx)
+add_dependencies(webvfx_driver webvfx)
 
 # Move these from qmake to cmake https://vicrucann.github.io/tutorials/quick-cmake-doxygen/
 # https://cmake.org/cmake/help/latest/module/FindDoxygen.html?highlight=doxygen#module:FindDoxygen
