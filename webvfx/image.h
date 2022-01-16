@@ -20,9 +20,6 @@ namespace WebVfx
 class Image
 {
 public:
-    //! Number of bytes per pixel.
-    static const int BytesPerPixel = 3;
-
     Image()
         : pixels_(0)
         , width_(0)

@@ -20,7 +20,7 @@ class ServiceLocker;
 class ServiceManager
 {
 public:
-    int render(mlt_image sourceImage, mlt_image targetImage, mlt_image outputImage);
+    int render(mlt_image sourceImage, mlt_image targetImage, mlt_image outputImage, mlt_position position);
 
 private:
     friend class ServiceLocker;
@@ -30,6 +30,7 @@ private:
     template <typename T> bool dataIO(int fd, void *data, size_t size, T ioFunc);
 
     mlt_service service;
+    mlt_position length;
     pid_t pid;
     int pipeRead;
     int pipeWrite;

@@ -1,11 +1,10 @@
 #include <string.h>
 #include <QtGlobal>
+#include "common/webvfx_common.h"
 #include "webvfx/image.h"
 
 namespace WebVfx
 {
-
-const int Image::BytesPerPixel;
 
 void Image::copyPixels(const Image& sourceImage, Image& targetImage)
 {
@@ -16,7 +15,7 @@ void Image::copyPixels(const Image& sourceImage, Image& targetImage)
         int sourceRowBytes = sourceImage.bytesPerLine();
         unsigned char* targetP = targetImage.pixels_;
         int targetRowBytes = targetImage.bytesPerLine();
-        int widthBytes = targetImage.width_ * BytesPerPixel;
+        int widthBytes = targetImage.width_ * WebVfxCommon::BytesPerPixel;
         for (int i = 0; i < targetImage.height_; i++) {
             memcpy(targetP, sourceP, widthBytes);
             sourceP += sourceRowBytes;

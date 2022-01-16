@@ -70,6 +70,7 @@ private:
 
 ServiceManager::ServiceManager(mlt_service service)
     : service(service)
+    , length(0)
     , pipeRead(-1)
     , pipeWrite(-1)
     , imageProducers(0)
@@ -98,6 +99,7 @@ bool ServiceManager::initialize(int width, int height, mlt_position length)
     if (pid == -1 || pid > 0)
         return true;
 
+    this->length = length;
     mlt_properties properties = MLT_SERVICE_PROPERTIES(service);
 
     // Create and initialize Effects
@@ -270,10 +272,13 @@ bool ServiceManager::dataIO(int fd, void *data, size_t size, T ioFunc) {
     return true;
 }
 
-int ServiceManager::render(mlt_image sourceImage, mlt_image targetImage, mlt_image outputImage)
+int ServiceManager::render(mlt_image sourceImage, mlt_image targetImage, mlt_image outputImage, mlt_position position)
 {
     if (pipeRead == -1 || pipeWrite == -1)
         return 1;
+    double time = length > 0 ? position / (double)length : 0;
+    //XXX write time as NS out of 1sec, netlong
+    //XXX need to implement reading time in frameserver
     if (sourceImage != nullptr) {
         if (!dataIO(pipeWrite, sourceImage->data, mlt_image_calculate_size(sourceImage), write)) {
             return 1;

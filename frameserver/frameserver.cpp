@@ -10,6 +10,7 @@
 #include <QTimer>
 #include "frameserver.h"
 #include "pipe_reader.h"
+#include "common/webvfx_common.h"
 #include <webvfx/webvfx.h>
 #include <webvfx/logger.h>
 #include <webvfx/parameters.h>
@@ -50,7 +51,7 @@ FrameServer::FrameServer(const QSize &size, unsigned int frameCount, const QStri
     , frameCount(frameCount)
     , currentFrame(0)
     , imageNames(imageNames)
-    , imageByteCount(videoSize.width() * videoSize.height() * WebVfx::Image::BytesPerPixel)
+    , imageByteCount(videoSize.width() * videoSize.height() * WebVfxCommon::BytesPerPixel)
     , imageData(0)
     , images(0)
 {
@@ -87,6 +88,7 @@ void FrameServer::onContentLoadFinished(bool result)
             connect(readNotifier, &PipeReader::bufferFilled, this, &FrameServer::renderFrame);
         }
         else {
+            //XXX should we post an event instead? https://www.qt.io/blog/2017/02/21/making-movies-qml
             QTimer *timer = new QTimer(this);
             connect(timer, &QTimer::timeout, this, &FrameServer::renderFrame);
             timer->start();
@@ -100,6 +102,7 @@ void FrameServer::onContentLoadFinished(bool result)
 }
 
 void FrameServer::renderFrame() {
+    //XXX producer needs to exit after last frame
     auto outputImage = &images[imageNames.size()];
     content->renderContent(currentFrame / (double)frameCount, outputImage);
     currentFrame++;
