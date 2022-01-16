@@ -19,7 +19,7 @@ class FrameServer : public QObject
     Q_OBJECT
 
 public:
-    FrameServer(const QSize &size, unsigned int frameCount, const QStringList& imageNames, const QMap<QString, QString>& propertyMap, const QUrl& qmlUrl, QObject *parent = nullptr);
+    FrameServer(const QSize &size, const QStringList& imageNames, const QMap<QString, QString>& propertyMap, const QUrl& qmlUrl, QObject *parent = nullptr);
     ~FrameServer();
 
 private slots:
@@ -30,8 +30,6 @@ private:
 
     WebVfx::QmlContent* content;
     QSize videoSize;
-    unsigned int frameCount;
-    unsigned int currentFrame;
     QStringList imageNames;
     unsigned int imageByteCount;
     unsigned char *imageData;

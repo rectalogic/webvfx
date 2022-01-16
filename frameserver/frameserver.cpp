@@ -7,7 +7,6 @@
 #include <QDebug>
 #include <QMap>
 #include <QUrl>
-#include <QTimer>
 #include "frameserver.h"
 #include "pipe_reader.h"
 #include "common/webvfx_common.h"
@@ -44,12 +43,10 @@ public:
 
 /////////////////
 
-FrameServer::FrameServer(const QSize &size, unsigned int frameCount, const QStringList& imageNames, const QMap<QString, QString>& propertyMap, const QUrl& qmlUrl, QObject *parent)
+FrameServer::FrameServer(const QSize &size, const QStringList& imageNames, const QMap<QString, QString>& propertyMap, const QUrl& qmlUrl, QObject *parent)
     : QObject(parent)
     , content(0)
     , videoSize(size)
-    , frameCount(frameCount)
-    , currentFrame(0)
     , imageNames(imageNames)
     , imageByteCount(videoSize.width() * videoSize.height() * WebVfxCommon::BytesPerPixel)
     , imageData(0)
@@ -73,27 +70,18 @@ void FrameServer::onContentLoadFinished(bool result)
 {
     if (result) {
         int imageCount = 1 + imageNames.size();
-        // Single buffer to hold output image and all input images
-        imageData = new unsigned char[imageCount * imageByteCount];
+        // Single buffer to hold output image and all input images, plus timecode
+        imageData = new unsigned char[sizeof(uint32_t) + (imageCount * imageByteCount)];
         images = new WebVfx::Image[imageCount];
         for (int i = 0; i < imageCount; i++) {
-            images[i] = WebVfx::Image(imageData + (i * imageByteCount), videoSize.width(), videoSize.height(), imageByteCount);
+            images[i] = WebVfx::Image(imageData + sizeof(uint32_t) + (i * imageByteCount), videoSize.width(), videoSize.height(), imageByteCount);
             // Last image is the output image
             if (i < imageCount - 1)
                 content->setImage(imageNames.at(i), &images[i]);
         }
 
-        if (!imageNames.isEmpty()) {
-            const auto readNotifier = new PipeReader(STDIN_FILENO, imageData, imageByteCount * imageNames.size(), this);
-            connect(readNotifier, &PipeReader::bufferFilled, this, &FrameServer::renderFrame);
-        }
-        else {
-            //XXX should we post an event instead? https://www.qt.io/blog/2017/02/21/making-movies-qml
-            QTimer *timer = new QTimer(this);
-            connect(timer, &QTimer::timeout, this, &FrameServer::renderFrame);
-            timer->start();
-        }
-
+        const auto readNotifier = new PipeReader(STDIN_FILENO, imageData, sizeof(uint32_t) + imageByteCount * imageNames.size(), this);
+        connect(readNotifier, &PipeReader::bufferFilled, this, &FrameServer::renderFrame);
     }
     else {
         qCritical("QML content failed to load.");
@@ -104,8 +92,8 @@ void FrameServer::onContentLoadFinished(bool result)
 void FrameServer::renderFrame() {
     //XXX producer needs to exit after last frame
     auto outputImage = &images[imageNames.size()];
-    content->renderContent(currentFrame / (double)frameCount, outputImage);
-    currentFrame++;
+    double time = WebVfxCommon::fromTimecode((uint32_t)*imageData);
+    content->renderContent(time, outputImage);
 
     size_t bytesWritten = 0;
     while (bytesWritten < imageByteCount) {

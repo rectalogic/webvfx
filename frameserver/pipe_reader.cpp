@@ -17,7 +17,6 @@ void PipeReader::dataReady(QSocketDescriptor, QSocketNotifier::Type)
 {
     //XXX do we need QSocketNotifier::Exception too or can we detect it when reading?
 
-    //XXX if there is more to read will we be notified again, or do we need to keep readahead buffer?
     ssize_t n = read(notifier->socket(), buffer + currentBufferPosition, bufferSize - currentBufferPosition);
     if (n == -1) {
         qCritical("read failed: %s", strerror(errno));

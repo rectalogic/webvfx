@@ -15,6 +15,7 @@ extern "C" {
     #include <framework/mlt_image.h>
     #include <framework/mlt_producer.h>
 }
+#include "common/webvfx_common.h"
 #include "service_manager.h"
 
 extern char **environ;
@@ -276,9 +277,12 @@ int ServiceManager::render(mlt_image sourceImage, mlt_image targetImage, mlt_ima
 {
     if (pipeRead == -1 || pipeWrite == -1)
         return 1;
-    double time = length > 0 ? position / (double)length : 0;
-    //XXX write time as NS out of 1sec, netlong
-    //XXX need to implement reading time in frameserver
+
+    uint32_t timecode = length > 0 ? WebVfxCommon::toTimecode(position, length) : 0;
+    if (!dataIO(pipeWrite, &timecode, sizeof(timecode), write)) {
+        return 1;
+    }
+
     if (sourceImage != nullptr) {
         if (!dataIO(pipeWrite, sourceImage->data, mlt_image_calculate_size(sourceImage), write)) {
             return 1;

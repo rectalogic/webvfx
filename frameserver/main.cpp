@@ -31,7 +31,6 @@ int main(int argc, char *argv[])
     assertOpt(parser.addOption({{"p", "property"}, "Property name=value, may be specified multiple times.", "property"}));
     assertOpt(parser.addOption({"width", "Video frame width.", "width"}));
     assertOpt(parser.addOption({"height", "Video frame height.", "height"}));
-    assertOpt(parser.addOption({{"f", "frames"}, "Number of frames to be rendered.", "frameCount"}));
     assertOpt(parser.addOption({{"i", "image"}, "Name of image on stdin, may be specified multiple times, order matters.", "image"}));
     parser.addPositionalArgument("source", "QML source URL.");
 
@@ -56,14 +55,6 @@ int main(int argc, char *argv[])
         QCoreApplication::exit(1);
     }
 
-    const auto frameCountValue = parser.value("frames");
-    bool fOk;
-    const int frameCount = frameCountValue.toInt(&fOk);
-    if (!fOk) {
-        qCritical("Invalid frame count.");
-        QCoreApplication::exit(1);
-    }
-
     const QStringList args = parser.positionalArguments();
     if (args.size() != 1) {
         qCritical("Missing required source url");
@@ -71,7 +62,7 @@ int main(int argc, char *argv[])
     }
     const QUrl url(args.at(0));
 
-    new FrameServer(QSize(width, height), frameCount, imageNames, propertyMap, url, &app);
+    new FrameServer(QSize(width, height), imageNames, propertyMap, url, &app);
 
     return app.exec();
 }
