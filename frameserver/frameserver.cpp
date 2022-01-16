@@ -86,6 +86,7 @@ void FrameServer::onContentLoadFinished(bool result)
     else {
         qCritical("QML content failed to load.");
         QCoreApplication::exit(1);
+        return;
     }
 }
 
@@ -105,9 +106,11 @@ void FrameServer::readFrames() {
         if (n == -1) {
             qCritical("read failed: %s", strerror(errno));
             QCoreApplication::exit(1);
+            return;
         }
         else if (n == 0) {
             QCoreApplication::exit(0);
+            return;
         }
         else {
             currentBufferPosition += n;
@@ -128,10 +131,12 @@ void FrameServer::renderFrame() {
         // EOF
         if (n == 0) {
             QCoreApplication::exit(0);
+            return;
         }
         if (n == -1) {
             qCritical("QML content failed to load.");
             QCoreApplication::exit(1);
+            return;
         }
         bytesWritten = bytesWritten + n;
     }

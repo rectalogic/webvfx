@@ -12,7 +12,7 @@
 inline void assertOpt(bool r) {
     if (!r) {
         qCritical("Failed to add option");
-        QCoreApplication::exit(1);;
+        exit(1);
     }
 }
 
@@ -52,13 +52,13 @@ int main(int argc, char *argv[])
     const int height = heightValue.toInt(&hOk);
     if (!wOk || !hOk) {
         qCritical("Invalid frame size.");
-        QCoreApplication::exit(1);
+        exit(1);
     }
 
     const QStringList args = parser.positionalArguments();
     if (args.size() != 1) {
         qCritical("Missing required source url");
-        QCoreApplication::exit(1);
+        exit(1);
     }
     const QUrl url(args.at(0));
 
