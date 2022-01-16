@@ -22,16 +22,20 @@ public:
     FrameServer(const QSize &size, const QStringList& imageNames, const QMap<QString, QString>& propertyMap, const QUrl& qmlUrl, QObject *parent = nullptr);
     ~FrameServer();
 
+    bool event(QEvent *event) override;
+
 private slots:
     void onContentLoadFinished(bool);
 
 private:
+    void readFrames();
     void renderFrame();
 
     WebVfx::QmlContent* content;
     QSize videoSize;
     QStringList imageNames;
     unsigned int imageByteCount;
+    unsigned int imageBufferReadSize;
     unsigned char *imageData;
     WebVfx::Image *images;
 };

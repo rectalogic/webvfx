@@ -9,7 +9,6 @@ set(CMAKE_AUTOMOC ON)
 qt_add_executable(webvfx_frameserver
     main.cpp
     frameserver.cpp
-    pipe_reader.cpp
 )
 set_property(TARGET webvfx_frameserver PROPERTY AUTOMOC ON)
 

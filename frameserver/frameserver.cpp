@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include <unistd.h>
+#include <errno.h>
 #include <QCoreApplication>
 #include <QDebug>
 #include <QMap>
 #include <QUrl>
 #include "frameserver.h"
-#include "pipe_reader.h"
 #include "common/webvfx_common.h"
 #include <webvfx/webvfx.h>
 #include <webvfx/logger.h>
@@ -49,6 +49,7 @@ FrameServer::FrameServer(const QSize &size, const QStringList& imageNames, const
     , videoSize(size)
     , imageNames(imageNames)
     , imageByteCount(videoSize.width() * videoSize.height() * WebVfxCommon::BytesPerPixel)
+    , imageBufferReadSize(0)
     , imageData(0)
     , images(0)
 {
@@ -79,14 +80,40 @@ void FrameServer::onContentLoadFinished(bool result)
             if (i < imageCount - 1)
                 content->setImage(imageNames.at(i), &images[i]);
         }
-
-        const auto readNotifier = new PipeReader(STDIN_FILENO, imageData, sizeof(uint32_t) + imageByteCount * imageNames.size(), this);
-        connect(readNotifier, &PipeReader::bufferFilled, this, &FrameServer::renderFrame);
+        imageBufferReadSize = sizeof(uint32_t) + (imageByteCount * imageNames.size());
+        QCoreApplication::postEvent(this, new QEvent(QEvent::User));
     }
     else {
         qCritical("QML content failed to load.");
         QCoreApplication::exit(1);
     }
+}
+
+bool FrameServer::event(QEvent *event) {
+    if (event->type() == QEvent::User) {
+        readFrames();
+        return true;
+    }
+    return QObject::event(event);
+}
+
+void FrameServer::readFrames() {
+    unsigned int currentBufferPosition = 0;
+
+    while (currentBufferPosition < imageBufferReadSize) {
+        ssize_t n = read(STDIN_FILENO, imageData + currentBufferPosition, imageBufferReadSize - currentBufferPosition);
+        if (n == -1) {
+            qCritical("read failed: %s", strerror(errno));
+            QCoreApplication::exit(1);
+        }
+        else if (n == 0) {
+            QCoreApplication::exit(0);
+        }
+        else {
+            currentBufferPosition += n;
+        }
+    }
+    renderFrame();
 }
 
 void FrameServer::renderFrame() {
@@ -108,4 +135,6 @@ void FrameServer::renderFrame() {
         }
         bytesWritten = bytesWritten + n;
     }
+
+    QCoreApplication::postEvent(this, new QEvent(QEvent::User));
 }
