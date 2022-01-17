@@ -217,10 +217,10 @@ void QmlContent::setContentSize(const QSize& size) {
     }
 }
 
-QImage QmlContent::renderContent(double time)
+bool QmlContent::renderContent(double time, QImage& renderImage)
 {
     if (!initialize()) {
-        return QImage();
+        return false;
     }
     // Allow the content to render for this time
     contentContext->render(time);
@@ -239,7 +239,6 @@ QImage QmlContent::renderContent(double time)
     QQuickRenderControlPrivate *renderControlPrivate = QQuickRenderControlPrivate::get(renderControl);
     QRhi *rhi = renderControlPrivate->rhi;
 
-    QImage renderImage(contentContext->getVideoSize(), QImage::Format_RGB888);
     QRhiReadbackResult readResult;
     readResult.completed = [&readResult, &rhi, &renderImage] {
         QImage sourceImage(reinterpret_cast<const uchar *>(readResult.data.constData()),
@@ -259,7 +258,7 @@ QImage QmlContent::renderContent(double time)
 
     renderControl->endFrame();
 
-    return renderImage;
+    return true;
 }
 
 }

@@ -36,7 +36,7 @@ public:
     void loadContent(const QUrl& url);
     void setContentSize(const QSize& size);
     const Effects::ImageTypeMap& getImageTypeMap() { return contentContext->getImageTypeMap(); };
-    QImage renderContent(double time);
+    bool renderContent(double time, QImage& renderImage);
     void setImage(const QString& name, QImage image) { contentContext->setImage(name, image); }
 
 signals:

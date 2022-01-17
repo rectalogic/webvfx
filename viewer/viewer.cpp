@@ -151,7 +151,8 @@ void Viewer::renderContent()
     if (!content)
         return;
     setImagesOnContent();
-    QImage renderImage = content->renderContent(timeSpinBox->value());
+    QImage renderImage(scrollArea->widget()->size(), QImage::Format_RGB888);
+    content->renderContent(timeSpinBox->value(), renderImage);
     imageLabel->setPixmap(QPixmap::fromImage(renderImage));
 }
 

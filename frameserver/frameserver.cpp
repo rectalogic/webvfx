@@ -70,16 +70,19 @@ FrameServer::~FrameServer()
 void FrameServer::onContentLoadFinished(bool result)
 {
     if (result) {
-        int imageCount = imageNames.size();
-        // Single buffer to hold all input images, plus timecode
-        imageData = new unsigned char[sizeof(uint32_t) + (imageCount * imageByteCount)];
-        images = new QImage[imageCount];
-        for (int i = 0; i < imageCount; i++) {
+        // Single buffer to hold output image and all input images, plus timecode
+        imageData = new unsigned char[sizeof(uint32_t) + ((1 + imageNames.size()) * imageByteCount)];
+        images = new QImage[1 + imageNames.size()]; //XXX use QList/emplace_back ?
+        for (int i = 0; i < imageNames.size(); i++) {
             images[i] = QImage((const uchar*)(imageData + sizeof(uint32_t) + (i * imageByteCount)),
                 videoSize.width(), videoSize.height(), QImage::Format_RGB888);
             content->setImage(imageNames.at(i), images[i]);
         }
-        imageBufferReadSize = sizeof(uint32_t) + (imageByteCount * imageCount);
+        // Last image is the output image
+        images[imageNames.size()] = QImage((uchar*)(imageData + sizeof(uint32_t) + (imageNames.size() * imageByteCount)),
+            videoSize.width(), videoSize.height(), QImage::Format_RGB888);
+
+        imageBufferReadSize = sizeof(uint32_t) + (imageByteCount * imageNames.size());
         QCoreApplication::postEvent(this, new QEvent(QEvent::User));
     }
     else {
@@ -119,9 +122,9 @@ void FrameServer::readFrames() {
 }
 
 void FrameServer::renderFrame() {
-    //XXX producer needs to exit after last frame
     double time = WebVfxCommon::fromTimecode((uint32_t)*imageData);
-    auto outputImage = content->renderContent(time);
+    auto outputImage = images[imageNames.size()];
+    content->renderContent(time, outputImage);
 
     size_t bytesWritten = 0;
     while (bytesWritten < imageByteCount) {
