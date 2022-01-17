@@ -7,11 +7,11 @@
 
 #include <QQmlError>
 #include <QQuickView>
+#include <QImage>
 #include <QQuickRenderControl>
 #include <QtQuick3D/QQuick3DTextureData>
 #include "webvfx/content_context.h"
 #include "webvfx/effects.h"
-#include "webvfx/image.h"
 
 class QRhiRenderBuffer;
 class QRhiRenderPassDescriptor;
@@ -23,7 +23,6 @@ class QUrl;
 namespace WebVfx
 {
 
-class Image;
 class Parameters;
 class RenderStrategy;
 
@@ -37,8 +36,8 @@ public:
     void loadContent(const QUrl& url);
     void setContentSize(const QSize& size);
     const Effects::ImageTypeMap& getImageTypeMap() { return contentContext->getImageTypeMap(); };
-    bool renderContent(double time, Image* renderImage);
-    void setImage(const QString& name, Image* image) { contentContext->setImage(name, image); }
+    QImage renderContent(double time);
+    void setImage(const QString& name, QImage image) { contentContext->setImage(name, image); }
 
 signals:
     void contentLoadFinished(bool result);

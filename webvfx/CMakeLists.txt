@@ -6,7 +6,6 @@ find_package(Qt6 COMPONENTS Core Gui Qml Quick Quick3D REQUIRED)
 
 set(SOURCES
     content_context.cpp
-    image.cpp
     logger.cpp
     parameters.cpp
     qml_content.cpp

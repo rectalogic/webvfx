@@ -6,8 +6,8 @@
 
 #include <QObject>
 #include <QSize>
+#include <QImage>
 #include <QStringList>
-#include <webvfx/image.h>
 
 namespace WebVfx
 {
@@ -37,5 +37,5 @@ private:
     unsigned int imageByteCount;
     unsigned int imageBufferReadSize;
     unsigned char *imageData;
-    WebVfx::Image *images;
+    QImage *images;
 };

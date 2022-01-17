@@ -17,7 +17,6 @@
 #include <QTextStream>
 #include <QUrl>
 #include <webvfx/effects.h>
-#include <webvfx/image.h>
 #include <webvfx/parameters.h>
 #include <webvfx/webvfx.h>
 #include <webvfx/qml_content.h>
@@ -152,11 +151,8 @@ void Viewer::renderContent()
     if (!content)
         return;
     setImagesOnContent();
-    QImage image(scrollArea->widget()->size(), QImage::Format_RGB888);
-    WebVfx::Image renderImage(image.bits(), image.width(), image.height(),
-                              image.sizeInBytes());
-    content->renderContent(timeSpinBox->value(), &renderImage);
-    imageLabel->setPixmap(QPixmap::fromImage(image));
+    QImage renderImage = content->renderContent(timeSpinBox->value());
+    imageLabel->setPixmap(QPixmap::fromImage(renderImage));
 }
 
 void Viewer::on_resizeButton_clicked()
@@ -201,8 +197,7 @@ void Viewer::setImagesOnContent()
     for (int i = 0; i < rowCount; i++) {
         ImageColor* imageColor = static_cast<ImageColor*>(imagesTable->cellWidget(i, 1));
         if (imageColor) {
-            WebVfx::Image image(imageColor->getImage());
-            content->setImage(imageColor->objectName(), &image);
+            content->setImage(imageColor->objectName(), imageColor->getImage());
         }
     }
 }
@@ -284,8 +279,8 @@ void Viewer::setupImages(const QSize& size)
         imageColor->setImageSize(size);
         imageColor->setObjectName(imageName);
         imageColor->setImageColor(QColor::fromHsv(QRandomGenerator::global()->generate() % 360, 200, 230));
-        connect(imageColor, SIGNAL(imageChanged(QString,WebVfx::Image)),
-                SLOT(onImageChanged(QString,WebVfx::Image)));
+        connect(imageColor, SIGNAL(imageChanged(QString,QImage)),
+                SLOT(onImageChanged(QString,QImage)));
         imagesTable->setCellWidget(row, 1, imageColor);
 
         // Type name in column 2
@@ -309,7 +304,7 @@ void Viewer::setupImages(const QSize& size)
     }
 }
 
-void Viewer::onImageChanged(const QString&, WebVfx::Image)
+void Viewer::onImageChanged(const QString&, QImage)
 {
     if (!content)
         return;

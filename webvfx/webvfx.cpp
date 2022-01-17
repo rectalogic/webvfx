@@ -7,7 +7,6 @@
 #include <QMutexLocker>
 #include <QString>
 #include "webvfx/logger.h"
-#include "webvfx/image.h"
 #include "webvfx/webvfx.h"
 
 namespace WebVfx
@@ -29,10 +28,6 @@ bool initialize()
 
     if (s_initialized)
         return true;
-
-    // Register metatypes for queued connections
-    qRegisterMetaType<Parameters*>("Parameters*");
-    qRegisterMetaType<Image*>("Image*");
 
     s_initialized = true;
     return true;

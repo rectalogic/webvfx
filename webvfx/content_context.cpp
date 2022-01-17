@@ -2,7 +2,6 @@
 #include <QVariant>
 #include <QtAlgorithms>
 #include "webvfx/content_context.h"
-#include "webvfx/image.h"
 #include "webvfx/parameters.h"
 
 namespace WebVfx
@@ -25,18 +24,11 @@ void ContentContext::render(double time)
 {
     renderCount++;
     emit renderRequested(time);
-
-    // Delete all QImage wrappers - data is not valid after render()
-    imageMap.clear();
 }
 
-void ContentContext::setImage(const QString& name, Image* image)
+void ContentContext::setImage(const QString& name, QImage image)
 {
-    // Create a QImage wrapper for the image data
-    QImage qimage((uchar*)image->pixels(),
-                  image->width(), image->height(),
-                  image->bytesPerLine(), QImage::Format_RGB888);
-    imageMap.insert(name, qimage);
+    imageMap.insert(name, image);
 }
 
 double ContentContext::getNumberParameter(const QString& name)

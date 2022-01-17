@@ -18,7 +18,6 @@
 #include <QtGui/private/qrhi_p.h>
 #include <QtQuick/private/qquickrendercontrol_p.h>
 
-#include "webvfx/image.h"
 #include "webvfx/qml_content.h"
 #include "webvfx/webvfx.h"
 
@@ -218,10 +217,10 @@ void QmlContent::setContentSize(const QSize& size) {
     }
 }
 
-bool QmlContent::renderContent(double time, Image* renderImage)
+QImage QmlContent::renderContent(double time)
 {
-    if (!renderImage || !initialize()) {
-        return false;
+    if (!initialize()) {
+        return QImage();
     }
     // Allow the content to render for this time
     contentContext->render(time);
@@ -240,15 +239,13 @@ bool QmlContent::renderContent(double time, Image* renderImage)
     QQuickRenderControlPrivate *renderControlPrivate = QQuickRenderControlPrivate::get(renderControl);
     QRhi *rhi = renderControlPrivate->rhi;
 
+    QImage renderImage(contentContext->getVideoSize(), QImage::Format_RGB888);
     QRhiReadbackResult readResult;
     readResult.completed = [&readResult, &rhi, &renderImage] {
         QImage sourceImage(reinterpret_cast<const uchar *>(readResult.data.constData()),
                            readResult.pixelSize.width(), readResult.pixelSize.height(),
                            QImage::Format_RGBA8888_Premultiplied);
-        QImage destImage((uchar*)renderImage->pixels(), renderImage->width(),
-                         renderImage->height(), renderImage->bytesPerLine(),
-                         QImage::Format_RGB888);
-        QPainter painter(&destImage);
+        QPainter painter(&renderImage);
         if (rhi->isYUpInFramebuffer()) {
             painter.scale(1, -1);
             painter.translate(0, -readResult.pixelSize.height());
@@ -262,7 +259,7 @@ bool QmlContent::renderContent(double time, Image* renderImage)
 
     renderControl->endFrame();
 
-    return true;
+    return renderImage;
 }
 
 }

@@ -7,8 +7,8 @@
 
 #include <QMainWindow>
 #include <QMessageLogContext>
+#include <QImage>
 #include <QtGlobal>
-#include <webvfx/image.h>
 #include "ui_viewer.h"
 
 namespace WebVfx
@@ -37,7 +37,7 @@ private slots:
     void onTimeSpinBoxValueChanged(double);
     void on_addParameterButton_clicked();
     void on_deleteParameterButton_clicked();
-    void onImageChanged(const QString&, WebVfx::Image);
+    void onImageChanged(const QString&, QImage);
 
 private:
     void createContent(const QString& fileName);

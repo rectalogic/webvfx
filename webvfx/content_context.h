@@ -20,7 +20,6 @@ typedef QMap<QString, QVariant> QVariantMap;
 namespace WebVfx
 {
 
-class Image;
 class Parameters;
 
 // See QtWebKit Bridge docs:
@@ -48,7 +47,7 @@ public:
 
     // Set an image for the given name.
     // image must remain valid until render() is called.
-    void setImage(const QString& name, Image* image);
+    void setImage(const QString& name, QImage image);
 
     // Page contents can use these to retrieve parameters.
     // JS: var title = webvfx.getStringParameter("title");
