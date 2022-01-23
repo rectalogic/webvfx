@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+BASEDIR=$(dirname "${BASH_SOURCE[0]}")
+
+export VFX_RED=${BASEDIR}/red.mov
+export VFX_BLUE=${BASEDIR}/blue.mov
+export VFX_GREEN=${BASEDIR}/green.mov
+
+if [ ! -f "$VFX_RED" ]; then
+    ${BASEDIR}/tests/gen_testsrc -d 12 -c red "$VFX_RED"
+fi
+if [ ! -f "$VFX_BLUE" ]; then
+    ${BASEDIR}/tests/gen_testsrc -d 12 -c blue "$VFX_BLUE"
+fi
+if [ ! -f "$VFX_GREEN" ]; then
+    ${BASEDIR}/tests/gen_testsrc -d 12 -c green "$VFX_GREEN"
+fi

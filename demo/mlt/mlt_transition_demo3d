@@ -1,10 +1,10 @@
 #!/bin/bash
 
 BASEDIR=$(dirname "${BASH_SOURCE[0]}")
+$BASEDIR/create_mov
 export DISPLAY=${DISPLAY:-:0}
-melt -verbose "${VFX_SOURCE:-${BASEDIR}/red.mlt}" out=349 \
+melt -verbose "${VFX_SOURCE:-${BASEDIR}/red.mov}" out=349 \
     -track -blank 69 \
-    "${VFX_TARGET:-${BASEDIR}/blue.mlt}" out=349 \
-    -transition webvfx:${BASEDIR}/../examples/transition-demo3d.qml in=70 out=349 \
-        title="${VFX_TITLE:-Hello 3D!}" \
+    "${VFX_TARGET:-${BASEDIR}/blue.mov}" out=349 \
+    -transition vfxpipe:"webvfx_frameserver --width ${VFXPIPE_WIDTH} --height ${VFXPIPE_HEIGHT} --image SourceImage --image TargetImage --property title=\"${VFX_TITLE:-Hello 3D!}\" ${BASEDIR}/../examples/transition-demo3d.qml" in=70 out=349 \
     $(eval echo $(< "${VFX_CONSUMER:-c${BASEDIR}/onsumer_sdl}")) mlt_profile=${BASEDIR}/webvfx_profile

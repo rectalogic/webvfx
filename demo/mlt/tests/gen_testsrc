@@ -16,7 +16,7 @@ shift "$((OPTIND-1))"
 FILE=$1
 
 if [[ ${RAW} -eq 1 ]]; then
-    ffmpeg -f lavfi -i testsrc=duration=${DURATION:-10}:size=640x360:rate=30:decimals=2 -f rawvideo -video_size 640x360 -pixel_format rgb24 -framerate 30 -vf drawbox=color=${COLOR:-white}:t=ih/16,format=rgb24 -y ${FILE}
+    ffmpeg -f lavfi -i testsrc=duration=${DURATION:-10}:size=640x360:rate=30:decimals=2,drawbox=color=${COLOR:-white}:t=ih/16,format=rgb24 -f rawvideo -video_size 640x360 -pixel_format rgb24 -framerate 30 -y ${FILE}
 else
-    ffmpeg -f lavfi -i testsrc=duration=${DURATION:-10}:size=640x360:rate=30:decimals=2 -f mov -vcodec rawvideo -pix_fmt uyvy422 -framerate 30 -vtag yuvs -vf drawbox=color=${COLOR:-white}:t=ih/16 -y ${FILE}
+    ffmpeg -f lavfi -i testsrc=duration=${DURATION:-10}:size=640x360:rate=30:decimals=2,drawbox=color=${COLOR:-white}:t=ih/16 -f mov -vcodec rawvideo -pix_fmt uyvy422 -framerate 30 -vtag yuvs -y ${FILE}
 fi
