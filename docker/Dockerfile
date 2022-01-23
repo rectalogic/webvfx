@@ -26,7 +26,7 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
 ARG QT_VER=6.2.2
 
 RUN pip3 install aqtinstall \
-    && python3 -m aqt install --outputdir /usr/local/Qt ${QT_VER} linux desktop -m qtquick3d qtshadertools qtquicktimeline
+    && python3 -m aqt install-qt linux desktop ${QT_VER} -m qtquick3d qtshadertools qtquicktimeline --outputdir /usr/local/Qt
 
 ENV PATH /usr/local/Qt/${QT_VER}/gcc_64/bin:$PATH
 ENV QT_PLUGIN_PATH /usr/local/Qt/${QT_VER}/gcc_64/plugins/
@@ -35,7 +35,7 @@ ENV QML2_IMPORT_PATH /usr/local/Qt/${QT_VER}/gcc_64/qml/
 
 RUN export MLT_VER=7.4.0 \
     && curl -L https://github.com/mltframework/mlt/releases/download/v${MLT_VER}/mlt-${MLT_VER}.tar.gz | tar xzf - \
-    && cd mlt-${MLT_VER} && cmake . && make && cmake --install . \
+    && cd mlt-${MLT_VER} && cmake . && cmake --build . && cmake --install . \
     && cd .. && rm -rf mlt-${MLT_VER}
 
 RUN ldconfig

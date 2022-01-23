@@ -79,8 +79,8 @@ jobs:
           curl -L https://github.com/mltframework/mlt/releases/download/v${MLT_VER}/mlt-${MLT_VER}.tar.gz | tar xzf -
           cd mlt-${MLT_VER}
           mkdir /tmp/mlt
-          cmake -DCMAKE_INSTALL_PREFIX=/tmp/mlt .
-          make
+          cmake --install-prefix /tmp/mlt .
+          cmake --build .
           cmake --install .
           cd ..
           tar -C /tmp/mlt -cf mlt-${MLT_VER}.tar .
@@ -92,8 +92,9 @@ jobs:
       run: |
         mkdir build
         cd build
-        qmake ..
-        sudo make install
+        cmake --install-prefix ${PWD}/../../Qt/${{ env.QT_VER }}/macos "-DCMAKE_PREFIX_PATH=${PWD}/../../Qt/${{ env.QT_VER }}/macos" ..
+        cmake --build .
+        cmake --install .
     - name: Test
       # Disable for now, no GPU on macos
       # https://github.com/actions/virtual-environments/issues/1779#issuecomment-707071183

@@ -31,7 +31,7 @@ class QmlContent : public QQuickView
     Q_OBJECT
 public:
     QmlContent(const QSize& size, Parameters* parameters);
-    ~QmlContent();
+    ~QmlContent() override;
 
     void loadContent(const QUrl& url);
     void setContentSize(const QSize& size);

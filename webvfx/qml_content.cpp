@@ -239,8 +239,10 @@ bool QmlContent::renderContent(double time, QImage& renderImage)
     QQuickRenderControlPrivate *renderControlPrivate = QQuickRenderControlPrivate::get(renderControl);
     QRhi *rhi = renderControlPrivate->rhi;
 
+    bool readCompleted = false;
     QRhiReadbackResult readResult;
-    readResult.completed = [&readResult, &rhi, &renderImage] {
+    readResult.completed = [&readCompleted, &readResult, &rhi, &renderImage] {
+        readCompleted = true;
         QImage sourceImage(reinterpret_cast<const uchar *>(readResult.data.constData()),
                            readResult.pixelSize.width(), readResult.pixelSize.height(),
                            QImage::Format_RGBA8888_Premultiplied);
@@ -258,7 +260,7 @@ bool QmlContent::renderContent(double time, QImage& renderImage)
 
     renderControl->endFrame();
 
-    return true;
+    return readCompleted;
 }
 
 }

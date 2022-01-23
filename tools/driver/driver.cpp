@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <stdlib.h>
+#include <cstring>
 #include <iostream>
 #include <fstream>
 #include <vector>

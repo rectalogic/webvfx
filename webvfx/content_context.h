@@ -39,7 +39,7 @@ class ContentContext : public QObject
 
 public:
     ContentContext(QObject* parent, Parameters* parameters, QSize size);
-    ~ContentContext();
+    ~ContentContext() override;
 
     // Inform page contents to render at time.
     // emits renderRequested signal to the page contents.

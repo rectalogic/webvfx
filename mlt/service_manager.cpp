@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <signal.h>
+#include <string.h>
 #include <string>
 #include <iterator>
 
