@@ -4,6 +4,6 @@ BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 $BASEDIR/create_mov
 export DISPLAY=${DISPLAY:-:0}
 melt -verbose \
-    -producer vfxpipe:"webvfx_frameserver --width ${VFXPIPE_WIDTH} --height ${VFXPIPE_HEIGHT} ${BASEDIR}/../examples/producer-demo.qml" length=199 \
+    -producer vfxpipe:"webvfx_frameserver --width \${VFXPIPE_WIDTH} --height \${VFXPIPE_HEIGHT} ${BASEDIR}/../examples/producer-demo.qml" length=199 \
         title="${VFX_TITLE:-WebVfx Producer Demo}" \
     $(eval echo $(< "${VFX_CONSUMER:-${BASEDIR}/consumer_sdl}")) mlt_profile=${BASEDIR}/webvfx_profile
