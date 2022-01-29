@@ -7,6 +7,7 @@
 #include <signal.h>
 #include <string.h>
 #include <string>
+#include <sstream>
 #include <iterator>
 
 extern "C" {
@@ -27,7 +28,7 @@ namespace VFXPipe
 class ImageProducer
 {
 public:
-    ImageProducer( mlt_producer producer)
+    ImageProducer(mlt_producer producer)
         : producerFrame(0)
         , producer(producer) {}
 
@@ -183,68 +184,31 @@ bool ServiceManager::initialize(int width, int height, mlt_position length)
     close(fdsFromChild[1]);
 	close(fdsToChild[0]);
 
-    //XXX fork/exec in here
-    if (1)
-        return true;
-
-    //XXX fork/exec - save pipes
-
-    //XXX iterate producer.N.resource properties and create ImageProducer, copy stuff over
-#if 0
-    // Iterate over image map - save source and target image names,
-    // and create an ImageProducer for each extra image.
+    // Find extra image producers - "producer.N.resource"
     char* factory = mlt_properties_get(properties, "factory");
-    WebVfx::Effects::ImageTypeMapIterator it(effects->getImageTypeMap());
-    while (it.hasNext()) {
-        it.next();
-
-        const QString& imageName = it.key();
-
-        switch (it.value()) {
-
-        case WebVfx::Effects::SourceImageType:
-            sourceImageName = imageName;
-            break;
-
-        case WebVfx::Effects::TargetImageType:
-            targetImageName = imageName;
-            break;
-
-        case WebVfx::Effects::ExtraImageType:
-        {
-            if (!imageProducers)
-                imageProducers = new std::vector<ImageProducer*>(3);
-
-            // Property prefix "producer.<name>."
-            QString producerPrefix("producer.");
-            producerPrefix.append(imageName).append(".");
-
-            // Find producer.<name>.resource property
-            QString resourceName(producerPrefix);
-            resourceName.append("resource");
-            char* resource = mlt_properties_get(properties, resourceName.toLatin1().constData());
-            if (resource) {
-                mlt_producer producer = mlt_factory_producer(mlt_service_profile(service), factory, resource);
-                if (!producer) {
-                    mlt_log(service, MLT_LOG_ERROR, "VFXPipe failed to create extra image producer for %s\n", resourceName.toLatin1().constData());
-                    return false;
-                }
-                // Copy producer.<name>.* properties onto producer
-                mlt_properties_pass(MLT_PRODUCER_PROPERTIES(producer), properties, producerPrefix.toLatin1().constData());
-                // Append ImageProducer to vector
-                imageProducers->insert(imageProducers->end(), new ImageProducer(imageName, producer));
-            }
-            else
-                mlt_log(service, MLT_LOG_WARNING, "VFXPipe no producer resource property specified for extra image %s\n", resourceName.toLatin1().constData());
+    for (int i = 0; true; i++) {
+        std::ostringstream os("producer.", std::ostringstream::ate);
+        os << i << ".resource";
+        auto resourceName = os.str();
+        char* resource = mlt_properties_get(properties, resourceName.c_str());
+        if (!resource) {
             break;
         }
-
-        default:
-            mlt_log(service, MLT_LOG_ERROR, "Invalid VFXPipe image type %d\n", it.value());
-            break;
+        if (!imageProducers)
+            imageProducers = new std::vector<ImageProducer*>(2);
+        mlt_producer producer = mlt_factory_producer(mlt_service_profile(service), factory, resource);
+        if (!producer) {
+            mlt_log_error(service, "%s: vfxpipe failed to create extra image producer for %s\n", __FUNCTION__, resourceName.c_str());
+            return false;
         }
+        // Copy producer.N.* properties onto producer
+        os << i << ".";
+        mlt_properties_pass(MLT_PRODUCER_PROPERTIES(producer), properties, os.str().c_str());
+        // Append ImageProducer to vector
+        imageProducers->insert(imageProducers->end(), new ImageProducer(producer));
+
     }
-#endif
+
     return true;
 }
 
@@ -294,16 +258,6 @@ int ServiceManager::render(mlt_image sourceImage, mlt_image targetImage, mlt_ima
             return 1;
         }
     }
-    //XXX write producer extra images
-    if (!dataIO(pipeRead, outputImage->data, mlt_image_calculate_size(outputImage), read)) {
-        return 1;
-    }
-    return 0;
-#if 0
-    double time = length > 0 ? position / (double)length : 0;
-
-    //XXX write source/target to pipe
-    return !effects->render(time, outputImage);
 
     // Produce any extra images
     if (imageProducers) {
@@ -313,17 +267,23 @@ int ServiceManager::render(mlt_image sourceImage, mlt_image targetImage, mlt_ima
             if (imageProducer && imageProducer->isPositionValid(position)) {
                 mlt_image_s extraImage =
                     imageProducer->produceImage(position,
-                                                outputImage->width(),
-                                                outputImage->height());
+                                                outputImage->width,
+                                                outputImage->height);
                 if (!extraImage.data) {
-                    mlt_log(service, MLT_LOG_ERROR, "WebVfx failed to produce image for name %s\n", imageProducer->getName().toLatin1().constData());
+                    mlt_log_error(service, "%s: vfxpipe failed to produce image for extra producer %ld\n", __FUNCTION__, it - imageProducers->begin());
                     return 1;
                 }
-                effects->setImage(imageProducer->getName(), &extraImage); //XXX write to pipe
+                if (!dataIO(pipeWrite, extraImage.data, mlt_image_calculate_size(&extraImage), write)) {
+                   return 1;
+                }
             }
         }
     }
-#endif
+
+    if (!dataIO(pipeRead, outputImage->data, mlt_image_calculate_size(outputImage), read)) {
+        return 1;
+    }
+    return 0;
 }
 
 }

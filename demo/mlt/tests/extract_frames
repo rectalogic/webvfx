@@ -9,7 +9,7 @@ ${BASEDIR}/extract_frame -s 00:00:04 "${BASEDIR}/../mlt_filter_banner" "${OUTPUT
 ${BASEDIR}/extract_frame -s 00:00:04 "${BASEDIR}/../mlt_filter_demo" "${OUTPUT_DIR}/filter_demo.png"
 ${BASEDIR}/extract_frame -s 00:00:04 "${BASEDIR}/../mlt_producer_demo" "${OUTPUT_DIR}/producer_demo.png"
 ${BASEDIR}/extract_frame -s 00:00:06 "${BASEDIR}/../mlt_transition_demo3d" "${OUTPUT_DIR}/transition_demo3d.png"
-${BASEDIR}/extract_frame -s 00:00:04 "${BASEDIR}/../mlt_transition_shader_crosszoom" "${OUTPUT_DIR}/transition_shader_crosszoom.png"
+${BASEDIR}/extract_frame -s 00:00:09 "${BASEDIR}/../mlt_transition_shader_crosszoom_extra" "${OUTPUT_DIR}/transition_shader_crosszoom.png"
 ${BASEDIR}/extract_frame -s 00:00:07 "${BASEDIR}/../mlt_transition_shader_pagecurl" "${OUTPUT_DIR}/transition_shader_pagecurl.png"
 ${BASEDIR}/extract_frame -s 00:00:10 "${BASEDIR}/../mlt_transition_simple" "${OUTPUT_DIR}/transition_simple-1.png"
 ${BASEDIR}/extract_frame -s 00:00:17 "${BASEDIR}/../mlt_transition_simple" "${OUTPUT_DIR}/transition_simple-2.png"

@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
     const auto properties = parser.values("property");
     for (int i = 0; i < properties.size(); ++i) {
         const auto value = properties.at(i);
-        propertyMap[value.section('=', 0, 0)] = value.section('=', 1, -1, QString::SectionIncludeLeadingSep|QString::SectionIncludeTrailingSep);
+        propertyMap[value.section('=', 0, 0)] = value.section('=', 1, -1, QString::SectionIncludeTrailingSep);
     }
 
     const auto widthValue = parser.value("width");

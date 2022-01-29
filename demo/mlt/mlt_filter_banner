@@ -4,5 +4,5 @@ BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 $BASEDIR/create_mov
 export DISPLAY=${DISPLAY:-:0}
 melt -verbose "${VFX_SOURCE:-${BASEDIR}/red.mov}" out=299 \
-    -filter vfxpipe:"webvfx_frameserver --width \${VFXPIPE_WIDTH} --height \${VFXPIPE_HEIGHT} --image SourceImage --property Title=\"${VFX_TITLE:-WebVfx Banner Demo}\" FadeIn=\"${VFX_FADEIN:-20}\" FadeOut=\"${VFX_FADEOUT:-20}\" ${BASEDIR}/../examples/filter-banner.qml" out=299 \
+    -filter vfxpipe:"webvfx_frameserver --width \${VFXPIPE_WIDTH} --height \${VFXPIPE_HEIGHT} --image SourceImage --property Title=\"${VFX_TITLE:-WebVfx Banner Demo}\" --property FadeIn=\"${VFX_FADEIN:-20}\" --property FadeOut=\"${VFX_FADEOUT:-20}\" ${BASEDIR}/../examples/filter-banner.qml" out=299 \
     $(eval echo $(< "${VFX_CONSUMER:-${BASEDIR}/consumer_sdl}")) mlt_profile=${BASEDIR}/webvfx_profile

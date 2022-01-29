@@ -37,6 +37,20 @@ Rectangle {
         property point center: Qt.point(0, 0.5)
         fragmentShader: "crossZoom.frag.qsb"
     }
+
+    Video {
+        id: extraVideo
+        imageName: "ExtraImage"
+        imageType: webvfx.ExtraImageType
+        width: parent.width / 4
+        height: parent.height / 4
+        rotation: 45
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.horizontalCenter: parent.horizontalCenter
+        clip: true
+        layer.enabled: true
+    }
+
     ParallelAnimation {
         id: animation
         // Mirrored sinusoidal loop. 0->strength then strength->0
