@@ -7,10 +7,9 @@ import QtQuick
 Image {
     id: video
     required property string imageName
-    required property int imageType
 
     Component.onCompleted: {
-        webvfx.registerImageType(video.imageName, video.imageType);
+        webvfx.registerImageName(video.imageName);
     }
 
     Connections {

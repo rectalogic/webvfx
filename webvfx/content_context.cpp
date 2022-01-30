@@ -47,8 +47,8 @@ QString ContentContext::getStringParameter(const QString& name)
         return QString();
 }
 
-void ContentContext::registerImageType(const QString& imageName, Effects::ImageType imageType) {
-    imageTypeMap[imageName] = imageType;
+void ContentContext::registerImageName(const QString& imageName) {
+    imageNameSet.insert(imageName);
 }
 
 // QtWebkit Bridge converts QImages to QPixmaps.

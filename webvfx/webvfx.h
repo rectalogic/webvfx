@@ -5,7 +5,6 @@
 #ifndef WEBVFX_WEBVFX_H_
 #define WEBVFX_WEBVFX_H_
 
-#include <webvfx/effects.h>
 #include <webvfx/logger.h>
 #include <webvfx/parameters.h>
 

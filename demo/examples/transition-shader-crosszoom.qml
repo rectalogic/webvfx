@@ -8,7 +8,6 @@ Rectangle {
     Video {
         id: sourceVideo
         imageName: "SourceImage"
-        imageType: webvfx.SourceImageType
         width: parent.width
         height: parent.height
         clip: true
@@ -18,7 +17,6 @@ Rectangle {
     Video {
         id: targetVideo
         imageName: "TargetImage"
-        imageType: webvfx.TargetImageType
         width: parent.width
         height: parent.height
         clip: true
@@ -41,7 +39,6 @@ Rectangle {
     Video {
         id: extraVideo
         imageName: "ExtraImage"
-        imageType: webvfx.ExtraImageType
         width: parent.width / 4
         height: parent.height / 4
         rotation: 45

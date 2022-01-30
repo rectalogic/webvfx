@@ -31,7 +31,6 @@ import org.webvfx.WebVfx 1.0
         materials: [ DefaultMaterial {
                 diffuseMap: VideoTexture {
                     imageName: "SourceImage"
-                    imageType: webvfx.SourceImageType
                     flipV: true
                 }
             }
@@ -63,7 +62,6 @@ import org.webvfx.WebVfx 1.0
         materials: [ DefaultMaterial {
                 diffuseMap: VideoTexture {
                     imageName: "TargetImage"
-                    imageType: webvfx.TargetImageType
                     flipV: true
                 }
             }

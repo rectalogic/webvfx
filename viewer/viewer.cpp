@@ -16,7 +16,6 @@
 #include <QTableWidgetItem>
 #include <QTextStream>
 #include <QUrl>
-#include <webvfx/effects.h>
 #include <webvfx/parameters.h>
 #include <webvfx/webvfx.h>
 #include <webvfx/qml_content.h>
@@ -262,13 +261,12 @@ void Viewer::setupImages(const QSize& size)
 {
     imagesTable->setRowCount(0);
     int row = 0;
-    WebVfx::Effects::ImageTypeMapIterator it(content->getImageTypeMap());
-    while (it.hasNext()) {
-        it.next();
-
+    auto imageNames = content->getImageNames();
+    QSet<QString>::const_iterator it = imageNames.constBegin();
+    while (it != imageNames.constEnd()) {
         imagesTable->insertRow(row);
 
-        QString imageName(it.key());
+        QString imageName(*it);
 
         // Image name in column 0
         QTableWidgetItem* item = new QTableWidgetItem(imageName);
@@ -284,24 +282,8 @@ void Viewer::setupImages(const QSize& size)
                 SLOT(onImageChanged(QString,QImage)));
         imagesTable->setCellWidget(row, 1, imageColor);
 
-        // Type name in column 2
-        QString typeName;
-        switch (it.value()) {
-            case WebVfx::Effects::SourceImageType:
-                typeName = tr("Source");
-                break;
-            case WebVfx::Effects::TargetImageType:
-                typeName = tr("Target");
-                break;
-            case WebVfx::Effects::ExtraImageType:
-                typeName = tr("Extra");
-                break;
-        }
-        item = new QTableWidgetItem(typeName);
-        item->setFlags(Qt::NoItemFlags);
-        imagesTable->setItem(row, 2, item);
-
         row++;
+        ++it;
     }
 }
 

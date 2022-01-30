@@ -9,14 +9,13 @@ import org.webvfx.WebVfx.native 1.0
 Texture {
     id: video
     required property string imageName
-    required property int imageType
 
     textureData: ImageTexture {
         id: texture
     }
 
     Component.onCompleted: {
-        webvfx.registerImageType(video.imageName, video.imageType);
+        webvfx.registerImageName(video.imageName);
     }
 
     Connections {

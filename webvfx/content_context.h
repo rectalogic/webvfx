@@ -8,10 +8,10 @@
 #include <QHash>
 #include <QImage>
 #include <QMap>
+#include <QSet>
 #include <QObject>
 #include <QVariant>
 #include <QUrl>
-#include "webvfx/effects.h"
 
 class QSize;
 class QString;
@@ -28,11 +28,6 @@ class Parameters;
 class ContentContext : public QObject
 {
     Q_OBJECT
-    //XXX We could use Q_ENUMS for this once this bug is fixed
-    // http://bugreports.qt.nokia.com/browse/QTBUG-12706
-    Q_PROPERTY(int SourceImageType READ getSourceImageType CONSTANT FINAL)
-    Q_PROPERTY(int TargetImageType READ getTargetImageType CONSTANT FINAL)
-    Q_PROPERTY(int ExtraImageType READ getExtraImageType CONSTANT FINAL)
 
     Q_PROPERTY(int videoWidth READ getVideoWidth NOTIFY videoSizeChanged)
     Q_PROPERTY(int videoHeight READ getVideoHeight NOTIFY videoSizeChanged)
@@ -63,10 +58,6 @@ public:
     // Return URL for use in QML to reference the named image
     Q_INVOKABLE QUrl getImageUrl(const QString& name);
 
-    int getSourceImageType() { return Effects::SourceImageType; }
-    int getTargetImageType() { return Effects::TargetImageType; }
-    int getExtraImageType() { return Effects::ExtraImageType; }
-
     int getVideoWidth() { return videoSize.width(); }
     int getVideoHeight() { return videoSize.height(); }
     QSize getVideoSize() { return videoSize; };
@@ -74,10 +65,10 @@ public:
 
     // Page contents should register if it consumes images.
     // JS:
-    //   webvfx.registerImageType("video", webvfx.SourceImageType);
-    Q_INVOKABLE void registerImageType(const QString& imageName, Effects::ImageType imageType);
+    //   webvfx.registerImageName("video");
+    Q_INVOKABLE void registerImageName(const QString& imageName);
 
-    const Effects::ImageTypeMap& getImageTypeMap() { return imageTypeMap; }
+    const QSet<QString>& getImageNames() { return imageNameSet; }
 
 signals:
     // Signal raised when page contents should render for the given time.
@@ -89,7 +80,7 @@ signals:
 private:
     Parameters* parameters;
     QHash<QString, QImage> imageMap;
-    Effects::ImageTypeMap imageTypeMap;
+    QSet<QString> imageNameSet;
     unsigned int renderCount;
     QSize videoSize;
 };
