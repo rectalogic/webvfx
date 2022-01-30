@@ -74,6 +74,7 @@ private:
 ServiceManager::ServiceManager(mlt_service service)
     : service(service)
     , length(0)
+    , pid(0)
     , pipeRead(-1)
     , pipeWrite(-1)
     , imageProducers(0)
