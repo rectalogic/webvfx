@@ -4,20 +4,21 @@
 
 #pragma once
 
-#include <arpa/inet.h>
 #include <stdint.h>
-#include <cmath>
 
 namespace WebVfxCommon {
     //! Number of bytes per pixel.
     static const int BytesPerPixel = 3;
 
-    inline uint32_t toTimecode(uint32_t position, uint32_t duration) {
-        return htonl((uint32_t)round((position / (double)duration) * UINT32_MAX));
+    struct Timecode {
+        Timecode(uint32_t position, uint32_t duration) : position(position), duration(duration) {}
+        uint32_t position;
+        uint32_t duration;
+
+        inline double toDouble() {
+            return this->position / (double)this->duration;
+        };
     };
 
-    inline double fromTimecode(uint32_t timecode) {
-        return ntohl(timecode) / (double)UINT32_MAX;
-    };
 
 }

@@ -71,18 +71,18 @@ void FrameServer::onContentLoadFinished(bool result)
 {
     if (result) {
         // Single buffer to hold output image and all input images, plus timecode
-        imageData = new unsigned char[sizeof(uint32_t) + ((1 + imageNames.size()) * imageByteCount)];
+        imageData = new unsigned char[sizeof(WebVfxCommon::Timecode) + ((1 + imageNames.size()) * imageByteCount)];
         images = new QImage[1 + imageNames.size()]; //XXX use QList/emplace_back ?
         for (int i = 0; i < imageNames.size(); i++) {
-            images[i] = QImage((const uchar*)(imageData + sizeof(uint32_t) + (i * imageByteCount)),
+            images[i] = QImage((const uchar*)(imageData + sizeof(WebVfxCommon::Timecode) + (i * imageByteCount)),
                 videoSize.width(), videoSize.height(), QImage::Format_RGB888);
             content->setImage(imageNames.at(i), images[i]);
         }
         // Last image is the output image
-        images[imageNames.size()] = QImage((uchar*)(imageData + sizeof(uint32_t) + (imageNames.size() * imageByteCount)),
+        images[imageNames.size()] = QImage((uchar*)(imageData + sizeof(WebVfxCommon::Timecode) + (imageNames.size() * imageByteCount)),
             videoSize.width(), videoSize.height(), QImage::Format_RGB888);
 
-        imageBufferReadSize = sizeof(uint32_t) + (imageByteCount * imageNames.size());
+        imageBufferReadSize = sizeof(WebVfxCommon::Timecode) + (imageByteCount * imageNames.size());
         QCoreApplication::postEvent(this, new QEvent(QEvent::User));
     }
     else {
@@ -122,7 +122,7 @@ void FrameServer::readFrames() {
 }
 
 void FrameServer::renderFrame() {
-    double time = WebVfxCommon::fromTimecode((uint32_t)*imageData);
+    double time = reinterpret_cast<WebVfxCommon::Timecode *>(imageData)->toDouble();
     auto outputImage = images[imageNames.size()];
     content->renderContent(time, outputImage);
 

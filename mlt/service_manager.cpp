@@ -243,7 +243,7 @@ int ServiceManager::render(mlt_image sourceImage, mlt_image targetImage, mlt_ima
     if (pipeRead == -1 || pipeWrite == -1)
         return 1;
 
-    uint32_t timecode = length > 0 ? WebVfxCommon::toTimecode(position, length) : 0;
+    WebVfxCommon::Timecode timecode(position, length);
     if (!dataIO(pipeWrite, &timecode, sizeof(timecode), write)) {
         return 1;
     }

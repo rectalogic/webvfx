@@ -76,8 +76,8 @@ int main(int argc, char* argv[]) {
 
     std::cout << std::unitbuf;
     for (int f = 0; f < frameCount; f++) {
-        uint32_t time = WebVfxCommon::toTimecode(f, frameCount);
-        std::cout.write((char *)(&time), sizeof(time));
+        WebVfxCommon::Timecode timecode(f, frameCount);
+        std::cout.write((char *)(&timecode), sizeof(timecode));
         for (std::istream& s : inputVideoStreams) {
             if (!s.good()) {
                 std::cerr << "Input stream error" << std::endl;
