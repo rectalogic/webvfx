@@ -6,49 +6,47 @@
 
 %WebVfx implements producer, filter and transition plugin services for the
 <a href="http://www.mltframework.org/">MLT Framework</a>.
-The MLT service ID is @c webvfx and the service argument
-or @c resource property is the path to the HTML or QML effect implementation.
+The MLT service ID is @c vfxpipe and the service argument
+or @c resource property is an executable that can consume timestamped
+raw RGB video frames in stdin, and return RGB video frames to stdout.
+This can be used with %WebVfx @c webvfx_frameserver to render QML content.
 
 MLT services are implemented as %WebVfx effects - see @ref effects_authoring.
-The pathname to the HTML or QML effects implementation can be provided
-as the service contructor argument, or specified using the @c resource
+The argument can be provided as the service contructor argument, or specified using the @c resource
 property. e.g.
 @code
-melt -transition webvfx:/path/to/transition.html
+melt -producer vfxpipe:"webvfx_frameserver --width \${VFXPIPE_WIDTH} --height \${VFXPIPE_HEIGHT} examples/producer-demo.qml" length=199
 @endcode
-@code
-melt -transition webvfx resource=/path/to/transition.html
-@endcode
+
+Note the some environment variables are available.
+They need to be escaped from the shell so they can be evaluated in the sub-shell
+that @c vfxpipe spawns to run the commandline.
 
 @section mlt_extra Extra Images
 
-Effects that use extra images (i.e. that register @c webvfx.ExtraImageType
-image names) accept an additional set of attributes of the form:
-<b>producer.</b><em>name</em><b>.</b><em>producer_attribute</em>.
-@li @em name - Name of the extra image. This is the name that was
-    tagged with @c webvfx.ExtraImageType.
+Effects that use extra images beyond the source (and target, for transitions)
+accept an additional set of attributes of the form:
+<b>producer.</b><em>N</em><b>.</b><em>producer_attribute</em>.
+@li @em N - Number of the extra image. This should correspond to the order of the @c --image arguments passed to @c webvfx_frameserver
 @li @em producer_attribute - Any valid producer attribute.
     At a minimum the @c resource attribute must be specified.
     @c in and @c out can also be specified (e.g. to extract a single
-    frame from a video). e.g. for an extra image named @c "foobar"
+    frame from a video). e.g. for a single extra image
     we might have:
 @code
-producer.foobar.resource=/some/file.mov
-producer.foobar.in=90
-producer.foobar.out=200
+producer.0.resource=/some/file.mov
+producer.0.in=90
+producer.0.out=200
 @endcode
 
 The example
-@ref examples/transition-demo.html "demo/examples/transition-demo.html"
+@ref examples/transition-shader-crosszoom.qml "demo/examples/transition-shader-crosszoom.qml"
 transition uses an
-extra image named @c "backgroundImage":
-@dontinclude transition-demo.html
-@skip webvfx.imageTypeMap
-@until };
+extra image named @c "ExtraImage".
 
-The melt script example demo/mlt/mlt_transition_demo_html specifies
-the @c producer.backgroundImage.resource attribute for the transition:
-@include mlt_transition_demo_html
+The melt script example demo/mlt/mlt_transition_shader_crosszoon specifies
+the @c producer.0.resource attribute for the transition:
+@include mlt_transition_shader_crosszoon
 
 @section mlt_demos Demos
 

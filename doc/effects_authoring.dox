@@ -4,33 +4,16 @@
 /*!
 @page effects_authoring Effects Authoring
 
-%WebVfx supports both @ref qml_effects_authoring and
-@ref web_effects_authoring for developing video effects.
-Both have a lot in common.
-%WebVfx loads the effect content (HTML or QML) and exposes a
+%WebVfx supports @ref qml_effects_authoring for developing video effects.
+%WebVfx loads the QML effect content and exposes a
 JavaScript context object named @c webvfx to the effect implementation.
 
 If the effect will need to access frames of video,
-it must set the @c webvfx.imageTypeMap property to a map
-describing the names it will use for each video source.
-
-@anchor image_types
-Each name should be mapped to one of the enumerations:
-
-@li @c webvfx.SourceImageType
-Indicates the image name is the source image of a transition
-(the image being transitioned from), or the primary image of a filter.
-@li @c webvfx.TargetImageType
-Indicates the image name is the target image of a transition
-(the image being transitioned to).
-@li @c webvfx.ExtraImageType
-Indicates the image name is an extra asset.
-There can be multiple image names with this type.
+it should register names for each image using @c webvfx.registerImageName
 
 For example:
 @code
-webvfx.imageTypeMap = { "sourceImage" : webvfx.SourceImageType,
-                        "targetImage" : webvfx.TargetImageType }
+webvfx.registerImageName("SourceImage);
 @endcode
 
 The effect can request additional named parameters as part of initialization
@@ -38,26 +21,18 @@ by calling @c webvfx.getStringParameter(name) or
 @c webvfx.getNumberParameter(name)
 
 The effect must connect the @c webvfx.renderRequested(time) signal.
-See @ref qml_effects_authoring or @ref web_effects_authoring for
-how to connect to this signal.
-
-When the effect has fully loaded (including any external resources
-being loaded asynchronously), it should call:
-@code
-webvfx.readyRender(true)
-@endcode
-If the load failed for any reason, pass @c false instead.
+See @ref qml_effects_authoring for how to connect to this signal.
 
 Now %WebVfx will start rendering frames of video. It will pull the current
-frame from each of the video sources specified in @c webvfx.imageTypeMap
+frame from each of the video sources specified with @c webvfx.registerImageName
 then invoke the @c webvfx.renderRequested(time) signal.
 The time is a normalized time from 0 to 1.0 indicating the position
 in the transition or effect. The effect should then request any images
-it specified in @c webvfx.imageTypeMap each time it handles
+it requires each time it handles
 @c renderRequested.  Images can be requested by calling
 @c webvfx.getImage(name) where @c name is the string image name specified
-in @c imageTypeMap. See @ref qml_effects_authoring or
-@ref web_effects_authoring for how to use the returned image object.
+in @c webvfx.registerImageName. See @ref qml_effects_authoring
+for how to use the returned image object.
 
 The effect should configure itself using the @c time value and the
 images it retrieved before returning from the @c renderRequested slot.
@@ -97,91 +72,23 @@ directly when possible, instead of the URL.
 QML is more interesting as a video effects technology when it
 is extended with 3D support - see @ref effects_3d.
 
-@section web_effects_authoring Web (HTML) Effects Authoring
-
-Effects can be authored using
-<a href="http://doc.qt.nokia.com/latest/qtwebkit.html">QtWebKit</a>
-HTML.
-
-The @c webvfx.renderRequested(time) signal can be handled by connecting
-it to a JavaScript function that takes a @c time parameter, using
-@c webvfx.renderRequested.connect:
-@code
-function render(time) {
-   console.log("render: " + time);
-}
-webvfx.renderRequested.connect(render);
-@endcode
-
-@c webvfx.getImage(name) returns a JavaScript image proxy object
-for the current frame of video for the named image.
-This must be assigned to a DOM @c Image element so that it can be
-used in the HTML.
-The <a href="http://doc.qt.nokia.com/latest/qtwebkit-bridge.html">QtWebKit Bridge</a>
-provides a method @c assignToHTMLImageElement() to do this.
-You can assign to a new @c Image:
-@code
-var image = new Image()
-webvfx.getImage("sourceImage").assignToHTMLImageElement(image);
-@endcode
-or reference an existing one in the DOM
-@code
-<img id="image"/>
-[...]
-webvfx.getImage("sourceImage").assignToHTMLImageElement(document.getElementById("image"));
-@endcode
-
-@sa See the HTML demos:
-@li @ref examples/producer-demo.html "demo/examples/producer-demo.html"
-@li @ref examples/filter-demo.html "demo/examples/filter-demo.html"
-@li @ref examples/transition-demo.html "demo/examples/transition-demo.html"
-
-
 @subsection web_effects_shader_authoring WebGL GLSL Shader Effects Authoring
 
-%WebVfx includes a simple framework for implementing 2D GLSL fragment shader
-effects. This requires QtWebKit to be compiled with WebGL enabled.
-A recent build should be used so the @c toImageData feature is available.
+QML effects can be written using fragment shaders.
+These must be compiled into @c qsb files first using the
+<a href="https://doc.qt.io/qt-6/qtshadertools-qsb.html">qsb</a> shader tool.
 
-The HTML effect should reference the @c shader.js JavaScript resource:
-@code
-<script type="text/javascript" src="qrc:/webvfx/scripts/shader.js"></script>
-@endcode
-The GLSL code can be placed in a @c script element:
-@code
-<script type="x-shader/x-fragment">...</script>
-@endcode
-
-The GLSL must declare a varying @c texCoord which carries the texture
-coordinates from the vertex shader.
-@code
-varying vec2 texCoord;
-@endcode
-It should also declare any uniforms it uses.
-Uniform values can be set on each render cycle from JavaScript
-using @c updateUniform(name,value).
-If the uniform is a sampler2D texture, it should use the @c ImageData
-returned from the %WebVfx image object:
-@code
-shader.updateUniform("sourceTex", webvfx.getImage("sourceImage").toImageData());
-@endcode
-
-See the sample CrossZoom and PageCurl shaders for complete examples:
-@li @ref examples/transition-shader-crosszoom.html "demo/examples/transition-shader-crosszoom.html"
-@li @ref examples/transition-shader-pagecurl.html "demo/examples/transition-shader-pagecurl.html"
+See the sample CrossZoom and PageCurl shader demos for complete examples:
+@li @ref examples/transition-shader-crosszoom.qml "demo/examples/transition-shader-crosszoom.qml"
+@li @ref examples/transition-shader-pagecurl.qml "demo/examples/transition-shader-pagecurl.qml"
 
 
 @section effects_authoring_tools Tools
 
-A couple of simple tools are provided to help authoring effects.
-
-@c webvfx_browser (<tt>%WebVfx Browser.app</tt> on MacOS) is a trivial
-wrapper around QtWebKit. This makes it easy to visit any website
-and see if the version of QtWebKit you are using supports various
-HTML features.
+A simple tool is provided to help authoring effects.
 
 @c webvfx_viewer (<tt>%WebVfx Viewer.app</tt> on MacOS) allows you to
-load your HTML or QML effects and exposes the @c webvfx context object
+load your QML effects and exposes the @c webvfx context object
 to them, and generates images that your effect can request using
 @c webvfx.getImage(name).
 It has a slider along the bottom that lets you control the rendering time

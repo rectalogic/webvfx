@@ -24,15 +24,8 @@ add_subdirectory(frameserver)
 add_subdirectory(viewer)
 add_subdirectory(tools/driver)
 add_subdirectory(mlt)
+add_subdirectory(doc)
 
 add_dependencies(webvfx_viewer webvfx)
 add_dependencies(webvfx_frameserver webvfx)
 add_dependencies(webvfx_driver webvfx)
-
-# Move these from qmake to cmake https://vicrucann.github.io/tutorials/quick-cmake-doxygen/
-# https://cmake.org/cmake/help/latest/module/FindDoxygen.html?highlight=doxygen#module:FindDoxygen
-# Documentation
-# doxydoc.target = doxydoc
-# doxydoc.commands = echo PROJECT_NUMBER=`git describe --always --dirty` | cat - doc/Doxyfile | doxygen -
-# doxydoc.depends = FORCE
-# QMAKE_EXTRA_TARGETS += doxydoc

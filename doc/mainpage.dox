@@ -5,8 +5,7 @@
 @mainpage
 
 %WebVfx is a video effects framework that allows video effects
-(filters, transitions etc.) to be authored using web technologies
-(HTML, CSS, JavaScript, WebGL etc.) or with
+(filters, transitions etc.) to be authored using
 <a href="http://qt.nokia.com/qtquick/">QtQuick</a>
 QML (a declarative CSS and JavaScript like language).
 See @ref effects_authoring for documentation and samples.
@@ -19,11 +18,11 @@ See @ref mlt for information on how to use %WebVfx with MLT.
 Sample effects included with the distribution, and videos
 rendered using them with MLT can be viewed here:
 @li @ref examples/transition-demo3d.qml "demo/examples/transition-demo3d.qml"
-@li @ref examples/transition-demo.html "demo/examples/transition-demo.html"
-@li @ref examples/transition-shader-crosszoom.html "demo/examples/transition-shader-crosszoom.html"
-@li @ref examples/transition-shader-pagecurl.html "demo/examples/transition-shader-pagecurl.html"
-@li @ref examples/producer-demo.html "demo/examples/producer-demo.html"
-@li @ref examples/filter-demo.html "demo/examples/filter-demo.html"
+@li @ref examples/transition-simple.qml "demo/examples/transition-simple.qml"
+@li @ref examples/transition-shader-crosszoom.qml "demo/examples/transition-shader-crosszoom.qml"
+@li @ref examples/transition-shader-pagecurl.qml "demo/examples/transition-shader-pagecurl.qml"
+@li @ref examples/producer-demo.qml "demo/examples/producer-demo.qml"
+@li @ref examples/filter-banner.qml "demo/examples/filter-banner.qml"
 @li @ref examples/filter-demo.qml "demo/examples/filter-demo.qml"
 
 %WebVfx is hosted at github,
