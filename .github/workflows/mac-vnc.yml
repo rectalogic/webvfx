@@ -2,9 +2,6 @@
 name: mac-vnc
 on: 
   workflow_dispatch:
-  push:
-    branches:
-      - '*'
 defaults:
   run:
     shell: bash
