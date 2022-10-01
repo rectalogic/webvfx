@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-find_package(Doxygen)
+find_package(Doxygen QUIET)
 
 if (DOXYGEN_FOUND)
     set(DOXYGEN_PROJECT_LOGO "logo.png")
