@@ -1,5 +1,5 @@
 # syntax = docker/dockerfile:1.2
-FROM ubuntu:focal
+FROM ubuntu:jammy
 LABEL maintainer=rectalogic
 
 ENV container docker
@@ -20,10 +20,10 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
        libxcb-icccm4 libxcb-image0 libxcb-render-util0 libxcb-keysyms1 \
        python3 python3-pip \
        curl xz-utils ffmpeg libsdl2-dev libgtk2.0-dev xvfb pkg-config \
-       libavutil-dev libavformat-dev libavdevice-dev libavresample-dev libpostproc-dev libavfilter-dev libswscale-dev libswresample-dev \
+       libavutil-dev libavformat-dev libavdevice-dev libpostproc-dev libavfilter-dev libswscale-dev libswresample-dev \
        fontconfig fonts-liberation imagemagick
 
-ARG QT_VER=6.2.2
+ARG QT_VER=6.4.0
 
 RUN pip3 install aqtinstall \
     && python3 -m aqt install-qt linux desktop ${QT_VER} -m qtquick3d qtshadertools qtquicktimeline --outputdir /usr/local/Qt
@@ -33,7 +33,7 @@ ENV QT_PLUGIN_PATH /usr/local/Qt/${QT_VER}/gcc_64/plugins/
 ENV QML_IMPORT_PATH /usr/local/Qt/${QT_VER}/gcc_64/qml/
 ENV QML2_IMPORT_PATH /usr/local/Qt/${QT_VER}/gcc_64/qml/
 
-RUN export MLT_VER=7.4.0 \
+RUN export MLT_VER=7.8.0 \
     && curl -L https://github.com/mltframework/mlt/releases/download/v${MLT_VER}/mlt-${MLT_VER}.tar.gz | tar xzf - \
     && cd mlt-${MLT_VER} && cmake . && cmake --build . && cmake --install . \
     && cd .. && rm -rf mlt-${MLT_VER}
