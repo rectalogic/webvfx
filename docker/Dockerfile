@@ -1,5 +1,6 @@
 # syntax = docker/dockerfile:1.2
-FROM ubuntu:jammy
+# linux arm64 not supported by Qt https://doc.qt.io/qt-6/supported-platforms.html
+FROM --platform=linux/amd64 ubuntu:jammy
 LABEL maintainer=rectalogic
 
 ENV container docker
@@ -32,6 +33,7 @@ ENV PATH /usr/local/Qt/${QT_VER}/gcc_64/bin:$PATH
 ENV QT_PLUGIN_PATH /usr/local/Qt/${QT_VER}/gcc_64/plugins/
 ENV QML_IMPORT_PATH /usr/local/Qt/${QT_VER}/gcc_64/qml/
 ENV QML2_IMPORT_PATH /usr/local/Qt/${QT_VER}/gcc_64/qml/
+ENV QT_VER=${QT_VER}
 
 RUN export MLT_VER=7.8.0 \
     && curl -L https://github.com/mltframework/mlt/releases/download/v${MLT_VER}/mlt-${MLT_VER}.tar.gz | tar xzf - \
