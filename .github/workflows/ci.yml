@@ -41,7 +41,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: failed-images-linux
-        path: /webvfx/build/linux/output
+        path: build/linux/output
 
   macos:
     runs-on: macos-12
