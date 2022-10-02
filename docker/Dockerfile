@@ -16,8 +16,8 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
     && apt-get -y update \
     && apt-get -y install locales tzdata \
     && dpkg-reconfigure locales tzdata \
-    && apt-get -y install build-essential build-essential cmake \
-       libgl1-mesa-dev libxkbcommon-x11-0 libpulse-dev libxcb1 libx11-xcb1 libxcb-glx0 \
+    && apt-get -y install build-essential cmake \
+       libglx-mesa0 libglvnd-dev libxkbcommon-x11-0 libpulse-dev libxcb1 libx11-xcb1 libxcb-glx0 \
        libxcb-icccm4 libxcb-image0 libxcb-render-util0 libxcb-keysyms1 \
        python3 python3-pip \
        curl xz-utils ffmpeg libsdl2-dev libgtk2.0-dev xvfb pkg-config \

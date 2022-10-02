@@ -4,7 +4,7 @@ set -e
 
 mkdir -p /webvfx/build/linux
 cd /webvfx/build/linux
-cmake --install-prefix /usr/local/Qt/${QT_VER}/gcc_64 "-DCMAKE_PREFIX_PATH=/usr/local/Qt/${QT_VER}/gcc_64" ../..
+cmake --install-prefix /usr/local/Qt/${QT_VER}/gcc_64 ../..
 cmake --build .
 cmake --install .
 

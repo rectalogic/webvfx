@@ -12,11 +12,6 @@ mkdir -p "${OUTPUT_DIR}/compare"
 FAILED=()
 for fixture in "${FIXTURE_DIR}/"*.png; do
     name=$(basename "$fixture")
-    # Broken for now https://bugreports.qt.io/browse/QTBUG-100138
-    if [ $name == "transition_demo3d.png" ]; then
-        continue
-    fi
-
     # ImageMagick compare
     if ! compare -metric MAE "$fixture" "${OUTPUT_DIR}/${name}" "${OUTPUT_DIR}/compare/${name}"; then
         FAILED+=($name)

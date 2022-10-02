@@ -4,8 +4,8 @@ BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 $BASEDIR/create_mov
 export DISPLAY=${DISPLAY:-:0}
 FRAG=${BASEDIR}/../examples/crossZoom.frag
-if [ ! -f "${FRAG}.qsb" ]; then
-    qsb --glsl "100 es,120,150" --hlsl 50 --msl 12 -o "${FRAG}.qsb" "$FRAG"
+if [ "${FRAG}" -nt "${FRAG}.qsb" ]; then
+    qsb --glsl "100 es,120,150,400" --hlsl 50 --msl 12 -o "${FRAG}.qsb" "$FRAG"
 fi
 melt -verbose \
     "${VFX_SOURCE:-${BASEDIR}/red.mov}" out=349 \
