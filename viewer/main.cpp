@@ -4,6 +4,7 @@
 
 #include <QApplication>
 #include <QtGlobal>
+#include <QScopedPointer>
 #include "viewer.h"
 
 int main(int argc, char *argv[])
@@ -14,16 +15,29 @@ int main(int argc, char *argv[])
     app.setOrganizationName("WebVfx");
     app.setApplicationName("WebVfx Viewer");
 
-    static Viewer viewer;
-    auto messageHandler = +[] (QtMsgType type, const QMessageLogContext &context, const QString &msg) -> void {
-        viewer.messageHandler(type, context, msg);
+    // Can't use a capturing lambda as a function pointer
+    // https://stackoverflow.com/questions/73366933/what-does-mean-in-cpp-lambda-declaration-auto-fun1
+    // Need to ensure viewer is destroyed before we leave main and exit,
+    // otherwise it's destructor tries to clean up global state which is in the unloaded webvfx library
+
+    struct Cleanup {
+        static inline void cleanup(Viewer *pointer) {
+            qInstallMessageHandler(0);
+            delete pointer;
+        }
+    };
+    static Viewer *viewer = new Viewer();
+    QScopedPointer<Viewer, Cleanup> destroyer(viewer);
+
+    auto messageHandler = +[] (QtMsgType type, const QMessageLogContext &context, const QString &msg) mutable {
+        viewer->messageHandler(type, context, msg);
     };
     qInstallMessageHandler(messageHandler);
-    viewer.show();
+    viewer->show();
 
     QStringList args(QApplication::arguments());
     if (args.size() > 1)
-        viewer.loadFile(args.at(1));
+        viewer->loadFile(args.at(1));
 
     return app.exec();
 }
