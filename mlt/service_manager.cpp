@@ -17,7 +17,6 @@ extern "C" {
     #include <framework/mlt_image.h>
     #include <framework/mlt_producer.h>
 }
-#include "common/webvfx_common.h"
 #include "service_manager.h"
 
 extern char **environ;
@@ -53,7 +52,7 @@ public:
         mlt_producer_seek(producer, position);
         mlt_service_get_frame(MLT_PRODUCER_SERVICE(producer), &producerFrame, 0);
 
-        mlt_image_format format = mlt_image_rgb;
+        mlt_image_format format = mlt_image_rgba;
         uint8_t *image = NULL;
         int error = mlt_frame_get_image(producerFrame, &image, &format,
                                         &width, &height, 0);
@@ -244,8 +243,8 @@ int ServiceManager::render(mlt_image sourceImage, mlt_image targetImage, mlt_ima
     if (pipeRead == -1 || pipeWrite == -1)
         return 1;
 
-    WebVfxCommon::Timecode timecode(position, length);
-    if (!dataIO(pipeWrite, &timecode, sizeof(timecode), write)) {
+    double time = (double)position / length;
+    if (!dataIO(pipeWrite, &time, sizeof(double), write)) {
         return 1;
     }
 

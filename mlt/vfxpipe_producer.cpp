@@ -7,7 +7,6 @@ extern "C" {
     #include <framework/mlt_producer.h>
     #include <framework/mlt_frame.h>
 }
-#include "common/webvfx_common.h"
 #include "factory.h"
 #include "service_locker.h"
 #include "service_manager.h"
@@ -25,8 +24,8 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
     mlt_producer producer = (mlt_producer)mlt_properties_get_data(properties, kVFXPipeProducerPropertyName, NULL);
 
     // Allocate the image
-    *format = mlt_image_rgb;
-    int size = *width * *height * WebVfxCommon::BytesPerPixel;
+    *format = mlt_image_rgba;
+    int size = *width * *height * 4;
     *buffer = (uint8_t*)mlt_pool_alloc(size);
     if (!*buffer)
         return 1;

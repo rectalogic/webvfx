@@ -9,7 +9,6 @@
 #include <vector>
 #include <string>
 #include <getopt.h>
-#include "common/webvfx_common.h"
 
 
 void usage(const char* name) {
@@ -71,13 +70,13 @@ int main(int argc, char* argv[]) {
         inputVideoStreams.emplace_back(argv[i], std::ifstream::binary);
     }
 
-    int imageSize = width * height * WebVfxCommon::BytesPerPixel;
+    int imageSize = width * height * 4;
     char image[imageSize];
 
     std::cout << std::unitbuf;
     for (int f = 0; f < frameCount; f++) {
-        WebVfxCommon::Timecode timecode(f, frameCount);
-        std::cout.write((char *)(&timecode), sizeof(timecode));
+        double time = (double)f / frameCount;
+        std::cout.write((const char *)(&time), sizeof(double));
         for (std::istream& s : inputVideoStreams) {
             if (!s.good()) {
                 std::cerr << "Input stream error" << std::endl;

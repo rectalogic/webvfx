@@ -9,7 +9,6 @@
 #include <QMap>
 #include <QUrl>
 #include "frameserver.h"
-#include "common/webvfx_common.h"
 #include <webvfx/webvfx.h>
 #include <webvfx/logger.h>
 #include <webvfx/parameters.h>
@@ -48,7 +47,7 @@ FrameServer::FrameServer(const QSize &size, const QStringList& imageNames, const
     , content(0)
     , videoSize(size)
     , imageNames(imageNames)
-    , imageByteCount(videoSize.width() * videoSize.height() * WebVfxCommon::BytesPerPixel)
+    , imageByteCount(videoSize.width() * videoSize.height() * 4)
     , imageBufferReadSize(0)
     , imageData(0)
     , images(0)
@@ -71,18 +70,18 @@ void FrameServer::onContentLoadFinished(bool result)
 {
     if (result) {
         // Single buffer to hold output image and all input images, plus timecode
-        imageData = new unsigned char[sizeof(WebVfxCommon::Timecode) + ((1 + imageNames.size()) * imageByteCount)];
+        imageData = new unsigned char[sizeof(double) + ((1 + imageNames.size()) * imageByteCount)];
         images = new QImage[1 + imageNames.size()]; //XXX use QList/emplace_back ?
         for (int i = 0; i < imageNames.size(); i++) {
-            images[i] = QImage((const uchar*)(imageData + sizeof(WebVfxCommon::Timecode) + (i * imageByteCount)),
-                videoSize.width(), videoSize.height(), QImage::Format_RGB888);
+            images[i] = QImage((const uchar*)(imageData + sizeof(double) + (i * imageByteCount)),
+                videoSize.width(), videoSize.height(), QImage::Format_RGBA8888);
             content->setImage(imageNames.at(i), images[i]);
         }
         // Last image is the output image
-        images[imageNames.size()] = QImage((uchar*)(imageData + sizeof(WebVfxCommon::Timecode) + (imageNames.size() * imageByteCount)),
-            videoSize.width(), videoSize.height(), QImage::Format_RGB888);
+        images[imageNames.size()] = QImage((uchar*)(imageData + sizeof(double) + (imageNames.size() * imageByteCount)),
+            videoSize.width(), videoSize.height(), QImage::Format_RGBA8888);
 
-        imageBufferReadSize = sizeof(WebVfxCommon::Timecode) + (imageByteCount * imageNames.size());
+        imageBufferReadSize = sizeof(double) + (imageByteCount * imageNames.size());
         QCoreApplication::postEvent(this, new QEvent(QEvent::User));
     }
     else {
@@ -122,7 +121,7 @@ void FrameServer::readFrames() {
 }
 
 void FrameServer::renderFrame() {
-    double time = reinterpret_cast<WebVfxCommon::Timecode *>(imageData)->toDouble();
+    double time = *reinterpret_cast<double *>(imageData);
     auto outputImage = images[imageNames.size()];
     content->renderContent(time, outputImage);
 
