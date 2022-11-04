@@ -13,8 +13,8 @@ void f0r_get_plugin_info(f0r_plugin_info_t* info)
     info->plugin_type = F0R_PLUGIN_TYPE_SOURCE;
     info->color_model = F0R_COLOR_MODEL_RGBA8888;
     info->frei0r_version = FREI0R_MAJOR_VERSION;
-    info->major_version = 0; 
-    info->minor_version = 9; 
-    info->num_params =  0; 
+    info->major_version = 0;
+    info->minor_version = 9;
+    info->num_params = 1;
     info->explanation = "Pipes video frames from an external source command";
 }

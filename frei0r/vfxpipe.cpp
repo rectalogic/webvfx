@@ -15,9 +15,9 @@ extern "C" {
 extern char **environ;
 
 struct VfxPipe {
+    int pid;
     int pipeWrite;
     int pipeRead;
-    bool initialized;
     std::string commandLine;
     unsigned int width;
     unsigned int height;
@@ -106,17 +106,15 @@ void f0r_get_param_value(f0r_instance_t instance, f0r_param_t param, int param_i
     *static_cast<f0r_param_string *>(param) = const_cast<f0r_param_string>(vfxpipe->commandLine.c_str());
  }
 
-void spawnProcess(VfxPipe *vfxpipe)
+int spawnProcess(VfxPipe *vfxpipe)
 {
-    vfxpipe->initialized = true;
-
     int fdsToChild[2];
     int fdsFromChild[2];
 
     if (pipe(fdsToChild) == -1
         || pipe(fdsFromChild) == -1) {
         std::cerr << __FUNCTION__ << ": vfxpipe pipe failed: " << strerror(errno) << std::endl;
-        return;
+        return -1;
     }
 
     // Ignore child exit so we don't have to waitpid, and to avoid zombie processes
@@ -125,7 +123,7 @@ void spawnProcess(VfxPipe *vfxpipe)
     int pid = fork();
     if (pid == -1) {
         std::cerr << __FUNCTION__ << ": vfxpipe fork failed: " << strerror(errno) << std::endl;
-        return;
+        return -1;
     }
     // In the child
     if (pid == 0) {
@@ -177,6 +175,8 @@ void spawnProcess(VfxPipe *vfxpipe)
 
     close(fdsFromChild[1]);
 	close(fdsToChild[0]);
+
+    return pid;
 }
 
 void f0r_update2(
@@ -188,8 +188,12 @@ void f0r_update2(
     uint32_t* outframe)
 {
     VfxPipe *vfxpipe = static_cast<VfxPipe*>(instance);
-    if (!vfxpipe->initialized) {
-        spawnProcess(vfxpipe);
+    if (vfxpipe->pid == 0) {
+        vfxpipe->pid = spawnProcess(vfxpipe);
+    }
+    else if (vfxpipe->pid == -1) {
+        std::cerr << __FUNCTION__ << ": vfxpipe no child process" << std::endl;
+        return;
     }
 
     if (!vfxpipe->dataIO(vfxpipe->pipeWrite, reinterpret_cast<std::byte *>(&time), sizeof(time), write)) {
