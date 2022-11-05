@@ -10,7 +10,14 @@
 #include <string>
 #include <unistd.h>
 
-extern char** environ;
+void replaceAll(std::string& inout, std::string_view what, std::string_view with)
+{
+    for (std::string::size_type pos {};
+         inout.npos != (pos = inout.find(what.data(), pos, what.length()));
+         pos += with.length()) {
+        inout.replace(pos, what.length(), with.data(), with.length());
+    }
+}
 
 class VfxPipe {
 public:
@@ -122,32 +129,17 @@ private:
             close(fdsToChild[0]);
             close(fdsToChild[1]);
 
-            auto envWidth = std::string("VFXPIPE_WIDTH=") + std::to_string(width);
-            auto envHeight = std::string("VFXPIPE_HEIGHT=") + std::to_string(height);
-            const char* const envExtra[] = {
-                envWidth.c_str(),
-                envHeight.c_str(),
-                NULL,
-            };
-            char** p;
-            int environSize;
-            for (p = environ, environSize = 0; *p != NULL; p++, environSize++)
-                ;
-            char const* envp[environSize + std::size(envExtra)];
-            for (auto i = 0; i < environSize; i++) {
-                envp[i] = environ[i];
-            }
-            for (size_t i = environSize, j = 0; j < std::size(envExtra); i++, j++) {
-                envp[i] = envExtra[j];
-            }
-            auto execCommand = std::string("exec ") + commandLine;
+            std::string commandLineTemplate(commandLine);
+            replaceAll(commandLineTemplate, "{{width}}", std::to_string(width));
+            replaceAll(commandLineTemplate, "{{height}}", std::to_string(height));
+            auto execCommand = std::string("exec ") + commandLineTemplate;
             const char* const argv[] = {
                 "/bin/sh",
                 "-c",
                 execCommand.c_str(),
                 NULL,
             };
-            if (execve(argv[0], const_cast<char* const*>(argv), const_cast<char* const*>(envp)) < 0) {
+            if (execvp(argv[0], const_cast<char* const*>(argv)) < 0) {
                 std::cerr << __FUNCTION__ << ": vfxpipe exec failed: " << strerror(errno) << std::endl;
                 exit(1);
             }
