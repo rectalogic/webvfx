@@ -4,16 +4,13 @@
 
 #include <string>
 extern "C" {
-    #include <framework/mlt_log.h>
+#include <framework/mlt_log.h>
 }
 #include "service_locker.h"
 #include "service_manager.h"
 
-
-namespace VFXPipe
-{
+namespace VFXPipe {
 const char* ServiceLocker::kManagerPropertyName = "VFXPipeManager";
-
 
 ServiceLocker::ServiceLocker(mlt_service service)
     : service(service)

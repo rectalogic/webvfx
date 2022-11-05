@@ -8,25 +8,23 @@
 #include <QHash>
 #include <QImage>
 #include <QMap>
-#include <QSet>
 #include <QObject>
-#include <QVariant>
+#include <QSet>
 #include <QUrl>
+#include <QVariant>
 
 class QSize;
 class QString;
 typedef QMap<QString, QVariant> QVariantMap;
 
-namespace WebVfx
-{
+namespace WebVfx {
 
 class Parameters;
 
 // See QtWebKit Bridge docs:
 // http://doc.qt.nokia.com/4.7-snapshot/qtwebkit-bridge.html
 
-class ContentContext : public QObject
-{
+class ContentContext : public QObject {
     Q_OBJECT
 
     Q_PROPERTY(int videoWidth READ getVideoWidth NOTIFY videoSizeChanged)

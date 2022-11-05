@@ -4,17 +4,17 @@
 
 #include <cstddef>
 extern "C" {
-    #include <framework/mlt_filter.h>
-    #include <framework/mlt_frame.h>
-    #include <framework/mlt_image.h>
-    #include <framework/mlt_log.h>
+#include <framework/mlt_filter.h>
+#include <framework/mlt_frame.h>
+#include <framework/mlt_image.h>
+#include <framework/mlt_log.h>
 }
 #include "factory.h"
 #include "service_locker.h"
 #include "service_manager.h"
 
-
-static int filterGetImage(mlt_frame frame, uint8_t **image, mlt_image_format *format, int *width, int *height, int /*writable*/) {
+static int filterGetImage(mlt_frame frame, uint8_t** image, mlt_image_format* format, int* width, int* height, int /*writable*/)
+{
     int error = 0;
 
     // Get the filter
@@ -42,7 +42,8 @@ static int filterGetImage(mlt_frame frame, uint8_t **image, mlt_image_format *fo
     return error;
 }
 
-static mlt_frame filterProcess(mlt_filter filter, mlt_frame frame) {
+static mlt_frame filterProcess(mlt_filter filter, mlt_frame frame)
+{
     // Push the frame filter
     mlt_frame_push_service(frame, filter);
     mlt_frame_push_get_image(frame, filterGetImage);
@@ -50,7 +51,8 @@ static mlt_frame filterProcess(mlt_filter filter, mlt_frame frame) {
     return frame;
 }
 
-mlt_service VFXPipe::createFilter() {
+mlt_service VFXPipe::createFilter()
+{
     mlt_filter self = mlt_filter_new();
     if (self) {
         self->process = filterProcess;

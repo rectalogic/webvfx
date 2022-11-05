@@ -5,18 +5,17 @@
 #ifndef IMAGE_COLOR_H
 #define IMAGE_COLOR_H
 
-#include <QPushButton>
 #include <QColor>
+#include <QPushButton>
 #include <QSize>
 
-class ImageColor : public QPushButton
-{
+class ImageColor : public QPushButton {
     Q_OBJECT
     Q_PROPERTY(QColor imageColor READ imageColor WRITE setImageColor)
     Q_PROPERTY(QSize imageSize READ imageSize WRITE setImageSize)
 
 public:
-    ImageColor(QWidget *parent = 0);
+    ImageColor(QWidget* parent = 0);
 
     const QColor imageColor() { return color; }
     void setImageColor(const QColor& color);
@@ -37,4 +36,3 @@ private:
 };
 
 #endif
-

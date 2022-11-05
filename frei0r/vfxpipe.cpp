@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <iostream>
+#include "vfxpipe.h"
 #include <errno.h>
+#include <iostream>
 #include <signal.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <string>
-#include "vfxpipe.h"
+#include <unistd.h>
 
-
-extern char **environ;
+extern char** environ;
 
 class VfxPipe {
 public:
@@ -21,54 +20,60 @@ public:
         , frameSize(width * height * 4)
         , pid(0)
         , pipeWrite(-1)
-        , pipeRead(-1) {}
+        , pipeRead(-1)
+    {
+    }
 
-    ~VfxPipe() {
+    ~VfxPipe()
+    {
         if (pipeRead != -1)
             close(pipeRead);
         if (pipeWrite != -1)
             close(pipeWrite);
     }
 
-    void setCommandLine(const char *commandLine) {
+    void setCommandLine(const char* commandLine)
+    {
         if (this->commandLine.empty()) {
             this->commandLine = commandLine;
         }
     }
 
-    std::string & getCommandLine() {
+    std::string& getCommandLine()
+    {
         return this->commandLine;
     }
 
     void updateFrame(
-            double time,
-            const uint32_t* inframe1,
-            const uint32_t* inframe2,
-            const uint32_t* inframe3,
-            uint32_t* outframe) {
+        double time,
+        const uint32_t* inframe1,
+        const uint32_t* inframe2,
+        const uint32_t* inframe3,
+        uint32_t* outframe)
+    {
         spawnProcess();
 
-        if (!dataIO(pipeWrite, reinterpret_cast<std::byte *>(&time), sizeof(time), write)) {
+        if (!dataIO(pipeWrite, reinterpret_cast<std::byte*>(&time), sizeof(time), write)) {
             return;
         }
 
         if (inframe1 != nullptr) {
-            if (!dataIO(pipeWrite, reinterpret_cast<const std::byte *>(inframe1), frameSize, write)) {
+            if (!dataIO(pipeWrite, reinterpret_cast<const std::byte*>(inframe1), frameSize, write)) {
                 return;
             }
         }
         if (inframe2 != nullptr) {
-            if (!dataIO(pipeWrite, reinterpret_cast<const std::byte *>(inframe2), frameSize, write)) {
+            if (!dataIO(pipeWrite, reinterpret_cast<const std::byte*>(inframe2), frameSize, write)) {
                 return;
             }
         }
         if (inframe3 != nullptr) {
-            if (!dataIO(pipeWrite, reinterpret_cast<const std::byte *>(inframe3), frameSize, write)) {
+            if (!dataIO(pipeWrite, reinterpret_cast<const std::byte*>(inframe3), frameSize, write)) {
                 return;
             }
         }
 
-        if (!dataIO(pipeRead, reinterpret_cast<std::byte *>(outframe), frameSize, read)) {
+        if (!dataIO(pipeRead, reinterpret_cast<std::byte*>(outframe), frameSize, read)) {
             return;
         }
     }
@@ -82,7 +87,8 @@ private:
     unsigned int height;
     unsigned int frameSize;
 
-    void spawnProcess() {
+    void spawnProcess()
+    {
         if (pid)
             return;
 
@@ -118,15 +124,16 @@ private:
 
             auto envWidth = std::string("VFXPIPE_WIDTH=") + std::to_string(width);
             auto envHeight = std::string("VFXPIPE_HEIGHT=") + std::to_string(height);
-            const char * const envExtra[] = {
+            const char* const envExtra[] = {
                 envWidth.c_str(),
                 envHeight.c_str(),
                 NULL,
             };
-            char **p;
+            char** p;
             int environSize;
-            for (p = environ, environSize = 0; *p != NULL; p++, environSize++);
-            char const * envp[environSize + std::size(envExtra)];
+            for (p = environ, environSize = 0; *p != NULL; p++, environSize++)
+                ;
+            char const* envp[environSize + std::size(envExtra)];
             for (auto i = 0; i < environSize; i++) {
                 envp[i] = environ[i];
             }
@@ -134,13 +141,13 @@ private:
                 envp[i] = envExtra[j];
             }
             auto execCommand = std::string("exec ") + commandLine;
-            const char * const argv[] = {
+            const char* const argv[] = {
                 "/bin/sh",
                 "-c",
                 execCommand.c_str(),
                 NULL,
             };
-            if (execve(argv[0], const_cast<char * const *>(argv), const_cast<char * const *>(envp)) < 0) {
+            if (execve(argv[0], const_cast<char* const*>(argv), const_cast<char* const*>(envp)) < 0) {
                 std::cerr << __FUNCTION__ << ": vfxpipe exec failed: " << strerror(errno) << std::endl;
                 exit(1);
             }
@@ -156,7 +163,8 @@ private:
     }
 
     template <typename D, typename T>
-    bool dataIO(int fd, D data, size_t size, T ioFunc) {
+    bool dataIO(int fd, D data, size_t size, T ioFunc)
+    {
         size_t bytesIO = 0;
         while (bytesIO < size) {
             ssize_t n = ioFunc(fd, data + bytesIO, size - bytesIO);
@@ -181,7 +189,6 @@ private:
         return true;
     }
 };
-
 
 int f0r_init()
 {
@@ -218,7 +225,7 @@ f0r_instance_t f0r_construct(unsigned int width, unsigned int height)
 
 void f0r_destruct(f0r_instance_t instance)
 {
-    VfxPipe *vfxpipe = static_cast<VfxPipe*>(instance);
+    VfxPipe* vfxpipe = static_cast<VfxPipe*>(instance);
     delete vfxpipe;
 }
 
@@ -226,17 +233,17 @@ void f0r_set_param_value(f0r_instance_t instance, f0r_param_t param, int param_i
 {
     if (param_index != 0)
         return;
-    VfxPipe *vfxpipe = static_cast<VfxPipe*>(instance);
-    vfxpipe->setCommandLine(*(static_cast<f0r_param_string *>(param)));
+    VfxPipe* vfxpipe = static_cast<VfxPipe*>(instance);
+    vfxpipe->setCommandLine(*(static_cast<f0r_param_string*>(param)));
 }
 
 void f0r_get_param_value(f0r_instance_t instance, f0r_param_t param, int param_index)
 {
     if (param_index != 0)
         return;
-    VfxPipe *vfxpipe = static_cast<VfxPipe*>(instance);
-    *static_cast<f0r_param_string *>(param) = const_cast<f0r_param_string>(vfxpipe->getCommandLine().c_str());
- }
+    VfxPipe* vfxpipe = static_cast<VfxPipe*>(instance);
+    *static_cast<f0r_param_string*>(param) = const_cast<f0r_param_string>(vfxpipe->getCommandLine().c_str());
+}
 
 void f0r_update2(
     f0r_instance_t instance,
@@ -246,7 +253,7 @@ void f0r_update2(
     const uint32_t* inframe3,
     uint32_t* outframe)
 {
-    VfxPipe *vfxpipe = static_cast<VfxPipe*>(instance);
+    VfxPipe* vfxpipe = static_cast<VfxPipe*>(instance);
     vfxpipe->updateFrame(time, inframe1, inframe2, inframe3, outframe);
 }
 

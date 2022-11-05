@@ -6,12 +6,11 @@
 #define VFXPIPE_FACTORY_H_
 
 extern "C" {
-    #include <framework/mlt_service.h>
-    #include <framework/mlt_profile.h>
+#include <framework/mlt_profile.h>
+#include <framework/mlt_service.h>
 }
 
-namespace VFXPipe
-{
+namespace VFXPipe {
 
 mlt_service createProducer(mlt_profile profile);
 mlt_service createFilter();

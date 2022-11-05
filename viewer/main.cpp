@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <QApplication>
-#include <QtGlobal>
-#include <QScopedPointer>
 #include "viewer.h"
+#include <QApplication>
+#include <QScopedPointer>
+#include <QtGlobal>
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     QApplication app(argc, argv);
 
@@ -21,15 +21,16 @@ int main(int argc, char *argv[])
     // otherwise it's destructor tries to clean up global state which is in the unloaded webvfx library
 
     struct Cleanup {
-        static inline void cleanup(Viewer *pointer) {
+        static inline void cleanup(Viewer* pointer)
+        {
             qInstallMessageHandler(0);
             delete pointer;
         }
     };
-    static Viewer *viewer = new Viewer();
+    static Viewer* viewer = new Viewer();
     QScopedPointer<Viewer, Cleanup> destroyer(viewer);
 
-    auto messageHandler = +[] (QtMsgType type, const QMessageLogContext &context, const QString &msg) mutable {
+    auto messageHandler = +[](QtMsgType type, const QMessageLogContext& context, const QString& msg) mutable {
         viewer->messageHandler(type, context, msg);
     };
     qInstallMessageHandler(messageHandler);
@@ -41,4 +42,3 @@ int main(int argc, char *argv[])
 
     return app.exec();
 }
-

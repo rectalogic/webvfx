@@ -2,20 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "webvfx/webvfx.h"
+#include "webvfx/logger.h"
 #include <QMetaType>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QString>
-#include "webvfx/logger.h"
-#include "webvfx/webvfx.h"
 
-namespace WebVfx
-{
+namespace WebVfx {
 
 static bool s_initialized = false;
 static Logger* s_logger = 0;
 static QMutex s_initializedMutex;
-
 
 void setLogger(Logger* logger)
 {

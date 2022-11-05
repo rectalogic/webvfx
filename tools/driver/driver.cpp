@@ -2,20 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stdlib.h>
 #include <cstring>
-#include <iostream>
 #include <fstream>
-#include <vector>
-#include <string>
 #include <getopt.h>
+#include <iostream>
+#include <stdlib.h>
+#include <string>
+#include <vector>
 
-
-void usage(const char* name) {
+void usage(const char* name)
+{
     std::cerr << "Usage: " << name << " -s|--size <width>x<height> -f|--frames <framecount> [-h|--help] [[<input-raw-video>] ...]" << std::endl;
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
     if (argc <= 1) {
         usage(argv[0]);
         return 1;
@@ -23,19 +24,20 @@ int main(int argc, char* argv[]) {
 
     int width = 0, height = 0;
     int frameCount;
-    
+
     static struct option long_options[] = {
-        {"help", no_argument, 0, 'h'},
+        { "help", no_argument, 0, 'h' },
         // Render size
-        {"size", required_argument, 0, 's'},
+        { "size", required_argument, 0, 's' },
         // Number of frames to render
-        {"frames", required_argument, 0, 'f'},
-        {0, 0, 0, 0}
+        { "frames", required_argument, 0, 'f' },
+        { 0, 0, 0, 0 }
     };
     int option_index = 0;
     int c;
     while ((c = getopt_long(argc, argv, "hs:f:",
-                            long_options, &option_index)) != -1) {
+                long_options, &option_index))
+        != -1) {
         switch (c) {
         case 'h':
             usage(argv[0]);
@@ -66,7 +68,7 @@ int main(int argc, char* argv[]) {
 
     std::vector<std::ifstream> inputVideoStreams;
     for (int i = optind; i < argc; i++) {
-        //XXX handle pipe: specifiers
+        // XXX handle pipe: specifiers
         inputVideoStreams.emplace_back(argv[i], std::ifstream::binary);
     }
 
@@ -76,7 +78,7 @@ int main(int argc, char* argv[]) {
     std::cout << std::unitbuf;
     for (int f = 0; f < frameCount; f++) {
         double time = (double)f / frameCount;
-        std::cout.write((const char *)(&time), sizeof(double));
+        std::cout.write((const char*)(&time), sizeof(double));
         for (std::istream& s : inputVideoStreams) {
             if (!s.good()) {
                 std::cerr << "Input stream error" << std::endl;
@@ -86,6 +88,6 @@ int main(int argc, char* argv[]) {
             std::cout.write(image, imageSize);
         }
     }
- 
+
     return 0;
 }

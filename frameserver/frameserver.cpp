@@ -2,28 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <unistd.h>
-#include <errno.h>
+#include "frameserver.h"
 #include <QCoreApplication>
 #include <QDebug>
 #include <QMap>
 #include <QUrl>
-#include "frameserver.h"
-#include <webvfx/webvfx.h>
+#include <errno.h>
+#include <unistd.h>
 #include <webvfx/logger.h>
 #include <webvfx/parameters.h>
 #include <webvfx/qml_content.h>
+#include <webvfx/webvfx.h>
 
-class FrameServerParameters : public WebVfx::Parameters
-{
+class FrameServerParameters : public WebVfx::Parameters {
 public:
-    FrameServerParameters(QMap<QString, QString> map) : propertyMap(map) {}
+    FrameServerParameters(QMap<QString, QString> map)
+        : propertyMap(map)
+    {
+    }
 
-    double getNumberParameter(const QString& name) {
+    double getNumberParameter(const QString& name)
+    {
         return propertyMap[name].toDouble();
     }
 
-    QString getStringParameter(const QString& name) {
+    QString getStringParameter(const QString& name)
+    {
         return propertyMap[name];
     }
 
@@ -35,14 +39,15 @@ private:
 
 class FrameServerLogger : public WebVfx::Logger {
 public:
-    void log(const QString& message) {
+    void log(const QString& message)
+    {
         qDebug() << message;
     }
 };
 
 /////////////////
 
-FrameServer::FrameServer(const QSize &size, const QStringList& imageNames, const QMap<QString, QString>& propertyMap, const QUrl& qmlUrl, QObject *parent)
+FrameServer::FrameServer(const QSize& size, const QStringList& imageNames, const QMap<QString, QString>& propertyMap, const QUrl& qmlUrl, QObject* parent)
     : QObject(parent)
     , content(0)
     , videoSize(size)
@@ -71,7 +76,7 @@ void FrameServer::onContentLoadFinished(bool result)
     if (result) {
         // Single buffer to hold output image and all input images, plus timecode
         imageData = new unsigned char[sizeof(double) + ((1 + imageNames.size()) * imageByteCount)];
-        images = new QImage[1 + imageNames.size()]; //XXX use QList/emplace_back ?
+        images = new QImage[1 + imageNames.size()]; // XXX use QList/emplace_back ?
         for (int i = 0; i < imageNames.size(); i++) {
             images[i] = QImage((const uchar*)(imageData + sizeof(double) + (i * imageByteCount)),
                 videoSize.width(), videoSize.height(), QImage::Format_RGBA8888);
@@ -83,15 +88,15 @@ void FrameServer::onContentLoadFinished(bool result)
 
         imageBufferReadSize = sizeof(double) + (imageByteCount * imageNames.size());
         QCoreApplication::postEvent(this, new QEvent(QEvent::User));
-    }
-    else {
+    } else {
         qCritical("QML content failed to load.");
         QCoreApplication::exit(1);
         return;
     }
 }
 
-bool FrameServer::event(QEvent *event) {
+bool FrameServer::event(QEvent* event)
+{
     if (event->type() == QEvent::User) {
         readFrames();
         return true;
@@ -99,7 +104,8 @@ bool FrameServer::event(QEvent *event) {
     return QObject::event(event);
 }
 
-void FrameServer::readFrames() {
+void FrameServer::readFrames()
+{
     unsigned int currentBufferPosition = 0;
 
     while (currentBufferPosition < imageBufferReadSize) {
@@ -108,20 +114,19 @@ void FrameServer::readFrames() {
             qCritical("read failed: %s", strerror(errno));
             QCoreApplication::exit(1);
             return;
-        }
-        else if (n == 0) {
+        } else if (n == 0) {
             QCoreApplication::exit(0);
             return;
-        }
-        else {
+        } else {
             currentBufferPosition += n;
         }
     }
     renderFrame();
 }
 
-void FrameServer::renderFrame() {
-    double time = *reinterpret_cast<double *>(imageData);
+void FrameServer::renderFrame()
+{
+    double time = *reinterpret_cast<double*>(imageData);
     auto outputImage = images[imageNames.size()];
     content->renderContent(time, outputImage);
 

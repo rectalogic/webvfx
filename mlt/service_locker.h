@@ -6,16 +6,13 @@
 #define VFXPIPE_SERVICE_LOCKER_H_
 
 extern "C" {
-    #include <framework/mlt_service.h>
+#include <framework/mlt_service.h>
 }
 
-
-namespace VFXPipe
-{
+namespace VFXPipe {
 class ServiceManager;
 
-class ServiceLocker
-{
+class ServiceLocker {
 public:
     ServiceLocker(mlt_service service);
     ~ServiceLocker();

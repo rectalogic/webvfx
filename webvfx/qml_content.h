@@ -5,13 +5,13 @@
 #ifndef WEBVFX_QML_CONTENT_H_
 #define WEBVFX_QML_CONTENT_H_
 
-#include <QQmlError>
-#include <QQuickView>
-#include <QImage>
-#include <QSet>
-#include <QQuickRenderControl>
-#include <QtQuick3D/QQuick3DTextureData>
 #include "webvfx/content_context.h"
+#include <QImage>
+#include <QQmlError>
+#include <QQuickRenderControl>
+#include <QQuickView>
+#include <QSet>
+#include <QtQuick3D/QQuick3DTextureData>
 
 class QRhiRenderBuffer;
 class QRhiRenderPassDescriptor;
@@ -20,14 +20,12 @@ class QRhiTextureRenderTarget;
 class QSize;
 class QUrl;
 
-namespace WebVfx
-{
+namespace WebVfx {
 
 class Parameters;
 class RenderStrategy;
 
-class QmlContent : public QQuickView
-{
+class QmlContent : public QQuickView {
     Q_OBJECT
 public:
     QmlContent(const QSize& size, Parameters* parameters);
@@ -51,7 +49,9 @@ private:
     void uninitialize();
 
     QmlContent(QQuickRenderControl* renderControl, const QSize& size, Parameters* parameters);
-    enum LoadStatus { LoadNotFinished, LoadFailed, LoadSucceeded };
+    enum LoadStatus { LoadNotFinished,
+        LoadFailed,
+        LoadSucceeded };
     LoadStatus pageLoadFinished;
     ContentContext* contentContext;
     QQuickRenderControl* renderControl;
@@ -63,16 +63,15 @@ private:
     bool initialized;
 };
 
-
-class ImageTexture : public QQuick3DTextureData
-{
+class ImageTexture : public QQuick3DTextureData {
     Q_OBJECT
     Q_PROPERTY(QImage image READ image WRITE setImage NOTIFY imageChanged)
     QML_NAMED_ELEMENT(ImageTexture)
 
 public:
     ImageTexture()
-    {}
+    {
+    }
 
     QImage image() const
     {

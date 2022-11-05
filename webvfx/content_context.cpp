@@ -1,11 +1,10 @@
+#include "webvfx/content_context.h"
+#include "webvfx/parameters.h"
 #include <QImage>
 #include <QVariant>
 #include <QtAlgorithms>
-#include "webvfx/content_context.h"
-#include "webvfx/parameters.h"
 
-namespace WebVfx
-{
+namespace WebVfx {
 
 ContentContext::ContentContext(QObject* parent, Parameters* parameters, QSize size)
     : QObject(parent)
@@ -47,7 +46,8 @@ QString ContentContext::getStringParameter(const QString& name)
         return QString();
 }
 
-void ContentContext::registerImageName(const QString& imageName) {
+void ContentContext::registerImageName(const QString& imageName)
+{
     imageNameSet.insert(imageName);
 }
 
@@ -71,7 +71,8 @@ QUrl ContentContext::getImageUrl(const QString& name)
     return QUrl::fromEncoded(QString("image://webvfx/%1/%2").arg(name).arg(renderCount).toLatin1(), QUrl::StrictMode);
 }
 
-void ContentContext::setVideoSize(QSize size) {
+void ContentContext::setVideoSize(QSize size)
+{
     if (videoSize == size)
         return;
     videoSize = size;

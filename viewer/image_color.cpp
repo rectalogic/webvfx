@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "image_color.h"
 #include <QBrush>
 #include <QColorDialog>
 #include <QImage>
 #include <QPainter>
 #include <QPalette>
-#include "image_color.h"
 
 ImageColor::ImageColor(QWidget* parent)
     : QPushButton(parent)
@@ -77,7 +77,7 @@ void ImageColor::fillImage()
     pen.setWidth(penWidth);
     pen.setJoinStyle(Qt::MiterJoin);
     painter.setPen(pen);
-    painter.drawRect(rect.adjusted(penWidth/2, penWidth/2, -penWidth/2, -penWidth/2));
+    painter.drawRect(rect.adjusted(penWidth / 2, penWidth / 2, -penWidth / 2, -penWidth / 2));
 
     painter.end();
 }

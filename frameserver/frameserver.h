@@ -4,25 +4,23 @@
 
 #pragma once
 
+#include <QImage>
 #include <QObject>
 #include <QSize>
-#include <QImage>
 #include <QStringList>
 
-namespace WebVfx
-{
-    class QmlContent;
+namespace WebVfx {
+class QmlContent;
 }
 
-class FrameServer : public QObject
-{
+class FrameServer : public QObject {
     Q_OBJECT
 
 public:
-    FrameServer(const QSize &size, const QStringList& imageNames, const QMap<QString, QString>& propertyMap, const QUrl& qmlUrl, QObject *parent = nullptr);
+    FrameServer(const QSize& size, const QStringList& imageNames, const QMap<QString, QString>& propertyMap, const QUrl& qmlUrl, QObject* parent = nullptr);
     ~FrameServer();
 
-    bool event(QEvent *event) override;
+    bool event(QEvent* event) override;
 
 private slots:
     void onContentLoadFinished(bool);
@@ -36,6 +34,6 @@ private:
     QStringList imageNames;
     unsigned int imageByteCount;
     unsigned int imageBufferReadSize;
-    unsigned char *imageData;
-    QImage *images;
+    unsigned char* imageData;
+    QImage* images;
 };

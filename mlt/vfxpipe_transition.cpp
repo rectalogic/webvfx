@@ -3,17 +3,17 @@
 // found in the LICENSE file.
 
 extern "C" {
-    #include <framework/mlt_transition.h>
-    #include <framework/mlt_frame.h>
-    #include <framework/mlt_log.h>
+#include <framework/mlt_frame.h>
+#include <framework/mlt_log.h>
+#include <framework/mlt_transition.h>
 }
-#include <cstring>
 #include "factory.h"
 #include "service_locker.h"
 #include "service_manager.h"
+#include <cstring>
 
-
-static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_format *format, int *width, int *height, int /*writable*/) {
+static int transitionGetImage(mlt_frame aFrame, uint8_t** image, mlt_image_format* format, int* width, int* height, int /*writable*/)
+{
     int error = 0;
 
     mlt_frame bFrame = mlt_frame_pop_frame(aFrame);
@@ -27,7 +27,7 @@ static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_forma
     if ((error = mlt_frame_get_image(aFrame, image, format, width, height, 1)) != 0)
         return error;
     // Get the bFrame image, we won't write to it
-    uint8_t *bImage = NULL;
+    uint8_t* bImage = NULL;
     int bWidth = 0, bHeight = 0;
     if ((error = mlt_frame_get_image(bFrame, &bImage, format, &bWidth, &bHeight, 0)) != 0)
         return error;
@@ -48,14 +48,16 @@ static int transitionGetImage(mlt_frame aFrame, uint8_t **image, mlt_image_forma
     return error;
 }
 
-static mlt_frame transitionProcess(mlt_transition transition, mlt_frame aFrame, mlt_frame bFrame) {
+static mlt_frame transitionProcess(mlt_transition transition, mlt_frame aFrame, mlt_frame bFrame)
+{
     mlt_frame_push_service(aFrame, transition);
     mlt_frame_push_frame(aFrame, bFrame);
     mlt_frame_push_get_image(aFrame, transitionGetImage);
     return aFrame;
 }
 
-mlt_service VFXPipe::createTransition() {
+mlt_service VFXPipe::createTransition()
+{
     mlt_transition self = mlt_transition_new();
     if (self) {
         self->process = transitionProcess;

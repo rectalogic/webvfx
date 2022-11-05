@@ -4,8 +4,8 @@
 
 #include <cstddef>
 extern "C" {
-    #include <framework/mlt_producer.h>
-    #include <framework/mlt_frame.h>
+#include <framework/mlt_frame.h>
+#include <framework/mlt_producer.h>
 }
 #include "factory.h"
 #include "service_locker.h"
@@ -14,7 +14,8 @@ extern "C" {
 static const char* kVFXPipeProducerPropertyName = "VFXPipeProducer";
 static const char* kVFXPipePositionPropertyName = "vfxpipe.position";
 
-static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format *format, int *width, int *height, int /*writable*/) {
+static int producerGetImage(mlt_frame frame, uint8_t** buffer, mlt_image_format* format, int* width, int* height, int /*writable*/)
+{
     int error = 0;
 
     // Obtain properties of frame
@@ -43,13 +44,14 @@ static int producerGetImage(mlt_frame frame, uint8_t **buffer, mlt_image_format 
         mlt_image_s outputImage;
         mlt_image_set_values(&outputImage, *buffer, *format, *width, *height);
         locker.getManager()->render(nullptr, nullptr, &outputImage,
-                                    mlt_properties_get_position(properties, kVFXPipePositionPropertyName));
+            mlt_properties_get_position(properties, kVFXPipePositionPropertyName));
     }
 
     return error;
 }
 
-static int getFrame(mlt_producer producer, mlt_frame_ptr frame, int /*index*/) {
+static int getFrame(mlt_producer producer, mlt_frame_ptr frame, int /*index*/)
+{
     // Generate a frame
     *frame = mlt_frame_init(MLT_PRODUCER_SERVICE(producer));
 
@@ -82,7 +84,8 @@ static int getFrame(mlt_producer producer, mlt_frame_ptr frame, int /*index*/) {
     return 0;
 }
 
-mlt_service VFXPipe::createProducer(mlt_profile profile) {
+mlt_service VFXPipe::createProducer(mlt_profile profile)
+{
     mlt_producer self = mlt_producer_new(profile);
     if (self) {
         self->get_frame = getFrame;

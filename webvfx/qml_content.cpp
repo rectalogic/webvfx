@@ -1,15 +1,15 @@
 #include <QByteArray>
+#include <QImage>
+#include <QList>
 #include <QPainter>
+#include <QQmlContext>
+#include <QQmlError>
 #include <QQuickImageProvider>
 #include <QQuickItem>
 #include <QQuickItemGrabResult>
 #include <QQuickRenderControl>
 #include <QQuickRenderTarget>
 #include <QQuickView>
-#include <QImage>
-#include <QList>
-#include <QQmlError>
-#include <QQmlContext>
 #include <QResizeEvent>
 #include <QSharedPointer>
 #include <QSize>
@@ -21,18 +21,15 @@
 #include "webvfx/qml_content.h"
 #include "webvfx/webvfx.h"
 
+namespace WebVfx {
 
-namespace WebVfx
-{
-
-class ImageProvider : public QQuickImageProvider
-{
- public:
-     ImageProvider(ContentContext* contentContext)
-         : QQuickImageProvider(QQmlImageProviderBase::Image)
-         , contentContext(contentContext)
-     {
-     }
+class ImageProvider : public QQuickImageProvider {
+public:
+    ImageProvider(ContentContext* contentContext)
+        : QQuickImageProvider(QQmlImageProviderBase::Image)
+        , contentContext(contentContext)
+    {
+    }
 
     QImage requestImage(const QString& id, QSize* size, const QSize& requestedSize)
     {
@@ -45,17 +42,16 @@ class ImageProvider : public QQuickImageProvider
 
         if (!requestedSize.isEmpty())
             return image.scaled(requestedSize, Qt::IgnoreAspectRatio,
-                                Qt::SmoothTransformation);
+                Qt::SmoothTransformation);
 
         return image;
     }
 
 private:
     ContentContext* contentContext;
- };
+};
 
 ////////////////////
-
 
 void ImageTexture::setImage(QImage image)
 {
@@ -68,12 +64,12 @@ void ImageTexture::updateTexture(QImage image)
     setSize(image.size());
     bool needsConvert = false;
     switch (image.format()) {
-        case QImage::Format_RGBX8888:
-        case QImage::Format_RGBA8888:
-            break;
-        default:
-            needsConvert = true;
-            break;
+    case QImage::Format_RGBX8888:
+    case QImage::Format_RGBA8888:
+        break;
+    default:
+        needsConvert = true;
+        break;
     }
     setHasTransparency(image.hasAlphaChannel());
     setFormat(QQuick3DTextureData::RGBA8);
@@ -83,7 +79,7 @@ void ImageTexture::updateTexture(QImage image)
         m_image = image.copy();
     else
         m_image = image;
-    setTextureData(QByteArray::fromRawData((const char *)m_image.constBits(), m_image.sizeInBytes()));
+    setTextureData(QByteArray::fromRawData((const char*)m_image.constBits(), m_image.sizeInBytes()));
 }
 
 ////////////////////
@@ -150,7 +146,7 @@ bool QmlContent::initialize()
         return false;
     }
 
-    QRhi *rhi = QQuickRenderControlPrivate::get(renderControl)->rhi;
+    QRhi* rhi = QQuickRenderControlPrivate::get(renderControl)->rhi;
 
     const QSize size = contentContext->getVideoSize();
     texture = rhi->newTexture(QRhiTexture::RGBA8, size, 1, QRhiTexture::RenderTarget | QRhiTexture::UsedAsTransferSource);
@@ -210,7 +206,8 @@ void QmlContent::loadContent(const QUrl& url)
     setSource(url);
 }
 
-void QmlContent::setContentSize(const QSize& size) {
+void QmlContent::setContentSize(const QSize& size)
+{
     if (contentContext->getVideoSize() != size) {
         contentContext->setVideoSize(size);
         uninitialize();
@@ -236,16 +233,16 @@ bool QmlContent::renderContent(double time, QImage& renderImage)
 
     // RHI is private, we need to use it to avoid writing platform specific code for every platform
     // See https://bugreports.qt.io/browse/QTBUG-88876
-    QQuickRenderControlPrivate *renderControlPrivate = QQuickRenderControlPrivate::get(renderControl);
-    QRhi *rhi = renderControlPrivate->rhi;
+    QQuickRenderControlPrivate* renderControlPrivate = QQuickRenderControlPrivate::get(renderControl);
+    QRhi* rhi = renderControlPrivate->rhi;
 
     bool readCompleted = false;
     QRhiReadbackResult readResult;
     readResult.completed = [&readCompleted, &readResult, &rhi, &renderImage] {
         readCompleted = true;
-        QImage sourceImage(reinterpret_cast<const uchar *>(readResult.data.constData()),
-                           readResult.pixelSize.width(), readResult.pixelSize.height(),
-                           QImage::Format_RGBA8888_Premultiplied);
+        QImage sourceImage(reinterpret_cast<const uchar*>(readResult.data.constData()),
+            readResult.pixelSize.width(), readResult.pixelSize.height(),
+            QImage::Format_RGBA8888_Premultiplied);
         QPainter painter(&renderImage);
         if (rhi->isYUpInFramebuffer()) {
             painter.scale(1, -1);
@@ -254,7 +251,7 @@ bool QmlContent::renderContent(double time, QImage& renderImage)
         painter.drawImage(0, 0, sourceImage);
         painter.end();
     };
-    QRhiResourceUpdateBatch *readbackBatch = rhi->nextResourceUpdateBatch();
+    QRhiResourceUpdateBatch* readbackBatch = rhi->nextResourceUpdateBatch();
     readbackBatch->readBackTexture(texture, &readResult);
     renderControlPrivate->cb->resourceUpdate(readbackBatch);
 

@@ -5,11 +5,9 @@
 #ifndef WEBVFX_PARAMETERS_H_
 #define WEBVFX_PARAMETERS_H_
 
-
 class QString;
 
-namespace WebVfx
-{
+namespace WebVfx {
 
 /*!
  * @brief Callback interface to expose named parameter values to an effect.
@@ -17,8 +15,7 @@ namespace WebVfx
  * An instance of this class should be passed to the content constructor
  * to provide the parameters for that instance.
  */
-class Parameters
-{
+class Parameters {
 public:
     Parameters() {};
     virtual ~Parameters() = 0;

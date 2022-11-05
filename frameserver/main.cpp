@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <QGuiApplication>
+#include "frameserver.h"
 #include <QCommandLineParser>
-#include <QUrl>
+#include <QGuiApplication>
 #include <QMap>
 #include <QSize>
-#include "frameserver.h"
+#include <QUrl>
 
-inline void assertOpt(bool r) {
+inline void assertOpt(bool r)
+{
     if (!r) {
         qCritical("Failed to add option");
         exit(1);
     }
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     QGuiApplication app(argc, argv);
 
@@ -28,10 +29,10 @@ int main(int argc, char *argv[])
     parser.setApplicationDescription("WebVfx render pipe");
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
     parser.addHelpOption();
-    assertOpt(parser.addOption({{"p", "property"}, "Property name=value, may be specified multiple times.", "property"}));
-    assertOpt(parser.addOption({"width", "Video frame width.", "width"}));
-    assertOpt(parser.addOption({"height", "Video frame height.", "height"}));
-    assertOpt(parser.addOption({{"i", "image"}, "Name of image on stdin, may be specified multiple times, order matters.", "image"}));
+    assertOpt(parser.addOption({ { "p", "property" }, "Property name=value, may be specified multiple times.", "property" }));
+    assertOpt(parser.addOption({ "width", "Video frame width.", "width" }));
+    assertOpt(parser.addOption({ "height", "Video frame height.", "height" }));
+    assertOpt(parser.addOption({ { "i", "image" }, "Name of image on stdin, may be specified multiple times, order matters.", "image" }));
     parser.addPositionalArgument("source", "QML source URL.");
 
     parser.process(app);
@@ -66,4 +67,3 @@ int main(int argc, char *argv[])
 
     return app.exec();
 }
-

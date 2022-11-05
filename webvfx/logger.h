@@ -15,8 +15,7 @@ namespace WebVfx {
  * An instance of this class should be passed to WebVfx::setLogger().
  * WebVfx will then log all messages using that instance.
  */
-class Logger
-{
+class Logger {
 public:
     virtual ~Logger() = 0;
 
@@ -25,7 +24,7 @@ public:
      *
      * @param msg Message to be logged.
      */
-    //XXX should add log level enum
+    // XXX should add log level enum
     virtual void log(const QString& msg) = 0;
 };
 

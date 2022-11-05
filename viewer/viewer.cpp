@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "viewer.h"
+#include "image_color.h"
 #include <QDir>
 #include <QDoubleSpinBox>
 #include <QFileDialog>
@@ -17,30 +19,32 @@
 #include <QTextStream>
 #include <QUrl>
 #include <webvfx/parameters.h>
-#include <webvfx/webvfx.h>
 #include <webvfx/qml_content.h>
-#include "image_color.h"
-#include "viewer.h"
-
+#include <webvfx/webvfx.h>
 
 // Expose parameter name/value pairs from the table to the page content
-class ViewerParameters : public WebVfx::Parameters
-{
+class ViewerParameters : public WebVfx::Parameters {
 public:
-    ViewerParameters(QTableWidget* tableWidget) : tableWidget(tableWidget) {}
+    ViewerParameters(QTableWidget* tableWidget)
+        : tableWidget(tableWidget)
+    {
+    }
 
-    double getNumberParameter(const QString& name) {
+    double getNumberParameter(const QString& name)
+    {
         QString value = findValue(name);
         return value.toDouble();
     }
 
-    QString getStringParameter(const QString& name) {
+    QString getStringParameter(const QString& name)
+    {
         return findValue(name);
     }
 
 private:
-    QString findValue(const QString& name) {
-        QList<QTableWidgetItem*> itemList = tableWidget->findItems(name, Qt::MatchFixedString|Qt::MatchCaseSensitive);
+    QString findValue(const QString& name)
+    {
+        QList<QTableWidgetItem*> itemList = tableWidget->findItems(name, Qt::MatchFixedString | Qt::MatchCaseSensitive);
         foreach (const QTableWidgetItem* item, itemList) {
             // If the string matches column 0 (Name), then return column 1 (Value)
             if (item->column() == 0) {
@@ -57,11 +61,14 @@ private:
 
 /////////////////
 
-class ViewerLogger : public WebVfx::Logger
-{
+class ViewerLogger : public WebVfx::Logger {
 public:
-    ViewerLogger(QPlainTextEdit* logText) : logText(logText) {}
-    void log(const QString& msg) {
+    ViewerLogger(QPlainTextEdit* logText)
+        : logText(logText)
+    {
+    }
+    void log(const QString& msg)
+    {
         logText->appendPlainText(msg);
     }
 
@@ -89,7 +96,7 @@ Viewer::Viewer()
     timeSpinBox->setValue(sliderTimeValue(timeSlider->value()));
     statusBar()->addPermanentWidget(timeSpinBox);
     connect(timeSpinBox, SIGNAL(valueChanged(double)),
-            SLOT(onTimeSpinBoxValueChanged(double)));
+        SLOT(onTimeSpinBoxValueChanged(double)));
 
     // Size display
     sizeLabel = new QLabel(statusBar());
@@ -105,7 +112,7 @@ Viewer::~Viewer()
     delete content;
 }
 
-void Viewer::messageHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+void Viewer::messageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
     QString result;
     QTextStream(&result) << type << ": " << msg << " (line " << context.line << ", " << (context.function ? context.function : "") << ")\n";
@@ -124,8 +131,7 @@ void Viewer::onContentLoadFinished(bool result)
     if (result) {
         setupImages(scrollArea->widget()->size());
         renderContent();
-    }
-    else {
+    } else {
         statusBar()->showMessage(tr("Load failed"), 2000);
         setWindowFilePath("");
     }
@@ -135,8 +141,8 @@ void Viewer::onContentLoadFinished(bool result)
 void Viewer::on_actionOpen_triggered(bool)
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open"),
-                                                    QString(),
-                                                    tr("WebVfx Files (*.qml)"));
+        QString(),
+        tr("WebVfx Files (*.qml)"));
     loadFile(fileName);
 }
 
@@ -175,8 +181,7 @@ void Viewer::handleResize()
     scrollArea->widget()->resize(width, height);
     if (content)
         content->setContentSize(QSize(width, height));
-    sizeLabel->setText(QString::number(width) % QLatin1String("x") %
-                       QString::number(height));
+    sizeLabel->setText(QString::number(width) % QLatin1String("x") % QString::number(height));
 
     // Iterate over ImageColor widgets in table and change their sizes
     QSize size(width, height);
@@ -237,8 +242,7 @@ double Viewer::sliderTimeValue(int value)
 void Viewer::createContent(const QString& fileName)
 {
     QSize size(scrollArea->widget()->size());
-    WebVfx::QmlContent* qmlContent =
-        new WebVfx::QmlContent(size, new ViewerParameters(parametersTable));
+    WebVfx::QmlContent* qmlContent = new WebVfx::QmlContent(size, new ViewerParameters(parametersTable));
     delete content;
     content = qmlContent;
     imageLabel = new QLabel(scrollArea);
@@ -278,8 +282,8 @@ void Viewer::setupImages(const QSize& size)
         imageColor->setImageSize(size);
         imageColor->setObjectName(imageName);
         imageColor->setImageColor(QColor::fromHsv(QRandomGenerator::global()->generate() % 360, 200, 230));
-        connect(imageColor, SIGNAL(imageChanged(QString,QImage)),
-                SLOT(onImageChanged(QString,QImage)));
+        connect(imageColor, SIGNAL(imageChanged(QString, QImage)),
+            SLOT(onImageChanged(QString, QImage)));
         imagesTable->setCellWidget(row, 1, imageColor);
 
         row++;

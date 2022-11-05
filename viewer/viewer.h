@@ -5,29 +5,27 @@
 #ifndef VIEWER_H
 #define VIEWER_H
 
+#include "ui_viewer.h"
+#include <QImage>
 #include <QMainWindow>
 #include <QMessageLogContext>
-#include <QImage>
 #include <QtGlobal>
-#include "ui_viewer.h"
 
-namespace WebVfx
-{
-    class QmlContent;
+namespace WebVfx {
+class QmlContent;
 }
 
 class QDoubleSpinBox;
 class QLabel;
 
-class Viewer : public QMainWindow, private Ui::Viewer
-{
+class Viewer : public QMainWindow, private Ui::Viewer {
     Q_OBJECT
 
 public:
     Viewer();
     ~Viewer();
     void loadFile(const QString& fileName);
-    void messageHandler(QtMsgType, const QMessageLogContext &, const QString &);
+    void messageHandler(QtMsgType, const QMessageLogContext&, const QString&);
 private slots:
     void on_actionOpen_triggered(bool);
     void onContentLoadFinished(bool);
@@ -54,4 +52,3 @@ private:
 };
 
 #endif
-

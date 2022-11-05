@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 extern "C" {
-    #include <frei0r.h>
+#include <frei0r.h>
 }
 
 void get_common_plugin_info(f0r_plugin_info_t* info);
