@@ -8,9 +8,8 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <string>
-extern "C" {
-    #include <frei0r.h>
-}
+#include "vfxpipe.h"
+
 
 extern char **environ;
 
@@ -60,6 +59,16 @@ void f0r_deinit()
 {
 }
 
+void get_common_plugin_info(f0r_plugin_info_t* info)
+{
+    info->author = "Andrew Wason";
+    info->color_model = F0R_COLOR_MODEL_RGBA8888;
+    info->frei0r_version = FREI0R_MAJOR_VERSION;
+    info->major_version = 0;
+    info->minor_version = 9;
+    info->num_params = 1;
+}
+
 void f0r_get_param_info(f0r_param_info_t* info, int param_index)
 {
     if (param_index == 0) {
@@ -95,7 +104,9 @@ void f0r_set_param_value(f0r_instance_t instance, f0r_param_t param, int param_i
     if (param_index != 0)
         return;
     VfxPipe *vfxpipe = static_cast<VfxPipe*>(instance);
-    vfxpipe->commandLine = *(static_cast<f0r_param_string *>(param));
+    if (vfxpipe->commandLine.empty()) {
+        vfxpipe->commandLine = *(static_cast<f0r_param_string *>(param));
+    }
 }
 
 void f0r_get_param_value(f0r_instance_t instance, f0r_param_t param, int param_index)
