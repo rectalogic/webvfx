@@ -13,7 +13,67 @@
 
 extern char **environ;
 
-struct VfxPipe {
+class VfxPipe {
+public:
+    VfxPipe(unsigned int width, unsigned int height)
+        : width(width)
+        , height(height)
+        , frameSize(width * height * 4)
+        , pid(0)
+        , pipeWrite(-1)
+        , pipeRead(-1) {}
+
+    ~VfxPipe() {
+        if (pipeRead != -1)
+            close(pipeRead);
+        if (pipeWrite != -1)
+            close(pipeWrite);
+    }
+
+    void setCommandLine(const char *commandLine) {
+        if (this->commandLine.empty()) {
+            this->commandLine = commandLine;
+        }
+    }
+
+    std::string & getCommandLine() {
+        return this->commandLine;
+    }
+
+    void updateFrame(
+            double time,
+            const uint32_t* inframe1,
+            const uint32_t* inframe2,
+            const uint32_t* inframe3,
+            uint32_t* outframe) {
+        spawnProcess();
+
+        if (!dataIO(pipeWrite, reinterpret_cast<std::byte *>(&time), sizeof(time), write)) {
+            return;
+        }
+
+        if (inframe1 != nullptr) {
+            if (!dataIO(pipeWrite, reinterpret_cast<const std::byte *>(inframe1), frameSize, write)) {
+                return;
+            }
+        }
+        if (inframe2 != nullptr) {
+            if (!dataIO(pipeWrite, reinterpret_cast<const std::byte *>(inframe2), frameSize, write)) {
+                return;
+            }
+        }
+        if (inframe3 != nullptr) {
+            if (!dataIO(pipeWrite, reinterpret_cast<const std::byte *>(inframe3), frameSize, write)) {
+                return;
+            }
+        }
+
+        if (!dataIO(pipeRead, reinterpret_cast<std::byte *>(outframe), frameSize, read)) {
+            return;
+        }
+    }
+
+private:
     int pid;
     int pipeWrite;
     int pipeRead;
@@ -21,6 +81,79 @@ struct VfxPipe {
     unsigned int width;
     unsigned int height;
     unsigned int frameSize;
+
+    void spawnProcess() {
+        if (pid)
+            return;
+
+        int fdsToChild[2];
+        int fdsFromChild[2];
+
+        if (pipe(fdsToChild) == -1 || pipe(fdsFromChild) == -1) {
+            std::cerr << __FUNCTION__ << ": vfxpipe pipe failed: " << strerror(errno) << std::endl;
+            pid = -1;
+            return;
+        }
+
+        // Ignore child exit so we don't have to waitpid, and to avoid zombie processes
+        signal(SIGCHLD, SIG_IGN);
+
+        pid = fork();
+        if (pid == -1) {
+            std::cerr << __FUNCTION__ << ": vfxpipe fork failed: " << strerror(errno) << std::endl;
+            return;
+        }
+        // In the child
+        if (pid == 0) {
+            if (dup2(fdsToChild[0], STDIN_FILENO) == -1
+                || dup2(fdsFromChild[1], STDOUT_FILENO) == -1) {
+                std::cerr << __FUNCTION__ << ": vfxpipe dup2 failed: " << strerror(errno) << std::endl;
+                exit(1);
+            }
+
+            close(fdsFromChild[0]);
+            close(fdsFromChild[1]);
+            close(fdsToChild[0]);
+            close(fdsToChild[1]);
+
+            auto envWidth = std::string("VFXPIPE_WIDTH=") + std::to_string(width);
+            auto envHeight = std::string("VFXPIPE_HEIGHT=") + std::to_string(height);
+            const char * const envExtra[] = {
+                envWidth.c_str(),
+                envHeight.c_str(),
+                NULL,
+            };
+            char **p;
+            int environSize;
+            for (p = environ, environSize = 0; *p != NULL; p++, environSize++);
+            char const * envp[environSize + std::size(envExtra)];
+            for (auto i = 0; i < environSize; i++) {
+                envp[i] = environ[i];
+            }
+            for (size_t i = environSize, j = 0; j < std::size(envExtra); i++, j++) {
+                envp[i] = envExtra[j];
+            }
+            auto execCommand = std::string("exec ") + commandLine;
+            const char * const argv[] = {
+                "/bin/sh",
+                "-c",
+                execCommand.c_str(),
+                NULL,
+            };
+            if (execve(argv[0], const_cast<char * const *>(argv), const_cast<char * const *>(envp)) < 0) {
+                std::cerr << __FUNCTION__ << ": vfxpipe exec failed: " << strerror(errno) << std::endl;
+                exit(1);
+            }
+        }
+
+        // In the parent
+
+        pipeWrite = fdsToChild[1];
+        pipeRead = fdsFromChild[0];
+
+        close(fdsFromChild[1]);
+        close(fdsToChild[0]);
+    }
 
     template <typename D, typename T>
     bool dataIO(int fd, D data, size_t size, T ioFunc) {
@@ -80,22 +213,12 @@ void f0r_get_param_info(f0r_param_info_t* info, int param_index)
 
 f0r_instance_t f0r_construct(unsigned int width, unsigned int height)
 {
-    VfxPipe *vfxpipe = new VfxPipe();
-    vfxpipe->width = width;
-    vfxpipe->height = height;
-    vfxpipe->frameSize = width * height * 4;
-    vfxpipe->pipeWrite = -1;
-    vfxpipe->pipeRead = -1;
-    return static_cast<f0r_instance_t>(vfxpipe);
+    return static_cast<f0r_instance_t>(new VfxPipe(width, height));
 }
 
 void f0r_destruct(f0r_instance_t instance)
 {
     VfxPipe *vfxpipe = static_cast<VfxPipe*>(instance);
-    if (vfxpipe->pipeRead != -1)
-        close(vfxpipe->pipeRead);
-    if (vfxpipe->pipeWrite != -1)
-        close(vfxpipe->pipeWrite);
     delete vfxpipe;
 }
 
@@ -104,9 +227,7 @@ void f0r_set_param_value(f0r_instance_t instance, f0r_param_t param, int param_i
     if (param_index != 0)
         return;
     VfxPipe *vfxpipe = static_cast<VfxPipe*>(instance);
-    if (vfxpipe->commandLine.empty()) {
-        vfxpipe->commandLine = *(static_cast<f0r_param_string *>(param));
-    }
+    vfxpipe->setCommandLine(*(static_cast<f0r_param_string *>(param)));
 }
 
 void f0r_get_param_value(f0r_instance_t instance, f0r_param_t param, int param_index)
@@ -114,81 +235,8 @@ void f0r_get_param_value(f0r_instance_t instance, f0r_param_t param, int param_i
     if (param_index != 0)
         return;
     VfxPipe *vfxpipe = static_cast<VfxPipe*>(instance);
-    *static_cast<f0r_param_string *>(param) = const_cast<f0r_param_string>(vfxpipe->commandLine.c_str());
+    *static_cast<f0r_param_string *>(param) = const_cast<f0r_param_string>(vfxpipe->getCommandLine().c_str());
  }
-
-int spawnProcess(VfxPipe *vfxpipe)
-{
-    int fdsToChild[2];
-    int fdsFromChild[2];
-
-    if (pipe(fdsToChild) == -1
-        || pipe(fdsFromChild) == -1) {
-        std::cerr << __FUNCTION__ << ": vfxpipe pipe failed: " << strerror(errno) << std::endl;
-        return -1;
-    }
-
-    // Ignore child exit so we don't have to waitpid, and to avoid zombie processes
-    signal(SIGCHLD, SIG_IGN);
-
-    int pid = fork();
-    if (pid == -1) {
-        std::cerr << __FUNCTION__ << ": vfxpipe fork failed: " << strerror(errno) << std::endl;
-        return -1;
-    }
-    // In the child
-    if (pid == 0) {
-        if (dup2(fdsToChild[0], STDIN_FILENO) == -1
-            || dup2(fdsFromChild[1], STDOUT_FILENO) == -1) {
-            std::cerr << __FUNCTION__ << ": vfxpipe dup2 failed: " << strerror(errno) << std::endl;
-            exit(1);
-        }
-
-		close(fdsFromChild[0]);
-		close(fdsFromChild[1]);
-		close(fdsToChild[0]);
-		close(fdsToChild[1]);
-
-        auto envWidth = std::string("VFXPIPE_WIDTH=") + std::to_string(vfxpipe->width);
-        auto envHeight = std::string("VFXPIPE_HEIGHT=") + std::to_string(vfxpipe->height);
-        const char * const envExtra[] = {
-            envWidth.c_str(),
-            envHeight.c_str(),
-            NULL,
-        };
-        char **p;
-        int environSize;
-        for (p = environ, environSize = 0; *p != NULL; p++, environSize++);
-        char const * envp[environSize + std::size(envExtra)];
-        for (auto i = 0; i < environSize; i++) {
-            envp[i] = environ[i];
-        }
-        for (size_t i = environSize, j = 0; j < std::size(envExtra); i++, j++) {
-            envp[i] = envExtra[j];
-        }
-        auto execCommand = std::string("exec ") + vfxpipe->commandLine;
-        const char * const argv[] = {
-            "/bin/sh",
-            "-c",
-            execCommand.c_str(),
-            NULL,
-        };
-        if (execve(argv[0], const_cast<char * const *>(argv), const_cast<char * const *>(envp)) < 0) {
-            std::cerr << __FUNCTION__ << ": vfxpipe exec failed: " << strerror(errno) << std::endl;
-            exit(1);
-        }
-    }
-
-    // In the parent
-
-    vfxpipe->pipeWrite = fdsToChild[1];
-    vfxpipe->pipeRead = fdsFromChild[0];
-
-    close(fdsFromChild[1]);
-	close(fdsToChild[0]);
-
-    return pid;
-}
 
 void f0r_update2(
     f0r_instance_t instance,
@@ -199,37 +247,7 @@ void f0r_update2(
     uint32_t* outframe)
 {
     VfxPipe *vfxpipe = static_cast<VfxPipe*>(instance);
-    if (vfxpipe->pid == 0) {
-        vfxpipe->pid = spawnProcess(vfxpipe);
-    }
-    else if (vfxpipe->pid == -1) {
-        std::cerr << __FUNCTION__ << ": vfxpipe no child process" << std::endl;
-        return;
-    }
-
-    if (!vfxpipe->dataIO(vfxpipe->pipeWrite, reinterpret_cast<std::byte *>(&time), sizeof(time), write)) {
-        return;
-    }
-
-    if (inframe1 != nullptr) {
-        if (!vfxpipe->dataIO(vfxpipe->pipeWrite, reinterpret_cast<const std::byte *>(inframe1), vfxpipe->frameSize, write)) {
-            return;
-        }
-    }
-    if (inframe2 != nullptr) {
-        if (!vfxpipe->dataIO(vfxpipe->pipeWrite, reinterpret_cast<const std::byte *>(inframe2), vfxpipe->frameSize, write)) {
-            return;
-        }
-    }
-    if (inframe3 != nullptr) {
-        if (!vfxpipe->dataIO(vfxpipe->pipeWrite, reinterpret_cast<const std::byte *>(inframe3), vfxpipe->frameSize, write)) {
-            return;
-        }
-    }
-
-    if (!vfxpipe->dataIO(vfxpipe->pipeRead, reinterpret_cast<std::byte *>(outframe), vfxpipe->frameSize, read)) {
-        return;
-    }
+    vfxpipe->updateFrame(time, inframe1, inframe2, inframe3, outframe);
 }
 
 void f0r_update(
