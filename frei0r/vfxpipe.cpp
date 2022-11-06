@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <string>
 #include <unistd.h>
+#include <wordexp.h>
 
 void replaceAll(std::string& inout, std::string_view what, std::string_view with)
 {
@@ -132,17 +133,17 @@ private:
             std::string commandLineTemplate(commandLine);
             replaceAll(commandLineTemplate, "{{width}}", std::to_string(width));
             replaceAll(commandLineTemplate, "{{height}}", std::to_string(height));
-            auto execCommand = std::string("exec ") + commandLineTemplate;
-            const char* const argv[] = {
-                "/bin/sh",
-                "-c",
-                execCommand.c_str(),
-                NULL,
-            };
-            if (execvp(argv[0], const_cast<char* const*>(argv)) < 0) {
+            wordexp_t we;
+            int werr = wordexp(commandLineTemplate.c_str(), &we, WRDE_NOCMD);
+            if (werr != 0) {
+                std::cerr << __FUNCTION__ << ": vfxpipe wordexp failed: " << werr << std::endl;
+                exit(1);
+            }
+            if (execvp(we.we_wordv[0], we.we_wordv) < 0) {
                 std::cerr << __FUNCTION__ << ": vfxpipe exec failed: " << strerror(errno) << std::endl;
                 exit(1);
             }
+            // No need to wordfree()
         }
 
         // In the parent
