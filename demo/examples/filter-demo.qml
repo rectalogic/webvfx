@@ -26,6 +26,6 @@ Rectangle {
             video.rotation = time * 360;
 	        timeText.text = "rotating " + Math.round(video.rotation);
             timeText.rotation = -time * 360;
-	    }
+	}
     }
 }

@@ -47,15 +47,17 @@ public:
 
 /////////////////
 
-FrameServer::FrameServer(const QSize& size, const QStringList& imageNames, const QMap<QString, QString>& propertyMap, const QUrl& qmlUrl, QObject* parent)
+FrameServer::FrameServer(const QSize& size, const QStringList& imageNames, const QMap<QString, QString>& propertyMap, const QUrl& qmlUrl, double duration, QObject* parent)
     : QObject(parent)
     , content(0)
     , videoSize(size)
+    , duration(duration)
     , imageNames(imageNames)
     , imageByteCount(videoSize.width() * videoSize.height() * 4)
     , imageBufferReadSize(0)
     , imageData(0)
     , images(0)
+    , initialTime(-1)
 {
     WebVfx::setLogger(new FrameServerLogger());
     content = new WebVfx::QmlContent(size, new FrameServerParameters(propertyMap));
@@ -127,6 +129,14 @@ void FrameServer::readFrames()
 void FrameServer::renderFrame()
 {
     double time = *reinterpret_cast<double*>(imageData);
+    if (initialTime == -1) {
+        initialTime = time;
+    }
+    time = time - initialTime;
+    if (duration != 0) {
+        time = time / duration;
+    }
+
     auto outputImage = images[imageNames.size()];
     content->renderContent(time, outputImage);
 

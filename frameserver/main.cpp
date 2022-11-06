@@ -32,6 +32,7 @@ int main(int argc, char* argv[])
     assertOpt(parser.addOption({ { "p", "property" }, "Property name=value, may be specified multiple times.", "property" }));
     assertOpt(parser.addOption({ "width", "Video frame width.", "width" }));
     assertOpt(parser.addOption({ "height", "Video frame height.", "height" }));
+    assertOpt(parser.addOption({ "duration", "Video duration in seconds (floating point or rational e.g. 199/30).", "duration" }));
     assertOpt(parser.addOption({ { "i", "image" }, "Name of image on stdin, may be specified multiple times, order matters.", "image" }));
     parser.addPositionalArgument("source", "QML source URL.");
 
@@ -56,6 +57,33 @@ int main(int argc, char* argv[])
         exit(1);
     }
 
+    double duration = 0;
+    const auto durationValue = parser.value("duration");
+    if (!durationValue.isEmpty()) {
+        bool dOk;
+        duration = durationValue.toDouble(&dOk);
+        // Parse as rational
+        if (!dOk) {
+            bool error = true;
+            QStringList parts = durationValue.split(QChar('/'));
+            if (parts.size() == 2) {
+                error = false;
+                double numerator = parts.at(0).toDouble(&dOk);
+                if (!dOk)
+                    error = true;
+                double denominator = parts.at(1).toDouble(&dOk);
+                if (!dOk || denominator == 0)
+                    error = true;
+                if (!error)
+                    duration = numerator / denominator;
+            }
+            if (error) {
+                qCritical("Invalid duration.");
+                exit(1);
+            }
+        }
+    }
+
     const QStringList args = parser.positionalArguments();
     if (args.size() != 1) {
         qCritical("Missing required source url");
@@ -63,7 +91,7 @@ int main(int argc, char* argv[])
     }
     const QUrl url(args.at(0));
 
-    new FrameServer(QSize(width, height), imageNames, propertyMap, url, &app);
+    new FrameServer(QSize(width, height), imageNames, propertyMap, url, duration, &app);
 
     return app.exec();
 }
