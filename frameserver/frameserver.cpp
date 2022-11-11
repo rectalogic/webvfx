@@ -7,6 +7,8 @@
 #include <QDebug>
 #include <QMap>
 #include <QUrl>
+#include <QVideoFrame>
+#include <QVideoFrameFormat>
 #include <errno.h>
 #include <unistd.h>
 #include <webvfx/logger.h>
@@ -47,48 +49,42 @@ public:
 
 /////////////////
 
-FrameServer::FrameServer(const QSize& size, const QStringList& imageNames, const QMap<QString, QString>& propertyMap, const QUrl& qmlUrl, double duration, QObject* parent)
+class MutableVideoFrame : public QVideoFrame {
+    using QVideoFrame::QVideoFrame;
+    bool operator!=(const QVideoFrame& other) const { return true; }
+    bool operator==(const QVideoFrame& other) const { return false; }
+};
+
+/////////////////
+
+FrameServer::FrameServer(const QSize& size, const QMap<QString, QString>& propertyMap, const QUrl& qmlUrl, double duration, QObject* parent)
     : QObject(parent)
-    , content(0)
-    , videoSize(size)
+    , content(new WebVfx::QmlContent(size, new FrameServerParameters(propertyMap)))
+    , outputImage(size, QImage::Format_RGBA8888)
     , duration(duration)
-    , imageNames(imageNames)
-    , imageByteCount(videoSize.width() * videoSize.height() * 4)
-    , imageBufferReadSize(0)
-    , imageData(0)
-    , images(0)
     , initialTime(-1)
 {
     WebVfx::setLogger(new FrameServerLogger());
-    content = new WebVfx::QmlContent(size, new FrameServerParameters(propertyMap));
     connect(content, &WebVfx::QmlContent::contentLoadFinished, this, &FrameServer::onContentLoadFinished);
-
     content->loadContent(qmlUrl);
 }
 
 FrameServer::~FrameServer()
 {
-    delete[] images;
-    delete[] imageData;
+    for (qsizetype i = 0; i < frameSinks.size(); ++i) {
+        delete frameSinks.at(i).frame;
+    }
     delete content;
 }
 
 void FrameServer::onContentLoadFinished(bool result)
 {
     if (result) {
-        // Single buffer to hold output image and all input images, plus timecode
-        imageData = new unsigned char[sizeof(double) + ((1 + imageNames.size()) * imageByteCount)];
-        images = new QImage[1 + imageNames.size()]; // XXX use QList/emplace_back ?
-        for (int i = 0; i < imageNames.size(); i++) {
-            images[i] = QImage((const uchar*)(imageData + sizeof(double) + (i * imageByteCount)),
-                videoSize.width(), videoSize.height(), QImage::Format_RGBA8888);
-            content->setImage(imageNames.at(i), images[i]);
+        auto size = content->getContentSize();
+        auto videoSinks = content->getVideoSinks();
+        for (qsizetype i = 0; i < videoSinks.size(); ++i) {
+            frameSinks.append(FrameSink(new MutableVideoFrame(QVideoFrameFormat(size, QVideoFrameFormat::Format_RGBA8888)), videoSinks.at(i)));
         }
-        // Last image is the output image
-        images[imageNames.size()] = QImage((uchar*)(imageData + sizeof(double) + (imageNames.size() * imageByteCount)),
-            videoSize.width(), videoSize.height(), QImage::Format_RGBA8888);
-
-        imageBufferReadSize = sizeof(double) + (imageByteCount * imageNames.size());
         QCoreApplication::postEvent(this, new QEvent(QEvent::User));
     } else {
         qCritical("QML content failed to load.");
@@ -106,12 +102,12 @@ bool FrameServer::event(QEvent* event)
     return QObject::event(event);
 }
 
-void FrameServer::readFrames()
+void FrameServer::readBytes(uchar* buffer, size_t bufferSize)
 {
     unsigned int currentBufferPosition = 0;
 
-    while (currentBufferPosition < imageBufferReadSize) {
-        ssize_t n = read(STDIN_FILENO, imageData + currentBufferPosition, imageBufferReadSize - currentBufferPosition);
+    while (currentBufferPosition < bufferSize) {
+        ssize_t n = read(STDIN_FILENO, buffer + currentBufferPosition, bufferSize - currentBufferPosition);
         if (n == -1) {
             qCritical("read failed: %s", strerror(errno));
             QCoreApplication::exit(1);
@@ -123,12 +119,12 @@ void FrameServer::readFrames()
             currentBufferPosition += n;
         }
     }
-    renderFrame();
 }
 
-void FrameServer::renderFrame()
+void FrameServer::readFrames()
 {
-    double time = *reinterpret_cast<double*>(imageData);
+    double time;
+    readBytes(reinterpret_cast<uchar*>(&time), sizeof(time));
     if (initialTime == -1) {
         initialTime = time;
     }
@@ -137,12 +133,22 @@ void FrameServer::renderFrame()
         time = time / duration;
     }
 
-    auto outputImage = images[imageNames.size()];
-    content->renderContent(time, outputImage);
+    for (qsizetype i = 0; i < frameSinks.size(); ++i) {
+        auto frameSink = frameSinks.at(i);
+        frameSink.frame->map(QVideoFrame::WriteOnly);
+        readBytes(frameSink.frame->bits(0), frameSink.frame->mappedBytes(0));
+        frameSink.frame->unmap();
+        frameSink.sink->setVideoFrame(*frameSink.frame);
+    }
 
+    renderFrame(time);
+}
+
+void FrameServer::writeBytes(const uchar* buffer, size_t bufferSize)
+{
     size_t bytesWritten = 0;
-    while (bytesWritten < imageByteCount) {
-        ssize_t n = write(STDOUT_FILENO, outputImage.constBits() + bytesWritten, imageByteCount - bytesWritten);
+    while (bytesWritten < bufferSize) {
+        ssize_t n = write(STDOUT_FILENO, buffer + bytesWritten, bufferSize - bytesWritten);
         // EOF
         if (n == 0) {
             QCoreApplication::exit(0);
@@ -155,6 +161,11 @@ void FrameServer::renderFrame()
         }
         bytesWritten = bytesWritten + n;
     }
+}
 
+void FrameServer::renderFrame(double time)
+{
+    content->renderContent(time, outputImage);
+    writeBytes(outputImage.constBits(), outputImage.sizeInBytes());
     QCoreApplication::postEvent(this, new QEvent(QEvent::User));
 }

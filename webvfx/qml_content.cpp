@@ -3,8 +3,8 @@
 #include <QList>
 #include <QPainter>
 #include <QQmlContext>
+#include <QQmlEngine>
 #include <QQmlError>
-#include <QQuickImageProvider>
 #include <QQuickItem>
 #include <QQuickItemGrabResult>
 #include <QQuickRenderControl>
@@ -22,35 +22,6 @@
 #include "webvfx/webvfx.h"
 
 namespace WebVfx {
-
-class ImageProvider : public QQuickImageProvider {
-public:
-    ImageProvider(ContentContext* contentContext)
-        : QQuickImageProvider(QQmlImageProviderBase::Image)
-        , contentContext(contentContext)
-    {
-    }
-
-    QImage requestImage(const QString& id, QSize* size, const QSize& requestedSize)
-    {
-        // URLs are of the form image://webvfx/<name>/<count>
-        // where <count> is a unique ID to force refresh and is ignored.
-        QImage image(contentContext->getImage(id.section('/', 0, 0)));
-
-        if (size)
-            *size = image.size();
-
-        if (!requestedSize.isEmpty())
-            return image.scaled(requestedSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
-
-        return image;
-    }
-
-private:
-    ContentContext* contentContext;
-};
-
-////////////////////
 
 void ImageTexture::setImage(QImage image)
 {
@@ -101,9 +72,6 @@ QmlContent::QmlContent(QQuickRenderControl* renderControl, const QSize& size, Pa
 
     // Expose context to the QML
     rootContext()->setContextProperty("webvfx", contentContext);
-
-    // Register image provider for image://webvfx/<name>/<counter>
-    engine()->addImageProvider(QLatin1String("webvfx"), new ImageProvider(contentContext));
 
     connect(this, SIGNAL(statusChanged(QQuickView::Status)), SLOT(qmlViewStatusChanged(QQuickView::Status)));
     connect(engine(), SIGNAL(warnings(QList<QQmlError>)), SLOT(logWarnings(QList<QQmlError>)));

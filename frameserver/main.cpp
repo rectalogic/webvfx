@@ -33,12 +33,9 @@ int main(int argc, char* argv[])
     assertOpt(parser.addOption({ "width", "Video frame width.", "width" }));
     assertOpt(parser.addOption({ "height", "Video frame height.", "height" }));
     assertOpt(parser.addOption({ "duration", "Video duration in seconds (floating point or rational e.g. 199/30).", "duration" }));
-    assertOpt(parser.addOption({ { "i", "image" }, "Name of image on stdin, may be specified multiple times, order matters.", "image" }));
     parser.addPositionalArgument("source", "QML source URL.");
 
     parser.process(app);
-
-    const auto imageNames = parser.values("image");
 
     QMap<QString, QString> propertyMap;
     const auto properties = parser.values("property");
@@ -91,7 +88,7 @@ int main(int argc, char* argv[])
     }
     const QUrl url(args.at(0));
 
-    new FrameServer(QSize(width, height), imageNames, propertyMap, url, duration, &app);
+    new FrameServer(QSize(width, height), propertyMap, url, duration, &app);
 
     return app.exec();
 }

@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-find_package(Qt6 COMPONENTS Core Gui Qml Quick Quick3D REQUIRED)
+find_package(Qt6 COMPONENTS Core Gui Multimedia Qml Quick Quick3D REQUIRED)
 
 set(SOURCES
     content_context.cpp
@@ -25,6 +25,6 @@ qt_add_qml_module(webvfx
     NO_PLUGIN
 )
 
-target_link_libraries(webvfx PUBLIC Qt6::Core Qt6::Gui Qt6::GuiPrivate Qt6::Qml Qt6::Quick Qt6::QuickPrivate Qt6::Quick3D)
+target_link_libraries(webvfx PUBLIC Qt6::Core Qt6::Gui Qt6::Multimedia Qt6::GuiPrivate Qt6::Qml Qt6::Quick Qt6::QuickPrivate Qt6::Quick3D)
 
 install(TARGETS webvfx LIBRARY)

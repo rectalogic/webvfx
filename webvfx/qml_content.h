@@ -11,6 +11,7 @@
 #include <QQuickRenderControl>
 #include <QQuickView>
 #include <QSet>
+#include <QVideoSink>
 #include <QtQuick3D/QQuick3DTextureData>
 
 class QRhiRenderBuffer;
@@ -32,9 +33,9 @@ public:
 
     void loadContent(const QUrl& url);
     void setContentSize(const QSize& size);
-    const QSet<QString>& getImageNames() { return contentContext->getImageNames(); };
+    QSize getContentSize() { return contentContext->getVideoSize(); }
+    const QList<QVideoSink*>& getVideoSinks() { return contentContext->getVideoSinks(); }
     bool renderContent(double time, QImage& renderImage);
-    void setImage(const QString& name, QImage image) { contentContext->setImage(name, image); }
 
 signals:
     void contentLoadFinished(bool result);

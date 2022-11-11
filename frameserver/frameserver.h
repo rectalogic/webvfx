@@ -5,19 +5,30 @@
 #pragma once
 
 #include <QImage>
+#include <QList>
 #include <QObject>
 #include <QSize>
-#include <QStringList>
+
+class QVideoFrame;
+class QVideoSink;
 
 namespace WebVfx {
 class QmlContent;
 }
 
+struct FrameSink {
+    FrameSink(QVideoFrame* frame, QVideoSink* sink)
+        : frame(frame)
+        , sink(sink) {};
+    QVideoFrame* frame;
+    QVideoSink* sink;
+};
+
 class FrameServer : public QObject {
     Q_OBJECT
 
 public:
-    FrameServer(const QSize& size, const QStringList& imageNames, const QMap<QString, QString>& propertyMap, const QUrl& qmlUrl, double duration = 0, QObject* parent = nullptr);
+    FrameServer(const QSize& size, const QMap<QString, QString>& propertyMap, const QUrl& qmlUrl, double duration = 0, QObject* parent = nullptr);
     ~FrameServer();
 
     bool event(QEvent* event) override;
@@ -26,16 +37,14 @@ private slots:
     void onContentLoadFinished(bool);
 
 private:
+    void readBytes(uchar* buffer, size_t bufferSize);
     void readFrames();
-    void renderFrame();
+    void writeBytes(const uchar* buffer, size_t bufferSize);
+    void renderFrame(double time);
 
     WebVfx::QmlContent* content;
-    QSize videoSize;
+    QList<FrameSink> frameSinks;
+    QImage outputImage;
     double duration;
-    QStringList imageNames;
-    unsigned int imageByteCount;
-    unsigned int imageBufferReadSize;
-    unsigned char* imageData;
-    QImage* images;
     double initialTime;
 };

@@ -15,18 +15,22 @@ set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+
 if(NOT "${isSystemDir}" STREQUAL "-1")
     set(CMAKE_INSTALL_RPATH "")
 endif()
 
 add_subdirectory(webvfx)
 add_subdirectory(frameserver)
-add_subdirectory(viewer)
-add_subdirectory(tools/driver)
-add_subdirectory(mlt)
-add_subdirectory(frei0r)
-add_subdirectory(doc)
 
-add_dependencies(webvfx_viewer webvfx)
+# add_subdirectory(viewer)
+# add_subdirectory(tools/driver)
+# add_subdirectory(mlt)
+add_subdirectory(frei0r)
+
+# add_subdirectory(doc)
+
+# add_dependencies(webvfx_viewer webvfx)
 add_dependencies(webvfx_frameserver webvfx)
-add_dependencies(webvfx_driver webvfx)
+
+# add_dependencies(webvfx_driver webvfx)
