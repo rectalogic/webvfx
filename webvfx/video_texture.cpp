@@ -26,5 +26,6 @@ void VideoTextureData::onVideoFrameChanged()
     setFormat(QQuick3DTextureData::RGBA8);
     setTextureData(QByteArray::fromRawData((const char*)frame.bits(0), frame.mappedBytes(0)));
     frame.unmap();
+    update();
 }
 }

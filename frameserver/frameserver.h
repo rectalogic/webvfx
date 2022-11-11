@@ -17,10 +17,13 @@ class QmlContent;
 }
 
 struct FrameSink {
-    FrameSink(QVideoFrame* frame, QVideoSink* sink)
-        : frame(frame)
-        , sink(sink) {};
-    QVideoFrame* frame;
+    FrameSink(QVideoFrame* frame1, QVideoFrame* frame2, QVideoSink* sink)
+        : sink(sink)
+    {
+        frames[0] = frame1;
+        frames[1] = frame2;
+    };
+    QVideoFrame* frames[2];
     QVideoSink* sink;
 };
 
@@ -47,4 +50,5 @@ private:
     QImage outputImage;
     double duration;
     double initialTime;
+    bool frameSwap;
 };

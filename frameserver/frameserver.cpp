@@ -49,14 +49,6 @@ public:
 
 /////////////////
 
-class MutableVideoFrame : public QVideoFrame {
-    using QVideoFrame::QVideoFrame;
-    bool operator!=(const QVideoFrame& other) const { return true; }
-    bool operator==(const QVideoFrame& other) const { return false; }
-};
-
-/////////////////
-
 FrameServer::FrameServer(const QSize& size, const QMap<QString, QString>& propertyMap, const QUrl& qmlUrl, double duration, QObject* parent)
     : QObject(parent)
     , content(new WebVfx::QmlContent(size, new FrameServerParameters(propertyMap)))
@@ -72,7 +64,9 @@ FrameServer::FrameServer(const QSize& size, const QMap<QString, QString>& proper
 FrameServer::~FrameServer()
 {
     for (qsizetype i = 0; i < frameSinks.size(); ++i) {
-        delete frameSinks.at(i).frame;
+        auto frameSink = frameSinks.at(i);
+        delete frameSink.frames[0];
+        delete frameSink.frames[1];
     }
     delete content;
 }
@@ -83,7 +77,10 @@ void FrameServer::onContentLoadFinished(bool result)
         auto size = content->getContentSize();
         auto videoSinks = content->getVideoSinks();
         for (qsizetype i = 0; i < videoSinks.size(); ++i) {
-            frameSinks.append(FrameSink(new MutableVideoFrame(QVideoFrameFormat(size, QVideoFrameFormat::Format_RGBA8888)), videoSinks.at(i)));
+            frameSinks.append(FrameSink(
+                new QVideoFrame(QVideoFrameFormat(size, QVideoFrameFormat::Format_RGBA8888)),
+                new QVideoFrame(QVideoFrameFormat(size, QVideoFrameFormat::Format_RGBA8888)),
+                videoSinks.at(i)));
         }
         QCoreApplication::postEvent(this, new QEvent(QEvent::User));
     } else {
@@ -135,13 +132,15 @@ void FrameServer::readFrames()
 
     for (qsizetype i = 0; i < frameSinks.size(); ++i) {
         auto frameSink = frameSinks.at(i);
-        frameSink.frame->map(QVideoFrame::WriteOnly);
-        readBytes(frameSink.frame->bits(0), frameSink.frame->mappedBytes(0));
-        frameSink.frame->unmap();
-        frameSink.sink->setVideoFrame(*frameSink.frame);
+        QVideoFrame* frame = frameSwap ? frameSink.frames[0] : frameSink.frames[1];
+        frame->map(QVideoFrame::WriteOnly);
+        readBytes(frame->bits(0), frame->mappedBytes(0));
+        frame->unmap();
+        frameSink.sink->setVideoFrame(*frame);
     }
 
     renderFrame(time);
+    frameSwap = !frameSwap;
 }
 
 void FrameServer::writeBytes(const uchar* buffer, size_t bufferSize)
