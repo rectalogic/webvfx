@@ -33,7 +33,7 @@ import org.webvfx.WebVfx.native 1.0
         materials: [ DefaultMaterial {
                 diffuseMap: Texture {
                     textureData: VideoTextureData {
-                        id: "sourceTexture"
+                        id: sourceTexture
                     }
                     flipV: true
                 }
@@ -66,7 +66,7 @@ import org.webvfx.WebVfx.native 1.0
         materials: [ DefaultMaterial {
                 diffuseMap: Texture {
                     textureData: VideoTextureData {
-                        id: "targetTexture"
+                        id: targetTexture
                     }
                     flipV: true
                 }

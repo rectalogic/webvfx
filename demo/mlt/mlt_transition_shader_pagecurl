@@ -7,7 +7,7 @@ FRAG=${BASEDIR}/../examples/pageCurl.frag
 if [ "${FRAG}" -nt "${FRAG}.qsb" ]; then
     qsb --glsl "100 es,120,150,400" --hlsl 50 --msl 12 -o "${FRAG}.qsb" "$FRAG"
 fi
-COMMAND="webvfx_frameserver --duration 120/30 --width {{width}} --height {{height}} --image SourceImage --image TargetImage ${BASEDIR}/../examples/transition-shader-pagecurl.qml"
+COMMAND="webvfx_frameserver --duration 120/30 --width {{width}} --height {{height}} ${BASEDIR}/../examples/transition-shader-pagecurl.qml"
 melt -verbose \
     "${VFX_SOURCE:-${BASEDIR}/red.mov}" out=349 \
     "${VFX_TARGET:-${BASEDIR}/blue.mov}" out=349 \

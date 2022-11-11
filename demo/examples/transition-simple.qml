@@ -1,24 +1,21 @@
 import QtQuick
+import QtMultimedia
 import org.webvfx.WebVfx 1.0
 
 Rectangle {
-    width: webvfx.videoWidth
-    height: webvfx.videoHeight
+    width: webvfx.videoSize.width
+    height: webvfx.videoSize.height
     color: "lightgray"
 
-    Video {
+    VideoOutput {
         id: sourceVideo
-        imageName: "SourceImage"
         width: parent.width
         height: parent.height
-        clip: true
     }
-    Video {
+    VideoOutput {
         id: targetVideo
-        imageName: "TargetImage"
         width: parent.width
         height: parent.height
-        clip: true
     }
     ParallelAnimation {
         id: animation
@@ -40,6 +37,10 @@ Rectangle {
     AnimationController {
         id: animationController
         animation: animation
+    }
+    Component.onCompleted: {
+        webvfx.addVideoSink(sourceVideo.videoSink);
+        webvfx.addVideoSink(targetVideo.videoSink);
     }
     Connections {
         target: webvfx

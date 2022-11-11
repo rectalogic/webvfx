@@ -1,37 +1,36 @@
 import QtQuick 2.0
+import QtMultimedia
 import org.webvfx.WebVfx 1.0
 
 Rectangle {
-    width: webvfx.videoWidth
-    height: webvfx.videoHeight
+    width: webvfx.videoSize.width
+    height: webvfx.videoSize.height
 
-    Video {
+   VideoOutput {
         id: sourceVideo
-        imageName: "SourceImage"
-        width: parent.width
-        height: parent.height
-        clip: true
+        anchors.fill: parent
         visible: false
         layer.enabled: true
-    }
-    Video {
+   }
+   VideoOutput {
         id: targetVideo
-        imageName: "TargetImage"
-        width: parent.width
-        height: parent.height
-        clip: true
+        anchors.fill: parent
         visible: false
         layer.enabled: true
     }
 
     ShaderEffect {
         id: pageCurl
-        width: parent.width
-        height: parent.height
+        anchors.fill: parent
         property variant sourceTex: sourceVideo
         property variant targetTex: targetVideo
         property real time
         fragmentShader: "pageCurl.frag.qsb"
+    }
+
+    Component.onCompleted: {
+        webvfx.addVideoSink(sourceVideo.videoSink);
+        webvfx.addVideoSink(targetVideo.videoSink);
     }
 
     Connections {

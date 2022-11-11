@@ -1,16 +1,14 @@
 import QtQuick
+import QtMultimedia
 import org.webvfx.WebVfx 1.0
 
 Rectangle {
-    width: webvfx.videoWidth
-    height: webvfx.videoHeight
+    width: webvfx.videoSize.width
+    height: webvfx.videoSize.height
 
-    Video {
+    VideoOutput {
         id: video
-        imageName: "SourceImage"
-        width: parent.width
-        height: parent.height
-        clip: true
+        anchors.fill: parent
 
         Rectangle {
             id: banner
@@ -27,6 +25,7 @@ Rectangle {
             }
         }
     }
+
     AnimationController {
         id: animationController
         animation: SequentialAnimation {
@@ -48,6 +47,9 @@ Rectangle {
                 duration: webvfx.getNumberParameter("FadeOut")
             }
         }
+    }
+    Component.onCompleted: {
+        webvfx.addVideoSink(video.videoSink);
     }
     Connections {
         target: webvfx

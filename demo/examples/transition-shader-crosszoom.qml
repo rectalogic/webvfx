@@ -1,25 +1,20 @@
 import QtQuick 2.0
+import QtMultimedia
 import org.webvfx.WebVfx 1.0
 
 Rectangle {
-    width: webvfx.videoWidth
-    height: webvfx.videoHeight
+    width: webvfx.videoSize.width
+    height: webvfx.videoSize.height
 
-    Video {
+    VideoOutput {
         id: sourceVideo
-        imageName: "SourceImage"
-        width: parent.width
-        height: parent.height
-        clip: true
+        anchors.fill: parent
         visible: false
         layer.enabled: true
     }
-    Video {
+    VideoOutput {
         id: targetVideo
-        imageName: "TargetImage"
-        width: parent.width
-        height: parent.height
-        clip: true
+        anchors.fill: parent
         visible: false
         layer.enabled: true
     }
@@ -36,15 +31,14 @@ Rectangle {
         fragmentShader: "crossZoom.frag.qsb"
     }
 
-    Video {
+    VideoOutput {
         id: extraVideo
-        imageName: "ExtraImage"
         width: parent.width / 4
         height: parent.height / 4
         rotation: 45
         anchors.verticalCenter: parent.verticalCenter
         anchors.horizontalCenter: parent.horizontalCenter
-        clip: true
+        visible: false
         layer.enabled: true
     }
 
@@ -90,6 +84,11 @@ Rectangle {
     AnimationController {
         id: animationController
         animation: animation
+    }
+    Component.onCompleted: {
+        webvfx.addVideoSink(sourceVideo.videoSink);
+        webvfx.addVideoSink(targetVideo.videoSink);
+        // webvfx.addVideoSink(extraVideo.videoSink);
     }
     Connections {
         target: webvfx
