@@ -11,13 +11,13 @@ class QVideoSink;
 
 namespace WebVfx {
 
-class VideoTexture : public QQuick3DTextureData {
+class VideoTextureData : public QQuick3DTextureData {
     Q_OBJECT
     Q_PROPERTY(QVideoSink* videoSink READ getVideoSink CONSTANT)
-    QML_NAMED_ELEMENT(VideoTexture)
+    QML_NAMED_ELEMENT(VideoTextureData)
 
 public:
-    VideoTexture();
+    VideoTextureData();
 
     QVideoSink* getVideoSink()
     {

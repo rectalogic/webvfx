@@ -3,7 +3,7 @@
 BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 $BASEDIR/create_mov
 export DISPLAY=${DISPLAY:-:0}
-COMMAND="webvfx_frameserver --duration 120/30 --width {{width}} --height {{height}} --image SourceImage --image TargetImage --property title=\"${VFX_TITLE:-Hello 3D!}\" ${BASEDIR}/../examples/transition-demo3d.qml"
+COMMAND="webvfx_frameserver --duration 120/30 --width {{width}} --height {{height}} --property title=\"${VFX_TITLE:-Hello 3D!}\" ${BASEDIR}/../examples/transition-demo3d.qml"
 melt -verbose \
     "${VFX_SOURCE:-${BASEDIR}/red.mov}" out=349 \
     "${VFX_TARGET:-${BASEDIR}/blue.mov}" out=349 \

@@ -7,13 +7,13 @@
 
 namespace WebVfx {
 
-VideoTexture::VideoTexture()
+VideoTextureData::VideoTextureData()
     : videoSink(new QVideoSink(this))
 {
     connect(videoSink, SIGNAL(videoFrameChanged(const QVideoFrame&)), SLOT(onVideoFrameChanged()));
 }
 
-void VideoTexture::onVideoFrameChanged()
+void VideoTextureData::onVideoFrameChanged()
 {
     QVideoFrame frame = videoSink->videoFrame();
     if (frame.pixelFormat() != QVideoFrameFormat::Format_RGBA8888) {

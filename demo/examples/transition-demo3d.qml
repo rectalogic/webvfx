@@ -1,12 +1,14 @@
 import QtQuick
 import QtQuick3D
 import QtQuick.Timeline
+import QtMultimedia
 import org.webvfx.WebVfx 1.0
+import org.webvfx.WebVfx.native 1.0
 
  View3D {
     id: view
-    width: webvfx.videoWidth
-    height: webvfx.videoHeight
+    width: webvfx.videoSize.width
+    height: webvfx.videoSize.height
 
     environment: SceneEnvironment {
         clearColor: "skyblue"
@@ -29,8 +31,10 @@ import org.webvfx.WebVfx 1.0
         source: "#Cube"
         scale.y: 9 / 16
         materials: [ DefaultMaterial {
-                diffuseMap: VideoTexture {
-                    imageName: "SourceImage"
+                diffuseMap: Texture {
+                    textureData: VideoTextureData {
+                        id: "sourceTexture"
+                    }
                     flipV: true
                 }
             }
@@ -60,8 +64,10 @@ import org.webvfx.WebVfx 1.0
         source: "#Cube"
         scale.y: 9 / 16
         materials: [ DefaultMaterial {
-                diffuseMap: VideoTexture {
-                    imageName: "TargetImage"
+                diffuseMap: Texture {
+                    textureData: VideoTextureData {
+                        id: "targetTexture"
+                    }
                     flipV: true
                 }
             }
@@ -130,6 +136,11 @@ import org.webvfx.WebVfx 1.0
                 value: -90
             }
         }
+    }
+
+    Component.onCompleted: {
+        webvfx.addVideoSink(sourceTexture.videoSink);
+        webvfx.addVideoSink(targetTexture.videoSink);
     }
 
     Connections {

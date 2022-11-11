@@ -4,8 +4,6 @@
  <qresource prefix="/">
      <file>org/webvfx/WebVfx/qmldir</file>
      <file>org/webvfx/WebVfx/BlenderItem3D.qml</file>
-     <file>org/webvfx/WebVfx/Video.qml</file>
-     <file>org/webvfx/WebVfx/VideoTexture.qml</file>
      <file>webvfx/scripts/animation.js</file>
  </qresource>
 
