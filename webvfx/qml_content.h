@@ -11,14 +11,13 @@
 #include <QQuickRenderControl>
 #include <QQuickView>
 #include <QSet>
-#include <QVideoSink>
-#include <QtQuick3D/QQuick3DTextureData>
 
 class QRhiRenderBuffer;
 class QRhiRenderPassDescriptor;
 class QRhiTexture;
 class QRhiTextureRenderTarget;
 class QSize;
+class QVideoSink;
 class QUrl;
 
 namespace WebVfx {
@@ -61,33 +60,6 @@ private:
     QRhiTextureRenderTarget* textureRenderTarget;
     QRhiRenderPassDescriptor* renderPassDescriptor;
     bool initialized;
-};
-
-class ImageTexture : public QQuick3DTextureData {
-    Q_OBJECT
-    Q_PROPERTY(QImage image READ image WRITE setImage NOTIFY imageChanged)
-    QML_NAMED_ELEMENT(ImageTexture)
-
-public:
-    ImageTexture()
-    {
-    }
-
-    QImage image() const
-    {
-        return m_image;
-    }
-
-public Q_SLOTS:
-    void setImage(QImage image);
-
-Q_SIGNALS:
-    void imageChanged(QImage image);
-
-private:
-    void updateTexture(QImage image);
-
-    QImage m_image;
 };
 
 }

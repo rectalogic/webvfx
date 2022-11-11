@@ -9,6 +9,7 @@ set(SOURCES
     logger.cpp
     parameters.cpp
     qml_content.cpp
+    video_texture.cpp
     webvfx.cpp
 )
 qt_add_resources(SOURCES resources/resources.qrc)

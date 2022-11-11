@@ -23,37 +23,6 @@
 
 namespace WebVfx {
 
-void ImageTexture::setImage(QImage image)
-{
-    updateTexture(image);
-    emit imageChanged(m_image);
-}
-
-void ImageTexture::updateTexture(QImage image)
-{
-    setSize(image.size());
-    bool needsConvert = false;
-    switch (image.format()) {
-    case QImage::Format_RGBX8888:
-    case QImage::Format_RGBA8888:
-        break;
-    default:
-        needsConvert = true;
-        break;
-    }
-    setHasTransparency(image.hasAlphaChannel());
-    setFormat(QQuick3DTextureData::RGBA8);
-    if (needsConvert)
-        m_image = image.convertToFormat(QImage::Format_RGBA8888);
-    else if (image.width() * image.depth() != image.bytesPerLine() * 8)
-        m_image = image.copy();
-    else
-        m_image = image;
-    setTextureData(QByteArray::fromRawData((const char*)m_image.constBits(), m_image.sizeInBytes()));
-}
-
-////////////////////
-
 QmlContent::QmlContent(QQuickRenderControl* renderControl, const QSize& size, Parameters* parameters)
     : QQuickView(QUrl(), renderControl)
     , pageLoadFinished(LoadNotFinished)
