@@ -23,7 +23,6 @@ class QUrl;
 namespace WebVfx {
 
 class Parameters;
-class RenderStrategy;
 
 class QmlContent : public QQuickView {
     Q_OBJECT

@@ -20,7 +20,7 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
        libglx-mesa0 libglvnd-dev libxkbcommon-x11-0 libpulse-dev libxcb1 libx11-xcb1 libxcb-glx0 \
        libxcb-icccm4 libxcb-image0 libxcb-render-util0 libxcb-keysyms1 \
        python3 python3-pip \
-       curl xz-utils ffmpeg libsdl2-dev libgtk2.0-dev xvfb pkg-config \
+       curl xz-utils frei0r-plugins-dev ffmpeg libsdl2-dev libgtk2.0-dev xvfb pkg-config \
        libavutil-dev libavformat-dev libavdevice-dev libpostproc-dev libavfilter-dev libswscale-dev libswresample-dev \
        fontconfig fonts-liberation imagemagick
 

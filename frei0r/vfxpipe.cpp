@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "vfxpipe.h"
+#include <cstring>
+#include <dlfcn.h>
 #include <errno.h>
 #include <iostream>
 #include <signal.h>
@@ -139,8 +141,17 @@ private:
                 std::cerr << __FUNCTION__ << ": vfxpipe wordexp failed: " << werr << std::endl;
                 exit(1);
             }
+
+            // Allowlist
+            Dl_info info;
+            auto fptr = &f0r_init;
+            if (dladdr(reinterpret_cast<void*&>(fptr), &info)) {
+                std::cerr << "allowlist " << info.dli_fname << std::endl;
+                // XXX check that we.we_wordv[0] is in our allowlist
+            }
+
             if (execvp(we.we_wordv[0], we.we_wordv) < 0) {
-                std::cerr << __FUNCTION__ << ": vfxpipe exec failed: " << strerror(errno) << std::endl;
+                std::cerr << __FUNCTION__ << ": vfxpipe exec '" << commandLineTemplate << "' failed: " << strerror(errno) << std::endl;
                 exit(1);
             }
             // No need to wordfree()

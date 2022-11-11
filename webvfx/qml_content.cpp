@@ -41,8 +41,7 @@ public:
             *size = image.size();
 
         if (!requestedSize.isEmpty())
-            return image.scaled(requestedSize, Qt::IgnoreAspectRatio,
-                Qt::SmoothTransformation);
+            return image.scaled(requestedSize, Qt::IgnoreAspectRatio, Qt::SmoothTransformation);
 
         return image;
     }

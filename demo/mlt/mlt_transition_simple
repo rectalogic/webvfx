@@ -3,10 +3,12 @@
 BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 $BASEDIR/create_mov
 export DISPLAY=${DISPLAY:-:0}
+COMMAND1="webvfx_frameserver --duration 120/30 --width {{width}} --height {{height}} --image SourceImage --image TargetImage ${BASEDIR}/../examples/transition-simple.qml"
+COMMAND2="webvfx_frameserver --duration 120/30 --width {{width}} --height {{height}} --image SourceImage --image TargetImage ${BASEDIR}/../examples/transition-simple.qml"
 melt -verbose \
     "${VFX_SOURCE:-${BASEDIR}/red.mov}" out=349 \
     "${VFX_TARGET:-${BASEDIR}/blue.mov}" out=349 \
-    -mix 120 -mixer vfxpipe:"webvfx_frameserver --width \${VFXPIPE_WIDTH} --height \${VFXPIPE_HEIGHT} --image SourceImage --image TargetImage ${BASEDIR}/../examples/transition-simple.qml" \
+    -mix 120 -mixer frei0r.vfxpipe_mixer2 0="\"$COMMAND1\"" \
     "${VFX_EXTRA:-${BASEDIR}/green.mov}" out=349 \
-    -mix 120 -mixer vfxpipe:"webvfx_frameserver --width \${VFXPIPE_WIDTH} --height \${VFXPIPE_HEIGHT} --image SourceImage --image TargetImage ${BASEDIR}/../examples/transition-simple.qml" \
+    -mix 120 -mixer frei0r.vfxpipe_mixer2 0="\"$COMMAND2\"" \
     $(eval echo $(< "${VFX_CONSUMER:-${BASEDIR}/consumer_sdl}")) mlt_profile=${BASEDIR}/webvfx_profile

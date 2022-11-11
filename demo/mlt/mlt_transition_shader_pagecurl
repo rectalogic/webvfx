@@ -7,8 +7,9 @@ FRAG=${BASEDIR}/../examples/pageCurl.frag
 if [ "${FRAG}" -nt "${FRAG}.qsb" ]; then
     qsb --glsl "100 es,120,150,400" --hlsl 50 --msl 12 -o "${FRAG}.qsb" "$FRAG"
 fi
+COMMAND="webvfx_frameserver --duration 120/30 --width {{width}} --height {{height}} --image SourceImage --image TargetImage ${BASEDIR}/../examples/transition-shader-pagecurl.qml"
 melt -verbose \
     "${VFX_SOURCE:-${BASEDIR}/red.mov}" out=349 \
     "${VFX_TARGET:-${BASEDIR}/blue.mov}" out=349 \
-    -mix 120 -mixer vfxpipe:"webvfx_frameserver --width \${VFXPIPE_WIDTH} --height \${VFXPIPE_HEIGHT} --image SourceImage --image TargetImage ${BASEDIR}/../examples/transition-shader-pagecurl.qml" \
+    -mix 120 -mixer frei0r.vfxpipe_mixer2 0="\"$COMMAND\"" \
     $(eval echo $(< "${VFX_CONSUMER:-${BASEDIR}/consumer_sdl}")) mlt_profile=${BASEDIR}/webvfx_profile

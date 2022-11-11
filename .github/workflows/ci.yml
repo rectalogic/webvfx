@@ -54,7 +54,7 @@ jobs:
     - name: Provision
       run: |
         sudo xcode-select -s "/Applications/Xcode_14.0.1.app"
-        brew install imagemagick pkg-config cmake ffmpeg
+        brew install imagemagick pkg-config cmake ffmpeg frei0r
     - name: Install Qt
       uses: jurplel/install-qt-action@v3
       with:
@@ -87,7 +87,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake --install-prefix ${Qt6_DIR} "-DCMAKE_PREFIX_PATH=${Qt6_DIR}" ..
+        cmake --install-prefix ${Qt6_DIR} ..
         cmake --build .
         cmake --install .
     - name: Test
@@ -95,6 +95,7 @@ jobs:
       # https://github.com/actions/virtual-environments/issues/1779#issuecomment-707071183
       if: false
       run: |
+        export FREI0R_PATH=/usr/local/lib/frei0r-1/webvfx
         cd demo/mlt/tests
         mkdir -p fixtures/output
         ./runtests fixtures/macos fixtures/output
