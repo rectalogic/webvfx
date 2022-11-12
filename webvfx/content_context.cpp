@@ -1,7 +1,5 @@
 #include "webvfx/content_context.h"
 #include "webvfx/parameters.h"
-//#include <QVariant>
-//#include <QtAlgorithms>
 
 namespace WebVfx {
 
