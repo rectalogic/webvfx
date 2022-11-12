@@ -33,7 +33,7 @@ void ImageColor::setImageSize(const QSize& size)
 {
     if (image.size() == size)
         return;
-    image = QImage(size, QImage::Format_RGB888);
+    image = QImage(size, QImage::Format_RGBA8888);
     fillImage();
 
     emit imageChanged(objectName(), getImage());

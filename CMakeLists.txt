@@ -4,7 +4,7 @@
 
 cmake_minimum_required(VERSION 3.16)
 
-project(WebFfx VERSION 1.0.0 LANGUAGES CXX)
+project(WebVfx VERSION 1.0.0 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -22,15 +22,11 @@ endif()
 
 add_subdirectory(webvfx)
 add_subdirectory(frameserver)
-
-# add_subdirectory(viewer)
-# add_subdirectory(tools/driver)
-# add_subdirectory(mlt)
+add_subdirectory(viewer)
+add_subdirectory(tools/driver)
+add_subdirectory(mlt)
 add_subdirectory(frei0r)
+add_subdirectory(doc)
 
-# add_subdirectory(doc)
-
-# add_dependencies(webvfx_viewer webvfx)
+add_dependencies(webvfx_viewer webvfx)
 add_dependencies(webvfx_frameserver webvfx)
-
-# add_dependencies(webvfx_driver webvfx)

@@ -18,6 +18,8 @@
 #include <QTableWidgetItem>
 #include <QTextStream>
 #include <QUrl>
+#include <QVideoFrame>
+#include <QVideoFrameFormat>
 #include <webvfx/parameters.h>
 #include <webvfx/qml_content.h>
 #include <webvfx/webvfx.h>
@@ -156,7 +158,7 @@ void Viewer::renderContent()
     if (!content)
         return;
     setImagesOnContent();
-    QImage renderImage(scrollArea->widget()->size(), QImage::Format_RGB888);
+    QImage renderImage(scrollArea->widget()->size(), QImage::Format_RGBA8888);
     content->renderContent(timeSpinBox->value(), renderImage);
     imageLabel->setPixmap(QPixmap::fromImage(renderImage));
 }
@@ -198,11 +200,17 @@ void Viewer::setImagesOnContent()
 {
     if (!content)
         return;
+    auto videoSinks = content->getVideoSinks();
     int rowCount = imagesTable->rowCount();
     for (int i = 0; i < rowCount; i++) {
         ImageColor* imageColor = static_cast<ImageColor*>(imagesTable->cellWidget(i, 1));
         if (imageColor) {
-            content->setImage(imageColor->objectName(), imageColor->getImage());
+            auto image = imageColor->getImage();
+            QVideoFrame frame(QVideoFrameFormat(image.size(), QVideoFrameFormat::pixelFormatFromImageFormat(image.format())));
+            frame.map(QVideoFrame::WriteOnly);
+            memcpy(frame.bits(0), image.bits(), frame.mappedBytes(0));
+            frame.unmap();
+            videoSinks.at(i)->setVideoFrame(frame);
         }
     }
 }
@@ -264,13 +272,11 @@ void Viewer::createContent(const QString& fileName)
 void Viewer::setupImages(const QSize& size)
 {
     imagesTable->setRowCount(0);
-    int row = 0;
-    auto imageNames = content->getImageNames();
-    QSet<QString>::const_iterator it = imageNames.constBegin();
-    while (it != imageNames.constEnd()) {
+    auto videoSinks = content->getVideoSinks();
+    for (qsizetype row = 0; row < videoSinks.size(); ++row) {
         imagesTable->insertRow(row);
 
-        QString imageName(*it);
+        QString imageName = QString("Image %1").arg(row);
 
         // Image name in column 0
         QTableWidgetItem* item = new QTableWidgetItem(imageName);
@@ -285,9 +291,6 @@ void Viewer::setupImages(const QSize& size)
         connect(imageColor, SIGNAL(imageChanged(QString, QImage)),
             SLOT(onImageChanged(QString, QImage)));
         imagesTable->setCellWidget(row, 1, imageColor);
-
-        row++;
-        ++it;
     }
 }
 
