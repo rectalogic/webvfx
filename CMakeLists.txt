@@ -24,7 +24,6 @@ add_subdirectory(webvfx)
 add_subdirectory(frameserver)
 add_subdirectory(viewer)
 add_subdirectory(tools/driver)
-add_subdirectory(mlt)
 add_subdirectory(frei0r)
 add_subdirectory(doc)
 

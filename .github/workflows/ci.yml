@@ -47,42 +47,20 @@ jobs:
     runs-on: macos-12
     env:
       QT_VER: 6.4.0
-      MLT_VER: 7.8.0
     steps:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Provision
       run: |
         sudo xcode-select -s "/Applications/Xcode_14.0.1.app"
-        brew install imagemagick pkg-config cmake ffmpeg frei0r
+        brew install imagemagick pkg-config cmake ffmpeg frei0r mlt
     - name: Install Qt
       uses: jurplel/install-qt-action@v3
       with:
         cache: true
         cache-key-prefix: ${{ runner.os }}-QtCache-${{ env.QT_VER }}
         version: ${{ env.QT_VER }}
-        modules: 'qtquick3d qtshadertools qtquicktimeline'
-    - name: Cache MLT
-      uses: actions/cache@v3
-      id: mlt-cache
-      with:
-        path: mlt-${MLT_VER}.tar
-        key: ${{ runner.os }}-mlt-${{ env.MLT_VER }}-v4
-    - name: Build MLT
-      run: |
-        if ! tar -tf mlt-${MLT_VER}.tar > /dev/null; then
-          curl -L https://github.com/mltframework/mlt/releases/download/v${MLT_VER}/mlt-${MLT_VER}.tar.gz | tar xzf -
-          cd mlt-${MLT_VER}
-          mkdir /tmp/mlt
-          cmake --install-prefix /tmp/mlt .
-          cmake --build .
-          cmake --install .
-          cd ..
-          tar -C /tmp/mlt -cf mlt-${MLT_VER}.tar .
-        fi
-    - name: Install MLT
-      run: |
-        sudo tar -C /usr/local/ --no-same-owner --modification-time -xf mlt-${MLT_VER}.tar
+        modules: 'qtquick3d qtmultimedia qtshadertools qtquicktimeline'
     - name: Install WebVfx
       run: |
         mkdir build
