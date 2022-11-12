@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "vfxpipe.h"
+#include <frei0r.h>
 
 void f0r_get_plugin_info(f0r_plugin_info_t* info)
 {
