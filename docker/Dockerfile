@@ -22,6 +22,7 @@ RUN --mount=type=cache,target=/var/cache/apt --mount=type=cache,target=/var/lib/
        python3 python3-pip \
        curl xz-utils frei0r-plugins-dev ffmpeg libsdl2-dev libgtk2.0-dev xvfb pkg-config \
        libavutil-dev libavformat-dev libavdevice-dev libpostproc-dev libavfilter-dev libswscale-dev libswresample-dev \
+       gstreamer1.0-plugins-base gstreamer1.0-plugins-good libgstreamer-gl1.0-0 \
        fontconfig fonts-liberation imagemagick
 
 ARG QT_VER=6.4.0
