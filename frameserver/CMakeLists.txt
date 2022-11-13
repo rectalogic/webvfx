@@ -12,6 +12,7 @@ qt_add_executable(webvfx_frameserver
 )
 set_property(TARGET webvfx_frameserver PROPERTY AUTOMOC ON)
 
+target_include_directories(webvfx_frameserver PRIVATE "${CMAKE_CURRENT_LIST_DIR}/..")
 target_link_libraries(webvfx_frameserver PRIVATE Qt6::Gui Qt6::Quick webvfx)
 
 install(TARGETS webvfx_frameserver RUNTIME DESTINATION)

@@ -76,7 +76,7 @@ public:
             return;
         }
 
-        auto ioErrorHandler = [this](std::string msg = "") {
+        auto ioErrorHandler = [this](int n, std::string msg = "") {
             if (!msg.empty())
                 std::cerr << __FUNCTION__ << ": " << msg << std::endl;
             close(pipeRead);

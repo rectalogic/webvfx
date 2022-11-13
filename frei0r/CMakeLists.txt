@@ -24,6 +24,7 @@ if(FREI0R_FOUND)
         mixer3.cpp
     )
 
+    set_target_properties(plugin PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
     set_target_properties(vfxpipe_filter PROPERTIES PREFIX "")
     set_target_properties(vfxpipe_source PROPERTIES PREFIX "")
     set_target_properties(vfxpipe_mixer2 PROPERTIES PREFIX "")

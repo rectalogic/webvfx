@@ -17,11 +17,11 @@ bool dataIO(int fd, D data, size_t size, IO ioFunc, ERR errFunc)
         ssize_t n = ioFunc(fd, data + bytesIO, size - bytesIO);
         // EOF
         if (n == 0) {
-            errFunc();
+            errFunc(n);
             return false;
         }
         if (n == -1) {
-            errFunc(std::string("vfxpipe data IO failed: ") + strerror(errno));
+            errFunc(n, std::string("vfxpipe data IO failed: ") + strerror(errno));
             return false;
         }
         bytesIO = bytesIO + n;

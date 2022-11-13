@@ -40,9 +40,7 @@ private slots:
     void onContentLoadFinished(bool);
 
 private:
-    void readBytes(uchar* buffer, size_t bufferSize);
     void readFrames();
-    void writeBytes(const uchar* buffer, size_t bufferSize);
     void renderFrame(double time);
 
     WebVfx::QmlContent* content;

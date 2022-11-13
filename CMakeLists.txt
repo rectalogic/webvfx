@@ -29,7 +29,7 @@ add_subdirectory(frei0r)
 add_subdirectory(doc)
 
 add_dependencies(webvfx_viewer webvfx)
-add_dependencies(webvfx_frameserver webvfx vfxpipe)
+add_dependencies(webvfx_frameserver webvfx)
 add_dependencies(vfxpipe_source vfxpipe)
 add_dependencies(vfxpipe_filter vfxpipe)
 add_dependencies(vfxpipe_mixer2 vfxpipe)

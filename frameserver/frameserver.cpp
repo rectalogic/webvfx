@@ -9,8 +9,10 @@
 #include <QUrl>
 #include <QVideoFrame>
 #include <QVideoFrameFormat>
+#include <QtDebug>
 #include <errno.h>
 #include <unistd.h>
+#include <vfxpipe/vfxpipe.h>
 #include <webvfx/logger.h>
 #include <webvfx/parameters.h>
 #include <webvfx/qml_content.h>
@@ -84,7 +86,7 @@ void FrameServer::onContentLoadFinished(bool result)
         }
         QCoreApplication::postEvent(this, new QEvent(QEvent::User));
     } else {
-        qCritical("QML content failed to load.");
+        qCritical() << "QML content failed to load.";
         QCoreApplication::exit(1);
         return;
     }
@@ -99,29 +101,21 @@ bool FrameServer::event(QEvent* event)
     return QObject::event(event);
 }
 
-void FrameServer::readBytes(uchar* buffer, size_t bufferSize)
-{
-    unsigned int currentBufferPosition = 0;
-
-    while (currentBufferPosition < bufferSize) {
-        ssize_t n = read(STDIN_FILENO, buffer + currentBufferPosition, bufferSize - currentBufferPosition);
-        if (n == -1) {
-            qCritical("read failed: %s", strerror(errno));
-            QCoreApplication::exit(1);
-            return;
-        } else if (n == 0) {
-            QCoreApplication::exit(0);
-            return;
-        } else {
-            currentBufferPosition += n;
-        }
-    }
-}
-
 void FrameServer::readFrames()
 {
+    auto ioErrorHandler = [](int n, std::string msg = "") {
+        // EOF
+        if (n == 0) {
+            QCoreApplication::exit(0);
+        } else if (n == -1) {
+            qCritical() << msg.c_str();
+            QCoreApplication::exit(1);
+        }
+    };
+
     double time;
-    readBytes(reinterpret_cast<uchar*>(&time), sizeof(time));
+    dataIO(STDIN_FILENO, reinterpret_cast<uchar*>(&time), sizeof(time), read, ioErrorHandler);
+
     if (initialTime == -1) {
         initialTime = time;
     }
@@ -134,7 +128,7 @@ void FrameServer::readFrames()
         auto frameSink = frameSinks.at(i);
         QVideoFrame* frame = frameSwap ? frameSink.frames[0] : frameSink.frames[1];
         frame->map(QVideoFrame::WriteOnly);
-        readBytes(frame->bits(0), frame->mappedBytes(0));
+        dataIO(STDIN_FILENO, frame->bits(0), frame->mappedBytes(0), read, ioErrorHandler);
         frame->unmap();
         frameSink.sink->setVideoFrame(*frame);
     }
@@ -143,28 +137,18 @@ void FrameServer::readFrames()
     frameSwap = !frameSwap;
 }
 
-void FrameServer::writeBytes(const uchar* buffer, size_t bufferSize)
+void FrameServer::renderFrame(double time)
 {
-    size_t bytesWritten = 0;
-    while (bytesWritten < bufferSize) {
-        ssize_t n = write(STDOUT_FILENO, buffer + bytesWritten, bufferSize - bytesWritten);
+    auto ioErrorHandler = [](int n, std::string msg = "") {
         // EOF
         if (n == 0) {
             QCoreApplication::exit(0);
-            return;
-        }
-        if (n == -1) {
-            qCritical("QML content failed to load.");
+        } else if (n == -1) {
+            qCritical() << msg.c_str();
             QCoreApplication::exit(1);
-            return;
         }
-        bytesWritten = bytesWritten + n;
-    }
-}
-
-void FrameServer::renderFrame(double time)
-{
+    };
     content->renderContent(time, outputImage);
-    writeBytes(outputImage.constBits(), outputImage.sizeInBytes());
+    dataIO(STDOUT_FILENO, outputImage.constBits(), outputImage.sizeInBytes(), write, ioErrorHandler);
     QCoreApplication::postEvent(this, new QEvent(QEvent::User));
 }
