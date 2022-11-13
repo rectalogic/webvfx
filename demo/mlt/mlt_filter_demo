@@ -3,7 +3,7 @@
 BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 $BASEDIR/create_mov
 export DISPLAY=${DISPLAY:-:0}
-COMMAND="webvfx_frameserver --width {{width}} --height {{height}} --duration 299/30 ${BASEDIR}/../examples/filter-demo.qml"
+COMMAND="webvfx_frameserver --width {{width}} --height {{height}} --duration 300/30 ${BASEDIR}/../examples/filter-demo.qml"
 melt -verbose "${VFX_SOURCE:-${BASEDIR}/red.mov}" out=299 \
     -filter frei0r.vfxpipe_filter 0="\"$COMMAND\"" out=299 \
     $(eval echo $(< "${VFX_CONSUMER:-${BASEDIR}/consumer_sdl}")) mlt_profile=${BASEDIR}/webvfx_profile

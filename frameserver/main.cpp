@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
     const int width = widthValue.toInt(&wOk);
     const int height = heightValue.toInt(&hOk);
     if (!wOk || !hOk) {
-        qCritical("Invalid frame size.");
+        qCritical("Invalid --width or --height.");
         exit(1);
     }
 

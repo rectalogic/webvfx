@@ -7,6 +7,8 @@
 #include <string>
 #include <unistd.h>
 
+void replaceAll(std::string& inout, std::string_view what, std::string_view with);
+
 int spawnProcess(int* pipeRead, int* pipeWrite, std::string& commandLine, std::function<void(std::string)> errorHandler);
 
 template <typename D, typename IO, typename ERR>

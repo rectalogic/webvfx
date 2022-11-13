@@ -14,15 +14,6 @@
 #include <vfxpipe/vfxpipe.h>
 #include <wordexp.h>
 
-void replaceAll(std::string& inout, std::string_view what, std::string_view with)
-{
-    for (std::string::size_type pos {};
-         inout.npos != (pos = inout.find(what.data(), pos, what.length()));
-         pos += with.length()) {
-        inout.replace(pos, what.length(), with.data(), with.length());
-    }
-}
-
 class VfxPipe {
 public:
     VfxPipe(unsigned int width, unsigned int height)

@@ -12,7 +12,7 @@ RUN apt-get -y update \
        libglx-mesa0 libglvnd-dev libxkbcommon-dev libxkbcommon-x11-0 libpulse-dev libxcb1 libx11-xcb1 libxcb-glx0 \
        libxcb-icccm4 libxcb-image0 libxcb-render-util0 libxcb-keysyms1 \
        python3 python3-pip \
-       curl xz-utils frei0r-plugins-dev melt ffmpeg xvfb pkg-config \
+       curl xz-utils frei0r-plugins-dev melt libmlt-dev ffmpeg xvfb pkg-config \
        gstreamer1.0-plugins-base gstreamer1.0-plugins-good libgstreamer-gl1.0-0 \
        fontconfig fonts-liberation imagemagick
 
