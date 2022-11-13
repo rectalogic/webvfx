@@ -7,20 +7,20 @@ find_package(PkgConfig)
 pkg_search_module(FREI0R IMPORTED_TARGET frei0r)
 
 if(FREI0R_FOUND)
+    add_library(plugin STATIC
+        plugin.cpp
+    )
+
     add_library(vfxpipe_filter MODULE
-        vfxpipe.cpp
         filter.cpp
     )
     add_library(vfxpipe_source MODULE
-        vfxpipe.cpp
         source.cpp
     )
     add_library(vfxpipe_mixer2 MODULE
-        vfxpipe.cpp
         mixer2.cpp
     )
     add_library(vfxpipe_mixer3 MODULE
-        vfxpipe.cpp
         mixer3.cpp
     )
 
@@ -29,10 +29,18 @@ if(FREI0R_FOUND)
     set_target_properties(vfxpipe_mixer2 PROPERTIES PREFIX "")
     set_target_properties(vfxpipe_mixer3 PROPERTIES PREFIX "")
 
+    target_include_directories(plugin PRIVATE "${CMAKE_CURRENT_LIST_DIR}/..")
+
+    target_compile_options(plugin PUBLIC ${FREI0R_CFLAGS})
     target_compile_options(vfxpipe_filter PUBLIC ${FREI0R_CFLAGS})
     target_compile_options(vfxpipe_source PUBLIC ${FREI0R_CFLAGS})
     target_compile_options(vfxpipe_mixer2 PUBLIC ${FREI0R_CFLAGS})
     target_compile_options(vfxpipe_mixer3 PUBLIC ${FREI0R_CFLAGS})
+
+    target_link_libraries(vfxpipe_filter plugin vfxpipe)
+    target_link_libraries(vfxpipe_source plugin vfxpipe)
+    target_link_libraries(vfxpipe_mixer2 plugin vfxpipe)
+    target_link_libraries(vfxpipe_mixer3 plugin vfxpipe)
 
     install(TARGETS vfxpipe_filter LIBRARY DESTINATION ${FREI0R_LIBDIR}/frei0r-1/webvfx)
     install(TARGETS vfxpipe_source LIBRARY DESTINATION ${FREI0R_LIBDIR}/frei0r-1/webvfx)
