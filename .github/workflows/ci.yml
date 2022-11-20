@@ -75,9 +75,7 @@ jobs:
       run: |
         export QT_LOGGING_RULES="*.debug=true"
         export QT_DEBUG_PLUGINS=1
-        export DYLD_INSERT_LIBRARIES=/usr/local/Cellar/mesa/22.2.4/lib/libGL.dylib
-        ls /usr/local/Cellar/mesa
-        ls -R /usr/local
+        export DYLD_INSERT_LIBRARIES=/usr/local/lib/libGL.dylib
         export FREI0R_PATH=/usr/local/lib/frei0r-1/webvfx
         cd demo/mlt/tests
         mkdir -p fixtures/output
