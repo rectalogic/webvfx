@@ -8,6 +8,9 @@
 #include <QMap>
 #include <QSize>
 #include <QUrl>
+#ifdef WEBENGINEQUICK
+#include <QtWebEngineQuick>
+#endif
 
 inline void assertOpt(bool r)
 {
@@ -19,6 +22,12 @@ inline void assertOpt(bool r)
 
 int main(int argc, char* argv[])
 {
+#ifdef WEBENGINEQUICK
+    // https://doc.qt.io/qt-6/qml-qtwebengine-webengineview.html#rendering-to-opengl-surface
+    // https://doc.qt.io/qt-6/qtwebengine-overview.html#embedding-web-content-into-qt-quick-applications
+    QtWebEngineQuick::initialize();
+#endif
+
     QGuiApplication app(argc, argv);
 
     app.setOrganizationDomain("webvfx.org");
