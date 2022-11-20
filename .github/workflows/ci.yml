@@ -73,6 +73,8 @@ jobs:
       # https://github.com/actions/virtual-environments/issues/1779#issuecomment-707071183
       #if: false
       run: |
+        export QT_LOGGING_RULES="*.debug=true"
+        export QT_DEBUG_PLUGINS=1
         export FREI0R_PATH=/usr/local/lib/frei0r-1/webvfx
         cd demo/mlt/tests
         mkdir -p fixtures/output
