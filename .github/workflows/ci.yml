@@ -72,10 +72,13 @@ jobs:
       # Disable for now, no GPU on macos
       # https://github.com/actions/virtual-environments/issues/1779#issuecomment-707071183
       #if: false
+      # qt.rhi.general: OpenGL VENDOR: Apple Inc. RENDERER: Apple Software Renderer VERSION: 2.1 APPLE-19.5.1
       run: |
-        export QT_LOGGING_RULES="*.debug=true"
-        export QT_DEBUG_PLUGINS=1
-        export DYLD_INSERT_LIBRARIES=/usr/local/lib/libGL.dylib
+        export QT_LOGGING_RULES="qt.rhi.general=true"
+        #export QT_DEBUG_PLUGINS=1
+        #export DYLD_INSERT_LIBRARIES=/usr/local/lib/libGL.dylib
+        export DYLD_LIBRARY_PATH=/usr/local/lib/
+        export DYLD_PRINT_LIBRARIES=1
         export FREI0R_PATH=/usr/local/lib/frei0r-1/webvfx
         cd demo/mlt/tests
         mkdir -p fixtures/output
