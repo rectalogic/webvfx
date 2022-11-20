@@ -53,7 +53,7 @@ jobs:
     - name: Provision
       run: |
         sudo xcode-select -s "/Applications/Xcode_14.0.1.app"
-        brew install imagemagick pkg-config cmake ffmpeg frei0r mlt
+        brew install imagemagick pkg-config cmake ffmpeg frei0r mlt mesa
     - name: Install Qt
       uses: jurplel/install-qt-action@v3
       with:
@@ -71,7 +71,7 @@ jobs:
     - name: Test
       # Disable for now, no GPU on macos
       # https://github.com/actions/virtual-environments/issues/1779#issuecomment-707071183
-      if: false
+      #if: false
       run: |
         export FREI0R_PATH=/usr/local/lib/frei0r-1/webvfx
         cd demo/mlt/tests
