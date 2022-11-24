@@ -7,10 +7,17 @@ FRAG=${BASEDIR}/../examples/crossZoom.frag
 if [ "${FRAG}" -nt "${FRAG}.qsb" ]; then
     qsb --glsl "100 es,120,150,400" --hlsl 50 --msl 12 -o "${FRAG}.qsb" "$FRAG"
 fi
-COMMAND="webvfx_frameserver --duration 120/30 --width {{width}} --height {{height}} --property Strength=0.3 ${BASEDIR}/../examples/transition-shader-crosszoom.qml"
+case ${PLUGIN:-frei0r} in
+frei0r)
+    TRANSITION=("frei0r.vfxpipe_mixer2" "0=\"\"webvfx_frameserver --duration 120/30 --width {{width}} --height {{height}} --property Strength=0.3 ${BASEDIR}/../examples/transition-shader-crosszoom.qml\"\"")
+    ;;
+mlt)
+    TRANSITION=(mltpipe:"webvfx_frameserver --width {{width}} --height {{height}} --property Strength=0.3 ${BASEDIR}/../examples/transition-shader-crosszoom.qml")
+    ;;
+esac
 melt -verbose \
     "${VFX_SOURCE:-${BASEDIR}/red.mov}" out=349 \
     "${VFX_TARGET:-${BASEDIR}/blue.mov}" out=349 \
-    -mix 120 -mixer frei0r.vfxpipe_mixer2 0="\"\"$COMMAND\"\"" \
-    producer.0.resource="${VFX_TARGET:-${BASEDIR}/green.mov}" \
+    -mix 120 -mixer "${TRANSITION[@]}" \
+    #producer.0.resource="${VFX_TARGET:-${BASEDIR}/green.mov}" \
     $(eval echo $(< "${VFX_CONSUMER:-${BASEDIR}/consumer_sdl}")) mlt_profile=${BASEDIR}/webvfx_profile

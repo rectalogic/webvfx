@@ -3,12 +3,18 @@
 BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 $BASEDIR/create_mov
 export DISPLAY=${DISPLAY:-:0}
-COMMAND1="webvfx_frameserver --duration 120/30 --width {{width}} --height {{height}} ${BASEDIR}/../examples/transition-simple.qml"
-COMMAND2="webvfx_frameserver --duration 120/30 --width {{width}} --height {{height}} ${BASEDIR}/../examples/transition-simple.qml"
+case ${PLUGIN:-frei0r} in
+frei0r)
+    TRANSITION=("frei0r.vfxpipe_mixer2" "0=\"webvfx_frameserver --duration 120/30 --width {{width}} --height {{height}} ${BASEDIR}/../examples/transition-simple.qml\"")
+    ;;
+mlt)
+    TRANSITION=(mltpipe:"webvfx_frameserver --width {{width}} --height {{height}} ${BASEDIR}/../examples/transition-simple.qml")
+    ;;
+esac
 melt -verbose \
     "${VFX_SOURCE:-${BASEDIR}/red.mov}" out=349 \
     "${VFX_TARGET:-${BASEDIR}/blue.mov}" out=349 \
-    -mix 120 -mixer frei0r.vfxpipe_mixer2 0="\"$COMMAND1\"" \
+    -mix 120 -mixer "${TRANSITION[@]}" \
     "${VFX_EXTRA:-${BASEDIR}/green.mov}" out=349 \
-    -mix 120 -mixer frei0r.vfxpipe_mixer2 0="\"$COMMAND2\"" \
+    -mix 120 -mixer "${TRANSITION[@]}" \
     $(eval echo $(< "${VFX_CONSUMER:-${BASEDIR}/consumer_sdl}")) mlt_profile=${BASEDIR}/webvfx_profile

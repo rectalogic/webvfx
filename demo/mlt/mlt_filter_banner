@@ -3,7 +3,14 @@
 BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 $BASEDIR/create_mov
 export DISPLAY=${DISPLAY:-:0}
-COMMAND="webvfx_frameserver --duration 300/30 --width {{width}} --height {{height}} --property Title='${VFX_TITLE:-WebVfx Banner Demo}' --property FadeIn=${VFX_FADEIN:-20} --property FadeOut=${VFX_FADEOUT:-20} ${BASEDIR}/../examples/filter-banner.qml"
+case ${PLUGIN:-frei0r} in
+frei0r)
+    FILTER=("frei0r.vfxpipe_filter" "0=\"\"webvfx_frameserver --duration 300/30 --width {{width}} --height {{height}} --property Title='${VFX_TITLE:-WebVfx Banner Demo}' --property FadeIn=${VFX_FADEIN:-20} --property FadeOut=${VFX_FADEOUT:-20} ${BASEDIR}/../examples/filter-banner.qml\"\"")
+    ;;
+mlt)
+    FILTER=(mltpipe:"webvfx_frameserver --width {{width}} --height {{height}} --property Title='${VFX_TITLE:-WebVfx Banner Demo}' --property FadeIn=${VFX_FADEIN:-20} --property FadeOut=${VFX_FADEOUT:-20} ${BASEDIR}/../examples/filter-banner.qml")
+    ;;
+esac
 melt -verbose "${VFX_SOURCE:-${BASEDIR}/red.mov}" out=299 \
-    -filter frei0r.vfxpipe_filter 0="\"\"$COMMAND\"\"" out=299 \
+    -filter "${FILTER[@]}" out=299 \
     $(eval echo $(< "${VFX_CONSUMER:-${BASEDIR}/consumer_sdl}")) mlt_profile=${BASEDIR}/webvfx_profile

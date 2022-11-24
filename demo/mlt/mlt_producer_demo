@@ -3,7 +3,14 @@
 BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 $BASEDIR/create_mov
 export DISPLAY=${DISPLAY:-:0}
-COMMAND="webvfx_frameserver --duration 199/30 --width {{width}} --height {{height}} ${BASEDIR}/../examples/producer-demo.qml"
+case ${PLUGIN:-frei0r} in
+frei0r)
+    PRODUCER=("frei0r.vfxpipe_source" "0=\"webvfx_frameserver --duration 199/30 --width {{width}} --height {{height}} ${BASEDIR}/../examples/producer-demo.qml\"")
+    ;;
+mlt)
+    PRODUCER=(mltpipe:"webvfx_frameserver --width {{width}} --height {{height}} ${BASEDIR}/../examples/producer-demo.qml")
+    ;;
+esac
 melt -verbose \
-    -producer frei0r.vfxpipe_source 0="\"$COMMAND\"" length=199 \
+    -producer "${PRODUCER[@]}" length=199 \
     $(eval echo $(< "${VFX_CONSUMER:-${BASEDIR}/consumer_sdl}")) mlt_profile=${BASEDIR}/webvfx_profile
