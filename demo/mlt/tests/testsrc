@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+echo testsrc=duration=${DURATION:-10}:size=640x360:rate=30:decimals=2,drawbox=color=${COLOR:-white}:t=ih/16

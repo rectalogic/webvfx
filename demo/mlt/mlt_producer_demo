@@ -1,7 +1,6 @@
 #!/bin/bash
 
 BASEDIR=$(dirname "${BASH_SOURCE[0]}")
-$BASEDIR/create_mov
 export DISPLAY=${DISPLAY:-:0}
 case ${PLUGIN:-frei0r} in
 frei0r)

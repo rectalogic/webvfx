@@ -4,19 +4,20 @@ if [[ ${#} -eq 0 ]]; then
     echo "Usage: $(basename $0) [-d DURATION] [-c COLOR] [-r] FILE.mov" 2>&1
     exit 1
 fi
+BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 
 while getopts "d:c:r" arg; do
     case ${arg} in
-      c) COLOR="${OPTARG}" ;;
-      d) DURATION="${OPTARG}" ;;
+      c) export COLOR="${OPTARG}" ;;
+      d) export DURATION="${OPTARG}" ;;
       r) RAW=1 ;;
     esac
 done
 shift "$((OPTIND-1))"
 FILE=$1
-
+TESTSRC=$(${BASEDIR}/testsrc)
 if [[ ${RAW} -eq 1 ]]; then
-    ffmpeg -f lavfi -i testsrc=duration=${DURATION:-10}:size=640x360:rate=30:decimals=2,drawbox=color=${COLOR:-white}:t=ih/16,format=rgb24 -f rawvideo -video_size 640x360 -pixel_format rgb24 -framerate 30 -y ${FILE}
+    ffmpeg -f lavfi -i ${TESTSRC} -f rawvideo -video_size 640x360 -pixel_format rgb24 -framerate 30 -y ${FILE}
 else
-    ffmpeg -f lavfi -i testsrc=duration=${DURATION:-10}:size=640x360:rate=30:decimals=2,drawbox=color=${COLOR:-white}:t=ih/16 -f mov -vcodec rawvideo -pix_fmt uyvy422 -framerate 30 -vtag yuvs -y ${FILE}
+    ffmpeg -f lavfi -i ${TESTSRC} -f mov -vcodec rawvideo -pix_fmt uyvy422 -framerate 30 -vtag yuvs -y ${FILE}
 fi

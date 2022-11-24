@@ -1,7 +1,6 @@
 #!/bin/bash
 
 BASEDIR=$(dirname "${BASH_SOURCE[0]}")
-$BASEDIR/create_mov
 export DISPLAY=${DISPLAY:-:0}
 case ${PLUGIN:-frei0r} in
 frei0r)
@@ -11,10 +10,13 @@ mlt)
     TRANSITION=(mltpipe:"webvfx_frameserver --width {{width}} --height {{height}} ${BASEDIR}/../examples/transition-simple.qml")
     ;;
 esac
+REDTESTSRC=lavfi:$(COLOR=red ${BASEDIR}/tests/testsrc)
+BLUETESTSRC=lavfi:$(COLOR=blue ${BASEDIR}/tests/testsrc)
+GREENTESTSRC=lavfi:$(COLOR=green ${BASEDIR}/tests/testsrc)
 melt -verbose \
-    "${VFX_SOURCE:-${BASEDIR}/red.mov}" out=349 \
-    "${VFX_TARGET:-${BASEDIR}/blue.mov}" out=349 \
+    "${VFX_SOURCE:-${REDTESTSRC}}" out=349 \
+    "${VFX_TARGET:-${BLUETESTSRC}}" out=349 \
     -mix 120 -mixer "${TRANSITION[@]}" \
-    "${VFX_EXTRA:-${BASEDIR}/green.mov}" out=349 \
+    "${VFX_EXTRA:-${GREENTESTSRC}}" out=349 \
     -mix 120 -mixer "${TRANSITION[@]}" \
     $(eval echo $(< "${VFX_CONSUMER:-${BASEDIR}/consumer_sdl}")) mlt_profile=${BASEDIR}/webvfx_profile
