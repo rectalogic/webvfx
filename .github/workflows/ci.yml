@@ -76,9 +76,10 @@ jobs:
       run: |
         export QT_LOGGING_RULES="qt.rhi.general=true"
         #export QT_DEBUG_PLUGINS=1
-        #export DYLD_INSERT_LIBRARIES=/usr/local/lib/libGL.dylib
-        export DYLD_LIBRARY_PATH=/usr/local/lib/
-        export DYLD_PRINT_LIBRARIES=1
+        export DYLD_INSERT_LIBRARIES=/usr/local/lib/libGL.dylib
+        #export DYLD_LIBRARY_PATH=/usr/local/lib/
+        export DYLD_PRINT_LIBRARIES=YES
+        export DYLD_PRINT_BINDINGS=YES
         export FREI0R_PATH=/usr/local/lib/frei0r-1/webvfx
         cd demo/mlt/tests
         mkdir -p fixtures/output
