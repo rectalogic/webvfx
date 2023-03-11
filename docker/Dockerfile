@@ -16,7 +16,7 @@ RUN apt-get -y update \
        gstreamer1.0-plugins-base gstreamer1.0-plugins-good libgstreamer-gl1.0-0 \
        fontconfig fonts-liberation imagemagick
 
-ARG QT_VER=6.4.0
+ARG QT_VER=6.4.1
 
 RUN pip3 install aqtinstall \
     && python3 -m aqt install-qt linux desktop ${QT_VER} -m qtmultimedia qtquick3d qtshadertools qtquicktimeline --outputdir /usr/local/Qt

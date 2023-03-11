@@ -46,13 +46,13 @@ jobs:
   macos:
     runs-on: macos-12
     env:
-      QT_VER: 6.4.0
+      QT_VER: 6.4.1
     steps:
     - name: Checkout
       uses: actions/checkout@v3
     - name: Provision
       run: |
-        sudo xcode-select -s "/Applications/Xcode_14.0.1.app"
+        sudo xcode-select -s "/Applications/Xcode_14.2.app"
         brew install imagemagick pkg-config cmake ffmpeg frei0r mlt
     - name: Install Qt
       uses: jurplel/install-qt-action@v3
