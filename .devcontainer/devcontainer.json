@@ -4,25 +4,29 @@
         "dockerfile": "../docker/Dockerfile"
     },
     "init": true,
-    "extensions": [
-        "twxs.cmake",
-        "josetr.cmake-language-support-vscode",
-        "xaver.clang-format",
-        "ms-vscode.cmake-tools",
-        "ms-vscode.cpptools",
-        "ms-vscode.cpptools-extension-pack",
-        "ms-vscode.cpptools-themes"
-    ],
-    "settings": {
-        "cmake.installPrefix": "/usr/local/Qt/6.4.0/gcc_64",
-        "cmake.buildDirectory": "${workspaceFolder}/build/vscode",
-        "cmake.configureSettings": {
-            "CMAKE_BUILD_TYPE": "Debug"
-        },
-        "cmake.loggingLevel": "info",
-        "C_Cpp.loggingLevel": "Error",
-        "source.organizeImports": true,
-        "editor.formatOnSave": true,
-        "git.ignoreLimitWarning": true
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "twxs.cmake",
+                "josetr.cmake-language-support-vscode",
+                "xaver.clang-format",
+                "ms-vscode.cmake-tools",
+                "ms-vscode.cpptools",
+                "ms-vscode.cpptools-extension-pack",
+                "ms-vscode.cpptools-themes"
+            ],
+            "settings": {
+                "cmake.installPrefix": "/usr/local/Qt/6.4.1/gcc_64",
+                "cmake.buildDirectory": "${workspaceFolder}/build/vscode",
+                "cmake.configureSettings": {
+                    "CMAKE_BUILD_TYPE": "Debug"
+                },
+                "cmake.loggingLevel": "info",
+                "C_Cpp.loggingLevel": "Error",
+                "source.organizeImports": true,
+                "editor.formatOnSave": true,
+                "git.ignoreLimitWarning": true
+            }
+        }
     }
 }
