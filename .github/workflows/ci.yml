@@ -46,7 +46,7 @@ jobs:
   macos:
     runs-on: macos-12
     env:
-      QT_VER: 6.4.1
+      QT_VER: 6.4.3
     steps:
     - name: Checkout
       uses: actions/checkout@v3

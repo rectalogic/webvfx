@@ -17,9 +17,10 @@ esac
 REDTESTSRC=lavfi:$(COLOR=red ${BASEDIR}/tests/testsrc)
 BLUETESTSRC=lavfi:$(COLOR=blue ${BASEDIR}/tests/testsrc)
 GREENTESTSRC=lavfi:$(COLOR=green ${BASEDIR}/tests/testsrc)
+# Extra producer not supported by frei0r
+#producer.0.resource="${VFX_TARGET:-${GREENTESTSRC}}"
 melt -verbose \
     "${VFX_SOURCE:-${REDTESTSRC}}" out=349 \
     "${VFX_TARGET:-${BLUETESTSRC}}" out=349 \
     -mix 120 -mixer "${TRANSITION[@]}" \
-    #producer.0.resource="${VFX_TARGET:-${GREENTESTSRC}}" \
     $(eval echo $(< "${VFX_CONSUMER:-${BASEDIR}/consumer_sdl}")) mlt_profile=${BASEDIR}/webvfx_profile

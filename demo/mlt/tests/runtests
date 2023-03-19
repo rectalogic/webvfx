@@ -7,7 +7,7 @@ BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 
 mkdir -p "${OUTPUT_DIR}/compare"
 
-"${BASEDIR}/extract_frames" "$OUTPUT_DIR"
+env SHELLOPTS=xtrace "${BASEDIR}/extract_frames" "$OUTPUT_DIR"
 
 FAILED=()
 for fixture in "${FIXTURE_DIR}/"*.png; do
