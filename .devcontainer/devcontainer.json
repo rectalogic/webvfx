@@ -25,7 +25,9 @@
                 "C_Cpp.loggingLevel": "Error",
                 "source.organizeImports": true,
                 "editor.formatOnSave": true,
-                "git.ignoreLimitWarning": true
+                "git.ignoreLimitWarning": true,
+                // https: //github.com/microsoft/vscode-remote-release/issues/8169
+                "extensions.verifySignature": false
             }
         }
     }

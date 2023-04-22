@@ -38,7 +38,7 @@ jobs:
       run: docker/docker-run.sh
     - name: Upload Failed Artifacts
       if: failure()
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: failed-images-linux
         path: build/linux/output
@@ -79,7 +79,7 @@ jobs:
         ./runtests fixtures/macos fixtures/output
     - name: Failed Artifacts
       if: failure()
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: failed-images-macos
         path: demo/mlt/tests/fixtures/output
