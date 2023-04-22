@@ -9,14 +9,14 @@ ENV LANG=en_US.UTF-8
 ENV LC_ALL=C.UTF-8
 RUN apt-get -y update \
     && apt-get -y install build-essential cmake ninja-build git clang-format iwyu \
-       libglx-mesa0 libglvnd-dev libxkbcommon-dev libxkbcommon-x11-0 libpulse-dev libxcb1 libx11-xcb1 libxcb-glx0 \
+       libglx-mesa0 libglvnd-dev libxkbcommon-dev libxkbcommon-x11-0 libpulse-dev libxcb1 libx11-xcb1 libxcb-glx0 libxcb-cursor0 \
        libxcb-icccm4 libxcb-image0 libxcb-render-util0 libxcb-keysyms1 \
        python3 python3-pip \
        curl xz-utils frei0r-plugins-dev melt libmlt-dev ffmpeg xvfb pkg-config \
        gstreamer1.0-plugins-base gstreamer1.0-plugins-good libgstreamer-gl1.0-0 \
        fontconfig fonts-liberation imagemagick
 
-ARG QT_VER=6.4.3
+ARG QT_VER=6.5.0
 
 RUN pip3 install aqtinstall \
     && python3 -m aqt install-qt linux desktop ${QT_VER} -m qtmultimedia qtquick3d qtshadertools qtquicktimeline --outputdir /usr/local/Qt
