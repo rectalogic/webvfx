@@ -21,12 +21,6 @@ make available some additional useful QML elements.
 import org.webvfx.WebVfx 1.0
 @endcode
 
-@li @c BlenderItem - this is an
-  @c <a href="http://doc.qt.nokia.com/qt-quick3d-snapshot/qml-item3d.html">Item3D</a>
-  that applies a coordinate system
-  transformation to convert from Blenders coordinate system to QtQuick3D.
-  If the mesh was exported from Blender, you should load it inside
-  a @c BlenderItem instead of an ordinary @c Item3D.
 @li @c AnimatedCamera - this is a @c <a href="http://doc.qt.nokia.com/qt-quick3d-snapshot/qml-camera.html">Camera</a>
   that supports an additional @c animationData property.
   This property should be set to the JSON camera path data exported

@@ -1,6 +1,5 @@
 import QtQuick 2.0
 import QtMultimedia
-import org.webvfx.WebVfx 1.0
 
 Rectangle {
     width: webvfx.videoSize.width

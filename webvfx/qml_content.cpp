@@ -34,9 +34,6 @@ QmlContent::QmlContent(QQuickRenderControl* renderControl, const QSize& size, Pa
     , renderPassDescriptor(0)
     , initialized(false)
 {
-    // Add root of our qrc:/ resource path so embedded QML components are available.
-    engine()->addImportPath(":/");
-
     setResizeMode(ResizeMode::SizeViewToRootObject);
 
     // Expose context to the QML

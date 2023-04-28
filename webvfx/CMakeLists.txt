@@ -20,6 +20,7 @@ set_property(TARGET webvfx PROPERTY AUTORCC ON)
 
 target_include_directories(webvfx PUBLIC "${CMAKE_CURRENT_LIST_DIR}/..")
 
+qt_policy(SET QTP0001 NEW)
 qt_add_qml_module(webvfx
     URI org.webvfx.WebVfx.native
     VERSION 1.0

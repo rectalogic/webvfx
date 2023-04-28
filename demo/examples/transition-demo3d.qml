@@ -2,7 +2,6 @@ import QtQuick
 import QtQuick3D
 import QtQuick.Timeline
 import QtMultimedia
-import org.webvfx.WebVfx 1.0
 import org.webvfx.WebVfx.native 1.0
 
  View3D {
