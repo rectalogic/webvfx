@@ -24,7 +24,7 @@ jobs:
       uses: docker/build-push-action@v3
       with:
         push: false
-        context: docker
+        context: builders/linux
         tags: webvfx
         load: true
         cache-from: type=local,src=/tmp/.buildx-cache
@@ -35,7 +35,7 @@ jobs:
         rm -rf /tmp/.buildx-cache
         mv /tmp/.buildx-cache-new /tmp/.buildx-cache
     - name: Test
-      run: docker/docker-run.sh
+      run: builders/linux/docker-run.sh
     - name: Upload Failed Artifacts
       if: failure()
       uses: actions/upload-artifact@v3

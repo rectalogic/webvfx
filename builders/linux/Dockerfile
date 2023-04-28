@@ -34,4 +34,4 @@ VOLUME /webvfx
 WORKDIR /webvfx
 
 ENTRYPOINT ["/usr/bin/xvfb-run"]
-CMD ["/webvfx/docker/docker-runtests.sh"]
+CMD ["/webvfx/builders/linux/webvfx-build-run.sh"]

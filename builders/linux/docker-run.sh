@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-MOUNT="$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")"; pwd)")"
+MOUNT="$(dirname $(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")"; pwd)"))"
 
 $MOUNT/demo/mlt/tests/clean
 
