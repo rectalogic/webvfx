@@ -34,4 +34,4 @@ VOLUME /webvfx
 WORKDIR /webvfx
 
 ENTRYPOINT ["/usr/bin/xvfb-run"]
-CMD ["/webvfx/builders/linux/webvfx-build-run.sh"]
+CMD ["/webvfx/builders/linux/webvfx-run.sh", "/webvfx/demo/mlt/tests/runtests", "/webvfx/demo/mlt/tests/fixtures/linux", "/webvfx/build/linux/output"]
