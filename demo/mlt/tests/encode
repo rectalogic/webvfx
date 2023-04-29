@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+BASEDIR=$(dirname "${BASH_SOURCE[0]}")
+
+usage () {
+    echo "Usage: $(basename $0) MLT_SCRIPT OUTPUT.mov" 2>&1
+    exit 1
+}
+
+MLT_SCRIPT=$1
+OUTPUT=${2:?output}
+if ! [[ -f "$MLT_SCRIPT" ]]; then
+    usage
+fi
+
+export VFX_CONSUMER=${BASEDIR}/../consumer_raw
+${MLT_SCRIPT} | ffmpeg -f rawvideo -video_size 640x360 -pixel_format rgb24 -framerate 30 -i -  -f mov -vcodec rawvideo -pix_fmt uyvy422 -framerate 30 -vtag yuvs -y "${OUTPUT}"
