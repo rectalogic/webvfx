@@ -6,7 +6,7 @@ CURRENT=$(dirname "${BASH_SOURCE[0]}")
 source "$CURRENT/versions"
 
 FREI0R_GIT="${BUILD_ROOT}/frei0r"
-"$CURRENT/git-checkout.sh" git@github.com:dyne/frei0r.git ${FREI0R_VER} "$FREI0R_GIT"
+"$CURRENT/git-checkout.sh" https://github.com/dyne/frei0r.git ${FREI0R_VER} "$FREI0R_GIT"
 FREI0R_BUILD="${BUILD_ROOT}/build/frei0r"
 mkdir -p "$FREI0R_BUILD"
 

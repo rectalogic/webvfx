@@ -6,7 +6,7 @@ CURRENT=$(dirname "${BASH_SOURCE[0]}")
 source "$CURRENT/versions"
 
 MLT_GIT="${BUILD_ROOT}/mlt"
-"$CURRENT/git-checkout.sh" git@github.com:mltframework/mlt.git $MLT_VER} "$MLT_GIT"
+"$CURRENT/git-checkout.sh" https://github.com/mltframework/mlt.git $MLT_VER} "$MLT_GIT"
 MLT_BUILD="${BUILD_ROOT}/build/mlt"
 mkdir -p "$MLT_BUILD"
 

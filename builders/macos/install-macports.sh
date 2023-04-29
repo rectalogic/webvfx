@@ -6,7 +6,7 @@ CURRENT=$(dirname "${BASH_SOURCE[0]}")
 source "$CURRENT/versions"
 
 MACPORTS_GIT="${BUILD_ROOT}/macports-base"
-"$CURRENT/git-checkout.sh" git@github.com:macports/macports-base.git ${MACPORTS_VER} "$MACPORTS_GIT"
+"$CURRENT/git-checkout.sh" https://github.com/macports/macports-base.git ${MACPORTS_VER} "$MACPORTS_GIT"
 
 # Avoid any system-wide macports
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin
