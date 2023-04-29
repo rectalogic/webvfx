@@ -44,7 +44,7 @@ jobs:
         path: build/linux/output
 
   macos:
-    runs-on: macos-12
+    runs-on: macos-13
     env:
       XCODE_VER: 14.2
     steps:
