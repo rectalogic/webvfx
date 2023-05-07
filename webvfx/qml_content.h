@@ -11,6 +11,7 @@
 #include <QQuickRenderControl>
 #include <QQuickView>
 #include <QSet>
+#include <QScopedPointer>
 
 class QRhiRenderBuffer;
 class QRhiRenderPassDescriptor;
@@ -53,12 +54,12 @@ private:
         LoadSucceeded };
     LoadStatus pageLoadFinished;
     ContentContext* contentContext;
-    QQuickRenderControl* renderControl;
+    QScopedPointer<QQuickRenderControl> renderControl;
 
-    QRhiTexture* texture;
-    QRhiRenderBuffer* stencilBuffer;
-    QRhiTextureRenderTarget* textureRenderTarget;
-    QRhiRenderPassDescriptor* renderPassDescriptor;
+    QScopedPointer<QRhiTexture> texture;
+    QScopedPointer<QRhiRenderBuffer> stencilBuffer;
+    QScopedPointer<QRhiTextureRenderTarget> textureRenderTarget;
+    QScopedPointer<QRhiRenderPassDescriptor> renderPassDescriptor;
     bool initialized;
 };
 
