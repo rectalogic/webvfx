@@ -10,8 +10,8 @@
 #include <QQmlError>
 #include <QQuickRenderControl>
 #include <QQuickView>
-#include <QSet>
 #include <QScopedPointer>
+#include <QSet>
 
 class QRhiRenderBuffer;
 class QRhiRenderPassDescriptor;
