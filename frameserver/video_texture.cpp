@@ -6,8 +6,8 @@
 #include <QVideoFrameFormat>
 #include <QVideoSink>
 
-#include "webvfx/video_texture.h"
-#include "webvfx/webvfx.h"
+#include "video_texture.h"
+#include "webvfx.h"
 
 namespace WebVfx {
 

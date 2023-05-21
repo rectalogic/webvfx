@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBVFX_PARAMETERS_H_
-#define WEBVFX_PARAMETERS_H_
+#pragma once
 
 class QString;
 
@@ -34,5 +33,3 @@ public:
 };
 
 }
-
-#endif

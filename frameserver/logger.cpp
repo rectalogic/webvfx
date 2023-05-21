@@ -1,4 +1,4 @@
-#include "webvfx/logger.h"
+#include "logger.h"
 
 WebVfx::Logger::~Logger()
 {

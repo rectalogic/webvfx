@@ -11,12 +11,12 @@
 #include <QVideoFrameFormat>
 #include <QtDebug>
 #include <errno.h>
+#include <logger.h>
+#include <parameters.h>
+#include <qml_content.h>
 #include <unistd.h>
-#include <vfxpipe/vfxpipe.h>
-#include <webvfx/logger.h>
-#include <webvfx/parameters.h>
-#include <webvfx/qml_content.h>
-#include <webvfx/webvfx.h>
+#include <vfxpipe.h>
+#include <webvfx.h>
 
 class FrameServerParameters : public WebVfx::Parameters {
 public:

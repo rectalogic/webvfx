@@ -17,8 +17,8 @@
 #include <QtGui/private/qrhi_p.h>
 #include <QtQuick/private/qquickrendercontrol_p.h>
 
-#include "webvfx/qml_content.h"
-#include "webvfx/webvfx.h"
+#include "qml_content.h"
+#include "webvfx.h"
 
 namespace WebVfx {
 

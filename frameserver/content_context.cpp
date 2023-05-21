@@ -1,5 +1,5 @@
-#include "webvfx/content_context.h"
-#include "webvfx/parameters.h"
+#include "content_context.h"
+#include "parameters.h"
 
 namespace WebVfx {
 

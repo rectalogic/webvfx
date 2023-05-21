@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBVFX_WEBVFX_H_
-#define WEBVFX_WEBVFX_H_
+#pragma once
 
-#include <webvfx/logger.h>
-#include <webvfx/parameters.h>
+#include <logger.h>
+#include <parameters.h>
 
 /*!
  * @brief Public entry points into WebVfx
@@ -48,4 +47,3 @@ void log(const QString& msg);
 bool initialize();
 
 }
-#endif

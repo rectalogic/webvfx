@@ -1,4 +1,4 @@
-#include "webvfx/parameters.h"
+#include "parameters.h"
 #include <QString>
 
 WebVfx::Parameters::~Parameters()

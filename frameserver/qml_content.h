@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef WEBVFX_QML_CONTENT_H_
-#define WEBVFX_QML_CONTENT_H_
+#pragma once
 
-#include "webvfx/content_context.h"
+#include "content_context.h"
 #include <QImage>
 #include <QQmlError>
 #include <QQuickRenderControl>
@@ -64,5 +63,3 @@ private:
 };
 
 }
-
-#endif

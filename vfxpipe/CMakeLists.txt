@@ -6,3 +6,4 @@ add_library(vfxpipe STATIC
     vfxpipe.cpp
 )
 set_target_properties(vfxpipe PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+target_include_directories(vfxpipe PUBLIC .)
