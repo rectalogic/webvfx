@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "webvfx.h"
-#include "logger.h"
 #include <QMetaType>
 #include <QMutex>
 #include <QMutexLocker>
@@ -12,13 +11,7 @@
 namespace WebVfx {
 
 static bool s_initialized = false;
-static Logger* s_logger = 0;
 static QMutex s_initializedMutex;
-
-void setLogger(Logger* logger)
-{
-    s_logger = logger;
-}
 
 bool initialize()
 {
@@ -29,12 +22,6 @@ bool initialize()
 
     s_initialized = true;
     return true;
-}
-
-void log(const QString& msg)
-{
-    if (s_logger)
-        s_logger->log(msg);
 }
 
 }

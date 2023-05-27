@@ -4,8 +4,7 @@
 
 #pragma once
 
-#include <logger.h>
-#include <parameters.h>
+#include "parameters.h"
 
 /*!
  * @brief Public entry points into WebVfx
@@ -14,21 +13,6 @@
  * WebVfx effect rendering.
  */
 namespace WebVfx {
-
-/*!
- * @brief Set a Logger implementation
- *
- * WebVfx will take ownership of the logger and delete it at shutdown.
- * setLogger() must be called only once and must be called before initialize().
- */
-void setLogger(Logger* logger);
-
-/*!
- * @brief Log a message
- *
- * Logs a message using the currently set Logger implementation.
- */
-void log(const QString& msg);
 
 /*!
  * @brief Initialize the WebVfx framework

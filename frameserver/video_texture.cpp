@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "video_texture.h"
+#include "webvfx.h"
 #include <QVideoFrame>
 #include <QVideoFrameFormat>
 #include <QVideoSink>
-
-#include "video_texture.h"
-#include "webvfx.h"
+#include <QtDebug>
 
 namespace WebVfx {
 
@@ -21,7 +21,7 @@ void VideoTextureData::onVideoFrameChanged()
 {
     QVideoFrame frame = videoSink->videoFrame();
     if (frame.pixelFormat() != QVideoFrameFormat::Format_RGBA8888) {
-        log("Unable to handle QVideoFrame pixel format");
+        qDebug() << "Unable to handle QVideoFrame pixel format";
         return;
     }
     frame.map(QVideoFrame::ReadOnly);

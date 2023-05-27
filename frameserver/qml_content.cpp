@@ -14,6 +14,7 @@
 #include <QSize>
 #include <QString>
 #include <QVariant>
+#include <QtDebug>
 #include <QtGui/private/qrhi_p.h>
 #include <QtQuick/private/qquickrendercontrol_p.h>
 
@@ -65,7 +66,7 @@ bool QmlContent::initialize()
     if (initialized)
         return true;
     if (!renderControl->initialize()) {
-        log("Failed to initialize render control");
+        qDebug() << "Failed to initialize render control";
         return false;
     }
 
@@ -74,7 +75,7 @@ bool QmlContent::initialize()
     const QSize size = contentContext->getVideoSize();
     texture.reset(rhi->newTexture(QRhiTexture::RGBA8, size, 1, QRhiTexture::RenderTarget | QRhiTexture::UsedAsTransferSource));
     if (!texture->create()) {
-        log("Failed to create texture");
+        qDebug() << "Failed to create texture";
         return false;
     }
 
@@ -83,7 +84,7 @@ bool QmlContent::initialize()
     // the lack of a ds buffer, so just be nice and provide one.
     stencilBuffer.reset(rhi->newRenderBuffer(QRhiRenderBuffer::DepthStencil, size, 1));
     if (!stencilBuffer->create()) {
-        log("Failed to create render buffer");
+        qDebug() << "Failed to create render buffer";
         return false;
     }
 
@@ -93,7 +94,7 @@ bool QmlContent::initialize()
     renderPassDescriptor.reset(textureRenderTarget->newCompatibleRenderPassDescriptor());
     textureRenderTarget->setRenderPassDescriptor(renderPassDescriptor.data());
     if (!textureRenderTarget->create()) {
-        log("Failed to create render target");
+        qDebug() << "Failed to create render target";
         return false;
     }
 
@@ -119,7 +120,7 @@ void QmlContent::qmlViewStatusChanged(QQuickView::Status status)
 void QmlContent::logWarnings(const QList<QQmlError>& warnings)
 {
     foreach (const QQmlError& warning, warnings) {
-        log(warning.toString());
+        qDebug() << warning.toString();
     }
 }
 

@@ -3,20 +3,18 @@
 // found in the LICENSE file.
 
 #include "frameserver.h"
+#include "parameters.h"
+#include "qml_content.h"
+#include "webvfx.h"
 #include <QCoreApplication>
 #include <QDebug>
 #include <QMap>
 #include <QUrl>
 #include <QVideoFrame>
 #include <QVideoFrameFormat>
-#include <QtDebug>
 #include <errno.h>
-#include <logger.h>
-#include <parameters.h>
-#include <qml_content.h>
 #include <unistd.h>
 #include <vfxpipe.h>
-#include <webvfx.h>
 
 class FrameServerParameters : public WebVfx::Parameters {
 public:
@@ -41,16 +39,6 @@ private:
 
 /////////////////
 
-class FrameServerLogger : public WebVfx::Logger {
-public:
-    void log(const QString& message)
-    {
-        qDebug() << message;
-    }
-};
-
-/////////////////
-
 FrameServer::FrameServer(const QSize& size, const QMap<QString, QString>& propertyMap, const QUrl& qmlUrl, double duration, QObject* parent)
     : QObject(parent)
     , content(new WebVfx::QmlContent(size, new FrameServerParameters(propertyMap)))
@@ -58,7 +46,6 @@ FrameServer::FrameServer(const QSize& size, const QMap<QString, QString>& proper
     , duration(duration)
     , initialTime(-1)
 {
-    WebVfx::setLogger(new FrameServerLogger());
     connect(content, &WebVfx::QmlContent::contentLoadFinished, this, &FrameServer::onContentLoadFinished);
     content->loadContent(qmlUrl);
 }

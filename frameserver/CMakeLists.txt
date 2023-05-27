@@ -10,7 +10,6 @@ qt_add_executable(webvfx_frameserver
     main.cpp
     frameserver.cpp
     content_context.cpp
-    logger.cpp
     parameters.cpp
     qml_content.cpp
     video_texture.cpp
