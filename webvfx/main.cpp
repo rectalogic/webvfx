@@ -35,23 +35,15 @@ int main(int argc, char* argv[])
     app.setApplicationName("WebVfx");
 
     QCommandLineParser parser;
-    parser.setApplicationDescription("WebVfx render pipe");
+    parser.setApplicationDescription("WebVfx frameserver");
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
     parser.addHelpOption();
-    assertOpt(parser.addOption({ { "p", "property" }, "Property name=value, may be specified multiple times.", "property" }));
     assertOpt(parser.addOption({ "width", "Video frame width.", "width" }));
     assertOpt(parser.addOption({ "height", "Video frame height.", "height" }));
     assertOpt(parser.addOption({ "duration", "Video duration in seconds (floating point or rational e.g. 199/30).", "duration" }));
     parser.addPositionalArgument("source", "QML source URL.");
 
     parser.process(app);
-
-    QMap<QString, QString> propertyMap;
-    const auto properties = parser.values("property");
-    for (int i = 0; i < properties.size(); ++i) {
-        const auto value = properties.at(i);
-        propertyMap[value.section('=', 0, 0)] = value.section('=', 1, -1, QString::SectionIncludeTrailingSep);
-    }
 
     const auto widthValue = parser.value("width");
     const auto heightValue = parser.value("height");
@@ -95,9 +87,9 @@ int main(int argc, char* argv[])
         qCritical("Missing required source url");
         exit(1);
     }
-    const QUrl url(args.at(0));
+    QUrl url(args.at(0));
 
-    new FrameServer(QSize(width, height), propertyMap, url, duration, &app);
+    new FrameServer(QSize(width, height), url, duration, &app);
 
     return app.exec();
 }

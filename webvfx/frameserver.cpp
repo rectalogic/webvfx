@@ -9,7 +9,9 @@
 #include <QCoreApplication>
 #include <QDebug>
 #include <QMap>
+#include <QString>
 #include <QUrl>
+#include <QUrlQuery>
 #include <QVideoFrame>
 #include <QVideoFrameFormat>
 #include <errno.h>
@@ -18,30 +20,31 @@
 
 class FrameServerParameters : public WebVfx::Parameters {
 public:
-    FrameServerParameters(QMap<QString, QString> map)
-        : propertyMap(map)
+    FrameServerParameters(QUrl& url)
+        : urlQuery(url)
     {
+        url.setQuery(QString());
     }
 
     double getNumberParameter(const QString& name)
     {
-        return propertyMap[name].toDouble();
+        return urlQuery.queryItemValue(name).toDouble();
     }
 
     QString getStringParameter(const QString& name)
     {
-        return propertyMap[name];
+        return urlQuery.queryItemValue(name);
     }
 
 private:
-    QMap<QString, QString> propertyMap;
+    QUrlQuery urlQuery;
 };
 
 /////////////////
 
-FrameServer::FrameServer(const QSize& size, const QMap<QString, QString>& propertyMap, const QUrl& qmlUrl, double duration, QObject* parent)
+FrameServer::FrameServer(const QSize& size, QUrl& qmlUrl, double duration, QObject* parent)
     : QObject(parent)
-    , content(new WebVfx::QmlContent(size, new FrameServerParameters(propertyMap)))
+    , content(new WebVfx::QmlContent(size, new FrameServerParameters(qmlUrl)))
     , outputImage(size, QImage::Format_RGBA8888)
     , duration(duration)
     , initialTime(-1)
