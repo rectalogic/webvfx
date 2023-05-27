@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef VFXPIPE_FACTORY_H_
-#define VFXPIPE_FACTORY_H_
+#pragma once
 
 extern "C" {
 #include <framework/mlt_profile.h>
@@ -17,5 +16,3 @@ mlt_service createFilter();
 mlt_service createTransition();
 
 }
-
-#endif

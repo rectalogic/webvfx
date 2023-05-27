@@ -11,8 +11,8 @@ extern "C" {
 #include "service_locker.h"
 #include "service_manager.h"
 
-static const char* kVFXPipeProducerPropertyName = "VFXPipeProducer";
-static const char* kVFXPipePositionPropertyName = "vfxpipe.position";
+static const char* kWebVfxProducerPropertyName = "WebVfxProducer";
+static const char* kWebVfxPositionPropertyName = "webvfx.position";
 
 static int producerGetImage(mlt_frame frame, uint8_t** buffer, mlt_image_format* format, int* width, int* height, int /*writable*/)
 {
@@ -22,7 +22,7 @@ static int producerGetImage(mlt_frame frame, uint8_t** buffer, mlt_image_format*
     mlt_properties properties = MLT_FRAME_PROPERTIES(frame);
 
     // Obtain the producer for this frame
-    mlt_producer producer = (mlt_producer)mlt_properties_get_data(properties, kVFXPipeProducerPropertyName, NULL);
+    mlt_producer producer = (mlt_producer)mlt_properties_get_data(properties, kWebVfxProducerPropertyName, NULL);
 
     // Allocate the image
     *format = mlt_image_rgba;
@@ -44,7 +44,7 @@ static int producerGetImage(mlt_frame frame, uint8_t** buffer, mlt_image_format*
         mlt_image_s outputImage;
         mlt_image_set_values(&outputImage, *buffer, *format, *width, *height);
         locker.getManager()->render(nullptr, nullptr, &outputImage,
-            mlt_properties_get_position(properties, kVFXPipePositionPropertyName));
+            mlt_properties_get_position(properties, kWebVfxPositionPropertyName));
     }
 
     return error;
@@ -63,12 +63,12 @@ static int getFrame(mlt_producer producer, mlt_frame_ptr frame, int /*index*/)
         mlt_properties producer_props = MLT_PRODUCER_PROPERTIES(producer);
 
         // Set the producer on the frame properties
-        mlt_properties_set_data(properties, kVFXPipeProducerPropertyName, producer, 0, NULL, NULL);
+        mlt_properties_set_data(properties, kWebVfxProducerPropertyName, producer, 0, NULL, NULL);
 
         // Update timecode on the frame we're creating
         mlt_position position = mlt_producer_position(producer);
         mlt_frame_set_position(*frame, position);
-        mlt_properties_set_position(properties, kVFXPipePositionPropertyName, position);
+        mlt_properties_set_position(properties, kWebVfxPositionPropertyName, position);
 
         // Set producer-specific frame properties
         mlt_properties_set_int(properties, "progressive", 1);

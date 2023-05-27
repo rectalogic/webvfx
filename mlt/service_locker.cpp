@@ -10,7 +10,7 @@ extern "C" {
 #include "service_manager.h"
 
 namespace VFXPipe {
-const char* ServiceLocker::kManagerPropertyName = "VFXPipeManager";
+const char* ServiceLocker::kManagerPropertyName = "WebVfxManager";
 
 ServiceLocker::ServiceLocker(mlt_service service)
     : service(service)

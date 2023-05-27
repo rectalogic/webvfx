@@ -4,10 +4,10 @@ BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 export DISPLAY=${DISPLAY:-:0}
 case ${PLUGIN:-frei0r} in
 frei0r)
-    FILTER=("frei0r.vfxpipe_filter" "0=\"\"webvfx_frameserver --duration 300/30 --width {{width}} --height {{height}} --property Title='${VFX_TITLE:-WebVfx Banner Demo}' --property FadeIn=${VFX_FADEIN:-20} --property FadeOut=${VFX_FADEOUT:-20} ${BASEDIR}/../examples/filter-banner.qml\"\"")
+    FILTER=("frei0r.webvfx_filter" "0=\"\"webvfx --duration 300/30 --width {{width}} --height {{height}} --property Title='${VFX_TITLE:-WebVfx Banner Demo}' --property FadeIn=${VFX_FADEIN:-20} --property FadeOut=${VFX_FADEOUT:-20} ${BASEDIR}/../examples/filter-banner.qml\"\"")
     ;;
 mlt)
-    FILTER=(mltpipe:"webvfx_frameserver --width {{width}} --height {{height}} --property Title='${VFX_TITLE:-WebVfx Banner Demo}' --property FadeIn=${VFX_FADEIN:-20} --property FadeOut=${VFX_FADEOUT:-20} ${BASEDIR}/../examples/filter-banner.qml")
+    FILTER=(mltwebvfx:"webvfx --width {{width}} --height {{height}} --property Title='${VFX_TITLE:-WebVfx Banner Demo}' --property FadeIn=${VFX_FADEIN:-20} --property FadeOut=${VFX_FADEOUT:-20} ${BASEDIR}/../examples/filter-banner.qml")
     ;;
 esac
 REDTESTSRC=lavfi:$(COLOR=red ${BASEDIR}/tests/testsrc)

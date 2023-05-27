@@ -47,9 +47,9 @@ static void* createService(mlt_profile profile,
 
 extern "C" EXPORT MLT_REPOSITORY
 {
-    MLT_REGISTER(mlt_service_producer_type, "mltpipe", createService);
-    MLT_REGISTER(mlt_service_filter_type, "mltpipe", createService);
-    MLT_REGISTER(mlt_service_transition_type, "mltpipe", createService);
+    MLT_REGISTER(mlt_service_producer_type, "mltwebvfx", createService);
+    MLT_REGISTER(mlt_service_filter_type, "mltwebvfx", createService);
+    MLT_REGISTER(mlt_service_transition_type, "mltwebvfx", createService);
 }
 
 }

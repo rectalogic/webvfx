@@ -4,10 +4,10 @@ BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 export DISPLAY=${DISPLAY:-:0}
 case ${PLUGIN:-frei0r} in
 frei0r)
-    TRANSITION=("frei0r.vfxpipe_mixer2" "0=\"webvfx_frameserver --duration 120/30 --width {{width}} --height {{height}} ${BASEDIR}/../examples/transition-simple.qml\"")
+    TRANSITION=("frei0r.webvfx_mixer2" "0=\"webvfx --duration 120/30 --width {{width}} --height {{height}} ${BASEDIR}/../examples/transition-simple.qml\"")
     ;;
 mlt)
-    TRANSITION=(mltpipe:"webvfx_frameserver --width {{width}} --height {{height}} ${BASEDIR}/../examples/transition-simple.qml")
+    TRANSITION=(mltwebvfx:"webvfx --width {{width}} --height {{height}} ${BASEDIR}/../examples/transition-simple.qml")
     ;;
 esac
 REDTESTSRC=lavfi:$(COLOR=red ${BASEDIR}/tests/testsrc)

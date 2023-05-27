@@ -6,7 +6,7 @@ find_package(Qt6 REQUIRED QUIET COMPONENTS Core Gui Multimedia Qml Quick Quick3D
 
 set(CMAKE_AUTOMOC ON)
 
-qt_add_executable(webvfx_frameserver
+qt_add_executable(webvfx
     main.cpp
     frameserver.cpp
     content_context.cpp
@@ -15,7 +15,7 @@ qt_add_executable(webvfx_frameserver
     video_texture.cpp
     webvfx.cpp
 )
-set_property(TARGET webvfx_frameserver PROPERTY AUTOMOC ON)
+set_property(TARGET webvfx PROPERTY AUTOMOC ON)
 
 list(APPEND FrameserverLibraries Qt6::Core Qt6::Gui Qt6::Multimedia Qt6::GuiPrivate Qt6::Qml Qt6::Quick Qt6::QuickPrivate Qt6::Quick3D)
 
@@ -26,13 +26,13 @@ if(${Qt6WebEngineQuick_FOUND})
     # add_definitions(-DWEBENGINEQUICK)
 endif()
 
-target_link_libraries(webvfx_frameserver PRIVATE ${FrameserverLibraries} vfxpipe)
+target_link_libraries(webvfx PRIVATE ${FrameserverLibraries} vfxpipe)
 
 qt_policy(SET QTP0001 NEW)
-qt_add_qml_module(webvfx_frameserver
+qt_add_qml_module(webvfx
     URI org.webvfx.WebVfx.native
     VERSION 1.0
     NO_PLUGIN
 )
 
-install(TARGETS webvfx_frameserver RUNTIME DESTINATION)
+install(TARGETS webvfx RUNTIME DESTINATION)
