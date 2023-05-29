@@ -56,7 +56,7 @@ int spawnProcess(int* pipeRead, int* pipeWrite, std::string& commandLine, std::f
         wordexp_t we;
         int werr = wordexp(commandLine.c_str(), &we, WRDE_NOCMD);
         if (werr != 0) {
-            errorHandler(std::string("vfxpipe wordexp failed: ") + std::to_string(werr));
+            errorHandler(std::string("vfxpipe wordexp failed '") + commandLine + "' error: " + std::to_string(werr));
             exit(1);
         }
 
