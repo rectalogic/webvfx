@@ -7,15 +7,9 @@
 #include "content_context.h"
 #include <QImage>
 #include <QQmlError>
-#include <QQuickRenderControl>
 #include <QQuickView>
 #include <QScopedPointer>
-#include <QSet>
 
-class QRhiRenderBuffer;
-class QRhiRenderPassDescriptor;
-class QRhiTexture;
-class QRhiTextureRenderTarget;
 class QSize;
 class QVideoSink;
 class QUrl;
@@ -23,6 +17,7 @@ class QUrl;
 namespace WebVfx {
 
 class Parameters;
+class RenderControl;
 
 class QmlContent : public QQuickView {
     Q_OBJECT
@@ -47,19 +42,13 @@ private:
     bool initialize();
     void uninitialize();
 
-    QmlContent(QQuickRenderControl* renderControl, const QSize& size, Parameters* parameters);
+    QmlContent(RenderControl* renderControl, const QSize& size, Parameters* parameters);
     enum LoadStatus { LoadNotFinished,
         LoadFailed,
         LoadSucceeded };
     LoadStatus pageLoadFinished;
     ContentContext* contentContext;
-    QScopedPointer<QQuickRenderControl> renderControl;
-
-    QScopedPointer<QRhiTexture> texture;
-    QScopedPointer<QRhiRenderBuffer> stencilBuffer;
-    QScopedPointer<QRhiTextureRenderTarget> textureRenderTarget;
-    QScopedPointer<QRhiRenderPassDescriptor> renderPassDescriptor;
-    bool initialized;
+    QScopedPointer<RenderControl> renderControl;
 };
 
 }

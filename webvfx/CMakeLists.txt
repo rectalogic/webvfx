@@ -9,6 +9,7 @@ set(CMAKE_AUTOMOC ON)
 qt_add_executable(webvfx
     main.cpp
     frameserver.cpp
+    render_control.cpp
     content_context.cpp
     parameters.cpp
     qml_content.cpp
