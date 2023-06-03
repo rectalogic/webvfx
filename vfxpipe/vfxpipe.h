@@ -7,6 +7,8 @@
 #include <string>
 #include <unistd.h>
 
+namespace VfxPipe {
+
 void replaceAll(std::string& inout, std::string_view what, std::string_view with);
 
 int spawnProcess(int* pipeRead, int* pipeWrite, std::string& commandLine, std::function<void(std::string)> errorHandler);
@@ -29,4 +31,6 @@ bool dataIO(int fd, D data, size_t size, IO ioFunc, ERR errFunc)
         bytesIO = bytesIO + n;
     }
     return true;
+}
+
 }

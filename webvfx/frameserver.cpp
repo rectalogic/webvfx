@@ -104,7 +104,7 @@ void FrameServer::readFrames()
     };
 
     double time;
-    dataIO(STDIN_FILENO, reinterpret_cast<uchar*>(&time), sizeof(time), read, ioErrorHandler);
+    VfxPipe::dataIO(STDIN_FILENO, reinterpret_cast<uchar*>(&time), sizeof(time), read, ioErrorHandler);
 
     if (initialTime == -1) {
         initialTime = time;
@@ -118,7 +118,7 @@ void FrameServer::readFrames()
         auto frameSink = frameSinks.at(i);
         QVideoFrame* frame = frameSwap ? frameSink.frames[0] : frameSink.frames[1];
         frame->map(QVideoFrame::WriteOnly);
-        dataIO(STDIN_FILENO, frame->bits(0), frame->mappedBytes(0), read, ioErrorHandler);
+        VfxPipe::dataIO(STDIN_FILENO, frame->bits(0), frame->mappedBytes(0), read, ioErrorHandler);
         frame->unmap();
         frameSink.sink->setVideoFrame(*frame);
     }
@@ -139,6 +139,6 @@ void FrameServer::renderFrame(double time)
         }
     };
     content->renderContent(time, outputImage);
-    dataIO(STDOUT_FILENO, outputImage.constBits(), outputImage.sizeInBytes(), write, ioErrorHandler);
+    VfxPipe::dataIO(STDOUT_FILENO, outputImage.constBits(), outputImage.sizeInBytes(), write, ioErrorHandler);
     QCoreApplication::postEvent(this, new QEvent(QEvent::User));
 }

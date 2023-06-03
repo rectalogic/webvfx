@@ -116,12 +116,12 @@ bool ServiceManager::initialize(int width, int height, mlt_position length)
     }
 
     std::string commandLineTemplate(command);
-    replaceAll(commandLineTemplate, "{{width}}", std::to_string(width));
-    replaceAll(commandLineTemplate, "{{height}}", std::to_string(height));
+    VfxPipe::replaceAll(commandLineTemplate, "{{width}}", std::to_string(width));
+    VfxPipe::replaceAll(commandLineTemplate, "{{height}}", std::to_string(height));
     auto spawnErrorHandler = [this](std::string msg) {
         mlt_log_error(service, "%s", msg.c_str());
     };
-    pid = spawnProcess(&pipeRead, &pipeWrite, commandLineTemplate, spawnErrorHandler);
+    pid = VfxPipe::spawnProcess(&pipeRead, &pipeWrite, commandLineTemplate, spawnErrorHandler);
     if (pid == -1) {
         return false;
     }
@@ -170,17 +170,17 @@ int ServiceManager::render(mlt_image sourceImage, mlt_image targetImage, mlt_ima
     };
 
     double time = (double)position / length;
-    if (!dataIO(pipeWrite, reinterpret_cast<const std::byte*>(&time), sizeof(time), write, ioErrorHandler)) {
+    if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<const std::byte*>(&time), sizeof(time), write, ioErrorHandler)) {
         return 1;
     }
 
     if (sourceImage != nullptr) {
-        if (!dataIO(pipeWrite, reinterpret_cast<const std::byte*>(sourceImage->data), mlt_image_calculate_size(sourceImage), write, ioErrorHandler)) {
+        if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<const std::byte*>(sourceImage->data), mlt_image_calculate_size(sourceImage), write, ioErrorHandler)) {
             return 1;
         }
     }
     if (targetImage != nullptr) {
-        if (!dataIO(pipeWrite, reinterpret_cast<const std::byte*>(targetImage->data), mlt_image_calculate_size(targetImage), write, ioErrorHandler)) {
+        if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<const std::byte*>(targetImage->data), mlt_image_calculate_size(targetImage), write, ioErrorHandler)) {
             return 1;
         }
     }
@@ -198,14 +198,14 @@ int ServiceManager::render(mlt_image sourceImage, mlt_image targetImage, mlt_ima
                     mlt_log_error(service, "%s: vfxpipe failed to produce image for extra producer %ld\n", __FUNCTION__, it - imageProducers->begin());
                     return 1;
                 }
-                if (!dataIO(pipeWrite, reinterpret_cast<const std::byte*>(extraImage.data), mlt_image_calculate_size(&extraImage), write, ioErrorHandler)) {
+                if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<const std::byte*>(extraImage.data), mlt_image_calculate_size(&extraImage), write, ioErrorHandler)) {
                     return 1;
                 }
             }
         }
     }
 
-    if (!dataIO(pipeRead, reinterpret_cast<std::byte*>(outputImage->data), mlt_image_calculate_size(outputImage), read, ioErrorHandler)) {
+    if (!VfxPipe::dataIO(pipeRead, reinterpret_cast<std::byte*>(outputImage->data), mlt_image_calculate_size(outputImage), read, ioErrorHandler)) {
         return 1;
     }
     return 0;

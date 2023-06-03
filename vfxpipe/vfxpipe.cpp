@@ -13,6 +13,8 @@
 #include <unistd.h>
 #include <wordexp.h>
 
+namespace VfxPipe {
+
 void replaceAll(std::string& inout, std::string_view what, std::string_view with)
 {
     for (std::string::size_type pos {};
@@ -83,4 +85,6 @@ int spawnProcess(int* pipeRead, int* pipeWrite, std::string& commandLine, std::f
     close(fdsFromChild[1]);
     close(fdsToChild[0]);
     return pid;
+}
+
 }

@@ -55,12 +55,12 @@ public:
     {
         if (!pid) {
             std::string commandLineTemplate(commandLine);
-            replaceAll(commandLineTemplate, "{{width}}", std::to_string(width));
-            replaceAll(commandLineTemplate, "{{height}}", std::to_string(height));
+            VfxPipe::replaceAll(commandLineTemplate, "{{width}}", std::to_string(width));
+            VfxPipe::replaceAll(commandLineTemplate, "{{height}}", std::to_string(height));
             auto spawnErrorHandler = [](std::string msg) {
                 std::cerr << __FUNCTION__ << ": " << msg << std::endl;
             };
-            pid = spawnProcess(&pipeRead, &pipeWrite, commandLineTemplate, spawnErrorHandler);
+            pid = VfxPipe::spawnProcess(&pipeRead, &pipeWrite, commandLineTemplate, spawnErrorHandler);
         }
         if (pid == -1) {
             std::cerr << __FUNCTION__ << ": vfxpipe failed to spawn process" << std::endl;
@@ -76,27 +76,27 @@ public:
             pipeWrite = -1;
         };
 
-        if (!dataIO(pipeWrite, reinterpret_cast<std::byte*>(&time), sizeof(time), write, ioErrorHandler)) {
+        if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<std::byte*>(&time), sizeof(time), write, ioErrorHandler)) {
             return;
         }
 
         if (inframe1 != nullptr) {
-            if (!dataIO(pipeWrite, reinterpret_cast<const std::byte*>(inframe1), frameSize, write, ioErrorHandler)) {
+            if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<const std::byte*>(inframe1), frameSize, write, ioErrorHandler)) {
                 return;
             }
         }
         if (inframe2 != nullptr) {
-            if (!dataIO(pipeWrite, reinterpret_cast<const std::byte*>(inframe2), frameSize, write, ioErrorHandler)) {
+            if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<const std::byte*>(inframe2), frameSize, write, ioErrorHandler)) {
                 return;
             }
         }
         if (inframe3 != nullptr) {
-            if (!dataIO(pipeWrite, reinterpret_cast<const std::byte*>(inframe3), frameSize, write, ioErrorHandler)) {
+            if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<const std::byte*>(inframe3), frameSize, write, ioErrorHandler)) {
                 return;
             }
         }
 
-        if (!dataIO(pipeRead, reinterpret_cast<std::byte*>(outframe), frameSize, read, ioErrorHandler)) {
+        if (!VfxPipe::dataIO(pipeRead, reinterpret_cast<std::byte*>(outframe), frameSize, read, ioErrorHandler)) {
             return;
         }
     }
