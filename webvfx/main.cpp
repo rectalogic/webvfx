@@ -11,6 +11,7 @@
 #ifdef WEBENGINEQUICK
 #include <QtWebEngineQuick>
 #endif
+#include <stdlib.h>
 
 inline void assertOpt(bool r)
 {
@@ -22,6 +23,10 @@ inline void assertOpt(bool r)
 
 int main(int argc, char* argv[])
 {
+#ifdef TARGET_OS_MAC
+    putenv(const_cast<char*>("QT_MAC_DISABLE_FOREGROUND_APPLICATION_TRANSFORM=1"));
+#endif
+
 #ifdef WEBENGINEQUICK
     // https://doc.qt.io/qt-6/qml-qtwebengine-webengineview.html#rendering-to-opengl-surface
     // https://doc.qt.io/qt-6/qtwebengine-overview.html#embedding-web-content-into-qt-quick-applications
