@@ -9,7 +9,7 @@ extern "C" {
 #include "service_locker.h"
 #include "service_manager.h"
 
-namespace VFXPipe {
+namespace WebVfxPlugin {
 const char* ServiceLocker::kManagerPropertyName = "WebVfxManager";
 
 ServiceLocker::ServiceLocker(mlt_service service)

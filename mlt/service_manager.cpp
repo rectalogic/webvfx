@@ -20,9 +20,7 @@ extern "C" {
 }
 #include "service_manager.h"
 
-extern char** environ;
-
-namespace VFXPipe {
+namespace WebVfxPlugin {
 
 class ImageProducer {
 public:

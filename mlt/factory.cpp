@@ -9,7 +9,7 @@ extern "C" {
 }
 #include "factory.h"
 
-namespace VFXPipe {
+namespace WebVfxPlugin {
 
 static void* createService(mlt_profile profile,
     mlt_service_type serviceType,
@@ -18,13 +18,13 @@ static void* createService(mlt_profile profile,
     mlt_service service = 0;
     switch (serviceType) {
     case mlt_service_producer_type:
-        service = VFXPipe::createProducer(profile);
+        service = WebVfxPlugin::createProducer(profile);
         break;
     case mlt_service_filter_type:
-        service = VFXPipe::createFilter();
+        service = WebVfxPlugin::createFilter();
         break;
     case mlt_service_transition_type:
-        service = VFXPipe::createTransition();
+        service = WebVfxPlugin::createTransition();
         break;
     default:
         return 0;

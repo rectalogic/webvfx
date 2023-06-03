@@ -14,9 +14,9 @@
 #include <vfxpipe/vfxpipe.h>
 #include <wordexp.h>
 
-class VfxPipe {
+class WebVfxPlugin {
 public:
-    VfxPipe(unsigned int width, unsigned int height)
+    WebVfxPlugin(unsigned int width, unsigned int height)
         : width(width)
         , height(height)
         , frameSize(width * height * 4)
@@ -26,7 +26,7 @@ public:
     {
     }
 
-    ~VfxPipe()
+    ~WebVfxPlugin()
     {
         if (pipeRead != -1)
             close(pipeRead);
@@ -141,12 +141,12 @@ void f0r_get_param_info(f0r_param_info_t* info, int param_index)
 
 f0r_instance_t f0r_construct(unsigned int width, unsigned int height)
 {
-    return static_cast<f0r_instance_t>(new VfxPipe(width, height));
+    return static_cast<f0r_instance_t>(new WebVfxPlugin(width, height));
 }
 
 void f0r_destruct(f0r_instance_t instance)
 {
-    VfxPipe* vfxpipe = static_cast<VfxPipe*>(instance);
+    WebVfxPlugin* vfxpipe = static_cast<WebVfxPlugin*>(instance);
     delete vfxpipe;
 }
 
@@ -154,7 +154,7 @@ void f0r_set_param_value(f0r_instance_t instance, f0r_param_t param, int param_i
 {
     if (param_index != 0)
         return;
-    VfxPipe* vfxpipe = static_cast<VfxPipe*>(instance);
+    WebVfxPlugin* vfxpipe = static_cast<WebVfxPlugin*>(instance);
     vfxpipe->setCommandLine(*(static_cast<f0r_param_string*>(param)));
 }
 
@@ -162,7 +162,7 @@ void f0r_get_param_value(f0r_instance_t instance, f0r_param_t param, int param_i
 {
     if (param_index != 0)
         return;
-    VfxPipe* vfxpipe = static_cast<VfxPipe*>(instance);
+    WebVfxPlugin* vfxpipe = static_cast<WebVfxPlugin*>(instance);
     *static_cast<f0r_param_string*>(param) = const_cast<f0r_param_string>(vfxpipe->getCommandLine().c_str());
 }
 
@@ -174,7 +174,7 @@ void f0r_update2(
     const uint32_t* inframe3,
     uint32_t* outframe)
 {
-    VfxPipe* vfxpipe = static_cast<VfxPipe*>(instance);
+    WebVfxPlugin* vfxpipe = static_cast<WebVfxPlugin*>(instance);
     vfxpipe->updateFrame(time, inframe1, inframe2, inframe3, outframe);
 }
 

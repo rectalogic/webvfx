@@ -37,7 +37,7 @@ static int producerGetImage(mlt_frame frame, uint8_t** buffer, mlt_image_format*
     mlt_properties_set_int(properties, "height", *height);
 
     { // Scope the lock
-        VFXPipe::ServiceLocker locker(MLT_PRODUCER_SERVICE(producer));
+        WebVfxPlugin::ServiceLocker locker(MLT_PRODUCER_SERVICE(producer));
         if (!locker.initialize(*width, *height, mlt_producer_get_length(producer)))
             return 1;
 
@@ -84,7 +84,7 @@ static int getFrame(mlt_producer producer, mlt_frame_ptr frame, int /*index*/)
     return 0;
 }
 
-mlt_service VFXPipe::createProducer(mlt_profile profile)
+mlt_service WebVfxPlugin::createProducer(mlt_profile profile)
 {
     mlt_producer self = mlt_producer_new(profile);
     if (self) {

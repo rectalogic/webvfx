@@ -9,7 +9,7 @@ extern "C" {
 #include <framework/mlt_service.h>
 }
 
-namespace VFXPipe {
+namespace WebVfxPlugin {
 
 mlt_service createProducer(mlt_profile profile);
 mlt_service createFilter();

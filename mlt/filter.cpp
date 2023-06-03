@@ -29,11 +29,11 @@ static int filterGetImage(mlt_frame frame, uint8_t** image, mlt_image_format* fo
         return error;
 
     { // Scope the lock
-        VFXPipe::ServiceLocker locker(MLT_FILTER_SERVICE(filter));
+        WebVfxPlugin::ServiceLocker locker(MLT_FILTER_SERVICE(filter));
         if (!locker.initialize(*width, *height, length))
             return 1;
 
-        VFXPipe::ServiceManager* manager = locker.getManager();
+        WebVfxPlugin::ServiceManager* manager = locker.getManager();
         mlt_image_s renderedImage;
         mlt_image_set_values(&renderedImage, *image, *format, *width, *height);
         manager->render(&renderedImage, nullptr, &renderedImage, position);
@@ -51,7 +51,7 @@ static mlt_frame filterProcess(mlt_filter filter, mlt_frame frame)
     return frame;
 }
 
-mlt_service VFXPipe::createFilter()
+mlt_service WebVfxPlugin::createFilter()
 {
     mlt_filter self = mlt_filter_new();
     if (self) {

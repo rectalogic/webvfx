@@ -8,7 +8,7 @@ extern "C" {
 #include <framework/mlt_service.h>
 }
 
-namespace VFXPipe {
+namespace WebVfxPlugin {
 class ServiceManager;
 
 class ServiceLocker {

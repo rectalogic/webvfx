@@ -11,7 +11,7 @@ extern "C" {
 #include <unistd.h>
 #include <vector>
 
-namespace VFXPipe {
+namespace WebVfxPlugin {
 class ImageProducer;
 class ServiceLocker;
 
