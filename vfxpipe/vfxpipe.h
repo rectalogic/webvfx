@@ -105,19 +105,19 @@ bool dataIO(int fd, D data, size_t size, IO ioFunc, ERR errFunc)
 template <typename ERR>
 bool readVideoFrame(int fd, VideoFrame* frame, ERR errFunc)
 {
-    return dataIO(fd, reinterpret_cast<std::byte*>(frame->format.pixelFormat), sizeof(frame->format.pixelFormat), read, errFunc)
-        && dataIO(fd, reinterpret_cast<std::byte*>(frame->format.width), sizeof(frame->format.height), read, errFunc)
-        && dataIO(fd, reinterpret_cast<std::byte*>(frame->format.height), sizeof(frame->format.height), read, errFunc)
-        && dataIO(fd, reinterpret_cast<std::byte*>(frame->format.stride), sizeof(frame->format.stride), read, errFunc);
+    return dataIO(fd, reinterpret_cast<std::byte*>(&frame->format.pixelFormat), sizeof(frame->format.pixelFormat), read, errFunc)
+        && dataIO(fd, reinterpret_cast<std::byte*>(&frame->format.width), sizeof(frame->format.width), read, errFunc)
+        && dataIO(fd, reinterpret_cast<std::byte*>(&frame->format.height), sizeof(frame->format.height), read, errFunc)
+        && dataIO(fd, reinterpret_cast<std::byte*>(&frame->format.stride), sizeof(frame->format.stride), read, errFunc);
 }
 
 template <typename ERR>
 bool writeVideoFrame(int fd, VideoFrame* frame, ERR errFunc)
 {
-    return dataIO(fd, reinterpret_cast<const std::byte*>(frame->format.pixelFormat), sizeof(frame->format.pixelFormat), write, errFunc)
-        && dataIO(fd, reinterpret_cast<const std::byte*>(frame->format.width), sizeof(frame->format.height), write, errFunc)
-        && dataIO(fd, reinterpret_cast<const std::byte*>(frame->format.height), sizeof(frame->format.height), write, errFunc)
-        && dataIO(fd, reinterpret_cast<const std::byte*>(frame->format.stride), sizeof(frame->format.stride), write, errFunc)
+    return dataIO(fd, reinterpret_cast<const std::byte*>(&frame->format.pixelFormat), sizeof(frame->format.pixelFormat), write, errFunc)
+        && dataIO(fd, reinterpret_cast<const std::byte*>(&frame->format.width), sizeof(frame->format.width), write, errFunc)
+        && dataIO(fd, reinterpret_cast<const std::byte*>(&frame->format.height), sizeof(frame->format.height), write, errFunc)
+        && dataIO(fd, reinterpret_cast<const std::byte*>(&frame->format.stride), sizeof(frame->format.stride), write, errFunc)
         && (!frame->data || dataIO(fd, frame->data, frame->format.dataSize, write, errFunc));
 }
 

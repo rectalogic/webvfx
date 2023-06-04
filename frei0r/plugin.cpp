@@ -78,8 +78,8 @@ public:
         }
 
         // Output format
-        VfxPipe::VideoFrame outputFrame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, width, height);
-        if (!VfxPipe::writeVideoFrame(pipeWrite, &outputFrame, ioErrorHandler)) {
+        VfxPipe::VideoFrame vfxOutputFrame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, width, height);
+        if (!VfxPipe::writeVideoFrame(pipeWrite, &vfxOutputFrame, ioErrorHandler)) {
             return;
         }
 
@@ -95,20 +95,20 @@ public:
         }
 
         if (inframe1) {
-            VfxPipe::VideoFrame frame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, width, height, reinterpret_cast<const std::byte*>(inframe1));
-            if (!VfxPipe::writeVideoFrame(pipeWrite, &frame, ioErrorHandler)) {
+            VfxPipe::VideoFrame vfxFrame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, width, height, reinterpret_cast<const std::byte*>(inframe1));
+            if (!VfxPipe::writeVideoFrame(pipeWrite, &vfxFrame, ioErrorHandler)) {
                 return;
             }
         }
         if (inframe2) {
-            VfxPipe::VideoFrame frame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, width, height, reinterpret_cast<const std::byte*>(inframe2));
-            if (!VfxPipe::writeVideoFrame(pipeWrite, &frame, ioErrorHandler)) {
+            VfxPipe::VideoFrame vfxFrame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, width, height, reinterpret_cast<const std::byte*>(inframe2));
+            if (!VfxPipe::writeVideoFrame(pipeWrite, &vfxFrame, ioErrorHandler)) {
                 return;
             }
         }
         if (inframe3) {
-            VfxPipe::VideoFrame frame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, width, height, reinterpret_cast<const std::byte*>(inframe3));
-            if (!VfxPipe::writeVideoFrame(pipeWrite, &frame, ioErrorHandler)) {
+            VfxPipe::VideoFrame vfxFrame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, width, height, reinterpret_cast<const std::byte*>(inframe3));
+            if (!VfxPipe::writeVideoFrame(pipeWrite, &vfxFrame, ioErrorHandler)) {
                 return;
             }
         }

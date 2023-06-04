@@ -37,8 +37,8 @@ static int filterGetImage(mlt_frame frame, uint8_t** image, mlt_image_format* fo
         WebVfxPlugin::ServiceManager* manager = locker.getManager();
         mlt_image_s renderedImage;
         mlt_image_set_values(&renderedImage, *image, *format, *width, *height);
-        VfxPipe::VideoFrame frame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, *width, *height, reinterpret_cast<std::byte*>(*image));
-        manager->render(&frame, nullptr, &renderedImage, position);
+        VfxPipe::VideoFrame vfxFrame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, *width, *height, reinterpret_cast<std::byte*>(*image));
+        manager->render(&vfxFrame, nullptr, &renderedImage, position);
     }
 
     return error;

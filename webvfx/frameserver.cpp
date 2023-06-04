@@ -84,20 +84,17 @@ bool FrameServer::event(QEvent* event)
 
 void FrameServer::readFrames()
 {
-    auto ioErrorHandler = [](int n, std::string msg = "") {
+    auto f = __FUNCTION__;
+    auto ioErrorHandler = [f](int n, std::string msg = "") {
         // EOF
         if (n == 0) {
             QCoreApplication::exit(0);
         } else if (n == -1) {
-            qCritical() << msg.c_str();
+            qCritical() << f << ": WebVfx frameserver: " << msg.c_str();
             QCoreApplication::exit(1);
         }
     };
 
-    // XXX
-    //  read time, output format, frame count, then frame header/data per frame
-    //  need to set content size based on output format
-    // XXX
     double time;
     VfxPipe::dataIO(STDIN_FILENO, reinterpret_cast<uchar*>(&time), sizeof(time), read, ioErrorHandler);
 
@@ -115,6 +112,8 @@ void FrameServer::readFrames()
 
     // XXX read frameCount, read all frames and set as many sinks as we have
     // XXX need to reset QVideoFrames if format changes
+    uint32_t frameCount;
+    VfxPipe::dataIO(STDIN_FILENO, reinterpret_cast<std::byte*>(&frameCount), sizeof(frameCount), read, ioErrorHandler);
 
     for (qsizetype i = 0; i < frameSinks.size(); ++i) {
         VfxPipe::VideoFrame inputFrame;
@@ -127,7 +126,10 @@ void FrameServer::readFrames()
                     QVideoFrameFormat::PixelFormat::Format_ARGB8888_Premultiplied);
                 frameSink.frames[0] = QVideoFrame(format);
                 frameSink.frames[1] = QVideoFrame(format);
-            } // XXX else error
+            } else {
+                qCritical() << "Unrecognized video frame format " << inputFrame.format.pixelFormat;
+                QCoreApplication::exit(1);
+            }
         }
         QVideoFrame frame = frameSwap ? frameSink.frames[0] : frameSink.frames[1];
         frame.map(QVideoFrame::WriteOnly);

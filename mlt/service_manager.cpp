@@ -150,7 +150,7 @@ bool ServiceManager::initialize(mlt_position length)
     return true;
 }
 
-int ServiceManager::render(VfxPipe::VideoFrame* sourceImage, VfxPipe::VideoFrame* targetImage, mlt_image outputImage, mlt_position position)
+int ServiceManager::render(VfxPipe::VideoFrame* vfxSourceImage, VfxPipe::VideoFrame* vfxTargetImage, mlt_image outputImage, mlt_position position)
 {
     if (pipeRead == -1 || pipeWrite == -1)
         return 1;
@@ -178,21 +178,21 @@ int ServiceManager::render(VfxPipe::VideoFrame* sourceImage, VfxPipe::VideoFrame
     }
 
     uint32_t frameCount = imageProducers->size();
-    if (sourceImage)
+    if (vfxSourceImage)
         frameCount++;
-    if (targetImage)
+    if (vfxTargetImage)
         frameCount++;
     if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<const std::byte*>(&frameCount), sizeof(frameCount), write, ioErrorHandler)) {
         return 1;
     }
 
-    if (sourceImage) {
-        if (!VfxPipe::writeVideoFrame(pipeWrite, sourceImage, ioErrorHandler)) {
+    if (vfxSourceImage) {
+        if (!VfxPipe::writeVideoFrame(pipeWrite, vfxSourceImage, ioErrorHandler)) {
             return 1;
         }
     }
-    if (targetImage) {
-        if (!VfxPipe::writeVideoFrame(pipeWrite, targetImage, ioErrorHandler)) {
+    if (vfxTargetImage) {
+        if (!VfxPipe::writeVideoFrame(pipeWrite, vfxTargetImage, ioErrorHandler)) {
             return 1;
         }
     }
@@ -210,8 +210,8 @@ int ServiceManager::render(VfxPipe::VideoFrame* sourceImage, VfxPipe::VideoFrame
                     mlt_log_error(service, "%s: vfxpipe failed to produce image for extra producer %ld\n", __FUNCTION__, it - imageProducers->begin());
                     return 1;
                 }
-                VfxPipe::VideoFrame frame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, outputImage->width, outputImage->height, reinterpret_cast<std::byte*>(extraImage.data));
-                if (!VfxPipe::writeVideoFrame(pipeWrite, &frame, ioErrorHandler)) {
+                VfxPipe::VideoFrame vfxFrame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, outputImage->width, outputImage->height, reinterpret_cast<std::byte*>(extraImage.data));
+                if (!VfxPipe::writeVideoFrame(pipeWrite, &vfxFrame, ioErrorHandler)) {
                     return 1;
                 }
             }

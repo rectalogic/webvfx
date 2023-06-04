@@ -18,7 +18,7 @@ class ServiceLocker;
 
 class ServiceManager {
 public:
-    int render(VfxPipe::VideoFrame* sourceImage, VfxPipe::VideoFrame* targetImage, mlt_image outputImage, mlt_position position);
+    int render(VfxPipe::VideoFrame* vfxSourceImage, VfxPipe::VideoFrame* vfxTargetImage, mlt_image outputImage, mlt_position position);
 
 private:
     friend class ServiceLocker;
