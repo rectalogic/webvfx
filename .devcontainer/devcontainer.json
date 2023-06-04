@@ -1,7 +1,7 @@
 {
     "name": "WebVfx",
     "build": {
-        "dockerfile": "../docker/Dockerfile"
+        "dockerfile": "../builders/linux/Dockerfile"
     },
     "init": true,
     "customizations": {
