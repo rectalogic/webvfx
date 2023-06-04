@@ -110,11 +110,12 @@ void FrameServer::readFrames()
     VfxPipe::readVideoFrame(STDIN_FILENO, &outputFrame, ioErrorHandler);
     content->setContentSize(QSize(outputFrame.format.width, outputFrame.format.height));
 
-    // XXX read frameCount, read all frames and set as many sinks as we have
-    // XXX need to reset QVideoFrames if format changes
     uint32_t frameCount;
     VfxPipe::dataIO(STDIN_FILENO, reinterpret_cast<std::byte*>(&frameCount), sizeof(frameCount), read, ioErrorHandler);
-
+    if (frameCount != frameSinks.size()) {
+        qCritical() << "Frame count " << frameCount << " does not match video sink count " << frameSinks.size();
+        QCoreApplication::exit(1);
+    }
     for (qsizetype i = 0; i < frameSinks.size(); ++i) {
         VfxPipe::VideoFrame inputFrame;
         VfxPipe::readVideoFrame(STDIN_FILENO, &inputFrame, ioErrorHandler);
@@ -133,7 +134,10 @@ void FrameServer::readFrames()
         }
         QVideoFrame frame = frameSwap ? frameSink.frames[0] : frameSink.frames[1];
         frame.map(QVideoFrame::WriteOnly);
-        // XXX assert frame.mappedBytes(0) == inputFrame.format.dataSize
+        if (frame.mappedBytes(0) != inputFrame.format.dataSize()) {
+            qCritical() << "QVideoFrame incorrect byte size: " << frame.mappedBytes(0) << " expected " << inputFrame.format.dataSize();
+            QCoreApplication::exit(1);
+        }
         VfxPipe::dataIO(STDIN_FILENO, frame.bits(0), frame.mappedBytes(0), read, ioErrorHandler);
         frame.unmap();
         frameSink.sink->setVideoFrame(frame);

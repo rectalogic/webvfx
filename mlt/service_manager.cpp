@@ -177,7 +177,7 @@ int ServiceManager::render(VfxPipe::VideoFrame* vfxSourceImage, VfxPipe::VideoFr
         return 1;
     }
 
-    uint32_t frameCount = imageProducers->size();
+    uint32_t frameCount = imageProducers ? imageProducers->size() : 0;
     if (vfxSourceImage)
         frameCount++;
     if (vfxTargetImage)

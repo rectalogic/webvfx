@@ -24,8 +24,6 @@ public:
         , height(height)
         , stride(stride)
     {
-        if (pixelFormat == PixelFormat::RGBA32)
-            dataSize = stride * height * 4;
     }
 
     VideoFrameFormat(PixelFormat pixelFormat, uint32_t width, uint32_t height)
@@ -36,6 +34,14 @@ public:
     VideoFrameFormat()
         : VideoFrameFormat(PixelFormat::UNDEFINED, 0, 0, 0)
     {
+    }
+
+    uint32_t dataSize()
+    {
+        if (pixelFormat == PixelFormat::RGBA32)
+            return stride * height * 4;
+        else
+            return 0;
     }
 
     bool operator!=(const VideoFrameFormat& other) const
@@ -50,7 +56,6 @@ public:
     uint32_t width;
     uint32_t height;
     uint32_t stride;
-    uint32_t dataSize;
 };
 
 class VideoFrame {
@@ -118,7 +123,7 @@ bool writeVideoFrame(int fd, VideoFrame* frame, ERR errFunc)
         && dataIO(fd, reinterpret_cast<const std::byte*>(&frame->format.width), sizeof(frame->format.width), write, errFunc)
         && dataIO(fd, reinterpret_cast<const std::byte*>(&frame->format.height), sizeof(frame->format.height), write, errFunc)
         && dataIO(fd, reinterpret_cast<const std::byte*>(&frame->format.stride), sizeof(frame->format.stride), write, errFunc)
-        && (!frame->data || dataIO(fd, frame->data, frame->format.dataSize, write, errFunc));
+        && (!frame->data || dataIO(fd, frame->data, frame->format.dataSize(), write, errFunc));
 }
 
 }
