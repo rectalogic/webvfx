@@ -16,7 +16,7 @@ public:
     ServiceLocker(mlt_service service);
     ~ServiceLocker();
 
-    bool initialize(int width, int height, mlt_position length);
+    bool initialize(mlt_position length);
     ServiceManager* getManager();
 
 private:

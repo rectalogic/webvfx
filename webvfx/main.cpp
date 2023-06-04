@@ -43,22 +43,10 @@ int main(int argc, char* argv[])
     parser.setApplicationDescription("WebVfx frameserver");
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
     parser.addHelpOption();
-    assertOpt(parser.addOption({ "width", "Video frame width.", "width" }));
-    assertOpt(parser.addOption({ "height", "Video frame height.", "height" }));
     assertOpt(parser.addOption({ "duration", "Video duration in seconds (floating point or rational e.g. 199/30).", "duration" }));
     parser.addPositionalArgument("source", "QML source URL.");
 
     parser.process(app);
-
-    const auto widthValue = parser.value("width");
-    const auto heightValue = parser.value("height");
-    bool wOk, hOk;
-    const int width = widthValue.toInt(&wOk);
-    const int height = heightValue.toInt(&hOk);
-    if (!wOk || !hOk) {
-        qCritical("Invalid --width or --height.");
-        exit(1);
-    }
 
     double duration = 0;
     const auto durationValue = parser.value("duration");
@@ -94,7 +82,7 @@ int main(int argc, char* argv[])
     }
     QUrl url(args.at(0));
 
-    new FrameServer(QSize(width, height), url, duration, &app);
+    new FrameServer(url, duration, &app);
 
     return app.exec();
 }

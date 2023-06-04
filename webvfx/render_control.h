@@ -23,7 +23,7 @@ public:
     ~RenderControl();
 
     bool install(QQuickWindow* window, QSize size);
-    bool renderImage(QImage& outputImage);
+    QImage renderImage();
     void invalidate();
 
 private:

@@ -10,6 +10,7 @@ extern "C" {
 }
 #include <unistd.h>
 #include <vector>
+#include <vfxpipe.h>
 
 namespace WebVfxPlugin {
 class ImageProducer;
@@ -17,13 +18,13 @@ class ServiceLocker;
 
 class ServiceManager {
 public:
-    int render(mlt_image sourceImage, mlt_image targetImage, mlt_image outputImage, mlt_position position);
+    int render(VfxPipe::VideoFrame* sourceImage, VfxPipe::VideoFrame* targetImage, mlt_image outputImage, mlt_position position);
 
 private:
     friend class ServiceLocker;
     ServiceManager(mlt_service service);
     ~ServiceManager();
-    bool initialize(int width, int height, mlt_position length);
+    bool initialize(mlt_position length);
 
     mlt_service service;
     mlt_position length;

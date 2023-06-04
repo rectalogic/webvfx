@@ -22,14 +22,14 @@ class RenderControl;
 class QmlContent : public QQuickView {
     Q_OBJECT
 public:
-    QmlContent(const QSize& size, Parameters* parameters);
+    QmlContent(Parameters* parameters);
     ~QmlContent() override;
 
     void loadContent(const QUrl& url);
     void setContentSize(const QSize& size);
     QSize getContentSize() { return contentContext->getVideoSize(); }
     const QList<QVideoSink*>& getVideoSinks() { return contentContext->getVideoSinks(); }
-    bool renderContent(double time, QImage& renderImage);
+    QImage renderContent(double time);
 
 signals:
     void contentLoadFinished(bool result);
@@ -42,7 +42,7 @@ private:
     bool initialize();
     void uninitialize();
 
-    QmlContent(RenderControl* renderControl, const QSize& size, Parameters* parameters);
+    QmlContent(RenderControl* renderControl, Parameters* parameters);
     enum LoadStatus { LoadNotFinished,
         LoadFailed,
         LoadSucceeded };

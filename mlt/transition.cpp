@@ -34,7 +34,7 @@ static int transitionGetImage(mlt_frame aFrame, uint8_t** image, mlt_image_forma
 
     { // Scope the lock
         WebVfxPlugin::ServiceLocker locker(MLT_TRANSITION_SERVICE(transition));
-        if (!locker.initialize(*width, *height, length))
+        if (!locker.initialize(length))
             return 1;
 
         WebVfxPlugin::ServiceManager* manager = locker.getManager();
@@ -42,7 +42,9 @@ static int transitionGetImage(mlt_frame aFrame, uint8_t** image, mlt_image_forma
         mlt_image_set_values(&renderedImage, *image, *format, *width, *height);
         mlt_image_s targetImage;
         mlt_image_set_values(&targetImage, bImage, *format, bWidth, bHeight);
-        manager->render(&renderedImage, &targetImage, &renderedImage, position);
+        VfxPipe::VideoFrame sourceFrame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, *width, *height, reinterpret_cast<std::byte*>(renderedImage.data));
+        VfxPipe::VideoFrame targetFrame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, bWidth, bHeight, reinterpret_cast<std::byte*>(targetImage.data));
+        manager->render(&sourceFrame, &targetFrame, &renderedImage, position);
     }
 
     return error;

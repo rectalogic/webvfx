@@ -9,7 +9,7 @@
 #include <string.h>
 #include <string>
 #include <unistd.h>
-#include <vfxpipe/vfxpipe.h>
+#include <vfxpipe.h>
 
 extern "C" {
 #include <framework/mlt_factory.h>
@@ -98,7 +98,7 @@ ServiceManager::~ServiceManager()
     }
 }
 
-bool ServiceManager::initialize(int width, int height, mlt_position length)
+bool ServiceManager::initialize(mlt_position length)
 {
     // Return if already initialized
     if (pid == -1 || pid > 0)
@@ -107,21 +107,18 @@ bool ServiceManager::initialize(int width, int height, mlt_position length)
     this->length = length;
     mlt_properties properties = MLT_SERVICE_PROPERTIES(service);
 
-    // Create and initialize Effects
-    char* command = mlt_properties_get(properties, "resource");
+    // Create and initialize webvfx
+    const char* command = mlt_properties_get(properties, "resource");
     if (!command) {
         pid = -1;
         mlt_log_error(service, "No 'resource' property found\n");
         return false;
     }
 
-    std::string commandLineTemplate(command);
-    VfxPipe::replaceAll(commandLineTemplate, "{{width}}", std::to_string(width));
-    VfxPipe::replaceAll(commandLineTemplate, "{{height}}", std::to_string(height));
     auto spawnErrorHandler = [this](std::string msg) {
         mlt_log_error(service, "%s", msg.c_str());
     };
-    pid = VfxPipe::spawnProcess(&pipeRead, &pipeWrite, commandLineTemplate, spawnErrorHandler);
+    pid = VfxPipe::spawnProcess(&pipeRead, &pipeWrite, command, spawnErrorHandler);
     if (pid == -1) {
         return false;
     }
@@ -153,7 +150,7 @@ bool ServiceManager::initialize(int width, int height, mlt_position length)
     return true;
 }
 
-int ServiceManager::render(mlt_image sourceImage, mlt_image targetImage, mlt_image outputImage, mlt_position position)
+int ServiceManager::render(VfxPipe::VideoFrame* sourceImage, VfxPipe::VideoFrame* targetImage, mlt_image outputImage, mlt_position position)
 {
     if (pipeRead == -1 || pipeWrite == -1)
         return 1;
@@ -174,13 +171,28 @@ int ServiceManager::render(mlt_image sourceImage, mlt_image targetImage, mlt_ima
         return 1;
     }
 
-    if (sourceImage != nullptr) {
-        if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<const std::byte*>(sourceImage->data), mlt_image_calculate_size(sourceImage), write, ioErrorHandler)) {
+    // Output format
+    VfxPipe::VideoFrame outputFrame(VfxPipe::VideoFrameFormat::RGBA32, outputImage->width, outputImage->height);
+    if (!VfxPipe::writeVideoFrame(pipeWrite, &outputFrame, ioErrorHandler)) {
+        return 1;
+    }
+
+    uint32_t frameCount = imageProducers->size();
+    if (sourceImage)
+        frameCount++;
+    if (targetImage)
+        frameCount++;
+    if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<const std::byte*>(&frameCount), sizeof(frameCount), write, ioErrorHandler)) {
+        return 1;
+    }
+
+    if (sourceImage) {
+        if (!VfxPipe::writeVideoFrame(pipeWrite, sourceImage, ioErrorHandler)) {
             return 1;
         }
     }
-    if (targetImage != nullptr) {
-        if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<const std::byte*>(targetImage->data), mlt_image_calculate_size(targetImage), write, ioErrorHandler)) {
+    if (targetImage) {
+        if (!VfxPipe::writeVideoFrame(pipeWrite, targetImage, ioErrorHandler)) {
             return 1;
         }
     }
@@ -198,7 +210,8 @@ int ServiceManager::render(mlt_image sourceImage, mlt_image targetImage, mlt_ima
                     mlt_log_error(service, "%s: vfxpipe failed to produce image for extra producer %ld\n", __FUNCTION__, it - imageProducers->begin());
                     return 1;
                 }
-                if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<const std::byte*>(extraImage.data), mlt_image_calculate_size(&extraImage), write, ioErrorHandler)) {
+                VfxPipe::VideoFrame frame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, outputImage->width, outputImage->height, reinterpret_cast<std::byte*>(extraImage.data));
+                if (!VfxPipe::writeVideoFrame(pipeWrite, &frame, ioErrorHandler)) {
                     return 1;
                 }
             }

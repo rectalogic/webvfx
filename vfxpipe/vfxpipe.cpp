@@ -15,16 +15,7 @@
 
 namespace VfxPipe {
 
-void replaceAll(std::string& inout, std::string_view what, std::string_view with)
-{
-    for (std::string::size_type pos {};
-         inout.npos != (pos = inout.find(what.data(), pos, what.length()));
-         pos += with.length()) {
-        inout.replace(pos, what.length(), with.data(), with.length());
-    }
-}
-
-int spawnProcess(int* pipeRead, int* pipeWrite, std::string& commandLine, std::function<void(std::string)> errorHandler)
+int spawnProcess(int* pipeRead, int* pipeWrite, const std::string& commandLine, std::function<void(std::string)> errorHandler)
 {
     int fdsToChild[2];
     int fdsFromChild[2];

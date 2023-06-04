@@ -12,6 +12,7 @@ extern "C" {
 #include "factory.h"
 #include "service_locker.h"
 #include "service_manager.h"
+#include <vfxpipe.h>
 
 static int filterGetImage(mlt_frame frame, uint8_t** image, mlt_image_format* format, int* width, int* height, int /*writable*/)
 {
@@ -30,13 +31,14 @@ static int filterGetImage(mlt_frame frame, uint8_t** image, mlt_image_format* fo
 
     { // Scope the lock
         WebVfxPlugin::ServiceLocker locker(MLT_FILTER_SERVICE(filter));
-        if (!locker.initialize(*width, *height, length))
+        if (!locker.initialize(length))
             return 1;
 
         WebVfxPlugin::ServiceManager* manager = locker.getManager();
         mlt_image_s renderedImage;
         mlt_image_set_values(&renderedImage, *image, *format, *width, *height);
-        manager->render(&renderedImage, nullptr, &renderedImage, position);
+        VfxPipe::VideoFrame frame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, *width, *height, reinterpret_cast<std::byte*>(*image));
+        manager->render(&frame, nullptr, &renderedImage, position);
     }
 
     return error;

@@ -75,7 +75,7 @@ bool RenderControl::install(QQuickWindow* window, QSize size)
     return true;
 }
 
-bool RenderControl::renderImage(QImage& outputImage)
+QImage RenderControl::renderImage()
 {
     polishItems();
     beginFrame();
@@ -87,20 +87,15 @@ bool RenderControl::renderImage(QImage& outputImage)
     QQuickRenderControlPrivate* renderControlPrivate = QQuickRenderControlPrivate::get(this);
     QRhi* rhi = renderControlPrivate->rhi;
 
-    bool readCompleted = false;
+    QImage outputImage;
     QRhiReadbackResult readResult;
-    readResult.completed = [&readCompleted, &readResult, &rhi, &outputImage] {
-        readCompleted = true;
+    readResult.completed = [&readResult, &rhi, &outputImage] {
         QImage sourceImage(reinterpret_cast<const uchar*>(readResult.data.constData()),
             readResult.pixelSize.width(), readResult.pixelSize.height(),
             QImage::Format_RGBA8888_Premultiplied);
-        QPainter painter(&outputImage);
-        if (rhi->isYUpInFramebuffer()) {
-            painter.scale(1, -1);
-            painter.translate(0, -readResult.pixelSize.height());
-        }
-        painter.drawImage(0, 0, sourceImage);
-        painter.end();
+        outputImage = sourceImage;
+        if (rhi->isYUpInFramebuffer())
+            outputImage.mirror();
     };
     QRhiResourceUpdateBatch* readbackBatch = rhi->nextResourceUpdateBatch();
     readbackBatch->readBackTexture(texture.data(), &readResult);
@@ -108,7 +103,7 @@ bool RenderControl::renderImage(QImage& outputImage)
 
     endFrame();
 
-    return readCompleted;
+    return outputImage;
 }
 
 }

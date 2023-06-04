@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <string>
 #include <unistd.h>
-#include <vfxpipe/vfxpipe.h>
+#include <vfxpipe.h>
 #include <wordexp.h>
 
 class WebVfxPlugin {
@@ -54,13 +54,10 @@ public:
         uint32_t* outframe)
     {
         if (!pid) {
-            std::string commandLineTemplate(commandLine);
-            VfxPipe::replaceAll(commandLineTemplate, "{{width}}", std::to_string(width));
-            VfxPipe::replaceAll(commandLineTemplate, "{{height}}", std::to_string(height));
             auto spawnErrorHandler = [](std::string msg) {
                 std::cerr << __FUNCTION__ << ": " << msg << std::endl;
             };
-            pid = VfxPipe::spawnProcess(&pipeRead, &pipeWrite, commandLineTemplate, spawnErrorHandler);
+            pid = VfxPipe::spawnProcess(&pipeRead, &pipeWrite, commandLine, spawnErrorHandler);
         }
         if (pid == -1) {
             std::cerr << __FUNCTION__ << ": vfxpipe failed to spawn process" << std::endl;
@@ -80,18 +77,38 @@ public:
             return;
         }
 
-        if (inframe1 != nullptr) {
-            if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<const std::byte*>(inframe1), frameSize, write, ioErrorHandler)) {
+        // Output format
+        VfxPipe::VideoFrame outputFrame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, width, height);
+        if (!VfxPipe::writeVideoFrame(pipeWrite, &outputFrame, ioErrorHandler)) {
+            return;
+        }
+
+        uint32_t frameCount = 0;
+        if (inframe1)
+            frameCount++;
+        if (inframe2)
+            frameCount++;
+        if (inframe3)
+            frameCount++;
+        if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<const std::byte*>(frameCount), frameCount, write, ioErrorHandler)) {
+            return;
+        }
+
+        if (inframe1) {
+            VfxPipe::VideoFrame frame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, width, height, reinterpret_cast<const std::byte*>(inframe1));
+            if (!VfxPipe::writeVideoFrame(pipeWrite, &frame, ioErrorHandler)) {
                 return;
             }
         }
-        if (inframe2 != nullptr) {
-            if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<const std::byte*>(inframe2), frameSize, write, ioErrorHandler)) {
+        if (inframe2) {
+            VfxPipe::VideoFrame frame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, width, height, reinterpret_cast<const std::byte*>(inframe2));
+            if (!VfxPipe::writeVideoFrame(pipeWrite, &frame, ioErrorHandler)) {
                 return;
             }
         }
-        if (inframe3 != nullptr) {
-            if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<const std::byte*>(inframe3), frameSize, write, ioErrorHandler)) {
+        if (inframe3) {
+            VfxPipe::VideoFrame frame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, width, height, reinterpret_cast<const std::byte*>(inframe3));
+            if (!VfxPipe::writeVideoFrame(pipeWrite, &frame, ioErrorHandler)) {
                 return;
             }
         }

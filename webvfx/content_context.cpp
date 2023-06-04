@@ -3,10 +3,9 @@
 
 namespace WebVfx {
 
-ContentContext::ContentContext(QObject* parent, Parameters* parameters, QSize size)
+ContentContext::ContentContext(QObject* parent, Parameters* parameters)
     : QObject(parent)
     , parameters(parameters)
-    , videoSize(size)
 {
 }
 

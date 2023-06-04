@@ -42,10 +42,9 @@ private:
 
 /////////////////
 
-FrameServer::FrameServer(const QSize& size, QUrl& qmlUrl, double duration, QObject* parent)
+FrameServer::FrameServer(QUrl& qmlUrl, double duration, QObject* parent)
     : QObject(parent)
-    , content(new WebVfx::QmlContent(size, new FrameServerParameters(qmlUrl)))
-    , outputImage(size, QImage::Format_RGBA8888)
+    , content(new WebVfx::QmlContent(new FrameServerParameters(qmlUrl)))
     , duration(duration)
     , initialTime(-1)
 {
@@ -55,11 +54,6 @@ FrameServer::FrameServer(const QSize& size, QUrl& qmlUrl, double duration, QObje
 
 FrameServer::~FrameServer()
 {
-    for (qsizetype i = 0; i < frameSinks.size(); ++i) {
-        auto frameSink = frameSinks.at(i);
-        delete frameSink.frames[0];
-        delete frameSink.frames[1];
-    }
     delete content;
 }
 
@@ -69,10 +63,7 @@ void FrameServer::onContentLoadFinished(bool result)
         auto size = content->getContentSize();
         auto videoSinks = content->getVideoSinks();
         for (qsizetype i = 0; i < videoSinks.size(); ++i) {
-            frameSinks.append(FrameSink(
-                new QVideoFrame(QVideoFrameFormat(size, QVideoFrameFormat::Format_RGBA8888)),
-                new QVideoFrame(QVideoFrameFormat(size, QVideoFrameFormat::Format_RGBA8888)),
-                videoSinks.at(i)));
+            frameSinks.append(FrameSink(videoSinks.at(i)));
         }
         QCoreApplication::postEvent(this, new QEvent(QEvent::User));
     } else {
@@ -103,6 +94,10 @@ void FrameServer::readFrames()
         }
     };
 
+    // XXX
+    //  read time, output format, frame count, then frame header/data per frame
+    //  need to set content size based on output format
+    // XXX
     double time;
     VfxPipe::dataIO(STDIN_FILENO, reinterpret_cast<uchar*>(&time), sizeof(time), read, ioErrorHandler);
 
@@ -114,20 +109,39 @@ void FrameServer::readFrames()
         time = time / duration;
     }
 
+    VfxPipe::VideoFrame outputFrame;
+    VfxPipe::readVideoFrame(STDIN_FILENO, &outputFrame, ioErrorHandler);
+    content->setContentSize(QSize(outputFrame.format.width, outputFrame.format.height));
+
+    // XXX read frameCount, read all frames and set as many sinks as we have
+    // XXX need to reset QVideoFrames if format changes
+
     for (qsizetype i = 0; i < frameSinks.size(); ++i) {
+        VfxPipe::VideoFrame inputFrame;
+        VfxPipe::readVideoFrame(STDIN_FILENO, &inputFrame, ioErrorHandler);
         auto frameSink = frameSinks.at(i);
-        QVideoFrame* frame = frameSwap ? frameSink.frames[0] : frameSink.frames[1];
-        frame->map(QVideoFrame::WriteOnly);
-        VfxPipe::dataIO(STDIN_FILENO, frame->bits(0), frame->mappedBytes(0), read, ioErrorHandler);
-        frame->unmap();
-        frameSink.sink->setVideoFrame(*frame);
+        if (frameSink.format != inputFrame.format) {
+            frameSink.format = inputFrame.format;
+            if (inputFrame.format.pixelFormat == VfxPipe::VideoFrameFormat::PixelFormat::RGBA32) {
+                QVideoFrameFormat format(QSize(inputFrame.format.width, inputFrame.format.height),
+                    QVideoFrameFormat::PixelFormat::Format_ARGB8888_Premultiplied);
+                frameSink.frames[0] = QVideoFrame(format);
+                frameSink.frames[1] = QVideoFrame(format);
+            } // XXX else error
+        }
+        QVideoFrame frame = frameSwap ? frameSink.frames[0] : frameSink.frames[1];
+        frame.map(QVideoFrame::WriteOnly);
+        // XXX assert frame.mappedBytes(0) == inputFrame.format.dataSize
+        VfxPipe::dataIO(STDIN_FILENO, frame.bits(0), frame.mappedBytes(0), read, ioErrorHandler);
+        frame.unmap();
+        frameSink.sink->setVideoFrame(frame);
     }
 
-    renderFrame(time);
+    renderFrame(time, outputFrame);
     frameSwap = !frameSwap;
 }
 
-void FrameServer::renderFrame(double time)
+void FrameServer::renderFrame(double time, VfxPipe::VideoFrame outputFrame)
 {
     auto ioErrorHandler = [](int n, std::string msg = "") {
         // EOF
@@ -138,7 +152,12 @@ void FrameServer::renderFrame(double time)
             QCoreApplication::exit(1);
         }
     };
-    content->renderContent(time, outputImage);
+    // XXX need to convert the rendered RGBA32 image to outputFrame format
+    QImage outputImage = content->renderContent(time);
+    if (outputImage.isNull()) {
+        qCritical() << "Null image rendered";
+        QCoreApplication::exit(1);
+    }
     VfxPipe::dataIO(STDOUT_FILENO, outputImage.constBits(), outputImage.sizeInBytes(), write, ioErrorHandler);
     QCoreApplication::postEvent(this, new QEvent(QEvent::User));
 }

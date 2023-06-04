@@ -12,10 +12,10 @@
 
 namespace WebVfx {
 
-QmlContent::QmlContent(RenderControl* renderControl, const QSize& size, Parameters* parameters)
+QmlContent::QmlContent(RenderControl* renderControl, Parameters* parameters)
     : QQuickView(QUrl(), renderControl)
     , pageLoadFinished(LoadNotFinished)
-    , contentContext(new ContentContext(this, parameters, size))
+    , contentContext(new ContentContext(this, parameters))
     , renderControl(renderControl)
 {
     setResizeMode(ResizeMode::SizeViewToRootObject);
@@ -27,8 +27,8 @@ QmlContent::QmlContent(RenderControl* renderControl, const QSize& size, Paramete
     connect(engine(), SIGNAL(warnings(QList<QQmlError>)), SLOT(logWarnings(QList<QQmlError>)));
 }
 
-QmlContent::QmlContent(const QSize& size, Parameters* parameters)
-    : QmlContent(new RenderControl(), size, parameters)
+QmlContent::QmlContent(Parameters* parameters)
+    : QmlContent(new RenderControl(), parameters)
 {
 }
 
@@ -68,10 +68,10 @@ void QmlContent::setContentSize(const QSize& size)
     }
 }
 
-bool QmlContent::renderContent(double time, QImage& renderImage)
+QImage QmlContent::renderContent(double time)
 {
     if (!renderControl->install(this, contentContext->getVideoSize())) {
-        return false;
+        return QImage();
     }
 
     // Allow the content to render for this time
@@ -81,7 +81,7 @@ bool QmlContent::renderContent(double time, QImage& renderImage)
         logWarnings(errors());
     }
 
-    return renderControl->renderImage(renderImage);
+    return renderControl->renderImage();
 }
 
 }

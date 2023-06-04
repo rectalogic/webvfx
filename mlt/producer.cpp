@@ -38,7 +38,7 @@ static int producerGetImage(mlt_frame frame, uint8_t** buffer, mlt_image_format*
 
     { // Scope the lock
         WebVfxPlugin::ServiceLocker locker(MLT_PRODUCER_SERVICE(producer));
-        if (!locker.initialize(*width, *height, mlt_producer_get_length(producer)))
+        if (!locker.initialize(mlt_producer_get_length(producer)))
             return 1;
 
         mlt_image_s outputImage;

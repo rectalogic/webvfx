@@ -8,8 +8,9 @@
 #include <QList>
 #include <QObject>
 #include <QSize>
+#include <QVideoFrame>
+#include <vfxpipe.h>
 
-class QVideoFrame;
 class QVideoSink;
 
 namespace WebVfx {
@@ -17,13 +18,10 @@ class QmlContent;
 }
 
 struct FrameSink {
-    FrameSink(QVideoFrame* frame1, QVideoFrame* frame2, QVideoSink* sink)
-        : sink(sink)
-    {
-        frames[0] = frame1;
-        frames[1] = frame2;
-    };
-    QVideoFrame* frames[2];
+    FrameSink(QVideoSink* sink)
+        : sink(sink) {};
+    VfxPipe::VideoFrameFormat format;
+    QVideoFrame frames[2];
     QVideoSink* sink;
 };
 
@@ -31,7 +29,7 @@ class FrameServer : public QObject {
     Q_OBJECT
 
 public:
-    FrameServer(const QSize& size, QUrl& qmlUrl, double duration = 0, QObject* parent = nullptr);
+    FrameServer(QUrl& qmlUrl, double duration = 0, QObject* parent = nullptr);
     ~FrameServer();
 
     bool event(QEvent* event) override;
@@ -41,11 +39,10 @@ private slots:
 
 private:
     void readFrames();
-    void renderFrame(double time);
+    void renderFrame(double time, VfxPipe::VideoFrame outputFrame);
 
     WebVfx::QmlContent* content;
     QList<FrameSink> frameSinks;
-    QImage outputImage;
     double duration;
     double initialTime;
     bool frameSwap;

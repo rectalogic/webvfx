@@ -27,7 +27,7 @@ class ContentContext : public QObject {
     Q_PROPERTY(QSize videoSize READ getVideoSize CONSTANT)
 
 public:
-    ContentContext(QObject* parent, Parameters* parameters, QSize size);
+    ContentContext(QObject* parent, Parameters* parameters);
     ~ContentContext() override;
 
     // Inform QML contents to render at time.
