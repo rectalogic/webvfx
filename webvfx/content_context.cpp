@@ -40,6 +40,7 @@ void ContentContext::setVideoSize(QSize size)
     if (videoSize == size)
         return;
     videoSize = size;
+    emit videoSizeChanged(size);
 }
 
 void ContentContext::addVideoSink(QVideoSink* videoSink)

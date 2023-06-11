@@ -1,5 +1,7 @@
 #include "render_control.h"
+#include <QByteArray>
 #include <QCoreApplication>
+#include <QImage>
 #include <QPainter>
 #include <QQuickRenderControl>
 #include <QQuickRenderTarget>
@@ -90,12 +92,18 @@ QImage RenderControl::renderImage()
     QImage outputImage;
     QRhiReadbackResult readResult;
     readResult.completed = [&readResult, &rhi, &outputImage] {
-        QImage sourceImage(reinterpret_cast<const uchar*>(readResult.data.constData()),
+        QByteArray* imageData = new QByteArray(readResult.data);
+        QImage sourceImage(
+            reinterpret_cast<const uchar*>(imageData->constData()),
             readResult.pixelSize.width(), readResult.pixelSize.height(),
-            QImage::Format_RGBA8888_Premultiplied);
+            QImage::Format_RGBA8888_Premultiplied,
+            [](void* ptr) {
+                delete static_cast<QByteArray*>(ptr);
+            },
+            imageData);
         outputImage = sourceImage;
         if (rhi->isYUpInFramebuffer())
-            outputImage.mirror();
+            outputImage.mirror(); // XXX can't mirror in-place if using const readback data
     };
     QRhiResourceUpdateBatch* readbackBatch = rhi->nextResourceUpdateBatch();
     readbackBatch->readBackTexture(texture.data(), &readResult);

@@ -24,7 +24,7 @@ class Parameters;
 class ContentContext : public QObject {
     Q_OBJECT
 
-    Q_PROPERTY(QSize videoSize READ getVideoSize CONSTANT)
+    Q_PROPERTY(QSize videoSize READ getVideoSize WRITE setVideoSize NOTIFY videoSizeChanged)
 
 public:
     ContentContext(QObject* parent, Parameters* parameters);
@@ -44,7 +44,7 @@ public:
     //   webvfx.addVideoSink(output.videoSink);
     Q_INVOKABLE void addVideoSink(QVideoSink* videoSink);
 
-    QSize getVideoSize() { return videoSize; };
+    QSize getVideoSize() const { return videoSize; };
     void setVideoSize(QSize size);
     const QList<QVideoSink*>& getVideoSinks() { return videoSinks; }
 
@@ -53,6 +53,7 @@ signals:
     // time is normalized 0..1.0
     // JS: webvfx.renderRequested.connect(function (time) { doSomething(); })
     void renderRequested(double time);
+    void videoSizeChanged(QSize size);
 
 private:
     Parameters* parameters;
