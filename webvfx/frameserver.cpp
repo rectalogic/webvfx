@@ -124,7 +124,7 @@ void FrameServer::readFrames()
             frameSink.format = inputFrame.format;
             if (inputFrame.format.pixelFormat == VfxPipe::VideoFrameFormat::PixelFormat::RGBA32) {
                 QVideoFrameFormat format(QSize(inputFrame.format.width, inputFrame.format.height),
-                    QVideoFrameFormat::PixelFormat::Format_ARGB8888_Premultiplied);
+                    QVideoFrameFormat::PixelFormat::Format_RGBA8888);
                 frameSink.frames[0] = QVideoFrame(format);
                 frameSink.frames[1] = QVideoFrame(format);
             } else {
