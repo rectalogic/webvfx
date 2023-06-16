@@ -4,10 +4,10 @@ BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 export DISPLAY=${DISPLAY:-:0}
 case ${PLUGIN:-frei0r} in
 frei0r)
-    FILTER=("frei0r.webvfx_filter" "0=\"webvfx --width {{width}} --height {{height}} --duration 300/30 ${BASEDIR}/../examples/filter-demo.qml\"")
+    FILTER=("frei0r.webvfx_filter" "0=\"webvfx --duration 300/30 ${BASEDIR}/../examples/filter-demo.qml\"")
     ;;
 mlt)
-    FILTER=(mltwebvfx:"webvfx --width {{width}} --height {{height}} ${BASEDIR}/../examples/filter-demo.qml")
+    FILTER=(mltwebvfx:"webvfx ${BASEDIR}/../examples/filter-demo.qml")
     ;;
 esac
 REDTESTSRC=lavfi:$(COLOR=red ${BASEDIR}/tests/testsrc)

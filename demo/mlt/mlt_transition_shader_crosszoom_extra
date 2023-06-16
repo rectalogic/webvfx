@@ -8,10 +8,10 @@ if [ "${FRAG}" -nt "${FRAG}.qsb" ]; then
 fi
 case ${PLUGIN:-frei0r} in
 frei0r)
-    TRANSITION=("frei0r.webvfx_mixer2" "0=\"\"webvfx --duration 120/30 --width {{width}} --height {{height}} '${BASEDIR}/../examples/transition-shader-crosszoom.qml?Strength=0.3'\"\"")
+    TRANSITION=("frei0r.webvfx_mixer2" "0=\"\"webvfx --duration 120/30 '${BASEDIR}/../examples/transition-shader-crosszoom.qml?Strength=0.3'\"\"")
     ;;
 mlt)
-    TRANSITION=(mltwebvfx:"webvfx --width {{width}} --height {{height}} '${BASEDIR}/../examples/transition-shader-crosszoom.qml?Strenth=0.3'")
+    TRANSITION=(mltwebvfx:"webvfx '${BASEDIR}/../examples/transition-shader-crosszoom.qml?Strenth=0.3'")
     ;;
 esac
 REDTESTSRC=lavfi:$(COLOR=red ${BASEDIR}/tests/testsrc)
