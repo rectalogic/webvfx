@@ -90,7 +90,7 @@ public:
             frameCount++;
         if (inframe3)
             frameCount++;
-        if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<const std::byte*>(frameCount), frameCount, write, ioErrorHandler)) {
+        if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<const std::byte*>(&frameCount), sizeof(frameCount), write, ioErrorHandler)) {
             return;
         }
 
