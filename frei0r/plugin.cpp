@@ -19,7 +19,6 @@ public:
     WebVfxPlugin(unsigned int width, unsigned int height)
         : width(width)
         , height(height)
-        , frameSize(width * height * 4)
         , pid(0)
         , pipeWrite(-1)
         , pipeRead(-1)
@@ -113,7 +112,7 @@ public:
             }
         }
 
-        if (!VfxPipe::dataIO(pipeRead, reinterpret_cast<std::byte*>(outframe), frameSize, read, ioErrorHandler)) {
+        if (!VfxPipe::dataIO(pipeRead, reinterpret_cast<std::byte*>(outframe), vfxOutputFrame.format.dataSize(), read, ioErrorHandler)) {
             return;
         }
     }
@@ -125,7 +124,6 @@ private:
     std::string commandLine;
     unsigned int width;
     unsigned int height;
-    unsigned int frameSize;
 };
 
 int f0r_init()

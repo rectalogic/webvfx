@@ -36,7 +36,7 @@ public:
     {
     }
 
-    uint32_t dataSize()
+    size_t dataSize()
     {
         if (pixelFormat == PixelFormat::RGBA32)
             return stride * height * 4;
