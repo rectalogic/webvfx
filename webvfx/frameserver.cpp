@@ -99,7 +99,8 @@ void FrameServer::readFrames()
     };
 
     double time;
-    VfxPipe::dataIO(STDIN_FILENO, reinterpret_cast<uchar*>(&time), sizeof(time), read, ioErrorHandler);
+    if (!VfxPipe::dataIO(STDIN_FILENO, reinterpret_cast<uchar*>(&time), sizeof(time), read, ioErrorHandler))
+        return;
 
     if (initialTime == -1) {
         initialTime = time;
@@ -110,18 +111,22 @@ void FrameServer::readFrames()
     }
 
     VfxPipe::VideoFrame outputFrame;
-    VfxPipe::readVideoFrame(STDIN_FILENO, &outputFrame, ioErrorHandler);
+    if (!VfxPipe::readVideoFrame(STDIN_FILENO, &outputFrame, ioErrorHandler))
+        return;
     content->setContentSize(QSize(outputFrame.format.width, outputFrame.format.height));
 
     uint32_t frameCount;
-    VfxPipe::dataIO(STDIN_FILENO, reinterpret_cast<std::byte*>(&frameCount), sizeof(frameCount), read, ioErrorHandler);
+    if (!VfxPipe::dataIO(STDIN_FILENO, reinterpret_cast<std::byte*>(&frameCount), sizeof(frameCount), read, ioErrorHandler))
+        return;
     if (frameCount > frameSinks.size()) {
         qCritical() << "Frame count " << frameCount << " does not match video sink count " << frameSinks.size();
         QCoreApplication::exit(1);
+        return;
     }
     for (qsizetype i = 0; i < frameSinks.size(); ++i) {
         VfxPipe::VideoFrame inputFrame;
-        VfxPipe::readVideoFrame(STDIN_FILENO, &inputFrame, ioErrorHandler);
+        if (!VfxPipe::readVideoFrame(STDIN_FILENO, &inputFrame, ioErrorHandler))
+            return;
         auto frameSink = frameSinks.at(i);
         if (frameSink.format != inputFrame.format) {
             frameSink.format = inputFrame.format;
@@ -133,6 +138,7 @@ void FrameServer::readFrames()
             } else {
                 qCritical() << "Unrecognized video frame format " << inputFrame.format.pixelFormat;
                 QCoreApplication::exit(1);
+                return;
             }
         }
         QVideoFrame frame = frameSwap ? frameSink.frames[0] : frameSink.frames[1];
@@ -140,8 +146,10 @@ void FrameServer::readFrames()
         if (frame.mappedBytes(0) != inputFrame.format.dataSize()) {
             qCritical() << "QVideoFrame incorrect byte size: " << frame.mappedBytes(0) << " expected " << inputFrame.format.dataSize();
             QCoreApplication::exit(1);
+            return;
         }
-        VfxPipe::dataIO(STDIN_FILENO, frame.bits(0), frame.mappedBytes(0), read, ioErrorHandler);
+        if (!VfxPipe::dataIO(STDIN_FILENO, frame.bits(0), frame.mappedBytes(0), read, ioErrorHandler))
+            return;
         frame.unmap();
         frameSink.sink->setVideoFrame(frame);
     }
@@ -166,7 +174,9 @@ void FrameServer::renderFrame(double time, VfxPipe::VideoFrame outputFrame)
     if (outputImage.isNull()) {
         qCritical() << "Null image rendered";
         QCoreApplication::exit(1);
+        return;
     }
-    VfxPipe::dataIO(STDOUT_FILENO, outputImage.constBits(), outputImage.sizeInBytes(), write, ioErrorHandler);
+    if (!VfxPipe::dataIO(STDOUT_FILENO, outputImage.constBits(), outputImage.sizeInBytes(), write, ioErrorHandler))
+        return;
     QCoreApplication::postEvent(this, new QEvent(renderEventType));
 }
