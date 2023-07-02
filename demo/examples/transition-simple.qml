@@ -46,5 +46,8 @@ Rectangle {
         function onRenderRequested(time) {
             animationController.progress = time;
         }
+        function onVideoSizeChanged(size) {
+            animationController.reload();
+        }
     }
 }
