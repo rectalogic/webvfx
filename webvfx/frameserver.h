@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <QEvent>
 #include <QImage>
 #include <QList>
 #include <QObject>
@@ -46,4 +47,5 @@ private:
     double duration;
     double initialTime;
     bool frameSwap;
+    static QEvent::Type renderEventType;
 };

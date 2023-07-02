@@ -8,6 +8,7 @@
 #include "webvfx.h"
 #include <QCoreApplication>
 #include <QDebug>
+#include <QEvent>
 #include <QMap>
 #include <QString>
 #include <QUrl>
@@ -42,6 +43,8 @@ private:
 
 /////////////////
 
+QEvent::Type FrameServer::renderEventType = static_cast<QEvent::Type>(QEvent::registerEventType());
+
 FrameServer::FrameServer(QUrl& qmlUrl, double duration, QObject* parent)
     : QObject(parent)
     , content(new WebVfx::QmlContent(new FrameServerParameters(qmlUrl)))
@@ -65,7 +68,7 @@ void FrameServer::onContentLoadFinished(bool result)
         for (qsizetype i = 0; i < videoSinks.size(); ++i) {
             frameSinks.append(FrameSink(videoSinks.at(i)));
         }
-        QCoreApplication::postEvent(this, new QEvent(QEvent::User));
+        QCoreApplication::postEvent(this, new QEvent(renderEventType));
     } else {
         qCritical() << "QML content failed to load.";
         QCoreApplication::exit(1);
@@ -75,7 +78,7 @@ void FrameServer::onContentLoadFinished(bool result)
 
 bool FrameServer::event(QEvent* event)
 {
-    if (event->type() == QEvent::User) {
+    if (event->type() == renderEventType) {
         readFrames();
         return true;
     }
@@ -112,7 +115,7 @@ void FrameServer::readFrames()
 
     uint32_t frameCount;
     VfxPipe::dataIO(STDIN_FILENO, reinterpret_cast<std::byte*>(&frameCount), sizeof(frameCount), read, ioErrorHandler);
-    if (frameCount != frameSinks.size()) {
+    if (frameCount > frameSinks.size()) {
         qCritical() << "Frame count " << frameCount << " does not match video sink count " << frameSinks.size();
         QCoreApplication::exit(1);
     }
@@ -165,5 +168,5 @@ void FrameServer::renderFrame(double time, VfxPipe::VideoFrame outputFrame)
         QCoreApplication::exit(1);
     }
     VfxPipe::dataIO(STDOUT_FILENO, outputImage.constBits(), outputImage.sizeInBytes(), write, ioErrorHandler);
-    QCoreApplication::postEvent(this, new QEvent(QEvent::User));
+    QCoreApplication::postEvent(this, new QEvent(renderEventType));
 }
