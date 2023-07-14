@@ -1,4 +1,4 @@
-export QT_VER=6.5.0
+export QT_VER=6.5.1
 export FFMPEG_VER=2d25f33a7ed36003de9a62c9cb165db183663d1c
 export FREI0R_VER=a9d15ff07e130baf3408da6e1f1b22f82e7c62b6
 export MACPORTS_VER=v2.8.1

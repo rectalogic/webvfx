@@ -10,6 +10,6 @@ fi
 
 if [ "$(git -C "$DEST" describe)" != "$VERSION" ]; then
     git -C "$DEST" fetch
-    git -C "$DEST" checkout $VERSION
+    git -C "$DEST" checkout "$VERSION"
     git -C "$DEST" submodule update --init
 fi

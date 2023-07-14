@@ -31,5 +31,11 @@ add_subdirectory(doc)
 
 # add_dependencies(webvfx_viewer webvfx)
 add_dependencies(webvfx vfxpipe)
-add_dependencies(mltwebvfx vfxpipe)
-add_dependencies(frei0r_plugin vfxpipe)
+
+if(MLT_FOUND)
+    add_dependencies(mltwebvfx vfxpipe)
+endif()
+
+if(FREI0R_FOUND)
+    add_dependencies(frei0r_plugin vfxpipe)
+endif()
