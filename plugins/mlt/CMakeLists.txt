@@ -16,7 +16,7 @@ if(MLT_FOUND)
         transition.cpp
     )
 
-    target_include_directories(mltwebvfx PRIVATE ${MLT_INCLUDE_DIRS} "${CMAKE_CURRENT_LIST_DIR}/..")
+    target_include_directories(mltwebvfx PRIVATE ${MLT_INCLUDE_DIRS} "${CMAKE_CURRENT_LIST_DIR}/../..")
     target_compile_options(mltwebvfx PUBLIC ${MLT_CFLAGS})
     target_link_libraries(mltwebvfx PRIVATE PkgConfig::MLT vfxpipe)
 

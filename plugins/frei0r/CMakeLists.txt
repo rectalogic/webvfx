@@ -30,7 +30,7 @@ if(FREI0R_FOUND)
     set_target_properties(webvfx_mixer2 PROPERTIES PREFIX "")
     set_target_properties(webvfx_mixer3 PROPERTIES PREFIX "")
 
-    target_include_directories(frei0r_plugin PRIVATE "${CMAKE_CURRENT_LIST_DIR}/..")
+    target_include_directories(frei0r_plugin PRIVATE "${CMAKE_CURRENT_LIST_DIR}/../..")
 
     target_compile_options(frei0r_plugin PUBLIC ${FREI0R_CFLAGS})
     target_compile_options(webvfx_filter PUBLIC ${FREI0R_CFLAGS})

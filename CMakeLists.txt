@@ -25,8 +25,8 @@ add_subdirectory(webvfx)
 
 # add_subdirectory(viewer)
 add_subdirectory(tools/driver)
-add_subdirectory(mlt)
-add_subdirectory(frei0r)
+add_subdirectory(plugins/mlt)
+add_subdirectory(plugins/frei0r)
 add_subdirectory(doc)
 
 # add_dependencies(webvfx_viewer webvfx)
