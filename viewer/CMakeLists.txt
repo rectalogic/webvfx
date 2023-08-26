@@ -18,9 +18,7 @@ list(APPEND ViewerLibraries Qt6::Widgets Qt6::Quick webvfx)
 
 if(${Qt6WebEngineQuick_FOUND})
     list(APPEND ViewerLibraries Qt6::WebEngineQuick)
-
-    # Disable for now
-    # add_definitions(-DWEBENGINEQUICK)
+    add_definitions(-DWEBENGINEQUICK)
 endif()
 
 target_link_libraries(webvfx_viewer PRIVATE ${ViewerLibraries})

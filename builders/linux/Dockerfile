@@ -19,7 +19,7 @@ RUN apt-get -y update \
 ARG QT_VER=6.5.1
 
 RUN pip3 install aqtinstall \
-    && python3 -m aqt install-qt linux desktop ${QT_VER} -m qtmultimedia qtquick3d qtshadertools qtquicktimeline --outputdir /usr/local/Qt
+    && python3 -m aqt install-qt linux desktop ${QT_VER} -m qtmultimedia qtquick3d qtshadertools qtquicktimeline qtwebchannel qtwebengine qtwebsockets qtwebview qtpositioning --outputdir /usr/local/Qt
 
 ENV PATH /usr/local/Qt/${QT_VER}/gcc_64/bin:$PATH
 ENV QT_PLUGIN_PATH /usr/local/Qt/${QT_VER}/gcc_64/plugins/

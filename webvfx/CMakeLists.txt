@@ -22,9 +22,7 @@ list(APPEND FrameserverLibraries Qt6::Core Qt6::Gui Qt6::Multimedia Qt6::GuiPriv
 
 if(${Qt6WebEngineQuick_FOUND})
     list(APPEND FrameserverLibraries Qt6::WebEngineQuick)
-
-    # Disable for now
-    # add_definitions(-DWEBENGINEQUICK)
+    add_definitions(-DWEBENGINEQUICK)
 endif()
 
 target_link_libraries(webvfx PRIVATE ${FrameserverLibraries} vfxpipe)
