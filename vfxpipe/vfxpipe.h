@@ -6,6 +6,7 @@
 
 #include <errno.h>
 #include <functional>
+#include <string.h>
 #include <string>
 #include <unistd.h>
 
