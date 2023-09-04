@@ -5,6 +5,7 @@
 find_package(Qt6 REQUIRED QUIET COMPONENTS Core Gui Multimedia Qml Quick Quick3D OPTIONAL_COMPONENTS WebEngineQuick)
 
 set(CMAKE_AUTOMOC ON)
+qt_policy(SET QTP0001 NEW)
 
 qt_add_executable(webvfx
     main.cpp
@@ -25,13 +26,12 @@ if(${Qt6WebEngineQuick_FOUND})
     add_definitions(-DWEBENGINEQUICK)
 endif()
 
-target_link_libraries(webvfx PRIVATE ${FrameserverLibraries} vfxpipe)
-
-qt_policy(SET QTP0001 NEW)
 qt_add_qml_module(webvfx
-    URI org.webvfx.WebVfx.native
+    URI stream.webvfx.WebVfx
     VERSION 1.0
     NO_PLUGIN
 )
+
+target_link_libraries(webvfx PRIVATE ${FrameserverLibraries} vfxpipe)
 
 install(TARGETS webvfx RUNTIME DESTINATION)
