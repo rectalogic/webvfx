@@ -29,26 +29,25 @@ public:
     void setContentSize(const QSize& size);
     QSize getContentSize() { return contentContext->getVideoSize(); }
     const QList<QVideoSink*>& getVideoSinks() { return contentContext->getVideoSinks(); }
-    QImage renderContent(double time);
+    void renderContent(double time);
 
 signals:
     void contentLoadFinished(bool result);
+    void renderComplete(QImage renderImage);
 
 private slots:
     void qmlViewStatusChanged(QQuickView::Status status);
     void logWarnings(const QList<QQmlError>& warnings);
+    void contextAsyncRenderComplete();
 
 private:
     bool initialize();
     void uninitialize();
 
     QmlContent(RenderControl* renderControl, Parameters* parameters);
-    enum LoadStatus { LoadNotFinished,
-        LoadFailed,
-        LoadSucceeded };
-    LoadStatus pageLoadFinished;
     ContentContext* contentContext;
     QScopedPointer<RenderControl> renderControl;
+    bool renderExpected;
 };
 
 }

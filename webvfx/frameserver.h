@@ -37,15 +37,16 @@ public:
 
 private slots:
     void onContentLoadFinished(bool);
+    void onRenderComplete(QImage);
 
 private:
     void readFrames();
-    void renderFrame(double time, VfxPipe::VideoFrame outputFrame);
 
     WebVfx::QmlContent* content;
     QList<FrameSink> frameSinks;
     double duration;
     double initialTime;
     bool frameSwap;
+    VfxPipe::VideoFrame outputFrame;
     static QEvent::Type renderEventType;
 };

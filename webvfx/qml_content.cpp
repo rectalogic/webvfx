@@ -14,9 +14,9 @@ namespace WebVfx {
 
 QmlContent::QmlContent(RenderControl* renderControl, Parameters* parameters)
     : QQuickView(QUrl(), renderControl)
-    , pageLoadFinished(LoadNotFinished)
     , contentContext(new ContentContext(this, parameters))
     , renderControl(renderControl)
+    , renderExpected(false)
 {
     setResizeMode(ResizeMode::SizeViewToRootObject);
 
@@ -25,6 +25,7 @@ QmlContent::QmlContent(RenderControl* renderControl, Parameters* parameters)
 
     connect(this, SIGNAL(statusChanged(QQuickView::Status)), SLOT(qmlViewStatusChanged(QQuickView::Status)));
     connect(engine(), SIGNAL(warnings(QList<QQmlError>)), SLOT(logWarnings(QList<QQmlError>)));
+    connect(contentContext, SIGNAL(asyncRenderComplete()), SLOT(contextAsyncRenderComplete()));
 }
 
 QmlContent::QmlContent(Parameters* parameters)
@@ -41,11 +42,8 @@ void QmlContent::qmlViewStatusChanged(QQuickView::Status status)
     if (status != QQuickView::Ready && status != QQuickView::Error)
         return;
 
-    if (pageLoadFinished == LoadNotFinished)
-        pageLoadFinished = (status == QQuickView::Ready) ? LoadSucceeded : LoadFailed;
-
     logWarnings(errors());
-    emit contentLoadFinished(pageLoadFinished == LoadSucceeded);
+    emit contentLoadFinished(status == QQuickView::Ready);
 }
 
 void QmlContent::logWarnings(const QList<QQmlError>& warnings)
@@ -57,7 +55,6 @@ void QmlContent::logWarnings(const QList<QQmlError>& warnings)
 
 void QmlContent::loadContent(const QUrl& url)
 {
-    pageLoadFinished = LoadNotFinished;
     setSource(url);
 }
 
@@ -68,20 +65,33 @@ void QmlContent::setContentSize(const QSize& size)
     }
 }
 
-QImage QmlContent::renderContent(double time)
+void QmlContent::contextAsyncRenderComplete()
 {
-    if (!renderControl->install(this, contentContext->getVideoSize())) {
-        return QImage();
+    if (!renderExpected) {
+        qDebug() << "Unexpected emitAsyncRenderComplete()";
+        emit renderComplete(QImage());
+        return;
     }
-
-    // Allow the content to render for this time
-    contentContext->render(time);
-
+    renderExpected = false;
     if (status() == QQuickView::Error) {
         logWarnings(errors());
     }
+    emit renderComplete(renderControl->renderImage());
+}
 
-    return renderControl->renderImage();
+void QmlContent::renderContent(double time)
+{
+    if (!renderControl->install(this, contentContext->getVideoSize())) {
+        emit renderComplete(QImage());
+    }
+
+    // Allow the content to render for this time
+    renderExpected = true;
+    contentContext->render(time);
+
+    if (!contentContext->isAsyncRenderRequired()) {
+        contextAsyncRenderComplete();
+    }
 }
 
 }

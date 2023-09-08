@@ -25,6 +25,9 @@ class ContentContext : public QObject {
     Q_OBJECT
 
     Q_PROPERTY(QSize videoSize READ getVideoSize WRITE setVideoSize NOTIFY videoSizeChanged)
+    // QML contents can set this if it requires async rendering.
+    // It should invoke emitAsyncRenderComplete when ready
+    Q_PROPERTY(bool asyncRenderRequired READ isAsyncRenderRequired WRITE setAsyncRenderRequired)
 
 public:
     ContentContext(QObject* parent, Parameters* parameters);
@@ -44,8 +47,15 @@ public:
     //   webvfx.addVideoSink(output.videoSink);
     Q_INVOKABLE void addVideoSink(QVideoSink* videoSink);
 
+    // QML contents should invoke this if it set asyncRenderRequired
+    // JS:
+    //   webvfx.emitAsyncRenderComplete()
+    Q_INVOKABLE void emitAsyncRenderComplete();
+
     QSize getVideoSize() const { return videoSize; };
     void setVideoSize(QSize size);
+    bool isAsyncRenderRequired() { return asyncRenderRequired; };
+    void setAsyncRenderRequired(bool asyncRender) { asyncRenderRequired = asyncRender; };
     const QList<QVideoSink*>& getVideoSinks() { return videoSinks; }
 
 signals:
@@ -55,10 +65,13 @@ signals:
     void renderRequested(double time);
     void videoSizeChanged(QSize size);
 
+    void asyncRenderComplete();
+
 private:
     Parameters* parameters;
     QList<QVideoSink*> videoSinks;
     QSize videoSize;
+    bool asyncRenderRequired;
 };
 
 }

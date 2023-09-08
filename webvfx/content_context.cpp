@@ -6,6 +6,7 @@ namespace WebVfx {
 ContentContext::ContentContext(QObject* parent, Parameters* parameters)
     : QObject(parent)
     , parameters(parameters)
+    , asyncRenderRequired(false)
 {
 }
 
@@ -46,6 +47,11 @@ void ContentContext::setVideoSize(QSize size)
 void ContentContext::addVideoSink(QVideoSink* videoSink)
 {
     videoSinks.append(videoSink);
+}
+
+void ContentContext::emitAsyncRenderComplete()
+{
+    emit asyncRenderComplete();
 }
 
 }

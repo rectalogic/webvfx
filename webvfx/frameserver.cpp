@@ -52,6 +52,7 @@ FrameServer::FrameServer(QUrl& qmlUrl, double duration, QObject* parent)
     , initialTime(-1)
 {
     connect(content, &WebVfx::QmlContent::contentLoadFinished, this, &FrameServer::onContentLoadFinished);
+    connect(content, &WebVfx::QmlContent::renderComplete, this, &FrameServer::onRenderComplete);
     content->loadContent(qmlUrl);
 }
 
@@ -110,7 +111,6 @@ void FrameServer::readFrames()
         time = time / duration;
     }
 
-    VfxPipe::VideoFrame outputFrame;
     if (!VfxPipe::readVideoFrame(STDIN_FILENO, &outputFrame, ioErrorHandler))
         return;
     content->setContentSize(QSize(outputFrame.format.width, outputFrame.format.height));
@@ -154,12 +154,14 @@ void FrameServer::readFrames()
         frameSink.sink->setVideoFrame(frame);
     }
 
-    renderFrame(time, outputFrame);
+    content->renderContent(time);
     frameSwap = !frameSwap;
 }
 
-void FrameServer::renderFrame(double time, VfxPipe::VideoFrame outputFrame)
+void FrameServer::onRenderComplete(QImage outputImage)
 {
+    // XXX need to convert the rendered RGBA32 outputImage to outputFrame format
+
     auto ioErrorHandler = [](int n, std::string msg = "") {
         // EOF
         if (n == 0) {
@@ -169,8 +171,7 @@ void FrameServer::renderFrame(double time, VfxPipe::VideoFrame outputFrame)
             QCoreApplication::exit(1);
         }
     };
-    // XXX need to convert the rendered RGBA32 image to outputFrame format
-    QImage outputImage = content->renderContent(time);
+
     if (outputImage.isNull()) {
         qCritical() << "Null image rendered";
         QCoreApplication::exit(1);
