@@ -42,10 +42,15 @@ public:
     Q_INVOKABLE double getNumberParameter(const QString& name);
     Q_INVOKABLE QString getStringParameter(const QString& name);
 
+    // QML contents can register a video source.
+    // JS:
+    //   int webvfx.addVideoSource();
+    Q_INVOKABLE qsizetype addVideoSource();
+
     // QML contents can register a video sink.
     // JS:
-    //   webvfx.addVideoSink(output.videoSink);
-    Q_INVOKABLE void addVideoSink(QVideoSink* videoSink);
+    //   webvfx.appendVideoSink(source, output.videoSink);
+    Q_INVOKABLE void appendVideoSink(qsizetype source, QVideoSink* videoSink);
 
     // QML contents should invoke this if it set asyncRenderRequired
     // JS:
@@ -56,7 +61,7 @@ public:
     void setVideoSize(QSize size);
     bool isAsyncRenderRequired() { return asyncRenderRequired; };
     void setAsyncRenderRequired(bool asyncRender) { asyncRenderRequired = asyncRender; };
-    const QList<QVideoSink*>& getVideoSinks() { return videoSinks; }
+    const QList<QList<QVideoSink*>>& getVideoSinks() { return videoSinks; }
 
 signals:
     // Signal raised when QML contents should render for the given time.
@@ -69,7 +74,7 @@ signals:
 
 private:
     Parameters* parameters;
-    QList<QVideoSink*> videoSinks;
+    QList<QList<QVideoSink*>> videoSinks;
     QSize videoSize;
     bool asyncRenderRequired;
 };

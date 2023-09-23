@@ -85,9 +85,9 @@ Rectangle {
         animation: animation
     }
     Component.onCompleted: {
-        webvfx.addVideoSink(sourceVideo.videoSink);
-        webvfx.addVideoSink(targetVideo.videoSink);
-        // webvfx.addVideoSink(extraVideo.videoSink);
+        webvfx.appendVideoSink(webvfx.addVideoSource(), sourceVideo.videoSink);
+        webvfx.appendVideoSink(webvfx.addVideoSource(), targetVideo.videoSink);
+        // webvfx.appendVideoSink(webvfx.addVideoSource(), extraVideo.videoSink);
     }
     Connections {
         target: webvfx

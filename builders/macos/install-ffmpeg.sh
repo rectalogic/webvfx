@@ -12,6 +12,6 @@ mkdir -p "$FFMPEG_BUILD"
 
 PATH=${INSTALL_ROOT}/bin:$PATH
 cd "$FFMPEG_BUILD"
-"$FFMPEG_GIT/configure" --prefix="$INSTALL_ROOT" --extra-cflags="-I $INSTALL_ROOT/include" --enable-frei0r --enable-rpath --enable-shared --enable-gpl
+"$FFMPEG_GIT/configure" --prefix="$INSTALL_ROOT" --extra-cflags="-I $INSTALL_ROOT/include" --enable-frei0r --enable-rpath --enable-shared --enable-gpl --disable-indevs --enable-indev=lavfi --disable-outdevs --enable-outdev=sdl2
 make
 make install

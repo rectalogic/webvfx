@@ -6,7 +6,8 @@ OUTPUT_DIR=${2:?Usage: $(basename $0) FIXTURE_DIR OUTPUT_DIR}
 BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 
 FAILED=()
-COMPARE_RE='.* (\(.*\))'
+SUCCEEDED=()
+COMPARE_RE='.* \((.*)\)'
 MAXDIFF=0.003
 for PLUGIN in frei0r mlt; do
     mkdir -p "$OUTPUT_DIR/$PLUGIN/compare"
@@ -17,12 +18,17 @@ for PLUGIN in frei0r mlt; do
         name=$(basename "$fixture")
         # ImageMagick compare
         compare=$(compare -metric Fuzz "$fixture" "${OUTPUT_DIR}/${PLUGIN}/${name}" "${OUTPUT_DIR}/${PLUGIN}/compare/${name}" 2>&1)
-        if [ 2 -eq $? ] || [[ "$compare" =~ $COMPARE_RE ]] && [ 1 -eq "$(echo "${BASH_REMATCH[1]} > $MAXDIFF" | bc)" ]; then
+        if [ 2 -eq $? ] || [[ "$compare" =~ $COMPARE_RE ]] && [ 1 -eq "$(printf "%.9f > $MAXDIFF\n" ${BASH_REMATCH[1]} | bc)" ]; then
             FAILED+=("${PLUGIN}/${name}=${BASH_REMATCH[1]}")
+        else
+            SUCCEEDED+=("${PLUGIN}/${name}=${compare}")
         fi
     done
 done
 
+if [ ${#SUCCEEDED[*]} != 0 ]; then
+    echo Succeeded: ${SUCCEEDED[@]}
+fi
 if [ ${#FAILED[*]} != 0 ]; then
     echo Failed: ${FAILED[@]}
     exit 1

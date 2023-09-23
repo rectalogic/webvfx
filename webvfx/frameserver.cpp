@@ -50,6 +50,7 @@ FrameServer::FrameServer(QUrl& qmlUrl, double duration, QObject* parent)
     , content(new WebVfx::QmlContent(new FrameServerParameters(qmlUrl)))
     , duration(duration)
     , initialTime(-1)
+    , frameSwap(false)
 {
     connect(content, &WebVfx::QmlContent::contentLoadFinished, this, &FrameServer::onContentLoadFinished);
     connect(content, &WebVfx::QmlContent::renderComplete, this, &FrameServer::onRenderComplete);
@@ -123,11 +124,10 @@ void FrameServer::readFrames()
         QCoreApplication::exit(1);
         return;
     }
-    for (qsizetype i = 0; i < frameSinks.size(); ++i) {
+    for (auto& frameSink : frameSinks) {
         VfxPipe::VideoFrame inputFrame;
         if (!VfxPipe::readVideoFrame(STDIN_FILENO, &inputFrame, ioErrorHandler))
             return;
-        auto frameSink = frameSinks.at(i);
         if (frameSink.format != inputFrame.format) {
             frameSink.format = inputFrame.format;
             if (inputFrame.format.pixelFormat == VfxPipe::VideoFrameFormat::PixelFormat::RGBA32) {
@@ -151,7 +151,9 @@ void FrameServer::readFrames()
         if (!VfxPipe::dataIO(STDIN_FILENO, frame.bits(0), frame.mappedBytes(0), read, ioErrorHandler))
             return;
         frame.unmap();
-        frameSink.sink->setVideoFrame(frame);
+        for (const auto& sink : frameSink.sinks) {
+            sink->setVideoFrame(frame);
+        }
     }
 
     content->renderContent(time);

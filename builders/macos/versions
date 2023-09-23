@@ -1,8 +1,8 @@
-export QT_VER=6.5.1
-export FFMPEG_VER=2d25f33a7ed36003de9a62c9cb165db183663d1c
+export QT_VER=6.5.2
+export FFMPEG_VER=984d0b6e6f40752cd00a2474bc1198d1a9e9e923
 export FREI0R_VER=a9d15ff07e130baf3408da6e1f1b22f82e7c62b6
 export MACPORTS_VER=v2.8.1
-export MLT_VER=v7.8.0
+export MLT_VER=v7.18.0
 
 export BUILD_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../"; pwd)/build/macos"
 export INSTALL_ROOT="${BUILD_ROOT}/installed/${QT_VER}/macos"

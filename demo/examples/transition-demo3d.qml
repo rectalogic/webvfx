@@ -138,8 +138,8 @@ import stream.webvfx.WebVfx
     }
 
     Component.onCompleted: {
-        webvfx.addVideoSink(sourceTexture.videoSink);
-        webvfx.addVideoSink(targetTexture.videoSink);
+        webvfx.appendVideoSink(webvfx.addVideoSource(), sourceTexture.videoSink);
+        webvfx.appendVideoSink(webvfx.addVideoSource(), targetTexture.videoSink);
     }
 
     Connections {

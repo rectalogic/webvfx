@@ -48,7 +48,7 @@ Rectangle {
         }
     }
     Component.onCompleted: {
-        webvfx.addVideoSink(video.videoSink);
+        webvfx.appendVideoSink(webvfx.addVideoSource(), video.videoSink);
     }
     Connections {
         target: webvfx

@@ -19,11 +19,11 @@ class QmlContent;
 }
 
 struct FrameSink {
-    FrameSink(QVideoSink* sink)
-        : sink(sink) {};
+    FrameSink(QList<QVideoSink*> sinks)
+        : sinks(sinks) {};
     VfxPipe::VideoFrameFormat format;
     QVideoFrame frames[2];
-    QVideoSink* sink;
+    QList<QVideoSink*> sinks;
 };
 
 class FrameServer : public QObject {
