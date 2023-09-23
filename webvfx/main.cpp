@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 
     QGuiApplication app(argc, argv);
 
-    app.setOrganizationDomain("webvfx.org");
+    app.setOrganizationDomain("webvfx.stream");
     app.setOrganizationName("WebVfx");
     app.setApplicationName("WebVfx");
 
