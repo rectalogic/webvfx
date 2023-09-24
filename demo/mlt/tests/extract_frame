@@ -29,9 +29,9 @@ if ! [[ -f "$MLT_SCRIPT" ]]; then
     usage
 fi
 
-export VFX_SOURCE=${BASEDIR}/../red.mov
-export VFX_TARGET=${BASEDIR}/../blue.mov
-export VFX_EXTRA=${BASEDIR}/../green.mov
+export VFX_SOURCE=${BASEDIR}/../../../build/red.mov
+export VFX_TARGET=${BASEDIR}/../../../build/blue.mov
+export VFX_EXTRA=${BASEDIR}/../../../build/green.mov
 export VFX_CONSUMER=${BASEDIR}/../consumer_raw
 
 if [ ! -f "$VFX_SOURCE" ]; then

@@ -3,4 +3,4 @@
 BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 
 # Clean up assets that may have been generated on another platform
-rm -f $BASEDIR/../*.mov $MOUNT/../*.raw $MOUNT/../../examples/*.qsb
+rm -f $BASEDIR/../../../build/*.mov $MOUNT/../*.raw $MOUNT/../../../build/*.qsb

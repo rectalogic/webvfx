@@ -27,7 +27,7 @@ Rectangle {
         property real dissolve
         property real strength
         property point center: Qt.point(0, 0.5)
-        fragmentShader: "crossZoom.frag.qsb"
+        fragmentShader: "../../build/crossZoom.qsb"
     }
 
     VideoOutput {

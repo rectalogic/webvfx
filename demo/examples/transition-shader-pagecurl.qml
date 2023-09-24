@@ -24,7 +24,7 @@ Rectangle {
         property variant sourceTex: sourceVideo
         property variant targetTex: targetVideo
         property real time
-        fragmentShader: "pageCurl.frag.qsb"
+        fragmentShader: "../../build/pageCurl.qsb"
     }
 
     Component.onCompleted: {

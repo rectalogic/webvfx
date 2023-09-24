@@ -3,8 +3,9 @@
 BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 export DISPLAY=${DISPLAY:-:0}
 FRAG=${BASEDIR}/../examples/crossZoom.frag
-if [ "${FRAG}" -nt "${FRAG}.qsb" ]; then
-    qsb --glsl "100 es,120,150,400" --hlsl 50 --msl 12 -o "${FRAG}.qsb" "$FRAG"
+QSB=${BASEDIR}/../../build/crossZoom.qsb
+if [ "${FRAG}" -nt "${QSB}" ]; then
+    qsb --glsl "100 es,120,150,400" --hlsl 50 --msl 12 -o "${QSB}" "$FRAG"
 fi
 case ${PLUGIN:-frei0r} in
 frei0r)
