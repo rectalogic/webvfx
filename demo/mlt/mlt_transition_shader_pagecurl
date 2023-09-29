@@ -9,10 +9,10 @@ if [ "${FRAG}" -nt "${QSB}" ]; then
 fi
 case ${PLUGIN:-frei0r} in
 frei0r)
-    TRANSITION=("frei0r.webvfx_mixer2" "0=\"webvfx --duration 120/30 ${BASEDIR}/../examples/transition-shader-pagecurl.qml\"")
+    TRANSITION=("frei0r.webvfx_mixer2" "0=\"\"${BASEDIR}/../examples/transition-shader-pagecurl.qml?webvfx_duration=120/30\"\"")
     ;;
 mlt)
-    TRANSITION=(mltwebvfx:"webvfx ${BASEDIR}/../examples/transition-shader-pagecurl.qml")
+    TRANSITION=(mltwebvfx:"${BASEDIR}/../examples/transition-shader-pagecurl.qml")
     ;;
 esac
 REDTESTSRC=lavfi:$(COLOR=red ${BASEDIR}/tests/testsrc)

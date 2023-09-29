@@ -4,18 +4,20 @@
 
 #include <cerrno>
 #include <cstring>
-#include <dlfcn.h>
 #include <functional>
 #include <iostream>
 #include <signal.h>
 #include <stdio.h>
 #include <string>
 #include <unistd.h>
-#include <wordexp.h>
+
+#ifndef WEBVFX_EXECUTABLE
+#define WEBVFX_EXECUTABLE "webvfx"
+#endif
 
 namespace VfxPipe {
 
-int spawnProcess(int* pipeRead, int* pipeWrite, const std::string& commandLine, std::function<void(std::string)> errorHandler)
+int spawnProcess(int* pipeRead, int* pipeWrite, const std::string& url, std::function<void(std::string)> errorHandler)
 {
     int fdsToChild[2];
     int fdsFromChild[2];
@@ -46,26 +48,11 @@ int spawnProcess(int* pipeRead, int* pipeWrite, const std::string& commandLine, 
         close(fdsToChild[0]);
         close(fdsToChild[1]);
 
-        wordexp_t we;
-        int werr = wordexp(commandLine.c_str(), &we, WRDE_NOCMD);
-        if (werr != 0) {
-            errorHandler(std::string("vfxpipe wordexp failed '") + commandLine + "' error: " + std::to_string(werr));
+        char* const argv[] = { const_cast<char*>(WEBVFX_EXECUTABLE), const_cast<char*>(url.c_str()), nullptr };
+        if (execvp(WEBVFX_EXECUTABLE, argv) < 0) {
+            errorHandler(std::string("vfxpipe exec '") + WEBVFX_EXECUTABLE + " " + url + "' failed: " + strerror(errno));
             exit(1);
         }
-
-        // Allowlist
-        Dl_info info;
-        auto fptr = &spawnProcess;
-        if (dladdr(reinterpret_cast<void*&>(fptr), &info)) {
-            std::cerr << "allowlist " << info.dli_fname << std::endl;
-            // XXX check that we.we_wordv[0] is in our allowlist
-        }
-
-        if (execvp(we.we_wordv[0], we.we_wordv) < 0) {
-            errorHandler(std::string("vfxpipe exec '") + commandLine + "' failed: " + strerror(errno));
-            exit(1);
-        }
-        // No need to wordfree()
     }
 
     // In the parent

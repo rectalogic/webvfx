@@ -4,10 +4,10 @@ BASEDIR=$(dirname "${BASH_SOURCE[0]}")
 export DISPLAY=${DISPLAY:-:0}
 case ${PLUGIN:-frei0r} in
 frei0r)
-    PRODUCER=("frei0r.webvfx_source" "0=\"webvfx --duration 199/30 ${BASEDIR}/../examples/producer-demo.qml\"")
+    PRODUCER=("frei0r.webvfx_source" "0=\"\"${BASEDIR}/../examples/producer-demo.qml?webvfx_duration=199/30\"\"")
     ;;
 mlt)
-    PRODUCER=(mltwebvfx:"webvfx ${BASEDIR}/../examples/producer-demo.qml")
+    PRODUCER=(mltwebvfx:"${BASEDIR}/../examples/producer-demo.qml")
     ;;
 esac
 melt -verbose \

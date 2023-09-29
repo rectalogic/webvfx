@@ -46,37 +46,9 @@ int main(int argc, char* argv[])
     parser.setApplicationDescription("WebVfx frameserver");
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
     parser.addHelpOption();
-    assertOpt(parser.addOption({ "duration", "Video duration in seconds (floating point or rational e.g. 199/30).", "duration" }));
     parser.addPositionalArgument("source", "QML source URL.");
 
     parser.process(app);
-
-    double duration = 0;
-    const auto durationValue = parser.value("duration");
-    if (!durationValue.isEmpty()) {
-        bool dOk;
-        duration = durationValue.toDouble(&dOk);
-        // Parse as rational
-        if (!dOk) {
-            bool error = true;
-            QStringList parts = durationValue.split(QChar('/'));
-            if (parts.size() == 2) {
-                error = false;
-                double numerator = parts.at(0).toDouble(&dOk);
-                if (!dOk)
-                    error = true;
-                double denominator = parts.at(1).toDouble(&dOk);
-                if (!dOk || denominator == 0)
-                    error = true;
-                if (!error)
-                    duration = numerator / denominator;
-            }
-            if (error) {
-                qCritical("Invalid duration.");
-                exit(1);
-            }
-        }
-    }
 
     const QStringList args = parser.positionalArguments();
     if (args.size() != 1) {
@@ -84,8 +56,7 @@ int main(int argc, char* argv[])
         exit(1);
     }
     QUrl url(args.at(0));
-
-    new FrameServer(url, duration, &app);
+    new FrameServer(url, &app);
 
     return app.exec();
 }

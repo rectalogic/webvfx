@@ -86,7 +86,7 @@ public:
     const std::byte* data;
 };
 
-int spawnProcess(int* pipeRead, int* pipeWrite, const std::string& commandLine, std::function<void(std::string)> errorHandler);
+int spawnProcess(int* pipeRead, int* pipeWrite, const std::string& url, std::function<void(std::string)> errorHandler);
 
 template <typename D, typename IO, typename ERR>
 bool dataIO(int fd, D data, size_t size, IO ioFunc, ERR errFunc)

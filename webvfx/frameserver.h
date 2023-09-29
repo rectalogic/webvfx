@@ -30,7 +30,7 @@ class FrameServer : public QObject {
     Q_OBJECT
 
 public:
-    FrameServer(QUrl& qmlUrl, double duration = 0, QObject* parent = nullptr);
+    FrameServer(QUrl& qmlUrl, QObject* parent = nullptr);
     ~FrameServer();
 
     bool event(QEvent* event) override;

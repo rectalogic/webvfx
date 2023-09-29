@@ -21,37 +21,72 @@
 
 class FrameServerParameters : public WebVfx::Parameters {
 public:
-    FrameServerParameters(QUrl& url)
-        : urlQuery(url)
+    FrameServerParameters(QUrlQuery& urlQuery)
+        : urlQuery(urlQuery)
     {
-        url.setQuery(QString());
     }
 
     double getNumberParameter(const QString& name)
     {
-        return urlQuery.queryItemValue(name).toDouble();
+        return urlQuery.queryItemValue(name, QUrl::FullyDecoded).toDouble();
     }
 
     QString getStringParameter(const QString& name)
     {
-        return urlQuery.queryItemValue(name);
+        return urlQuery.queryItemValue(name, QUrl::FullyDecoded);
     }
 
 private:
     QUrlQuery urlQuery;
 };
 
+double parseDuration(QString durationValue)
+{
+    double duration = 0;
+    if (!durationValue.isEmpty()) {
+        bool dOk;
+        duration = durationValue.toDouble(&dOk);
+        // Parse as rational
+        if (!dOk) {
+            bool error = true;
+            QStringList parts = durationValue.split(QChar('/'));
+            if (parts.size() == 2) {
+                error = false;
+                double numerator = parts.at(0).toDouble(&dOk);
+                if (!dOk)
+                    error = true;
+                double denominator = parts.at(1).toDouble(&dOk);
+                if (!dOk || denominator == 0)
+                    error = true;
+                if (!error)
+                    duration = numerator / denominator;
+            }
+            if (error) {
+                qCritical("Invalid duration.");
+                exit(1);
+            }
+        }
+    }
+    return duration;
+}
+
 /////////////////
 
 QEvent::Type FrameServer::renderEventType = static_cast<QEvent::Type>(QEvent::registerEventType());
 
-FrameServer::FrameServer(QUrl& qmlUrl, double duration, QObject* parent)
+FrameServer::FrameServer(QUrl& qmlUrl, QObject* parent)
     : QObject(parent)
-    , content(new WebVfx::QmlContent(new FrameServerParameters(qmlUrl)))
-    , duration(duration)
+    , duration(0)
     , initialTime(-1)
     , frameSwap(false)
 {
+    auto urlQuery = QUrlQuery(qmlUrl);
+    duration = parseDuration(urlQuery.queryItemValue("webvfx_duration", QUrl::FullyDecoded));
+    urlQuery.removeQueryItem("webvfx_duration");
+
+    content = new WebVfx::QmlContent(new FrameServerParameters(urlQuery));
+    qmlUrl.setQuery(QString());
+
     connect(content, &WebVfx::QmlContent::contentLoadFinished, this, &FrameServer::onContentLoadFinished);
     connect(content, &WebVfx::QmlContent::renderComplete, this, &FrameServer::onRenderComplete);
     content->loadContent(qmlUrl);
