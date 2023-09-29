@@ -16,7 +16,7 @@
                 "ms-vscode.cpptools-themes"
             ],
             "settings": {
-                "cmake.installPrefix": "/usr/local/Qt/6.5.2/gcc_64",
+                "cmake.installPrefix": "/usr/local/Qt/6.5.3/gcc_64",
                 "cmake.buildDirectory": "${workspaceFolder}/build/vscode",
                 "cmake.configureSettings": {
                     "CMAKE_BUILD_TYPE": "Debug"

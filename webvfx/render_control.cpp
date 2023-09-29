@@ -15,6 +15,7 @@ namespace WebVfx {
 
 RenderControl::RenderControl()
     : QQuickRenderControl()
+    , initialized(false)
 {
 }
 
@@ -24,7 +25,7 @@ RenderControl::~RenderControl()
 
 bool RenderControl::install(QQuickWindow* window, QSize size)
 {
-    if (size == renderSize)
+    if (initialized && size == renderSize)
         return true;
 
     if (!initialized) {
@@ -68,8 +69,12 @@ bool RenderControl::install(QQuickWindow* window, QSize size)
         return false;
     }
 
+    auto renderTarget = QQuickRenderTarget::fromRhiRenderTarget(textureRenderTarget.data());
+    if (rhi->isYUpInFramebuffer())
+        renderTarget.setMirrorVertically(true);
+
     // redirect Qt Quick rendering into our texture
-    window->setRenderTarget(QQuickRenderTarget::fromRhiRenderTarget(textureRenderTarget.data()));
+    window->setRenderTarget(renderTarget);
 
     renderSize = size;
     return true;
@@ -100,8 +105,6 @@ QImage RenderControl::renderImage()
             },
             imageData);
         outputImage = sourceImage;
-        if (rhi->isYUpInFramebuffer())
-            outputImage.mirror(); // XXX can't mirror in-place if using const readback data
     };
     QRhiResourceUpdateBatch* readbackBatch = rhi->nextResourceUpdateBatch();
     readbackBatch->readBackTexture(texture.data(), &readResult);
