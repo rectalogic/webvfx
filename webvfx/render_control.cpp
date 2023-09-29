@@ -22,26 +22,24 @@ RenderControl::~RenderControl()
 {
 }
 
-void RenderControl::invalidate()
-{
-    QQuickRenderControl::invalidate();
-    renderPassDescriptor.reset();
-    textureRenderTarget.reset();
-    stencilBuffer.reset();
-    texture.reset();
-}
-
 bool RenderControl::install(QQuickWindow* window, QSize size)
 {
     if (size == renderSize)
         return true;
 
-    invalidate();
-
-    if (!initialize()) {
-        qDebug() << "Failed to initialize render control";
-        return false;
+    if (!initialized) {
+        if (!initialize()) {
+            qDebug() << "Failed to initialize render control";
+            return false;
+        }
+        initialized = true;
     }
+
+    window->setRenderTarget(QQuickRenderTarget());
+    textureRenderTarget.reset();
+    renderPassDescriptor.reset();
+    stencilBuffer.reset();
+    texture.reset();
 
     QRhi* rhi = QQuickRenderControlPrivate::get(this)->rhi;
 

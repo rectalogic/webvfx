@@ -24,7 +24,6 @@ public:
 
     bool install(QQuickWindow* window, QSize size);
     QImage renderImage();
-    void invalidate();
 
 private:
     QScopedPointer<QRhiTexture> texture;
@@ -32,6 +31,7 @@ private:
     QScopedPointer<QRhiTextureRenderTarget> textureRenderTarget;
     QScopedPointer<QRhiRenderPassDescriptor> renderPassDescriptor;
     QSize renderSize;
+    bool initialized;
 };
 
 }
