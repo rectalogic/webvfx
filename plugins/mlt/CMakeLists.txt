@@ -22,4 +22,7 @@ if(MLT_FOUND)
 
     pkg_get_variable(MLT_INSTALL_MODULE_DIR ${MLT_MODULE_NAME} moduledir)
     install(TARGETS mltwebvfx LIBRARY DESTINATION ${MLT_INSTALL_MODULE_DIR})
+
+    # https://stackoverflow.com/questions/66550128/create-symlinks-to-libraries-in-different-folder-during-installation-with-cmake
+    install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink \${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}/webvfx ${MLT_INSTALL_MODULE_DIR}/webvfx)")
 endif()

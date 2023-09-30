@@ -4,16 +4,14 @@
 
 #include <cerrno>
 #include <cstring>
+#include <dlfcn.h>
+#include <filesystem>
 #include <functional>
 #include <iostream>
 #include <signal.h>
 #include <stdio.h>
 #include <string>
 #include <unistd.h>
-
-#ifndef WEBVFX_EXECUTABLE
-#define WEBVFX_EXECUTABLE "webvfx"
-#endif
 
 namespace VfxPipe {
 
@@ -48,9 +46,19 @@ int spawnProcess(int* pipeRead, int* pipeWrite, const std::string& url, std::fun
         close(fdsToChild[0]);
         close(fdsToChild[1]);
 
-        char* const argv[] = { const_cast<char*>(WEBVFX_EXECUTABLE), const_cast<char*>(url.c_str()), nullptr };
-        if (execvp(WEBVFX_EXECUTABLE, argv) < 0) {
-            errorHandler(std::string("vfxpipe exec '") + WEBVFX_EXECUTABLE + " " + url + "' failed: " + strerror(errno));
+        Dl_info info;
+        auto fptr = &spawnProcess;
+        if (dladdr(reinterpret_cast<void*&>(fptr), &info)) {
+            std::filesystem::path path(info.dli_fname);
+            path.remove_filename();
+            path /= "webvfx";
+            char* const argv[] = { const_cast<char*>(path.c_str()), const_cast<char*>(url.c_str()), nullptr };
+            if (execv(argv[0], argv) < 0) {
+                errorHandler(std::string("vfxpipe exec '") + argv[0] + " " + url + "' failed: " + strerror(errno));
+                exit(1);
+            }
+        } else {
+            errorHandler(std::string("vfxpipe unable to determine library path"));
             exit(1);
         }
     }

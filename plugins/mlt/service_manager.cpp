@@ -108,8 +108,8 @@ bool ServiceManager::initialize(mlt_position length)
     mlt_properties properties = MLT_SERVICE_PROPERTIES(service);
 
     // Create and initialize webvfx
-    const char* command = mlt_properties_get(properties, "resource");
-    if (!command) {
+    const char* qmlUrl = mlt_properties_get(properties, "resource");
+    if (!qmlUrl) {
         pid = -1;
         mlt_log_error(service, "No 'resource' property found\n");
         return false;
@@ -118,7 +118,7 @@ bool ServiceManager::initialize(mlt_position length)
     auto spawnErrorHandler = [this](std::string msg) {
         mlt_log_error(service, "%s", msg.c_str());
     };
-    pid = VfxPipe::spawnProcess(&pipeRead, &pipeWrite, command, spawnErrorHandler);
+    pid = VfxPipe::spawnProcess(&pipeRead, &pipeWrite, qmlUrl, spawnErrorHandler);
     if (pid == -1) {
         return false;
     }

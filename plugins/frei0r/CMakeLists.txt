@@ -48,4 +48,7 @@ if(FREI0R_FOUND)
     install(TARGETS webvfx_source LIBRARY DESTINATION ${FREI0R_LIBDIR}/frei0r-1/webvfx)
     install(TARGETS webvfx_mixer2 LIBRARY DESTINATION ${FREI0R_LIBDIR}/frei0r-1/webvfx)
     install(TARGETS webvfx_mixer3 LIBRARY DESTINATION ${FREI0R_LIBDIR}/frei0r-1/webvfx)
+
+    # https://stackoverflow.com/questions/66550128/create-symlinks-to-libraries-in-different-folder-during-installation-with-cmake
+    install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink \${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}/webvfx ${FREI0R_LIBDIR}/frei0r-1/webvfx/webvfx)")
 endif()

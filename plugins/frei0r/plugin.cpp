@@ -33,16 +33,16 @@ public:
             close(pipeWrite);
     }
 
-    void setCommandLine(const char* commandLine)
+    void setQMLUrl(const char* qmlUrl)
     {
-        if (this->commandLine.empty()) {
-            this->commandLine = commandLine;
+        if (this->qmlUrl.empty()) {
+            this->qmlUrl = qmlUrl;
         }
     }
 
-    std::string& getCommandLine()
+    std::string& getQMLUrl()
     {
-        return this->commandLine;
+        return this->qmlUrl;
     }
 
     void updateFrame(
@@ -56,7 +56,7 @@ public:
             auto spawnErrorHandler = [](std::string msg) {
                 std::cerr << __FUNCTION__ << ": " << msg << std::endl;
             };
-            pid = VfxPipe::spawnProcess(&pipeRead, &pipeWrite, commandLine, spawnErrorHandler);
+            pid = VfxPipe::spawnProcess(&pipeRead, &pipeWrite, qmlUrl, spawnErrorHandler);
         }
         if (pid == -1) {
             std::cerr << __FUNCTION__ << ": vfxpipe failed to spawn process" << std::endl;
@@ -121,7 +121,7 @@ private:
     int pid;
     int pipeWrite;
     int pipeRead;
-    std::string commandLine;
+    std::string qmlUrl;
     unsigned int width;
     unsigned int height;
 };
@@ -148,9 +148,9 @@ void get_common_plugin_info(f0r_plugin_info_t* info)
 void f0r_get_param_info(f0r_param_info_t* info, int param_index)
 {
     if (param_index == 0) {
-        info->name = "Command Line";
+        info->name = "QML URL";
         info->type = F0R_PARAM_STRING;
-        info->explanation = "Command line for the process to spawn and pipe frames to/from";
+        info->explanation = "QML url to load and pipe frames to/from";
     }
 }
 
@@ -170,7 +170,7 @@ void f0r_set_param_value(f0r_instance_t instance, f0r_param_t param, int param_i
     if (param_index != 0)
         return;
     WebVfxPlugin* vfxpipe = static_cast<WebVfxPlugin*>(instance);
-    vfxpipe->setCommandLine(*(static_cast<f0r_param_string*>(param)));
+    vfxpipe->setQMLUrl(*(static_cast<f0r_param_string*>(param)));
 }
 
 void f0r_get_param_value(f0r_instance_t instance, f0r_param_t param, int param_index)
@@ -178,7 +178,7 @@ void f0r_get_param_value(f0r_instance_t instance, f0r_param_t param, int param_i
     if (param_index != 0)
         return;
     WebVfxPlugin* vfxpipe = static_cast<WebVfxPlugin*>(instance);
-    *static_cast<f0r_param_string*>(param) = const_cast<f0r_param_string>(vfxpipe->getCommandLine().c_str());
+    *static_cast<f0r_param_string*>(param) = const_cast<f0r_param_string>(vfxpipe->getQMLUrl().c_str());
 }
 
 void f0r_update2(
