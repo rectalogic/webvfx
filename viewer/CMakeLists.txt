@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-find_package(Qt6 REQUIRED QUIET COMPONENTS Widgets Quick OPTIONAL_COMPONENTS WebEngineQuick)
+find_package(Qt6 REQUIRED QUIET COMPONENTS Widgets)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
@@ -10,18 +10,12 @@ set(CMAKE_AUTOUIC ON)
 qt_add_executable(webvfx_viewer MACOSX_BUNDLE
     main.cpp
     image_color.cpp
+    content_pipe.cpp
     viewer.cpp
     viewer.ui
 )
 
-list(APPEND ViewerLibraries Qt6::Widgets Qt6::Quick webvfx)
-
-if(${Qt6WebEngineQuick_FOUND})
-    list(APPEND ViewerLibraries Qt6::WebEngineQuick)
-    add_definitions(-DWEBENGINEQUICK)
-endif()
-
-target_link_libraries(webvfx_viewer PRIVATE ${ViewerLibraries})
+target_link_libraries(webvfx_viewer PRIVATE Qt6::Widgets vfxpipe)
 
 if(APPLE)
     set_target_properties(webvfx_viewer PROPERTIES OUTPUT_NAME "WebVfx Viewer")

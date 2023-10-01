@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef VIEWER_H
-#define VIEWER_H
+#pragma once
 
+#include "content_pipe.h"
 #include "ui_viewer.h"
 #include <QImage>
 #include <QMainWindow>
@@ -23,12 +23,10 @@ class Viewer : public QMainWindow, private Ui::Viewer {
 
 public:
     Viewer();
-    ~Viewer();
     void loadFile(const QString& fileName);
     void messageHandler(QtMsgType, const QMessageLogContext&, const QString&);
 private slots:
     void on_actionOpen_triggered(bool);
-    void onContentLoadFinished(bool);
     void on_actionReload_triggered(bool);
     void on_resizeButton_clicked();
     void on_timeSlider_valueChanged(int);
@@ -42,13 +40,11 @@ private:
     void renderContent();
     void setContentUIEnabled(bool enable);
     void handleResize();
-    void setImagesOnContent();
     void setupImages(const QSize& size);
     double sliderTimeValue(int value);
     QLabel* sizeLabel;
     QDoubleSpinBox* timeSpinBox;
     QLabel* imageLabel;
-    WebVfx::QmlContent* content;
+    QImage renderImage;
+    ContentPipe* contentPipe;
 };
-
-#endif

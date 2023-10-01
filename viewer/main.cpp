@@ -6,21 +6,12 @@
 #include <QApplication>
 #include <QScopedPointer>
 #include <QtGlobal>
-#ifdef WEBENGINEQUICK
-#include <QtWebEngineQuick>
-#endif
 
 int main(int argc, char* argv[])
 {
-#ifdef WEBENGINEQUICK
-    // https://doc.qt.io/qt-6/qml-qtwebengine-webengineview.html#rendering-to-opengl-surface
-    // https://doc.qt.io/qt-6/qtwebengine-overview.html#embedding-web-content-into-qt-quick-applications
-    QtWebEngineQuick::initialize();
-#endif
-
     QApplication app(argc, argv);
 
-    app.setOrganizationDomain("webvfx.org");
+    app.setOrganizationDomain("webvfx.stream");
     app.setOrganizationName("WebVfx");
     app.setApplicationName("WebVfx Viewer");
 

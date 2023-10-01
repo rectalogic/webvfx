@@ -18,77 +18,18 @@
 #include <QTableWidgetItem>
 #include <QTextStream>
 #include <QUrl>
-#include <QVideoFrame>
-#include <QVideoFrameFormat>
-#include <webvfx/parameters.h>
-#include <webvfx/qml_content.h>
-#include <webvfx/webvfx.h>
-
-// Expose parameter name/value pairs from the table to the page content
-class ViewerParameters : public WebVfx::Parameters {
-public:
-    ViewerParameters(QTableWidget* tableWidget)
-        : tableWidget(tableWidget)
-    {
-    }
-
-    double getNumberParameter(const QString& name)
-    {
-        QString value = findValue(name);
-        return value.toDouble();
-    }
-
-    QString getStringParameter(const QString& name)
-    {
-        return findValue(name);
-    }
-
-private:
-    QString findValue(const QString& name)
-    {
-        QList<QTableWidgetItem*> itemList = tableWidget->findItems(name, Qt::MatchFixedString | Qt::MatchCaseSensitive);
-        foreach (const QTableWidgetItem* item, itemList) {
-            // If the string matches column 0 (Name), then return column 1 (Value)
-            if (item->column() == 0) {
-                QTableWidgetItem* valueItem = tableWidget->item(item->row(), 1);
-                if (valueItem)
-                    return valueItem->text();
-            }
-        }
-        return QString();
-    }
-
-    QTableWidget* tableWidget;
-};
-
-/////////////////
-
-class ViewerLogger : public WebVfx::Logger {
-public:
-    ViewerLogger(QPlainTextEdit* logText)
-        : logText(logText)
-    {
-    }
-    void log(const QString& msg)
-    {
-        logText->appendPlainText(msg);
-    }
-
-private:
-    QPlainTextEdit* logText;
-};
-
-/////////////////
+#include <QUrlQuery>
 
 Viewer::Viewer()
     : QMainWindow(0)
     , sizeLabel(0)
     , timeSpinBox(0)
-    , content(0)
+    , contentPipe(0)
 {
     setupUi(this);
 
-    WebVfx::setLogger(new ViewerLogger(logTextEdit));
+    // XXX capture stderr and send to logTextEdit
+    // XXX WebVfx::setLogger(new ViewerLogger(logTextEdit));
 
     // Time display
     timeSpinBox = new QDoubleSpinBox(statusBar());
@@ -109,11 +50,6 @@ Viewer::Viewer()
     handleResize();
 }
 
-Viewer::~Viewer()
-{
-    delete content;
-}
-
 void Viewer::messageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
     QString result;
@@ -126,18 +62,6 @@ void Viewer::setContentUIEnabled(bool enable)
     timeSpinBox->setEnabled(enable);
     timeSlider->setEnabled(enable);
     actionReload->setEnabled(enable);
-}
-
-void Viewer::onContentLoadFinished(bool result)
-{
-    if (result) {
-        setupImages(scrollArea->widget()->size());
-        renderContent();
-    } else {
-        statusBar()->showMessage(tr("Load failed"), 2000);
-        setWindowFilePath("");
-    }
-    setContentUIEnabled(result);
 }
 
 void Viewer::on_actionOpen_triggered(bool)
@@ -155,11 +79,21 @@ void Viewer::on_actionReload_triggered(bool)
 
 void Viewer::renderContent()
 {
-    if (!content)
+    if (!contentPipe)
         return;
-    setImagesOnContent();
-    QImage renderImage(scrollArea->widget()->size(), QImage::Format_RGBA8888);
-    content->renderContent(timeSpinBox->value(), renderImage);
+
+    int rowCount = imagesTable->rowCount();
+    QList<QImage> sourceImages(rowCount);
+    for (int i = 0; i < rowCount; i++) {
+        ImageColor* imageColor = static_cast<ImageColor*>(imagesTable->cellWidget(i, 1));
+        if (imageColor) {
+            sourceImages[i] = imageColor->getImage();
+        }
+    }
+
+    if (renderImage.size() != scrollArea->widget()->size())
+        renderImage = QImage(scrollArea->widget()->size(), QImage::Format_RGBA8888);
+    contentPipe->renderContent(timeSpinBox->value(), sourceImages, renderImage);
     imageLabel->setPixmap(QPixmap::fromImage(renderImage));
 }
 
@@ -181,8 +115,6 @@ void Viewer::handleResize()
     int width = widthSpinBox->value();
     int height = heightSpinBox->value();
     scrollArea->widget()->resize(width, height);
-    if (content)
-        content->setContentSize(QSize(width, height));
     sizeLabel->setText(QString::number(width) % QLatin1String("x") % QString::number(height));
 
     // Iterate over ImageColor widgets in table and change their sizes
@@ -194,25 +126,6 @@ void Viewer::handleResize()
             imageColor->setImageSize(size);
     }
     renderContent();
-}
-
-void Viewer::setImagesOnContent()
-{
-    if (!content)
-        return;
-    auto videoSinks = content->getVideoSinks();
-    int rowCount = imagesTable->rowCount();
-    for (int i = 0; i < rowCount; i++) {
-        ImageColor* imageColor = static_cast<ImageColor*>(imagesTable->cellWidget(i, 1));
-        if (imageColor) {
-            auto image = imageColor->getImage();
-            QVideoFrame frame(QVideoFrameFormat(image.size(), QVideoFrameFormat::pixelFormatFromImageFormat(image.format())));
-            frame.map(QVideoFrame::WriteOnly);
-            memcpy(frame.bits(0), image.bits(), frame.mappedBytes(0));
-            frame.unmap();
-            videoSinks.at(i)->setVideoFrame(frame);
-        }
-    }
 }
 
 void Viewer::on_timeSlider_valueChanged(int value)
@@ -250,13 +163,22 @@ double Viewer::sliderTimeValue(int value)
 void Viewer::createContent(const QString& fileName)
 {
     QSize size(scrollArea->widget()->size());
-    WebVfx::QmlContent* qmlContent = new WebVfx::QmlContent(size, new ViewerParameters(parametersTable));
-    delete content;
-    content = qmlContent;
-    imageLabel = new QLabel(scrollArea);
-    connect(qmlContent, SIGNAL(contentLoadFinished(bool)), SLOT(onContentLoadFinished(bool)));
 
-    // Set content as direct widget of QScrollArea,
+    QUrlQuery query;
+    for (int row = 0; row < parametersTable->rowCount(); row++) {
+        query.addQueryItem(
+            QUrl::toPercentEncoding(parametersTable->item(row, 0)->text()),
+            QUrl::toPercentEncoding(parametersTable->item(row, 1)->text()));
+    }
+    QUrl qmlUrl(QUrl::fromLocalFile(QFileInfo(fileName).absoluteFilePath()));
+    qmlUrl.setQuery(query);
+
+    ContentPipe* qmlContentPipe = new ContentPipe(qmlUrl, this);
+    delete contentPipe;
+    contentPipe = qmlContentPipe;
+    imageLabel = new QLabel(scrollArea);
+
+    // Set imageLabel as direct widget of QScrollArea,
     // otherwise it creates an intermediate QWidget which messes up resizing.
     // setWidget will destroy the old view.
     scrollArea->setWidget(imageLabel);
@@ -265,15 +187,17 @@ void Viewer::createContent(const QString& fileName)
 
     logTextEdit->clear();
 
-    setContentUIEnabled(false);
-    content->loadContent(QUrl::fromLocalFile(QFileInfo(fileName).absoluteFilePath()));
+    setContentUIEnabled(false); // XXX need UI enabled all the time now?
+
+    setupImages(scrollArea->widget()->size());
+    renderContent();
 }
 
 void Viewer::setupImages(const QSize& size)
 {
-    imagesTable->setRowCount(0);
-    auto videoSinks = content->getVideoSinks();
-    for (qsizetype row = 0; row < videoSinks.size(); ++row) {
+    int imageCount = 0; // XXX need a count, make frameserver return count
+    imagesTable->setRowCount(imageCount);
+    for (qsizetype row = 0; row < imageCount; ++row) {
         imagesTable->insertRow(row);
 
         QString imageName = QString("Image %1").arg(row);
@@ -296,8 +220,7 @@ void Viewer::setupImages(const QSize& size)
 
 void Viewer::onImageChanged(const QString&, QImage)
 {
-    if (!content)
+    if (!contentPipe)
         return;
-    setImagesOnContent();
     renderContent();
 }

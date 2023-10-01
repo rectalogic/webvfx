@@ -24,13 +24,13 @@ endif()
 add_subdirectory(vfxpipe)
 add_subdirectory(webvfx)
 
-# add_subdirectory(viewer)
+add_subdirectory(viewer)
 add_subdirectory(tools/driver)
 add_subdirectory(plugins/mlt)
 add_subdirectory(plugins/frei0r)
 add_subdirectory(doc)
 
-# add_dependencies(webvfx_viewer webvfx)
+add_dependencies(webvfx_viewer vfxpipe)
 add_dependencies(webvfx vfxpipe)
 
 if(MLT_FOUND)
