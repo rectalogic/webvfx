@@ -1,3 +1,4 @@
+#include <limits.h>
 // Copyright (c) 2022 Andrew Wason. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -8,6 +9,7 @@
 #include <filesystem>
 #include <functional>
 #include <iostream>
+#include <limits.h>
 #include <signal.h>
 #include <stdio.h>
 #include <string>
@@ -52,7 +54,12 @@ int spawnProcess(int* pipeRead, int* pipeWrite, const std::string& url, std::fun
             std::filesystem::path path(info.dli_fname);
             path.remove_filename();
             path /= "webvfx";
-            char* const argv[] = { const_cast<char*>(path.c_str()), const_cast<char*>(url.c_str()), nullptr };
+            char resolvedPath[PATH_MAX];
+            if (!realpath(path.c_str(), resolvedPath)) {
+                errorHandler(std::string("vfxpipe realpath '") + path.generic_string() + "' failed: " + strerror(errno));
+                exit(1);
+            }
+            char* const argv[] = { const_cast<char*>(resolvedPath), const_cast<char*>(url.c_str()), nullptr };
             if (execv(argv[0], argv) < 0) {
                 errorHandler(std::string("vfxpipe exec '") + argv[0] + " " + url + "' failed: " + strerror(errno));
                 exit(1);

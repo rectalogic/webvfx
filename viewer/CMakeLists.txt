@@ -22,6 +22,11 @@ if(APPLE)
 endif()
 
 install(TARGETS webvfx_viewer
-    RUNTIME DESTINATION
-    BUNDLE DESTINATION bin
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+    BUNDLE DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+if(APPLE)
+    # https://stackoverflow.com/questions/66550128/create-symlinks-to-libraries-in-different-folder-during-installation-with-cmake
+    install(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink \"\${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_BINDIR}/webvfx\" \"\$<TARGET_BUNDLE_CONTENT_DIR:webvfx_viewer>/MacOS/webvfx\")")
+endif()

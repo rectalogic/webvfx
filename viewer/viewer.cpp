@@ -45,7 +45,7 @@ Viewer::Viewer()
     sizeLabel = new QLabel(statusBar());
     statusBar()->addPermanentWidget(sizeLabel);
 
-    setContentUIEnabled(false);
+    setContentUIEnabled(true); // XXX
 
     handleResize();
 }
@@ -166,9 +166,13 @@ void Viewer::createContent(const QString& fileName)
 
     QUrlQuery query;
     for (int row = 0; row < parametersTable->rowCount(); row++) {
-        query.addQueryItem(
-            QUrl::toPercentEncoding(parametersTable->item(row, 0)->text()),
-            QUrl::toPercentEncoding(parametersTable->item(row, 1)->text()));
+        auto name = parametersTable->item(row, 0);
+        auto value = parametersTable->item(row, 1);
+        if (name && value) {
+            query.addQueryItem(
+                QUrl::toPercentEncoding(name->text()),
+                QUrl::toPercentEncoding(value->text()));
+        }
     }
     QUrl qmlUrl(QUrl::fromLocalFile(QFileInfo(fileName).absoluteFilePath()));
     qmlUrl.setQuery(query);
@@ -187,7 +191,7 @@ void Viewer::createContent(const QString& fileName)
 
     logTextEdit->clear();
 
-    setContentUIEnabled(false); // XXX need UI enabled all the time now?
+    setContentUIEnabled(true); // XXX need UI enabled all the time now?
 
     setupImages(scrollArea->widget()->size());
     renderContent();
