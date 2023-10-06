@@ -9,6 +9,7 @@
 #include <string.h>
 #include <string>
 #include <unistd.h>
+#include <vector>
 
 namespace VfxPipe {
 
@@ -37,7 +38,7 @@ public:
     {
     }
 
-    size_t dataSize()
+    size_t dataSize() const
     {
         if (pixelFormat == PixelFormat::RGBA32)
             return stride * height * 4;
@@ -59,20 +60,21 @@ public:
     uint32_t stride;
 };
 
+template <typename D>
 class VideoFrame {
 public:
-    VideoFrame(VideoFrameFormat format, const std::byte* data = nullptr)
+    VideoFrame(VideoFrameFormat format, D data = nullptr)
         : format(format)
         , data(data)
     {
     }
 
-    VideoFrame(VideoFrameFormat::PixelFormat pixelFormat, uint32_t width, uint32_t height, uint32_t stride, const std::byte* data = nullptr)
+    VideoFrame(VideoFrameFormat::PixelFormat pixelFormat, uint32_t width, uint32_t height, uint32_t stride, D data = nullptr)
         : VideoFrame(VideoFrameFormat(pixelFormat, width, height, stride), data)
     {
     }
 
-    VideoFrame(VideoFrameFormat::PixelFormat pixelFormat, uint32_t width, uint32_t height, const std::byte* data = nullptr)
+    VideoFrame(VideoFrameFormat::PixelFormat pixelFormat, uint32_t width, uint32_t height, D data = nullptr)
         : VideoFrame(VideoFrameFormat(pixelFormat, width, height), data)
     {
     }
@@ -83,24 +85,40 @@ public:
     }
 
     VideoFrameFormat format;
-    const std::byte* data;
+    D data;
 };
 
-int spawnProcess(int* pipeRead, int* pipeWrite, const std::string& url, std::function<void(std::string)> errorHandler);
+using SourceVideoFrame = VideoFrame<const std::byte*>;
+using RenderedVideoFrame = VideoFrame<std::byte*>;
+using ErrorHandler = std::function<void(std::string)>;
 
-template <typename D, typename IO, typename ERR>
-bool dataIO(int fd, D data, size_t size, IO ioFunc, ERR errFunc)
+class FrameServer {
+public:
+    FrameServer(const std::string& url);
+    ~FrameServer();
+    bool renderFrame(double time, const std::vector<SourceVideoFrame>& sourceFrames, RenderedVideoFrame& outputFrame, ErrorHandler errorHandler);
+    std::string& getUrl() { return url; }
+
+private:
+    std::string url;
+    int pid;
+    int pipeWrite;
+    int pipeRead;
+};
+
+template <typename D, typename IO>
+bool dataIO(int fd, D data, size_t size, IO ioFunc, ErrorHandler errFunc)
 {
     size_t bytesIO = 0;
     while (bytesIO < size) {
         ssize_t n = ioFunc(fd, data + bytesIO, size - bytesIO);
         // EOF
         if (n == 0) {
-            errFunc(n);
+            errFunc("");
             return false;
         }
         if (n == -1) {
-            errFunc(n, std::string("vfxpipe data IO failed: ") + strerror(errno));
+            errFunc(std::string("vfxpipe data IO failed: ") + strerror(errno));
             return false;
         }
         bytesIO = bytesIO + n;
@@ -108,23 +126,26 @@ bool dataIO(int fd, D data, size_t size, IO ioFunc, ERR errFunc)
     return true;
 }
 
-template <typename ERR>
-bool readVideoFrame(int fd, VideoFrame* frame, ERR errFunc)
+inline bool readVideoFrameFormat(int fd, VideoFrameFormat& format, ErrorHandler errFunc)
 {
-    return dataIO(fd, reinterpret_cast<std::byte*>(&frame->format.pixelFormat), sizeof(frame->format.pixelFormat), read, errFunc)
-        && dataIO(fd, reinterpret_cast<std::byte*>(&frame->format.width), sizeof(frame->format.width), read, errFunc)
-        && dataIO(fd, reinterpret_cast<std::byte*>(&frame->format.height), sizeof(frame->format.height), read, errFunc)
-        && dataIO(fd, reinterpret_cast<std::byte*>(&frame->format.stride), sizeof(frame->format.stride), read, errFunc);
+    return dataIO(fd, reinterpret_cast<std::byte*>(&format.pixelFormat), sizeof(format.pixelFormat), read, errFunc)
+        && dataIO(fd, reinterpret_cast<std::byte*>(&format.width), sizeof(format.width), read, errFunc)
+        && dataIO(fd, reinterpret_cast<std::byte*>(&format.height), sizeof(format.height), read, errFunc)
+        && dataIO(fd, reinterpret_cast<std::byte*>(&format.stride), sizeof(format.stride), read, errFunc);
 }
 
-template <typename ERR>
-bool writeVideoFrame(int fd, VideoFrame* frame, ERR errFunc)
+inline bool writeVideoFrameFormat(int fd, const VideoFrameFormat& format, ErrorHandler errFunc)
 {
-    return dataIO(fd, reinterpret_cast<const std::byte*>(&frame->format.pixelFormat), sizeof(frame->format.pixelFormat), write, errFunc)
-        && dataIO(fd, reinterpret_cast<const std::byte*>(&frame->format.width), sizeof(frame->format.width), write, errFunc)
-        && dataIO(fd, reinterpret_cast<const std::byte*>(&frame->format.height), sizeof(frame->format.height), write, errFunc)
-        && dataIO(fd, reinterpret_cast<const std::byte*>(&frame->format.stride), sizeof(frame->format.stride), write, errFunc)
-        && (!frame->data || dataIO(fd, frame->data, frame->format.dataSize(), write, errFunc));
+    return dataIO(fd, reinterpret_cast<const std::byte*>(&format.pixelFormat), sizeof(format.pixelFormat), write, errFunc)
+        && dataIO(fd, reinterpret_cast<const std::byte*>(&format.width), sizeof(format.width), write, errFunc)
+        && dataIO(fd, reinterpret_cast<const std::byte*>(&format.height), sizeof(format.height), write, errFunc)
+        && dataIO(fd, reinterpret_cast<const std::byte*>(&format.stride), sizeof(format.stride), write, errFunc);
+}
+
+inline bool writeVideoFrame(int fd, const SourceVideoFrame& frame, ErrorHandler errFunc)
+{
+    return writeVideoFrameFormat(fd, frame.format, errFunc)
+        && (!frame.data || dataIO(fd, frame.data, frame.format.dataSize(), write, errFunc));
 }
 
 }

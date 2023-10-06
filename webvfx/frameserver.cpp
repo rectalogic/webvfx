@@ -125,11 +125,11 @@ bool FrameServer::event(QEvent* event)
 void FrameServer::readFrames()
 {
     auto f = __FUNCTION__;
-    auto ioErrorHandler = [f](int n, std::string msg = "") {
+    auto ioErrorHandler = [f](std::string msg) {
         // EOF
-        if (n == 0) {
+        if (msg.empty()) {
             QCoreApplication::exit(0);
-        } else if (n == -1) {
+        } else {
             qCritical() << f << ": WebVfx frameserver: " << msg.c_str();
             QCoreApplication::exit(1);
         }
@@ -147,7 +147,7 @@ void FrameServer::readFrames()
         time = time / duration;
     }
 
-    if (!VfxPipe::readVideoFrame(STDIN_FILENO, &outputFrame, ioErrorHandler))
+    if (!VfxPipe::readVideoFrameFormat(STDIN_FILENO, outputFrame.format, ioErrorHandler))
         return;
     content->setContentSize(QSize(outputFrame.format.width, outputFrame.format.height));
 
@@ -160,8 +160,8 @@ void FrameServer::readFrames()
         return;
     }
     for (auto& frameSink : frameSinks) {
-        VfxPipe::VideoFrame inputFrame;
-        if (!VfxPipe::readVideoFrame(STDIN_FILENO, &inputFrame, ioErrorHandler))
+        VfxPipe::VideoFrame<std::byte*> inputFrame;
+        if (!VfxPipe::readVideoFrameFormat(STDIN_FILENO, inputFrame.format, ioErrorHandler))
             return;
         if (frameSink.format != inputFrame.format) {
             frameSink.format = inputFrame.format;
@@ -199,11 +199,11 @@ void FrameServer::onRenderComplete(QImage outputImage)
 {
     // XXX need to convert the rendered RGBA32 outputImage to outputFrame format
 
-    auto ioErrorHandler = [](int n, std::string msg = "") {
+    auto ioErrorHandler = [](std::string msg) {
         // EOF
-        if (n == 0) {
+        if (msg.empty()) {
             QCoreApplication::exit(0);
-        } else if (n == -1) {
+        } else {
             qCritical() << msg.c_str();
             QCoreApplication::exit(1);
         }

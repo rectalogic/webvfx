@@ -13,6 +13,4 @@ mkdir -p "$WEBVFX_BUILD"
 PATH=$INSTALL_ROOT/bin:$PATH
 
 cd "$WEBVFX_BUILD"
-cmake --install-prefix "$INSTALL_ROOT" "$WEBVFX_ROOT"
-cmake --build .
-cmake --install .
+cmake --install-prefix "$INSTALL_ROOT" "$WEBVFX_ROOT" && cmake --build . && cmake --install .

@@ -1,8 +1,8 @@
-#include <limits.h>
 // Copyright (c) 2022 Andrew Wason. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "vfxpipe.h"
 #include <cerrno>
 #include <cstring>
 #include <dlfcn.h>
@@ -17,7 +17,7 @@
 
 namespace VfxPipe {
 
-int spawnProcess(int* pipeRead, int* pipeWrite, const std::string& url, std::function<void(std::string)> errorHandler)
+int spawnProcess(int* pipeRead, int* pipeWrite, const std::string& url, ErrorHandler errorHandler)
 {
     int fdsToChild[2];
     int fdsFromChild[2];
@@ -78,6 +78,66 @@ int spawnProcess(int* pipeRead, int* pipeWrite, const std::string& url, std::fun
     close(fdsFromChild[1]);
     close(fdsToChild[0]);
     return pid;
+}
+
+FrameServer::FrameServer(const std::string& url)
+    : url(url)
+    , pid(0)
+    , pipeWrite(-1)
+    , pipeRead(-1)
+{
+}
+
+FrameServer::~FrameServer()
+{
+    if (pipeRead != -1)
+        close(pipeRead);
+    if (pipeWrite != -1)
+        close(pipeWrite);
+}
+
+bool FrameServer::renderFrame(double time, const std::vector<SourceVideoFrame>& sourceFrames, RenderedVideoFrame& outputFrame, ErrorHandler errorHandler)
+{
+    if (!pid) {
+        pid = spawnProcess(&pipeRead, &pipeWrite, url, errorHandler);
+    }
+    if (pid == -1) {
+        errorHandler("vfxpipe failed to spawn process");
+        return false;
+    }
+
+    auto ioErrorHandler = [this, errorHandler](std::string msg) {
+        if (!msg.empty())
+            errorHandler(msg);
+        close(pipeRead);
+        pipeRead = -1;
+        close(pipeWrite);
+        pipeWrite = -1;
+    };
+
+    if (!dataIO(pipeWrite, reinterpret_cast<std::byte*>(&time), sizeof(time), write, ioErrorHandler)) {
+        return false;
+    }
+
+    // Output format
+    if (!writeVideoFrameFormat(pipeWrite, outputFrame.format, ioErrorHandler)) {
+        return false;
+    }
+
+    uint32_t frameCount = sourceFrames.size();
+    if (!dataIO(pipeWrite, reinterpret_cast<const std::byte*>(&frameCount), sizeof(frameCount), write, ioErrorHandler)) {
+        return false;
+    }
+    for (const auto& sourceFrame : sourceFrames) {
+        if (!writeVideoFrame(pipeWrite, sourceFrame, ioErrorHandler)) {
+            return false;
+        }
+    }
+
+    if (!dataIO(pipeRead, outputFrame.data, outputFrame.format.dataSize(), read, ioErrorHandler)) {
+        return false;
+    }
+    return true;
 }
 
 }

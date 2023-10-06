@@ -10,7 +10,6 @@ set(CMAKE_AUTOUIC ON)
 qt_add_executable(webvfx_viewer MACOSX_BUNDLE
     main.cpp
     image_color.cpp
-    content_pipe.cpp
     viewer.cpp
     viewer.ui
 )

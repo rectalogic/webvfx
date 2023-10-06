@@ -24,7 +24,7 @@ Viewer::Viewer()
     : QMainWindow(0)
     , sizeLabel(0)
     , timeSpinBox(0)
-    , contentPipe(0)
+    , frameServer(0)
 {
     setupUi(this);
 
@@ -48,6 +48,11 @@ Viewer::Viewer()
     setContentUIEnabled(true); // XXX
 
     handleResize();
+}
+
+Viewer::~Viewer()
+{
+    delete frameServer;
 }
 
 void Viewer::messageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg)
@@ -79,22 +84,33 @@ void Viewer::on_actionReload_triggered(bool)
 
 void Viewer::renderContent()
 {
-    if (!contentPipe)
+    if (!frameServer)
         return;
 
     int rowCount = imagesTable->rowCount();
-    QList<QImage> sourceImages(rowCount);
+    std::vector<VfxPipe::VideoFrame<const std::byte*>> sourceImages;
     for (int i = 0; i < rowCount; i++) {
         ImageColor* imageColor = static_cast<ImageColor*>(imagesTable->cellWidget(i, 1));
         if (imageColor) {
-            sourceImages[i] = imageColor->getImage();
+            auto image = imageColor->getImage();
+            sourceImages.emplace_back(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, image.width(), image.height(), reinterpret_cast<const std::byte*>(image.constBits()));
         }
     }
 
+    auto errorHandler = [](std::string msg) {
+        qCritical() << msg;
+    };
+
     if (renderImage.size() != scrollArea->widget()->size())
         renderImage = QImage(scrollArea->widget()->size(), QImage::Format_RGBA8888);
-    contentPipe->renderContent(timeSpinBox->value(), sourceImages, renderImage);
-    imageLabel->setPixmap(QPixmap::fromImage(renderImage));
+    VfxPipe::VideoFrame outputImage(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, renderImage.width(), renderImage.height(), reinterpret_cast<std::byte*>(renderImage.bits()));
+    if (frameServer->renderFrame(timeSpinBox->value(), sourceImages, outputImage, errorHandler)) {
+        imageLabel->setPixmap(QPixmap::fromImage(renderImage));
+    } else {
+        delete frameServer;
+        frameServer = nullptr;
+        setContentUIEnabled(false);
+    }
 }
 
 void Viewer::on_resizeButton_clicked()
@@ -177,9 +193,9 @@ void Viewer::createContent(const QString& fileName)
     QUrl qmlUrl(QUrl::fromLocalFile(QFileInfo(fileName).absoluteFilePath()));
     qmlUrl.setQuery(query);
 
-    ContentPipe* qmlContentPipe = new ContentPipe(qmlUrl, this);
-    delete contentPipe;
-    contentPipe = qmlContentPipe;
+    VfxPipe::FrameServer* qmlFrameServer = new VfxPipe::FrameServer(qmlUrl.toString().toStdString());
+    delete frameServer;
+    frameServer = qmlFrameServer;
     imageLabel = new QLabel(scrollArea);
 
     // Set imageLabel as direct widget of QScrollArea,
@@ -224,7 +240,7 @@ void Viewer::setupImages(const QSize& size)
 
 void Viewer::onImageChanged(const QString&, QImage)
 {
-    if (!contentPipe)
+    if (!frameServer)
         return;
     renderContent();
 }

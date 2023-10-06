@@ -11,38 +11,37 @@
 #include <stdio.h>
 #include <string>
 #include <unistd.h>
+#include <vector>
 #include <vfxpipe.h>
 #include <wordexp.h>
 
 class WebVfxPlugin {
 public:
     WebVfxPlugin(unsigned int width, unsigned int height)
-        : width(width)
+        : frameServer(nullptr)
+        , width(width)
         , height(height)
-        , pid(0)
-        , pipeWrite(-1)
-        , pipeRead(-1)
     {
     }
 
     ~WebVfxPlugin()
     {
-        if (pipeRead != -1)
-            close(pipeRead);
-        if (pipeWrite != -1)
-            close(pipeWrite);
+        delete frameServer;
     }
 
     void setQMLUrl(const char* qmlUrl)
     {
-        if (this->qmlUrl.empty()) {
-            this->qmlUrl = qmlUrl;
+        if (!frameServer) {
+            frameServer = new VfxPipe::FrameServer(qmlUrl);
         }
     }
 
-    std::string& getQMLUrl()
+    std::string getQMLUrl()
     {
-        return this->qmlUrl;
+        if (frameServer)
+            return frameServer->getUrl();
+        else
+            return std::string();
     }
 
     void updateFrame(
@@ -52,76 +51,29 @@ public:
         const uint32_t* inframe3,
         uint32_t* outframe)
     {
-        if (!pid) {
-            auto spawnErrorHandler = [](std::string msg) {
-                std::cerr << __FUNCTION__ << ": " << msg << std::endl;
-            };
-            pid = VfxPipe::spawnProcess(&pipeRead, &pipeWrite, qmlUrl, spawnErrorHandler);
-        }
-        if (pid == -1) {
-            std::cerr << __FUNCTION__ << ": vfxpipe failed to spawn process" << std::endl;
+        if (!frameServer)
             return;
-        }
 
-        auto ioErrorHandler = [this](int n, std::string msg = "") {
-            if (!msg.empty())
-                std::cerr << __FUNCTION__ << ": " << msg << std::endl;
-            close(pipeRead);
-            pipeRead = -1;
-            close(pipeWrite);
-            pipeWrite = -1;
+        auto errorHandler = [](std::string msg) {
+            std::cerr << __FUNCTION__ << ": " << msg << std::endl;
         };
 
-        if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<std::byte*>(&time), sizeof(time), write, ioErrorHandler)) {
-            return;
-        }
-
-        // Output format
-        VfxPipe::VideoFrame vfxOutputFrame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, width, height);
-        if (!VfxPipe::writeVideoFrame(pipeWrite, &vfxOutputFrame, ioErrorHandler)) {
-            return;
-        }
-
-        uint32_t frameCount = 0;
+        std::vector<VfxPipe::SourceVideoFrame> sourceFrames;
         if (inframe1)
-            frameCount++;
+            sourceFrames.emplace_back(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, width, height, reinterpret_cast<const std::byte*>(inframe1));
         if (inframe2)
-            frameCount++;
+            sourceFrames.emplace_back(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, width, height, reinterpret_cast<const std::byte*>(inframe2));
         if (inframe3)
-            frameCount++;
-        if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<const std::byte*>(&frameCount), sizeof(frameCount), write, ioErrorHandler)) {
-            return;
-        }
-
-        if (inframe1) {
-            VfxPipe::VideoFrame vfxFrame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, width, height, reinterpret_cast<const std::byte*>(inframe1));
-            if (!VfxPipe::writeVideoFrame(pipeWrite, &vfxFrame, ioErrorHandler)) {
-                return;
-            }
-        }
-        if (inframe2) {
-            VfxPipe::VideoFrame vfxFrame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, width, height, reinterpret_cast<const std::byte*>(inframe2));
-            if (!VfxPipe::writeVideoFrame(pipeWrite, &vfxFrame, ioErrorHandler)) {
-                return;
-            }
-        }
-        if (inframe3) {
-            VfxPipe::VideoFrame vfxFrame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, width, height, reinterpret_cast<const std::byte*>(inframe3));
-            if (!VfxPipe::writeVideoFrame(pipeWrite, &vfxFrame, ioErrorHandler)) {
-                return;
-            }
-        }
-
-        if (!VfxPipe::dataIO(pipeRead, reinterpret_cast<std::byte*>(outframe), vfxOutputFrame.format.dataSize(), read, ioErrorHandler)) {
-            return;
+            sourceFrames.emplace_back(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, width, height, reinterpret_cast<const std::byte*>(inframe3));
+        VfxPipe::RenderedVideoFrame outputFrame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, width, height, reinterpret_cast<std::byte*>(outframe));
+        if (!frameServer->renderFrame(time, sourceFrames, outputFrame, errorHandler)) {
+            delete frameServer;
+            frameServer = nullptr;
         }
     }
 
 private:
-    int pid;
-    int pipeWrite;
-    int pipeRead;
-    std::string qmlUrl;
+    VfxPipe::FrameServer* frameServer;
     unsigned int width;
     unsigned int height;
 };

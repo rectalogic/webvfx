@@ -9,6 +9,7 @@
 #include <string.h>
 #include <string>
 #include <unistd.h>
+#include <vector>
 #include <vfxpipe.h>
 
 extern "C" {
@@ -75,9 +76,7 @@ private:
 ServiceManager::ServiceManager(mlt_service service)
     : service(service)
     , length(0)
-    , pid(0)
-    , pipeRead(-1)
-    , pipeWrite(-1)
+    , frameServer(nullptr)
     , imageProducers(0)
 {
     mlt_properties_set(MLT_SERVICE_PROPERTIES(service), "factory", mlt_environment("MLT_PRODUCER"));
@@ -85,10 +84,7 @@ ServiceManager::ServiceManager(mlt_service service)
 
 ServiceManager::~ServiceManager()
 {
-    if (pipeRead != -1)
-        close(pipeRead);
-    if (pipeWrite != -1)
-        close(pipeWrite);
+    delete frameServer;
     if (imageProducers) {
         for (std::vector<ImageProducer*>::iterator it = imageProducers->begin();
              it != imageProducers->end(); it++) {
@@ -101,7 +97,7 @@ ServiceManager::~ServiceManager()
 bool ServiceManager::initialize(mlt_position length)
 {
     // Return if already initialized
-    if (pid == -1 || pid > 0)
+    if (frameServer)
         return true;
 
     this->length = length;
@@ -110,18 +106,11 @@ bool ServiceManager::initialize(mlt_position length)
     // Create and initialize webvfx
     const char* qmlUrl = mlt_properties_get(properties, "resource");
     if (!qmlUrl) {
-        pid = -1;
         mlt_log_error(service, "No 'resource' property found\n");
         return false;
     }
 
-    auto spawnErrorHandler = [this](std::string msg) {
-        mlt_log_error(service, "%s", msg.c_str());
-    };
-    pid = VfxPipe::spawnProcess(&pipeRead, &pipeWrite, qmlUrl, spawnErrorHandler);
-    if (pid == -1) {
-        return false;
-    }
+    frameServer = new VfxPipe::FrameServer(qmlUrl);
 
     // Find extra image producers - "producer.N.resource"
     char* factory = mlt_properties_get(properties, "factory");
@@ -150,52 +139,25 @@ bool ServiceManager::initialize(mlt_position length)
     return true;
 }
 
-int ServiceManager::render(VfxPipe::VideoFrame* vfxSourceImage, VfxPipe::VideoFrame* vfxTargetImage, mlt_image outputImage, mlt_position position)
+int ServiceManager::render(VfxPipe::SourceVideoFrame* vfxSourceImage, VfxPipe::SourceVideoFrame* vfxTargetImage, mlt_image outputImage, mlt_position position)
 {
-    if (pipeRead == -1 || pipeWrite == -1)
+    if (!frameServer)
         return 1;
 
     auto f = __FUNCTION__;
-    auto ioErrorHandler = [this, f](int n, std::string msg = "") {
-        if (n == -1) {
-            mlt_log_error(service, "%s: Image IO failed: %s\n", f, msg.c_str());
+    auto errorHandler = [this, f](std::string msg) {
+        if (!msg.empty()) {
+            mlt_log_error(service, "%s: render failed: %s\n", f, msg.c_str());
         }
-        close(pipeRead);
-        pipeRead = -1;
-        close(pipeWrite);
-        pipeWrite = -1;
     };
 
     double time = (double)position / length;
-    if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<const std::byte*>(&time), sizeof(time), write, ioErrorHandler)) {
-        return 1;
-    }
 
-    // Output format
-    VfxPipe::VideoFrame outputFrame(VfxPipe::VideoFrameFormat::RGBA32, outputImage->width, outputImage->height);
-    if (!VfxPipe::writeVideoFrame(pipeWrite, &outputFrame, ioErrorHandler)) {
-        return 1;
-    }
-
-    uint32_t frameCount = imageProducers ? imageProducers->size() : 0;
+    std::vector<VfxPipe::SourceVideoFrame> sourceFrames;
     if (vfxSourceImage)
-        frameCount++;
+        sourceFrames.push_back(*vfxSourceImage);
     if (vfxTargetImage)
-        frameCount++;
-    if (!VfxPipe::dataIO(pipeWrite, reinterpret_cast<const std::byte*>(&frameCount), sizeof(frameCount), write, ioErrorHandler)) {
-        return 1;
-    }
-
-    if (vfxSourceImage) {
-        if (!VfxPipe::writeVideoFrame(pipeWrite, vfxSourceImage, ioErrorHandler)) {
-            return 1;
-        }
-    }
-    if (vfxTargetImage) {
-        if (!VfxPipe::writeVideoFrame(pipeWrite, vfxTargetImage, ioErrorHandler)) {
-            return 1;
-        }
-    }
+        sourceFrames.push_back(*vfxTargetImage);
 
     // Produce any extra images
     if (imageProducers) {
@@ -208,17 +170,20 @@ int ServiceManager::render(VfxPipe::VideoFrame* vfxSourceImage, VfxPipe::VideoFr
                     outputImage->height);
                 if (!extraImage.data) {
                     mlt_log_error(service, "%s: vfxpipe failed to produce image for extra producer %ld\n", __FUNCTION__, it - imageProducers->begin());
+                    delete frameServer;
+                    frameServer = nullptr;
                     return 1;
                 }
-                VfxPipe::VideoFrame vfxFrame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, outputImage->width, outputImage->height, reinterpret_cast<std::byte*>(extraImage.data));
-                if (!VfxPipe::writeVideoFrame(pipeWrite, &vfxFrame, ioErrorHandler)) {
-                    return 1;
-                }
+                VfxPipe::SourceVideoFrame vfxFrame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, outputImage->width, outputImage->height, reinterpret_cast<const std::byte*>(extraImage.data));
+                sourceFrames.push_back(vfxFrame);
             }
         }
     }
 
-    if (!VfxPipe::dataIO(pipeRead, reinterpret_cast<std::byte*>(outputImage->data), mlt_image_calculate_size(outputImage), read, ioErrorHandler)) {
+    VfxPipe::RenderedVideoFrame outputFrame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, outputImage->width, outputImage->height, reinterpret_cast<std::byte*>(outputImage->data));
+    if (!frameServer->renderFrame(time, sourceFrames, outputFrame, errorHandler)) {
+        delete frameServer;
+        frameServer = nullptr;
         return 1;
     }
     return 0;

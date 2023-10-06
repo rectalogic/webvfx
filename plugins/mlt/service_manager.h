@@ -18,7 +18,7 @@ class ServiceLocker;
 
 class ServiceManager {
 public:
-    int render(VfxPipe::VideoFrame* vfxSourceImage, VfxPipe::VideoFrame* vfxTargetImage, mlt_image outputImage, mlt_position position);
+    int render(VfxPipe::VideoFrame<const std::byte*>* vfxSourceImage, VfxPipe::VideoFrame<const std::byte*>* vfxTargetImage, mlt_image outputImage, mlt_position position);
 
 private:
     friend class ServiceLocker;
@@ -28,9 +28,7 @@ private:
 
     mlt_service service;
     mlt_position length;
-    pid_t pid;
-    int pipeRead;
-    int pipeWrite;
+    VfxPipe::FrameServer* frameServer;
     std::vector<ImageProducer*>* imageProducers;
 };
 

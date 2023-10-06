@@ -42,8 +42,8 @@ static int transitionGetImage(mlt_frame aFrame, uint8_t** image, mlt_image_forma
         mlt_image_set_values(&renderedImage, *image, *format, *width, *height);
         mlt_image_s targetImage;
         mlt_image_set_values(&targetImage, bImage, *format, bWidth, bHeight);
-        VfxPipe::VideoFrame vfxSourceFrame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, *width, *height, reinterpret_cast<std::byte*>(renderedImage.data));
-        VfxPipe::VideoFrame vfxTargetFrame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, bWidth, bHeight, reinterpret_cast<std::byte*>(targetImage.data));
+        VfxPipe::SourceVideoFrame vfxSourceFrame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, *width, *height, reinterpret_cast<const std::byte*>(renderedImage.data));
+        VfxPipe::SourceVideoFrame vfxTargetFrame(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, bWidth, bHeight, reinterpret_cast<const std::byte*>(targetImage.data));
         manager->render(&vfxSourceFrame, &vfxTargetFrame, &renderedImage, position);
     }
 

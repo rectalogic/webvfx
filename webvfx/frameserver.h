@@ -47,6 +47,6 @@ private:
     double duration;
     double initialTime;
     bool frameSwap;
-    VfxPipe::VideoFrame outputFrame;
+    VfxPipe::RenderedVideoFrame outputFrame;
     static QEvent::Type renderEventType;
 };

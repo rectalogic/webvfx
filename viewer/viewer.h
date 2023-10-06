@@ -4,12 +4,12 @@
 
 #pragma once
 
-#include "content_pipe.h"
 #include "ui_viewer.h"
 #include <QImage>
 #include <QMainWindow>
 #include <QMessageLogContext>
 #include <QtGlobal>
+#include <vfxpipe.h>
 
 namespace WebVfx {
 class QmlContent;
@@ -23,6 +23,7 @@ class Viewer : public QMainWindow, private Ui::Viewer {
 
 public:
     Viewer();
+    ~Viewer();
     void loadFile(const QString& fileName);
     void messageHandler(QtMsgType, const QMessageLogContext&, const QString&);
 private slots:
@@ -46,5 +47,5 @@ private:
     QDoubleSpinBox* timeSpinBox;
     QLabel* imageLabel;
     QImage renderImage;
-    ContentPipe* contentPipe;
+    VfxPipe::FrameServer* frameServer;
 };
