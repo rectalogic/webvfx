@@ -4,22 +4,22 @@
 
 #pragma once
 
-#include <QHash>
-#include <QImage>
-#include <QMap>
-#include <QObject>
-#include <QSet>
-#include <QSize>
-#include <QUrl>
-#include <QVariant>
-#include <QVideoSink>
+#include <QList> // for QList
+#include <QMap> // for QMap<>::const_iterator, QMap<>::iterator, QMap<>::key_iterator, QMap
+#include <QObject> // for Q_INVOKABLE, Q_PROPERTY, QObject, Q_OBJECT, signals
+#include <QSize> // for QSize
+#include <QString> // for QString
+#include <QVariant> // for QVariant
+#include <QVideoSink> // IWYU pragma: keep
+#include <QtTypes> // for qsizetype
 
-class QString;
+namespace WebVfx {
+class Parameters;
+}
+
 typedef QMap<QString, QVariant> QVariantMap;
 
 namespace WebVfx {
-
-class Parameters;
 
 class ContentContext : public QObject {
     Q_OBJECT

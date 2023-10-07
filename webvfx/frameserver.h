@@ -4,16 +4,14 @@
 
 #pragma once
 
-#include <QEvent>
-#include <QImage>
-#include <QList>
-#include <QObject>
-#include <QSize>
-#include <QVideoFrame>
-#include <vfxpipe.h>
-
+#include <QEvent> // for QEvent, QEvent::Type
+#include <QList> // for QList
+#include <QObject> // for QObject, Q_OBJECT, slots
+#include <QVideoFrame> // for QVideoFrame
+#include <vfxpipe.h> // for VideoFrameFormat, RenderedVideoFrame
+class QImage;
+class QUrl;
 class QVideoSink;
-
 namespace WebVfx {
 class QmlContent;
 }

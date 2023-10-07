@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 extern "C" {
-#include <framework/mlt_factory.h>
-#include <framework/mlt_log.h>
-#include <framework/mlt_repository.h>
+#include <framework/mlt_profile.h> // for mlt_profile_s
+#include <framework/mlt_properties.h> // for mlt_properties_set
+#include <framework/mlt_repository.h> // for MLT_REGISTER, MLT_REPOSITORY
+#include <framework/mlt_service.h> // for MLT_SERVICE_PROPERTIES, mlt_se...
 }
 #include "factory.h"
 

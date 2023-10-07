@@ -3,14 +3,19 @@
 // found in the LICENSE file.
 
 extern "C" {
-#include <framework/mlt_frame.h>
-#include <framework/mlt_log.h>
-#include <framework/mlt_transition.h>
+#include <framework/mlt_frame.h> // for mlt_frame_get_image, mlt_frame_s, mlt_frame_pop_frame, mlt_frame_pop_service, mlt_frame_push_frame, mlt_frame_push_get_image, mlt_frame_push_service
+#include <framework/mlt_image.h> // for mlt_image_set_values, mlt_image_s
+#include <framework/mlt_properties.h> // for mlt_properties_set_int
+#include <framework/mlt_service.h> // for mlt_service_s
+#include <framework/mlt_transition.h> // for mlt_transition_s, mlt_transition_get_length, mlt_transition_get_position, mlt_transition_new, MLT_TRANSITION_SERVICE, MLT_TRANSITION_PROPERTIES
+#include <framework/mlt_types.h> // for mlt_frame, mlt_transition, mlt_position, mlt_image_format, mlt_image_rgba, mlt_service
 }
-#include "factory.h"
-#include "service_locker.h"
-#include "service_manager.h"
-#include <cstring>
+#include "factory.h" // for createTransition
+#include "service_locker.h" // for ServiceLocker
+#include "service_manager.h" // for ServiceManager
+#include "vfxpipe.h" // for SourceVideoFrame, VideoFrameFormat, VideoFrameFormat::PixelFormat, VideoFrameFormat::RGBA32
+#include <cstddef> /* IWYU pragma: keep */ /* IWYU pragma: no_include <ext/type_traits> */ // for byte, NULL
+#include <stdint.h> // for uint8_t
 
 static int transitionGetImage(mlt_frame aFrame, uint8_t** image, mlt_image_format* format, int* width, int* height, int /*writable*/)
 {

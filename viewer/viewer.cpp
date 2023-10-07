@@ -3,22 +3,36 @@
 // found in the LICENSE file.
 
 #include "viewer.h"
-#include "image_color.h"
-#include <QDir>
-#include <QDoubleSpinBox>
-#include <QFileDialog>
-#include <QFileInfo>
-#include <QLabel>
-#include <QList>
-#include <QPlainTextEdit>
-#include <QPushButton>
-#include <QRandomGenerator>
-#include <QStringBuilder>
-#include <QTableWidget>
-#include <QTableWidgetItem>
-#include <QTextStream>
-#include <QUrl>
-#include <QUrlQuery>
+#include "image_color.h" // for ImageColor
+#include "vfxpipe.h" // for VideoFrame, FrameServer, VideoFrameFormat, VideoFrameFormat::PixelFormat, VideoFrameFormat::RGBA32
+#include <QAction> // for QAction
+#include <QColor> // for QColor
+#include <QDebug> // for QDebug
+#include <QDoubleSpinBox> // for QDoubleSpinBox
+#include <QFileDialog> // for QFileDialog
+#include <QFileInfo> // for QFileInfo
+#include <QLabel> // for QLabel
+#include <QLatin1String> // for QLatin1String
+#include <QPixmap> // for QPixmap
+#include <QPlainTextEdit> // for QPlainTextEdit
+#include <QRandomGenerator> // for QRandomGenerator
+#include <QScrollArea> // for QScrollArea
+#include <QSize> // for QSize, operator!=
+#include <QSlider> // for QSlider
+#include <QSpinBox> // for QSpinBox
+#include <QStatusBar> // for QStatusBar
+#include <QStringBuilder> // for operator%, QConcatenable<>::type, QStringBuilder
+#include <QTableWidget> // for QTableWidget
+#include <QTableWidgetItem> // for QTableWidgetItem
+#include <QTextStream> // for QTextStream
+#include <QUrl> // for QUrl
+#include <QUrlQuery> // for QUrlQuery
+#include <QWidget> // for QWidget
+#include <QtCore> // for NoItemFlags, qsizetype
+#include <algorithm> // for max
+#include <cstddef> /* IWYU pragma: keep */ /* IWYU pragma: no_include <ext/type_traits> */ // for byte
+#include <string> // for string
+#include <vector> // for vector
 
 Viewer::Viewer()
     : QMainWindow(0)

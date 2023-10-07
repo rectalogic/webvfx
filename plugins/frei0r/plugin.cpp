@@ -3,17 +3,12 @@
 // found in the LICENSE file.
 
 #include "plugin.h"
-#include <cstring>
-#include <dlfcn.h>
-#include <errno.h>
-#include <iostream>
-#include <signal.h>
-#include <stdio.h>
-#include <string>
-#include <unistd.h>
-#include <vector>
-#include <vfxpipe.h>
-#include <wordexp.h>
+#include <cstddef> // for byte
+#include <iostream> // for operator<<, basic_ostream, endl, cerr, ostream
+#include <stdint.h> // for uint32_t
+#include <string> // for string, allocator, operator<<, char_traits
+#include <vector> // for vector
+#include <vfxpipe.h> // for SourceVideoFrame, FrameServer, VideoFrameFormat, VideoFrameFormat::PixelFormat, VideoFrameFormat::RGBA32, RenderedVideoFrame
 
 class WebVfxPlugin {
 public:

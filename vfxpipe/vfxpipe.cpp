@@ -3,17 +3,14 @@
 // found in the LICENSE file.
 
 #include "vfxpipe.h"
-#include <cerrno>
-#include <cstring>
-#include <dlfcn.h>
-#include <filesystem>
-#include <functional>
-#include <iostream>
-#include <limits.h>
-#include <signal.h>
-#include <stdio.h>
-#include <string>
-#include <unistd.h>
+#include <dlfcn.h> // for dladdr, Dl_info
+#include <filesystem> // for path
+#include <functional> // for function
+#include <limits.h> // for PATH_MAX
+#include <signal.h> // for signal, SIGCHLD, SIG_IGN
+#include <stdlib.h> // for exit, realpath
+#include <string> // for allocator, operator+, char_traits, string
+#include <unistd.h> // for close, dup2, pipe, write, execv, fork, read, STDIN_FILENO, STDOUT_FILENO
 
 namespace VfxPipe {
 

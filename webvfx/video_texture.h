@@ -4,8 +4,9 @@
 
 #pragma once
 
-#include <QtQuick3D/QQuick3DTextureData>
-
+#include <QObject> // for Q_OBJECT, Q_PROPERTY, slots
+#include <QQuick3DTextureData> // for QQuick3DTextureData
+#include <QtQmlIntegration> // for QML_NAMED_ELEMENT
 class QVideoSink;
 
 namespace WebVfx {

@@ -4,20 +4,24 @@
 
 #pragma once
 
-#include "content_context.h"
-#include <QImage>
-#include <QQmlError>
-#include <QQuickView>
-#include <QScopedPointer>
-
-class QSize;
-class QVideoSink;
+#include "content_context.h" // for ContentContext
+#include <QList> // for QList
+#include <QObject> // for Q_OBJECT, signals, slots
+#include <QQuickView> // for QQuickView, QQuickView::Status
+#include <QScopedPointer> // for QScopedPointer
+#include <QSize> // for QSize
+class QImage;
+class QQmlError;
 class QUrl;
+class QVideoSink;
+namespace WebVfx {
+class Parameters;
+}
+namespace WebVfx {
+class RenderControl;
+}
 
 namespace WebVfx {
-
-class Parameters;
-class RenderControl;
 
 class QmlContent : public QQuickView {
     Q_OBJECT

@@ -2,14 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <cstddef>
 extern "C" {
-#include <framework/mlt_frame.h>
-#include <framework/mlt_producer.h>
+#include <framework/mlt_frame.h> // for mlt_frame_init, mlt_frame_push_get_image, mlt_frame_set_image, mlt_frame_set_position, MLT_FRAME_PROPERTIES, mlt_frame_s
+#include <framework/mlt_image.h> // for mlt_image_set_values, mlt_image_s
+#include <framework/mlt_pool.h> // for mlt_pool_alloc, mlt_pool_release
+#include <framework/mlt_producer.h> // for mlt_producer_s, MLT_PRODUCER_SERVICE, mlt_producer_get_length, mlt_producer_new, mlt_producer_position, mlt_producer_prepare_next, MLT_PRODUCER_PROPERTIES
+#include <framework/mlt_profile.h> // for mlt_profile_s
+#include <framework/mlt_properties.h> // for mlt_properties_set_int, mlt_properties_get_data, mlt_properties_get_double, mlt_properties_get_position, mlt_properties_s, mlt_properties_set_data, mlt_properties_set_double, mlt_properties_set_position
+#include <framework/mlt_service.h> // for mlt_service_s
+#include <framework/mlt_types.h> // for mlt_producer, mlt_properties, mlt_frame, mlt_frame_ptr, mlt_image_format, mlt_image_rgba, mlt_position, mlt_profile, mlt_service
 }
-#include "factory.h"
-#include "service_locker.h"
-#include "service_manager.h"
+#include "factory.h" // for createProducer
+#include "service_locker.h" // for ServiceLocker
+#include "service_manager.h" // for ServiceManager
+#include <cstddef> // for NULL
+#include <stdint.h> // for uint8_t
 
 static const char* kWebVfxProducerPropertyName = "WebVfxProducer";
 static const char* kWebVfxPositionPropertyName = "webvfx.position";

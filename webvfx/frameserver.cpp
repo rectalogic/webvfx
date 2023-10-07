@@ -3,21 +3,29 @@
 // found in the LICENSE file.
 
 #include "frameserver.h"
-#include "parameters.h"
-#include "qml_content.h"
-#include "webvfx.h"
-#include <QCoreApplication>
-#include <QDebug>
-#include <QEvent>
-#include <QMap>
-#include <QString>
-#include <QUrl>
-#include <QUrlQuery>
-#include <QVideoFrame>
-#include <QVideoFrameFormat>
-#include <errno.h>
-#include <unistd.h>
-#include <vfxpipe.h>
+#include "parameters.h" // for Parameters
+#include "qml_content.h" // for QmlContent
+#include <QChar> // for QChar
+#include <QCoreApplication> // for QCoreApplication
+#include <QDebug> // for QDebug
+#include <QEvent> // for QEvent, QEvent::Type
+#include <QImage> // for QImage
+#include <QMessageLogContext> // for qCritical
+#include <QSize> // for QSize
+#include <QString> // for QString
+#include <QStringList> // for QStringList
+#include <QUrl> // for QUrl, QUrl::FullyDecoded
+#include <QUrlQuery> // for QUrlQuery
+#include <QVideoFrame> // for QVideoFrame, QVideoFrame::WriteOnly
+#include <QVideoFrameFormat> // for QVideoFrameFormat, QVideoFrameFormat::Format_RGBA8888, QVideoFrameFormat::PixelFormat
+#include <QVideoSink> // for QVideoSink
+#include <QtTypes> // for qsizetype, uchar
+#include <cstddef> /* IWYU pragma: keep */ /* IWYU pragma: no_include <ext/type_traits> */ // for byte
+#include <stdint.h> // for uint32_t
+#include <stdlib.h> // for exit
+#include <string> // for string
+#include <unistd.h> // for read, STDIN_FILENO, write, STDOUT_FILENO
+#include <vfxpipe.h> // for dataIO, VideoFrameFormat, VideoFrame, readVideoFrameFormat, RenderedVideoFrame, VideoFrameFormat::PixelFormat, VideoFrameFormat::RGBA32
 
 class FrameServerParameters : public WebVfx::Parameters {
 public:

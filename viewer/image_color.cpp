@@ -3,11 +3,16 @@
 // found in the LICENSE file.
 
 #include "image_color.h"
-#include <QBrush>
-#include <QColorDialog>
-#include <QImage>
-#include <QPainter>
-#include <QPalette>
+#include <QColorDialog> // for QColorDialog
+#include <QConicalGradient> // for QBrush
+#include <QFont> // for QFont
+#include <QImage> // for QImage, QImage::Format_RGBA8888
+#include <QPainter> // for QPainter, QPainter::TextAntialiasing
+#include <QPalette> // for QPalette, QPalette::Button
+#include <QPen> // for QPen
+#include <QRectF> // for QRectF
+#include <Qt> // for AlignCenter, MiterJoin, black, white
+class QWidget;
 
 ImageColor::ImageColor(QWidget* parent)
     : QPushButton(parent)

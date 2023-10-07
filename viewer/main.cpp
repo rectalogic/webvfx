@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "viewer.h"
-#include <QApplication>
-#include <QScopedPointer>
-#include <QtGlobal>
+#include "viewer.h" // for Viewer
+#include <QApplication> // for QApplication
+#include <QList> // for QList
+#include <QMessageLogContext> // for qInstallMessageHandler, QtMsgType
+#include <QScopedPointer> // for QScopedPointer
+#include <QString> // for QString
+#include <QStringList> // for QStringList
 
 int main(int argc, char* argv[])
 {

@@ -5,8 +5,7 @@
 #pragma once
 
 extern "C" {
-#include <framework/mlt_profile.h>
-#include <framework/mlt_service.h>
+#include <framework/mlt_types.h> // for mlt_service, mlt_profile
 }
 
 namespace WebVfxPlugin {

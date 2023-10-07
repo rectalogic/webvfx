@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "frameserver.h"
-#include <QCommandLineParser>
-#include <QGuiApplication>
-#include <QMap>
-#include <QSize>
-#include <QUrl>
+#include <QCommandLineParser> // for QCommandLineParser, QCommandLineParser::ParseAsLongOptions
+#include <QCoreApplication> // for QCoreApplication
+#include <QGuiApplication> // for QGuiApplication
+#include <QList> // for QList
+#include <QMessageLogContext> // for qCritical
+#include <QStringList> // for QStringList
+#include <QUrl> // for QUrl
+#include <Qt> // for AA_ShareOpenGLContexts
+#include <stdlib.h> // for exit
 #ifdef WEBENGINEQUICK
-#include <QtWebEngineQuick>
+#include <QtWebEngineQuick> // for initialize
 #endif
-#include <stdlib.h>
+#include "frameserver.h" // for FrameServer
 
 inline void assertOpt(bool r)
 {

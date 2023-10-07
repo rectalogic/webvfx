@@ -2,24 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <errno.h>
-#include <iterator>
-#include <signal.h>
-#include <sstream>
-#include <string.h>
-#include <string>
-#include <unistd.h>
-#include <vector>
-#include <vfxpipe.h>
-
-extern "C" {
-#include <framework/mlt_factory.h>
-#include <framework/mlt_frame.h>
-#include <framework/mlt_image.h>
-#include <framework/mlt_log.h>
-#include <framework/mlt_producer.h>
-}
 #include "service_manager.h"
+extern "C" {
+#include <framework/mlt_factory.h> // for mlt_environment, mlt_factory_producer
+#include <framework/mlt_frame.h> // for mlt_frame_close, mlt_frame_get_image, mlt_frame_s
+#include <framework/mlt_image.h> // for mlt_image_s, mlt_image_set_values
+#include <framework/mlt_log.h> // for mlt_log_error
+#include <framework/mlt_producer.h> // for mlt_producer_close, mlt_producer_get_playtime, mlt_producer_s, mlt_producer_seek, MLT_PRODUCER_PROPERTIES, MLT_PRODUCER_SERVICE
+#include <framework/mlt_properties.h> // for mlt_properties_get, mlt_properties_pass, mlt_properties_set, mlt_properties_s
+}
+#include <sstream> // for basic_ostream::operator<<, operator<<, ostringstream, basic_ostream, basic_ostream<>::__ostream_type
+#include <stdint.h> // for uint8_t
+#include <string.h> // for NULL
+#include <string> // for basic_string, string
+#include <vector> // for vector, allocator, vector<>::iterator
+#include <vfxpipe.h> // for SourceVideoFrame, FrameServer
 
 namespace WebVfxPlugin {
 

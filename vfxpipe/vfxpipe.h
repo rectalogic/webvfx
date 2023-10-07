@@ -4,12 +4,14 @@
 
 #pragma once
 
-#include <errno.h>
-#include <functional>
-#include <string.h>
-#include <string>
-#include <unistd.h>
-#include <vector>
+#include <cstddef> /* IWYU pragma: keep */ /* IWYU pragma: no_include <ext/type_traits> */ // for byte, size_t
+#include <errno.h> // for errno
+#include <functional> // for function
+#include <stdint.h> // for uint32_t
+#include <string.h> // for strerror
+#include <string> // for string, allocator, operator+
+#include <unistd.h> // for write, read, size_t, ssize_t
+#include <vector> // for vector
 
 namespace VfxPipe {
 

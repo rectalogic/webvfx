@@ -1,5 +1,5 @@
 #include "parameters.h"
-#include <QString>
+#include <QString> // for QString
 
 WebVfx::Parameters::~Parameters()
 {

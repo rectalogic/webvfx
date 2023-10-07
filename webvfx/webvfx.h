@@ -4,8 +4,6 @@
 
 #pragma once
 
-#include "parameters.h"
-
 /*!
  * @brief Public entry points into WebVfx
  *

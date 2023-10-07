@@ -3,10 +3,8 @@
 // found in the LICENSE file.
 
 #include "webvfx.h"
-#include <QMetaType>
-#include <QMutex>
-#include <QMutexLocker>
-#include <QString>
+#include <QMutex> // for QMutex
+#include <QMutexLocker> // for QMutexLocker
 
 namespace WebVfx {
 

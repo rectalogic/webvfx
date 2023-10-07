@@ -1,14 +1,16 @@
 #include "qml_content.h"
-#include "render_control.h"
-#include "webvfx.h"
-#include <QImage>
-#include <QList>
-#include <QQmlContext>
-#include <QQmlEngine>
-#include <QQmlError>
-#include <QQuickRenderControl>
-#include <QQuickView>
-#include <QSize>
+#include "render_control.h" // for RenderControl
+#include <QDebug> // for QDebug
+#include <QImage> // for QImage
+#include <QList> // for QList<>::const_iterator, QList
+#include <QQmlContext> // for QQmlContext
+#include <QQmlEngine> // for QQmlEngine
+#include <QQmlError> // for QQmlError
+#include <QQuickView> // for QQuickView, QQuickView::Error, QQuickView::Ready, QQuickView::ResizeMode, QQuickView::SizeViewToRootObject, QQuickView::Status
+#include <QSize> // for operator!=, QSize
+#include <QUrl> // for QUrl
+#include <QtCore> // for QForeachContainer, qMakeForeachContainer
+#include <QtGlobal> // for qDebug
 
 namespace WebVfx {
 

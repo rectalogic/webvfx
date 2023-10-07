@@ -5,16 +5,23 @@
 #pragma once
 
 extern "C" {
-#include <framework/mlt_image.h>
-#include <framework/mlt_service.h>
+#include <framework/mlt_service.h> // for mlt_service_s
+#include <framework/mlt_types.h> // for mlt_position, mlt_service, mlt_image
 }
-#include <unistd.h>
-#include <vector>
-#include <vfxpipe.h>
-
+#include <cstddef> /* IWYU pragma: keep */ /* IWYU pragma: no_include <ext/type_traits> */ // for byte
+#include <vector> // for vector
+namespace VfxPipe {
+class FrameServer;
+}
+namespace VfxPipe {
+template <typename D>
+class VideoFrame;
+}
 namespace WebVfxPlugin {
 class ImageProducer;
-class ServiceLocker;
+}
+
+namespace WebVfxPlugin {
 
 class ServiceManager {
 public:

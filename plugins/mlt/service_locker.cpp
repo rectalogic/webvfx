@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
 extern "C" {
-#include <framework/mlt_log.h>
+#include <framework/mlt_log.h> // for mlt_log, MLT_LOG_ERROR
+#include <framework/mlt_properties.h> // for mlt_properties_get_data, mlt_properties_set_data, mlt_properties_s
 }
 #include "service_locker.h"
-#include "service_manager.h"
+#include "service_manager.h" // for ServiceManager
+#include <stddef.h> // for NULL
 
 namespace WebVfxPlugin {
 const char* ServiceLocker::kManagerPropertyName = "WebVfxManager";

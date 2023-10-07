@@ -4,15 +4,16 @@
 
 #pragma once
 
-#include <QQuickRenderControl>
-#include <QScopedPointer>
-#include <QSize>
-
+#include <QImage> // for QImage
+#include <QObject> // for Q_OBJECT
+#include <QQuickRenderControl> // for QQuickRenderControl
+#include <QScopedPointer> // for QScopedPointer
+#include <QSize> // for QSize
 class QQuickWindow;
-class QRhiTexture;
 class QRhiRenderBuffer;
-class QRhiTextureRenderTarget;
 class QRhiRenderPassDescriptor;
+class QRhiTexture;
+class QRhiTextureRenderTarget;
 
 namespace WebVfx {
 

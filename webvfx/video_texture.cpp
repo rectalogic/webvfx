@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 #include "video_texture.h"
-#include "webvfx.h"
-#include <QVideoFrame>
-#include <QVideoFrameFormat>
-#include <QVideoSink>
-#include <QtDebug>
+#include <QByteArray> // for QByteArray
+#include <QDebug> // for QDebug
+#include <QVideoFrame> // for QVideoFrame, QVideoFrame::ReadOnly
+#include <QVideoFrameFormat> // for QVideoFrameFormat, QVideoFrameFormat::Format_RGBA8888
+#include <QVideoSink> // for QVideoSink
+#include <QtGlobal> // for qDebug
 
 namespace WebVfx {
 

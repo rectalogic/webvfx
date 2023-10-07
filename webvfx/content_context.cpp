@@ -1,7 +1,8 @@
-#include <QQmlEngine>
-
 #include "content_context.h"
-#include "parameters.h"
+#include "parameters.h" // for Parameters
+#include <QQmlEngine> // for QQmlEngine
+#include <QStringLiteral> // for qMakeStringPrivate, QStringLiteral
+#include <QmlTypeAndRevisionsRegistration> // for qmlEngine
 
 namespace WebVfx {
 

@@ -1,15 +1,16 @@
 #include "render_control.h"
-#include <QByteArray>
-#include <QCoreApplication>
-#include <QImage>
-#include <QPainter>
-#include <QQuickRenderControl>
-#include <QQuickRenderTarget>
-#include <QQuickWindow>
-#include <QSize>
-#include <QtDebug>
-#include <QtGui/private/qrhi_p.h>
-#include <QtQuick/private/qquickrendercontrol_p.h>
+#include <QByteArray> // for QByteArray
+#include <QDebug> // for QDebug
+#include <QImage> // for QImage, QImage::Format_RGBA8888_Premultiplied
+#include <QQuickRenderControl> // for QQuickRenderControl
+#include <QQuickRenderTarget> // for QQuickRenderTarget
+#include <QQuickWindow> // for QQuickWindow
+#include <QSize> // for QSize, operator==
+#include <QtGlobal> // for qDebug
+#include <QtGui/private/qrhi_p.h> // for QRhiTextureRenderTarget, QRhiTexture, QRhi, QRhiReadbackResult, QRhiRenderBuffer, QRhiRenderPassDescriptor, operator|, QRhiColorAttachment, QRhiTextureRenderTargetDescription, QRhiCommandBuffer, QRhiRenderBuffer::DepthStencil, QRhiResour...
+#include <QtQuick/private/qquickrendercontrol_p.h> // for QQuickRenderControlPrivate
+#include <QtTypes> // for uchar
+#include <functional> // for function
 
 namespace WebVfx {
 

@@ -4,19 +4,18 @@
 
 #pragma once
 
-#include "ui_viewer.h"
-#include <QImage>
-#include <QMainWindow>
-#include <QMessageLogContext>
-#include <QtGlobal>
-#include <vfxpipe.h>
-
-namespace WebVfx {
-class QmlContent;
-}
-
+#include "ui_viewer.h" // for Viewer
+#include <QImage> // for QImage
+#include <QMainWindow> // for QMainWindow
+#include <QMessageLogContext> // for QtMsgType
+#include <QObject> // for Q_OBJECT, slots
+#include <QString> // for QString
 class QDoubleSpinBox;
 class QLabel;
+class QSize;
+namespace VfxPipe {
+class FrameServer;
+}
 
 class Viewer : public QMainWindow, private Ui::Viewer {
     Q_OBJECT

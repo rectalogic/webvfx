@@ -5,11 +5,14 @@
 #pragma once
 
 extern "C" {
-#include <framework/mlt_service.h>
+#include <framework/mlt_service.h> // for mlt_service_s
+#include <framework/mlt_types.h> // for mlt_service, mlt_position
+}
+namespace WebVfxPlugin {
+class ServiceManager;
 }
 
 namespace WebVfxPlugin {
-class ServiceManager;
 
 class ServiceLocker {
 public:

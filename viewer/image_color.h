@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IMAGE_COLOR_H
-#define IMAGE_COLOR_H
+#pragma once
 
-#include <QColor>
-#include <QPushButton>
-#include <QSize>
+#include <QColor> // for QColor
+#include <QImage> // for QImage
+#include <QObject> // for Q_PROPERTY, Q_OBJECT, signals, slots
+#include <QPushButton> // for QPushButton
+#include <QSize> // for QSize
+#include <QString> // for QString
+class QWidget;
 
 class ImageColor : public QPushButton {
     Q_OBJECT
@@ -34,5 +37,3 @@ private:
     QColor color;
     QImage image;
 };
-
-#endif

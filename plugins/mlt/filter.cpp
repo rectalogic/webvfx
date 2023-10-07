@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <cstddef>
 extern "C" {
-#include <framework/mlt_filter.h>
-#include <framework/mlt_frame.h>
-#include <framework/mlt_image.h>
-#include <framework/mlt_log.h>
+#include <framework/mlt_filter.h> // for mlt_filter_s, mlt_filter_get_length, mlt_filter_get_position, mlt_filter_new, MLT_FILTER_SERVICE
+#include <framework/mlt_frame.h> // for mlt_frame_get_image, mlt_frame_pop_service, mlt_frame_push_get_image, mlt_frame_push_service, mlt_frame_s
+#include <framework/mlt_image.h> // for mlt_image_set_values, mlt_image_s
+#include <framework/mlt_service.h> // for mlt_service_s
+#include <framework/mlt_types.h> // for mlt_filter, mlt_frame, mlt_position, mlt_image_format, mlt_image_rgba, mlt_service
 }
-#include "factory.h"
-#include "service_locker.h"
-#include "service_manager.h"
-#include <vfxpipe.h>
+#include "factory.h" // for createFilter
+#include "service_locker.h" // for ServiceLocker
+#include "service_manager.h" // for ServiceManager
+#include <cstddef> /* IWYU pragma: keep */ /* IWYU pragma: no_include <ext/type_traits> */ // for byte
+#include <stdint.h> // for uint8_t
+#include <vfxpipe.h> // for SourceVideoFrame, VideoFrameFormat
 
 static int filterGetImage(mlt_frame frame, uint8_t** image, mlt_image_format* format, int* width, int* height, int /*writable*/)
 {
