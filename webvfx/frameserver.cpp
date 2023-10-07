@@ -82,6 +82,17 @@ double parseDuration(QString durationValue)
 
 QEvent::Type FrameServer::renderEventType = static_cast<QEvent::Type>(QEvent::registerEventType());
 
+void ioErrorHandler(std::string msg)
+{
+    // EOF
+    if (msg.empty()) {
+        QCoreApplication::exit(0);
+    } else {
+        qCritical() << "WebVfx frameserver: " << msg.c_str();
+        QCoreApplication::exit(1);
+    }
+};
+
 FrameServer::FrameServer(QUrl& qmlUrl, QObject* parent)
     : QObject(parent)
     , duration(0)
@@ -110,9 +121,13 @@ void FrameServer::onContentLoadFinished(bool result)
     if (result) {
         auto size = content->getContentSize();
         auto videoSinks = content->getVideoSinks();
-        for (qsizetype i = 0; i < videoSinks.size(); ++i) {
-            frameSinks.append(FrameSink(videoSinks.at(i)));
+        for (const auto videoSink : videoSinks) {
+            frameSinks.append(FrameSink(videoSink));
         }
+        // Write sink count
+        uint32_t sinkCount = videoSinks.size();
+        if (!VfxPipe::dataIO(STDOUT_FILENO, reinterpret_cast<std::byte*>(&sinkCount), sizeof(sinkCount), write, ioErrorHandler))
+            return;
         QCoreApplication::postEvent(this, new QEvent(renderEventType));
     } else {
         qCritical() << "QML content failed to load.";
@@ -132,19 +147,8 @@ bool FrameServer::event(QEvent* event)
 
 void FrameServer::readFrames()
 {
-    auto f = __FUNCTION__;
-    auto ioErrorHandler = [f](std::string msg) {
-        // EOF
-        if (msg.empty()) {
-            QCoreApplication::exit(0);
-        } else {
-            qCritical() << f << ": WebVfx frameserver: " << msg.c_str();
-            QCoreApplication::exit(1);
-        }
-    };
-
     double time;
-    if (!VfxPipe::dataIO(STDIN_FILENO, reinterpret_cast<uchar*>(&time), sizeof(time), read, ioErrorHandler))
+    if (!VfxPipe::dataIO(STDIN_FILENO, reinterpret_cast<std::byte*>(&time), sizeof(time), read, ioErrorHandler))
         return;
 
     if (initialTime == -1) {
@@ -162,6 +166,7 @@ void FrameServer::readFrames()
     uint32_t frameCount;
     if (!VfxPipe::dataIO(STDIN_FILENO, reinterpret_cast<std::byte*>(&frameCount), sizeof(frameCount), read, ioErrorHandler))
         return;
+
     if (frameCount > frameSinks.size()) {
         qCritical() << "Frame count " << frameCount << " does not match video sink count " << frameSinks.size();
         QCoreApplication::exit(1);

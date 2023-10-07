@@ -40,7 +40,7 @@ private:
     void renderContent();
     void setContentUIEnabled(bool enable);
     void handleResize();
-    void setupImages(const QSize& size);
+    void setupImages(uint32_t imageCount, const QSize& size);
     double sliderTimeValue(int value);
     QLabel* sizeLabel;
     QDoubleSpinBox* timeSpinBox;

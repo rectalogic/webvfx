@@ -34,6 +34,11 @@
 #include <string> // for string
 #include <vector> // for vector
 
+void errorHandler(std::string msg)
+{
+    qCritical() << msg;
+};
+
 Viewer::Viewer()
     : QMainWindow(0)
     , sizeLabel(0)
@@ -110,10 +115,6 @@ void Viewer::renderContent()
             sourceImages.emplace_back(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, image.width(), image.height(), reinterpret_cast<const std::byte*>(image.constBits()));
         }
     }
-
-    auto errorHandler = [](std::string msg) {
-        qCritical() << msg;
-    };
 
     if (renderImage.size() != scrollArea->widget()->size())
         renderImage = QImage(scrollArea->widget()->size(), QImage::Format_RGBA8888);
@@ -221,15 +222,15 @@ void Viewer::createContent(const QString& fileName)
 
     logTextEdit->clear();
 
-    setContentUIEnabled(true); // XXX need UI enabled all the time now?
+    if (frameServer->initialize(errorHandler))
+        setContentUIEnabled(true);
 
-    setupImages(scrollArea->widget()->size());
+    setupImages(frameServer->getSinkCount(), scrollArea->widget()->size());
     renderContent();
 }
 
-void Viewer::setupImages(const QSize& size)
+void Viewer::setupImages(uint32_t imageCount, const QSize& size)
 {
-    int imageCount = 0; // XXX need a count, make frameserver return count
     imagesTable->setRowCount(imageCount);
     for (qsizetype row = 0; row < imageCount; ++row) {
         imagesTable->insertRow(row);

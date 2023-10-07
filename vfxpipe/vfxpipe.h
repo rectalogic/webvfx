@@ -98,14 +98,17 @@ class FrameServer {
 public:
     FrameServer(const std::string& url);
     ~FrameServer();
+    bool initialize(ErrorHandler errorHandler);
     bool renderFrame(double time, const std::vector<SourceVideoFrame>& sourceFrames, RenderedVideoFrame& outputFrame, ErrorHandler errorHandler);
     std::string& getUrl() { return url; }
+    uint32_t getSinkCount() { return sinkCount; }
 
 private:
     std::string url;
     int pid;
     int pipeWrite;
     int pipeRead;
+    uint32_t sinkCount;
 };
 
 template <typename D, typename IO>

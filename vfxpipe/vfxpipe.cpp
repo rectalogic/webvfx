@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "vfxpipe.h"
+#include <algorithm>
 #include <dlfcn.h> // for dladdr, Dl_info
 #include <filesystem> // for path
 #include <functional> // for function
@@ -10,18 +11,19 @@
 #include <signal.h> // for signal, SIGCHLD, SIG_IGN
 #include <stdlib.h> // for exit, realpath
 #include <string> // for allocator, operator+, char_traits, string
+#include <tuple>
 #include <unistd.h> // for close, dup2, pipe, write, execv, fork, read, STDIN_FILENO, STDOUT_FILENO
 
 namespace VfxPipe {
 
-int spawnProcess(int* pipeRead, int* pipeWrite, const std::string& url, ErrorHandler errorHandler)
+std::tuple<int, uint32_t> spawnProcess(int* pipeRead, int* pipeWrite, const std::string& url, ErrorHandler errorHandler)
 {
     int fdsToChild[2];
     int fdsFromChild[2];
 
     if (pipe(fdsToChild) == -1 || pipe(fdsFromChild) == -1) {
         errorHandler(std::string("vfxpipe pipe failed: ") + strerror(errno));
-        return -1;
+        return { -1, 0 };
     }
 
     // Ignore child exit so we don't have to waitpid, and to avoid zombie processes
@@ -30,7 +32,7 @@ int spawnProcess(int* pipeRead, int* pipeWrite, const std::string& url, ErrorHan
     int pid = fork();
     if (pid == -1) {
         errorHandler(std::string("vfxpipe fork failed: ") + strerror(errno));
-        return -1;
+        return { -1, 0 };
     }
     // In the child
     if (pid == 0) {
@@ -74,7 +76,13 @@ int spawnProcess(int* pipeRead, int* pipeWrite, const std::string& url, ErrorHan
 
     close(fdsFromChild[1]);
     close(fdsToChild[0]);
-    return pid;
+
+    uint32_t sinkCount = 0;
+    if (!dataIO(*pipeRead, reinterpret_cast<std::byte*>(&sinkCount), sizeof(sinkCount), read, errorHandler)) {
+        return { -1, 0 };
+    }
+
+    return { pid, sinkCount };
 }
 
 FrameServer::FrameServer(const std::string& url)
@@ -93,14 +101,26 @@ FrameServer::~FrameServer()
         close(pipeWrite);
 }
 
-bool FrameServer::renderFrame(double time, const std::vector<SourceVideoFrame>& sourceFrames, RenderedVideoFrame& outputFrame, ErrorHandler errorHandler)
+bool FrameServer::initialize(ErrorHandler errorHandler)
 {
     if (!pid) {
-        pid = spawnProcess(&pipeRead, &pipeWrite, url, errorHandler);
+        std::tie(pid, sinkCount) = spawnProcess(&pipeRead, &pipeWrite, url, errorHandler);
+        if (pid == -1) {
+            errorHandler("vfxpipe failed to spawn process");
+            return false;
+        }
+        return true;
     }
-    if (pid == -1) {
-        errorHandler("vfxpipe failed to spawn process");
+    return pid != -1;
+}
+
+bool FrameServer::renderFrame(double time, const std::vector<SourceVideoFrame>& sourceFrames, RenderedVideoFrame& outputFrame, ErrorHandler errorHandler)
+{
+    if (pid == -1)
         return false;
+    if (!pid) {
+        if (!initialize(errorHandler))
+            return false;
     }
 
     auto ioErrorHandler = [this, errorHandler](std::string msg) {
@@ -121,11 +141,15 @@ bool FrameServer::renderFrame(double time, const std::vector<SourceVideoFrame>& 
         return false;
     }
 
-    uint32_t frameCount = sourceFrames.size();
+    uint32_t frameCount = std::min(sinkCount, static_cast<uint32_t>(sourceFrames.size()));
     if (!dataIO(pipeWrite, reinterpret_cast<const std::byte*>(&frameCount), sizeof(frameCount), write, ioErrorHandler)) {
         return false;
     }
+    int index = 0;
     for (const auto& sourceFrame : sourceFrames) {
+        ++index;
+        if (index > frameCount)
+            break;
         if (!writeVideoFrame(pipeWrite, sourceFrame, ioErrorHandler)) {
             return false;
         }
