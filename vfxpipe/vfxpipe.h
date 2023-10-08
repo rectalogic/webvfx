@@ -106,8 +106,8 @@ public:
 private:
     std::string url;
     int pid;
-    int pipeWrite;
-    int pipeRead;
+    int pipeWriteStdin;
+    int pipeReadStdout;
     uint32_t sinkCount;
 };
 

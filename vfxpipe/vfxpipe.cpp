@@ -16,12 +16,12 @@
 
 namespace VfxPipe {
 
-std::tuple<int, uint32_t> spawnProcess(int* pipeRead, int* pipeWrite, const std::string& url, ErrorHandler errorHandler)
+std::tuple<int, uint32_t> spawnProcess(int* pipeReadStdout, int* pipeWriteStdin, const std::string& url, ErrorHandler errorHandler)
 {
-    int fdsToChild[2];
-    int fdsFromChild[2];
+    int fdsToChildStdin[2];
+    int fdsFromChildStdout[2];
 
-    if (pipe(fdsToChild) == -1 || pipe(fdsFromChild) == -1) {
+    if (pipe(fdsToChildStdin) == -1 || pipe(fdsFromChildStdout) == -1) {
         errorHandler(std::string("vfxpipe pipe failed: ") + strerror(errno));
         return { -1, 0 };
     }
@@ -36,16 +36,16 @@ std::tuple<int, uint32_t> spawnProcess(int* pipeRead, int* pipeWrite, const std:
     }
     // In the child
     if (pid == 0) {
-        if (dup2(fdsToChild[0], STDIN_FILENO) == -1
-            || dup2(fdsFromChild[1], STDOUT_FILENO) == -1) {
+        if (dup2(fdsToChildStdin[0], STDIN_FILENO) == -1
+            || dup2(fdsFromChildStdout[1], STDOUT_FILENO) == -1) {
             errorHandler(std::string("vfxpipe dup2 failed: ") + strerror(errno));
             exit(1);
         }
 
-        close(fdsFromChild[0]);
-        close(fdsFromChild[1]);
-        close(fdsToChild[0]);
-        close(fdsToChild[1]);
+        close(fdsFromChildStdout[0]);
+        close(fdsFromChildStdout[1]);
+        close(fdsToChildStdin[0]);
+        close(fdsToChildStdin[1]);
 
         Dl_info info;
         auto fptr = &spawnProcess;
@@ -71,14 +71,14 @@ std::tuple<int, uint32_t> spawnProcess(int* pipeRead, int* pipeWrite, const std:
 
     // In the parent
 
-    *pipeWrite = fdsToChild[1];
-    *pipeRead = fdsFromChild[0];
+    *pipeWriteStdin = fdsToChildStdin[1];
+    *pipeReadStdout = fdsFromChildStdout[0];
 
-    close(fdsFromChild[1]);
-    close(fdsToChild[0]);
+    close(fdsFromChildStdout[1]);
+    close(fdsToChildStdin[0]);
 
     uint32_t sinkCount = 0;
-    if (!dataIO(*pipeRead, reinterpret_cast<std::byte*>(&sinkCount), sizeof(sinkCount), read, errorHandler)) {
+    if (!dataIO(*pipeReadStdout, reinterpret_cast<std::byte*>(&sinkCount), sizeof(sinkCount), read, errorHandler)) {
         return { -1, 0 };
     }
 
@@ -88,23 +88,23 @@ std::tuple<int, uint32_t> spawnProcess(int* pipeRead, int* pipeWrite, const std:
 FrameServer::FrameServer(const std::string& url)
     : url(url)
     , pid(0)
-    , pipeWrite(-1)
-    , pipeRead(-1)
+    , pipeWriteStdin(-1)
+    , pipeReadStdout(-1)
 {
 }
 
 FrameServer::~FrameServer()
 {
-    if (pipeRead != -1)
-        close(pipeRead);
-    if (pipeWrite != -1)
-        close(pipeWrite);
+    if (pipeReadStdout != -1)
+        close(pipeReadStdout);
+    if (pipeWriteStdin != -1)
+        close(pipeWriteStdin);
 }
 
 bool FrameServer::initialize(ErrorHandler errorHandler)
 {
     if (!pid) {
-        std::tie(pid, sinkCount) = spawnProcess(&pipeRead, &pipeWrite, url, errorHandler);
+        std::tie(pid, sinkCount) = spawnProcess(&pipeReadStdout, &pipeWriteStdin, url, errorHandler);
         if (pid == -1) {
             errorHandler("vfxpipe failed to spawn process");
             return false;
@@ -126,23 +126,23 @@ bool FrameServer::renderFrame(double time, const std::vector<SourceVideoFrame>& 
     auto ioErrorHandler = [this, errorHandler](std::string msg) {
         if (!msg.empty())
             errorHandler(msg);
-        close(pipeRead);
-        pipeRead = -1;
-        close(pipeWrite);
-        pipeWrite = -1;
+        close(pipeReadStdout);
+        pipeReadStdout = -1;
+        close(pipeWriteStdin);
+        pipeWriteStdin = -1;
     };
 
-    if (!dataIO(pipeWrite, reinterpret_cast<std::byte*>(&time), sizeof(time), write, ioErrorHandler)) {
+    if (!dataIO(pipeWriteStdin, reinterpret_cast<std::byte*>(&time), sizeof(time), write, ioErrorHandler)) {
         return false;
     }
 
     // Output format
-    if (!writeVideoFrameFormat(pipeWrite, outputFrame.format, ioErrorHandler)) {
+    if (!writeVideoFrameFormat(pipeWriteStdin, outputFrame.format, ioErrorHandler)) {
         return false;
     }
 
     uint32_t frameCount = std::min(sinkCount, static_cast<uint32_t>(sourceFrames.size()));
-    if (!dataIO(pipeWrite, reinterpret_cast<const std::byte*>(&frameCount), sizeof(frameCount), write, ioErrorHandler)) {
+    if (!dataIO(pipeWriteStdin, reinterpret_cast<const std::byte*>(&frameCount), sizeof(frameCount), write, ioErrorHandler)) {
         return false;
     }
     int index = 0;
@@ -150,12 +150,12 @@ bool FrameServer::renderFrame(double time, const std::vector<SourceVideoFrame>& 
         ++index;
         if (index > frameCount)
             break;
-        if (!writeVideoFrame(pipeWrite, sourceFrame, ioErrorHandler)) {
+        if (!writeVideoFrame(pipeWriteStdin, sourceFrame, ioErrorHandler)) {
             return false;
         }
     }
 
-    if (!dataIO(pipeRead, outputFrame.data, outputFrame.format.dataSize(), read, ioErrorHandler)) {
+    if (!dataIO(pipeReadStdout, outputFrame.data, outputFrame.format.dataSize(), read, ioErrorHandler)) {
         return false;
     }
     return true;
