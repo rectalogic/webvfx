@@ -33,7 +33,7 @@ private slots:
     void onTimeSpinBoxValueChanged(double);
     void on_addParameterButton_clicked();
     void on_deleteParameterButton_clicked();
-    void onImageChanged(const QString&, QImage);
+    void onImageChanged();
 
 private:
     void createContent(const QString& fileName);

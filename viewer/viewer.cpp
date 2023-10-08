@@ -106,12 +106,13 @@ void Viewer::renderContent()
     if (!frameServer)
         return;
 
+    double time = timeSpinBox->value();
     int rowCount = imagesTable->rowCount();
     std::vector<VfxPipe::VideoFrame<const std::byte*>> sourceImages;
     for (int i = 0; i < rowCount; i++) {
         ImageColor* imageColor = static_cast<ImageColor*>(imagesTable->cellWidget(i, 1));
         if (imageColor) {
-            auto image = imageColor->getImage();
+            auto image = imageColor->renderImage(time);
             sourceImages.emplace_back(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, image.width(), image.height(), reinterpret_cast<const std::byte*>(image.constBits()));
         }
     }
@@ -119,7 +120,7 @@ void Viewer::renderContent()
     if (renderImage.size() != scrollArea->widget()->size())
         renderImage = QImage(scrollArea->widget()->size(), QImage::Format_RGBA8888);
     VfxPipe::VideoFrame outputImage(VfxPipe::VideoFrameFormat::PixelFormat::RGBA32, renderImage.width(), renderImage.height(), reinterpret_cast<std::byte*>(renderImage.bits()));
-    if (frameServer->renderFrame(timeSpinBox->value(), sourceImages, outputImage, errorHandler)) {
+    if (frameServer->renderFrame(time, sourceImages, outputImage, errorHandler)) {
         imageLabel->setPixmap(QPixmap::fromImage(renderImage));
     } else {
         delete frameServer;
@@ -247,13 +248,12 @@ void Viewer::setupImages(uint32_t imageCount, const QSize& size)
         imageColor->setImageSize(size);
         imageColor->setObjectName(imageName);
         imageColor->setImageColor(QColor::fromHsv(QRandomGenerator::global()->generate() % 360, 200, 230));
-        connect(imageColor, SIGNAL(imageChanged(QString, QImage)),
-            SLOT(onImageChanged(QString, QImage)));
+        connect(imageColor, SIGNAL(imageChanged()), SLOT(onImageChanged()));
         imagesTable->setCellWidget(row, 1, imageColor);
     }
 }
 
-void Viewer::onImageChanged(const QString&, QImage)
+void Viewer::onImageChanged()
 {
     if (!frameServer)
         return;

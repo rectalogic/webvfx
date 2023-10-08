@@ -24,10 +24,10 @@ public:
     void setImageColor(const QColor& color);
     const QSize imageSize() { return image.size(); }
     void setImageSize(const QSize& size);
-    const QImage getImage();
+    const QImage& renderImage(double time);
 
 signals:
-    void imageChanged(const QString& name, QImage image);
+    void imageChanged();
 
 private slots:
     void onClicked(bool);

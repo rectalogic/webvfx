@@ -29,9 +29,8 @@ void ImageColor::setImageColor(const QColor& color)
     QPalette palette;
     palette.setBrush(QPalette::Button, QBrush(color));
     setPalette(palette);
-    fillImage();
 
-    emit imageChanged(objectName(), getImage());
+    emit imageChanged();
 }
 
 void ImageColor::setImageSize(const QSize& size)
@@ -39,14 +38,8 @@ void ImageColor::setImageSize(const QSize& size)
     if (image.size() == size)
         return;
     image = QImage(size, QImage::Format_RGBA8888);
-    fillImage();
 
-    emit imageChanged(objectName(), getImage());
-}
-
-const QImage ImageColor::getImage()
-{
-    return image;
+    emit imageChanged();
 }
 
 void ImageColor::onClicked(bool)
@@ -57,10 +50,10 @@ void ImageColor::onClicked(bool)
     setImageColor(newColor);
 }
 
-void ImageColor::fillImage()
+const QImage& ImageColor::renderImage(double time)
 {
     if (image.isNull())
-        return;
+        return image;
 
     QSize size = image.size();
     QRectF rect(0, 0, size.width(), size.height());
@@ -71,10 +64,10 @@ void ImageColor::fillImage()
     // Fill background
     painter.fillRect(rect, color);
 
-    // Draw name centered, pick color to contrast with background
+    // Draw name centered, time below, pick color to contrast with background
     painter.setPen(color.lightnessF() < 0.5 ? Qt::white : Qt::black);
     painter.setFont(QFont("Arial", 30));
-    painter.drawText(rect, Qt::AlignCenter, objectName());
+    painter.drawText(rect, Qt::AlignCenter, QStringLiteral("%1\n%2").arg(objectName()).arg(int(time * 1000)));
 
     // Outline edges
     const int penWidth = 10;
@@ -85,4 +78,5 @@ void ImageColor::fillImage()
     painter.drawRect(rect.adjusted(penWidth / 2, penWidth / 2, -penWidth / 2, -penWidth / 2));
 
     painter.end();
+    return image;
 }
