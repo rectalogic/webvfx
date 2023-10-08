@@ -19,6 +19,7 @@
 #include <QScrollArea> // for QScrollArea
 #include <QSize> // for QSize, operator!=
 #include <QSlider> // for QSlider
+#include <QSocketNotifier>
 #include <QSpinBox> // for QSpinBox
 #include <QStatusBar> // for QStatusBar
 #include <QStringBuilder> // for operator%, QConcatenable<>::type, QStringBuilder
@@ -32,6 +33,7 @@
 #include <algorithm> // for max
 #include <cstddef> /* IWYU pragma: keep */ /* IWYU pragma: no_include <ext/type_traits> */ // for byte
 #include <string> // for string
+#include <unistd.h>
 #include <vector> // for vector
 
 void errorHandler(std::string msg)
@@ -44,6 +46,7 @@ Viewer::Viewer()
     , sizeLabel(0)
     , timeSpinBox(0)
     , frameServer(0)
+    , errorNotifier(0)
 {
     setupUi(this);
 
@@ -79,6 +82,16 @@ void Viewer::messageHandler(QtMsgType type, const QMessageLogContext& context, c
     QString result;
     QTextStream(&result) << type << ": " << msg << " (line " << context.line << ", " << (context.function ? context.function : "") << ")\n";
     logTextEdit->appendPlainText(result);
+}
+
+void Viewer::onErrorReadyRead(QSocketDescriptor fd, QSocketNotifier::Type)
+{
+    char data[2048];
+    ssize_t n = read(fd, data, sizeof(data) - 1);
+    if (n > 0) {
+        data[n] = 0;
+        logTextEdit->appendPlainText(QString(data));
+    }
 }
 
 void Viewer::setContentUIEnabled(bool enable)
@@ -162,7 +175,9 @@ void Viewer::handleResize()
 
 void Viewer::on_timeSlider_valueChanged(int value)
 {
+    timeSpinBox->blockSignals(true);
     timeSpinBox->setValue(sliderTimeValue(value));
+    timeSpinBox->blockSignals(false);
     renderContent();
 }
 
@@ -223,8 +238,13 @@ void Viewer::createContent(const QString& fileName)
 
     logTextEdit->clear();
 
-    if (frameServer->initialize(errorHandler))
+    delete errorNotifier;
+    int pipeReadStderr = 0;
+    if (frameServer->initialize(errorHandler, &pipeReadStderr)) {
+        errorNotifier = new QSocketNotifier(pipeReadStderr, QSocketNotifier::Read, this);
+        connect(errorNotifier, &QSocketNotifier::activated, this, &Viewer::onErrorReadyRead);
         setContentUIEnabled(true);
+    }
 
     setupImages(frameServer->getSinkCount(), scrollArea->widget()->size());
     renderContent();

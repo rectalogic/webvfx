@@ -9,10 +9,12 @@
 #include <QMainWindow> // for QMainWindow
 #include <QMessageLogContext> // for QtMsgType
 #include <QObject> // for Q_OBJECT, slots
+#include <QSocketNotifier>
 #include <QString> // for QString
 class QDoubleSpinBox;
 class QLabel;
 class QSize;
+
 namespace VfxPipe {
 class FrameServer;
 }
@@ -34,6 +36,7 @@ private slots:
     void on_addParameterButton_clicked();
     void on_deleteParameterButton_clicked();
     void onImageChanged();
+    void onErrorReadyRead(QSocketDescriptor, QSocketNotifier::Type);
 
 private:
     void createContent(const QString& fileName);
@@ -47,4 +50,5 @@ private:
     QLabel* imageLabel;
     QImage renderImage;
     VfxPipe::FrameServer* frameServer;
+    QSocketNotifier* errorNotifier;
 };

@@ -16,12 +16,13 @@
 
 namespace VfxPipe {
 
-std::tuple<int, uint32_t> spawnProcess(int* pipeReadStdout, int* pipeWriteStdin, const std::string& url, ErrorHandler errorHandler)
+std::tuple<int, uint32_t> spawnProcess(int* pipeReadStdout, int* pipeWriteStdin, int* pipeReadStderr, const std::string& url, ErrorHandler errorHandler)
 {
     int fdsToChildStdin[2];
     int fdsFromChildStdout[2];
+    int fdsFromChildStderr[2];
 
-    if (pipe(fdsToChildStdin) == -1 || pipe(fdsFromChildStdout) == -1) {
+    if (pipe(fdsToChildStdin) == -1 || pipe(fdsFromChildStdout) == -1 || (pipeReadStderr && pipe(fdsFromChildStderr) == -1)) {
         errorHandler(std::string("vfxpipe pipe failed: ") + strerror(errno));
         return { -1, 0 };
     }
@@ -37,7 +38,8 @@ std::tuple<int, uint32_t> spawnProcess(int* pipeReadStdout, int* pipeWriteStdin,
     // In the child
     if (pid == 0) {
         if (dup2(fdsToChildStdin[0], STDIN_FILENO) == -1
-            || dup2(fdsFromChildStdout[1], STDOUT_FILENO) == -1) {
+            || dup2(fdsFromChildStdout[1], STDOUT_FILENO) == -1
+            || (pipeReadStderr && dup2(fdsFromChildStderr[1], STDERR_FILENO) == -1)) {
             errorHandler(std::string("vfxpipe dup2 failed: ") + strerror(errno));
             exit(1);
         }
@@ -46,6 +48,10 @@ std::tuple<int, uint32_t> spawnProcess(int* pipeReadStdout, int* pipeWriteStdin,
         close(fdsFromChildStdout[1]);
         close(fdsToChildStdin[0]);
         close(fdsToChildStdin[1]);
+        if (pipeReadStderr) {
+            close(fdsFromChildStderr[0]);
+            close(fdsFromChildStderr[1]);
+        }
 
         Dl_info info;
         auto fptr = &spawnProcess;
@@ -72,10 +78,13 @@ std::tuple<int, uint32_t> spawnProcess(int* pipeReadStdout, int* pipeWriteStdin,
     // In the parent
 
     *pipeWriteStdin = fdsToChildStdin[1];
-    *pipeReadStdout = fdsFromChildStdout[0];
-
-    close(fdsFromChildStdout[1]);
     close(fdsToChildStdin[0]);
+    *pipeReadStdout = fdsFromChildStdout[0];
+    close(fdsFromChildStdout[1]);
+    if (pipeReadStderr) {
+        *pipeReadStderr = fdsFromChildStderr[0];
+        close(fdsFromChildStderr[1]);
+    }
 
     uint32_t sinkCount = 0;
     if (!dataIO(*pipeReadStdout, reinterpret_cast<std::byte*>(&sinkCount), sizeof(sinkCount), read, errorHandler)) {
@@ -101,10 +110,10 @@ FrameServer::~FrameServer()
         close(pipeWriteStdin);
 }
 
-bool FrameServer::initialize(ErrorHandler errorHandler)
+bool FrameServer::initialize(ErrorHandler errorHandler, int* pipeReadStderr)
 {
     if (!pid) {
-        std::tie(pid, sinkCount) = spawnProcess(&pipeReadStdout, &pipeWriteStdin, url, errorHandler);
+        std::tie(pid, sinkCount) = spawnProcess(&pipeReadStdout, &pipeWriteStdin, pipeReadStderr, url, errorHandler);
         if (pid == -1) {
             errorHandler("vfxpipe failed to spawn process");
             return false;

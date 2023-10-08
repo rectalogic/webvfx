@@ -98,7 +98,7 @@ class FrameServer {
 public:
     FrameServer(const std::string& url);
     ~FrameServer();
-    bool initialize(ErrorHandler errorHandler);
+    bool initialize(ErrorHandler errorHandler, int* pipeReadStderr = nullptr);
     bool renderFrame(double time, const std::vector<SourceVideoFrame>& sourceFrames, RenderedVideoFrame& outputFrame, ErrorHandler errorHandler);
     std::string& getUrl() { return url; }
     uint32_t getSinkCount() { return sinkCount; }
