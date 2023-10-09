@@ -3,8 +3,6 @@ import QtQuick.Shapes 1.0
 
 Shape {
     id: shape
-    width: webvfx.videoSize.width
-    height: webvfx.videoSize.height
     anchors.centerIn: parent
     ShapePath {
         fillGradient: RadialGradient {

@@ -2,16 +2,13 @@ import QtQuick 2.0
 import QtMultimedia
 
 Rectangle {
-    width: webvfx.videoSize.width
-    height: webvfx.videoSize.height
-
-   VideoOutput {
+    VideoOutput {
         id: sourceVideo
         anchors.fill: parent
         visible: false
         layer.enabled: true
-   }
-   VideoOutput {
+    }
+    VideoOutput {
         id: targetVideo
         anchors.fill: parent
         visible: false

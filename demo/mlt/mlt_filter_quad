@@ -1,0 +1,16 @@
+#!/bin/bash
+
+BASEDIR=$(dirname "${BASH_SOURCE[0]}")
+export DISPLAY=${DISPLAY:-:0}
+case ${PLUGIN:-frei0r} in
+frei0r)
+    FILTER=("frei0r.webvfx_filter" "0=\"\"${BASEDIR}/../examples/filter-quad.qml?webvfx_duration=300/30\"\"")
+    ;;
+mlt)
+    FILTER=(mltwebvfx:"${BASEDIR}/../examples/filter-quad.qml")
+    ;;
+esac
+REDTESTSRC=lavfi:$(COLOR=red ${BASEDIR}/tests/testsrc)
+melt -verbose "${VFX_SOURCE:-${REDTESTSRC}}" out=299 \
+    -filter "${FILTER[@]}" out=299 \
+    $(eval echo $(< "${VFX_CONSUMER:-${BASEDIR}/consumer_sdl}")) mlt_profile=${BASEDIR}/webvfx_profile

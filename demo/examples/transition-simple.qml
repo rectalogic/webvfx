@@ -2,8 +2,7 @@ import QtQuick
 import QtMultimedia
 
 Rectangle {
-    width: webvfx.videoSize.width
-    height: webvfx.videoSize.height
+    id: root
     color: "lightgray"
 
     VideoOutput {
@@ -37,6 +36,15 @@ Rectangle {
         id: animationController
         animation: animation
     }
+    Connections {
+        target: root
+        function onWidthChanged(w) {
+            animationController.reload();
+        }
+        function onHeightChanged(h) {
+            animationController.reload();
+        }
+    }
     Component.onCompleted: {
         webvfx.appendVideoSink(webvfx.addVideoSource(), sourceVideo.videoSink);
         webvfx.appendVideoSink(webvfx.addVideoSource(), targetVideo.videoSink);
@@ -45,9 +53,6 @@ Rectangle {
         target: webvfx
         function onRenderRequested(time) {
             animationController.progress = time;
-        }
-        function onVideoSizeChanged(size) {
-            animationController.reload();
         }
     }
 }

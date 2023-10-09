@@ -16,7 +16,7 @@
 
 namespace VfxPipe {
 
-std::tuple<int, uint32_t> spawnProcess(int* pipeReadStdout, int* pipeWriteStdin, int* pipeReadStderr, const std::string& url, ErrorHandler errorHandler)
+std::tuple<int, uint32_t> spawnProcess(int* pipeReadStdout, int* pipeWriteStdin, int* pipeReadStderr, const std::string& url, uint32_t width, uint32_t height, ErrorHandler errorHandler)
 {
     int fdsToChildStdin[2];
     int fdsFromChildStdout[2];
@@ -70,7 +70,7 @@ std::tuple<int, uint32_t> spawnProcess(int* pipeReadStdout, int* pipeWriteStdin,
                 exit(1);
             }
         } else {
-            errorHandler(std::string("vfxpipe unable to determine library path"));
+            errorHandler("vfxpipe unable to determine library path");
             exit(1);
         }
     }
@@ -86,8 +86,19 @@ std::tuple<int, uint32_t> spawnProcess(int* pipeReadStdout, int* pipeWriteStdin,
         close(fdsFromChildStderr[1]);
     }
 
+    VideoFrameFormat format(VideoFrameFormat::RGBA32, width, height);
     uint32_t sinkCount = 0;
-    if (!dataIO(*pipeReadStdout, reinterpret_cast<std::byte*>(&sinkCount), sizeof(sinkCount), read, errorHandler)) {
+    if (!(writeVideoFrameFormat(*pipeWriteStdin, format, errorHandler)
+            && dataIO(*pipeReadStdout, reinterpret_cast<std::byte*>(&sinkCount), sizeof(sinkCount), read, errorHandler))) {
+        errorHandler("vfxpipe failed to read sink count");
+        close(*pipeReadStdout);
+        *pipeReadStdout = -1;
+        close(*pipeWriteStdin);
+        *pipeWriteStdin = -1;
+        if (pipeReadStderr) {
+            close(*pipeReadStderr);
+            *pipeReadStderr = -1;
+        }
         return { -1, 0 };
     }
 
@@ -110,10 +121,10 @@ FrameServer::~FrameServer()
         close(pipeWriteStdin);
 }
 
-bool FrameServer::initialize(ErrorHandler errorHandler, int* pipeReadStderr)
+bool FrameServer::initialize(ErrorHandler errorHandler, uint32_t width, uint32_t height, int* pipeReadStderr)
 {
     if (!pid) {
-        std::tie(pid, sinkCount) = spawnProcess(&pipeReadStdout, &pipeWriteStdin, pipeReadStderr, url, errorHandler);
+        std::tie(pid, sinkCount) = spawnProcess(&pipeReadStdout, &pipeWriteStdin, pipeReadStderr, url, width, height, errorHandler);
         if (pid == -1) {
             errorHandler("vfxpipe failed to spawn process");
             return false;
@@ -128,7 +139,7 @@ bool FrameServer::renderFrame(double time, const std::vector<SourceVideoFrame>& 
     if (pid == -1)
         return false;
     if (!pid) {
-        if (!initialize(errorHandler))
+        if (!initialize(errorHandler, outputFrame.format.width, outputFrame.format.height))
             return false;
     }
 

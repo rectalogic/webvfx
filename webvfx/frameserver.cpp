@@ -104,6 +104,11 @@ FrameServer::FrameServer(QUrl& qmlUrl, QObject* parent)
     urlQuery.removeQueryItem("webvfx_duration");
 
     content = new WebVfx::QmlContent(new FrameServerParameters(urlQuery));
+    if (!VfxPipe::readVideoFrameFormat(STDIN_FILENO, outputFrame.format, ioErrorHandler)) {
+        return;
+    }
+    content->resize(outputFrame.format.width, outputFrame.format.height);
+
     qmlUrl.setQuery(QString());
 
     connect(content, &WebVfx::QmlContent::contentLoadFinished, this, &FrameServer::onContentLoadFinished);
@@ -119,7 +124,6 @@ FrameServer::~FrameServer()
 void FrameServer::onContentLoadFinished(bool result)
 {
     if (result) {
-        auto size = content->getContentSize();
         auto videoSinks = content->getVideoSinks();
         for (const auto videoSink : videoSinks) {
             frameSinks.append(FrameSink(videoSink));
@@ -161,7 +165,7 @@ void FrameServer::readFrames()
 
     if (!VfxPipe::readVideoFrameFormat(STDIN_FILENO, outputFrame.format, ioErrorHandler))
         return;
-    content->setContentSize(QSize(outputFrame.format.width, outputFrame.format.height));
+    content->resize(outputFrame.format.width, outputFrame.format.height);
 
     uint32_t frameCount;
     if (!VfxPipe::dataIO(STDIN_FILENO, reinterpret_cast<std::byte*>(&frameCount), sizeof(frameCount), read, ioErrorHandler))

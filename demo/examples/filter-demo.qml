@@ -2,8 +2,6 @@ import QtQuick
 import QtMultimedia
 
 Rectangle {
-    width: webvfx.videoSize.width
-    height: webvfx.videoSize.height
     color: "lightgray"
 
     VideoOutput {

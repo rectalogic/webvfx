@@ -240,7 +240,7 @@ void Viewer::createContent(const QString& fileName)
 
     delete errorNotifier;
     int pipeReadStderr = 0;
-    if (frameServer->initialize(errorHandler, &pipeReadStderr)) {
+    if (frameServer->initialize(errorHandler, size.width(), size.height(), &pipeReadStderr)) {
         errorNotifier = new QSocketNotifier(pipeReadStderr, QSocketNotifier::Read, this);
         connect(errorNotifier, &QSocketNotifier::activated, this, &Viewer::onErrorReadyRead);
         setContentUIEnabled(true);

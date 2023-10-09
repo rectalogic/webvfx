@@ -20,7 +20,7 @@ QmlContent::QmlContent(RenderControl* renderControl, Parameters* parameters)
     , renderControl(renderControl)
     , renderExpected(false)
 {
-    setResizeMode(ResizeMode::SizeViewToRootObject);
+    setResizeMode(ResizeMode::SizeRootObjectToView);
 
     // Expose context to the QML
     rootContext()->setContextProperty("webvfx", contentContext);
@@ -60,13 +60,6 @@ void QmlContent::loadContent(const QUrl& url)
     setSource(url);
 }
 
-void QmlContent::setContentSize(const QSize& size)
-{
-    if (contentContext->getVideoSize() != size) {
-        contentContext->setVideoSize(size);
-    }
-}
-
 void QmlContent::contextAsyncRenderComplete()
 {
     if (!renderExpected) {
@@ -83,7 +76,7 @@ void QmlContent::contextAsyncRenderComplete()
 
 void QmlContent::renderContent(double time)
 {
-    if (!renderControl->install(this, contentContext->getVideoSize())) {
+    if (!renderControl->install(this, size())) {
         emit renderComplete(QImage());
     }
 

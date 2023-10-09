@@ -6,8 +6,6 @@ import stream.webvfx.WebVfx
 
  View3D {
     id: view
-    width: webvfx.videoSize.width
-    height: webvfx.videoSize.height
 
     environment: SceneEnvironment {
         clearColor: "skyblue"

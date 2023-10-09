@@ -39,14 +39,6 @@ QString ContentContext::getStringParameter(const QString& name)
         return QString();
 }
 
-void ContentContext::setVideoSize(QSize size)
-{
-    if (videoSize == size)
-        return;
-    videoSize = size;
-    emit videoSizeChanged(size);
-}
-
 qsizetype ContentContext::addVideoSource()
 {
     videoSinks.resize(videoSinks.size() + 1);

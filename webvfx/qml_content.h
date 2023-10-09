@@ -30,8 +30,6 @@ public:
     ~QmlContent() override;
 
     void loadContent(const QUrl& url);
-    void setContentSize(const QSize& size);
-    QSize getContentSize() { return contentContext->getVideoSize(); }
     const QList<QList<QVideoSink*>>& getVideoSinks() { return contentContext->getVideoSinks(); }
     void renderContent(double time);
 
