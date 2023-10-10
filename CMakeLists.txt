@@ -2,12 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.21)
 
 project(WebVfx VERSION 1.0.0 LANGUAGES CXX)
 
 include(GNUInstallDirs)
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # https://gitlab.kitware.com/cmake/community/-/wikis/doc/cmake/RPATH-handling
