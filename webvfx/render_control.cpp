@@ -31,7 +31,7 @@ bool RenderControl::install(QQuickWindow* window, QSize size)
 
     if (!initialized) {
         if (!initialize()) {
-            qDebug() << "Failed to initialize render control";
+            qCritical() << "Failed to initialize render control";
             return false;
         }
         initialized = true;
@@ -43,11 +43,11 @@ bool RenderControl::install(QQuickWindow* window, QSize size)
     stencilBuffer.reset();
     texture.reset();
 
-    QRhi* rhi = QQuickRenderControlPrivate::get(this)->rhi;
+    QRhi* rhi = this->rhi();
 
     texture.reset(rhi->newTexture(QRhiTexture::RGBA8, size, 1, QRhiTexture::RenderTarget | QRhiTexture::UsedAsTransferSource));
     if (!texture->create()) {
-        qDebug() << "Failed to create texture";
+        qCritical() << "Failed to create texture";
         return false;
     }
 
@@ -56,7 +56,7 @@ bool RenderControl::install(QQuickWindow* window, QSize size)
     // the lack of a ds buffer, so just be nice and provide one.
     stencilBuffer.reset(rhi->newRenderBuffer(QRhiRenderBuffer::DepthStencil, size, 1));
     if (!stencilBuffer->create()) {
-        qDebug() << "Failed to create render buffer";
+        qCritical() << "Failed to create render buffer";
         return false;
     }
 
@@ -66,7 +66,7 @@ bool RenderControl::install(QQuickWindow* window, QSize size)
     renderPassDescriptor.reset(textureRenderTarget->newCompatibleRenderPassDescriptor());
     textureRenderTarget->setRenderPassDescriptor(renderPassDescriptor.data());
     if (!textureRenderTarget->create()) {
-        qDebug() << "Failed to create render target";
+        qCritical() << "Failed to create render target";
         return false;
     }
 
@@ -88,10 +88,7 @@ QImage RenderControl::renderImage()
     sync();
     render();
 
-    // RHI is private, we need to use it to avoid writing platform specific code for every platform
-    // See https://bugreports.qt.io/browse/QTBUG-88876
-    QQuickRenderControlPrivate* renderControlPrivate = QQuickRenderControlPrivate::get(this);
-    QRhi* rhi = renderControlPrivate->rhi;
+    QRhi* rhi = this->rhi();
 
     QImage outputImage;
     QRhiReadbackResult readResult;
@@ -109,7 +106,7 @@ QImage RenderControl::renderImage()
     };
     QRhiResourceUpdateBatch* readbackBatch = rhi->nextResourceUpdateBatch();
     readbackBatch->readBackTexture(texture.data(), &readResult);
-    renderControlPrivate->cb->resourceUpdate(readbackBatch);
+    this->commandBuffer()->resourceUpdate(readbackBatch);
 
     endFrame();
 
