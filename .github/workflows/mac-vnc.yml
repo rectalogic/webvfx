@@ -2,6 +2,9 @@
 name: mac-vnc
 on: 
   workflow_dispatch:
+  push:
+    branches:
+      - 'qt6-frameserver'
 defaults:
   run:
     shell: bash
